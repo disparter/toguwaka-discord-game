@@ -60,7 +60,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Debug generated image
-        run: echo "Generated image is: ${{ needs.build.outputs.image }}"
+        run: | 
+          echo "Generated image is: ${{ needs.build.outputs.image }}"
 
       - name: Download current task definition
         id: download-taskdef
