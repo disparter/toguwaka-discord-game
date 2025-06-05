@@ -6,6 +6,7 @@ import random
 import asyncio
 import json
 import sqlite3
+import os
 from datetime import datetime, timedelta, time
 import pytz
 from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation
@@ -155,11 +156,6 @@ class ScheduledEvents(commands.Cog):
         self.tournament_channel_id = None
         self.announcement_channel_id = None
 
-        # Start the background tasks
-        self.check_scheduled_events.start()
-        self.daily_reset.start()
-        self.weekly_reset.start()
-
         # Initialize player progress dictionaries
         PLAYER_PROGRESS['daily'] = {}
         PLAYER_PROGRESS['weekly'] = {}
@@ -168,6 +164,14 @@ class ScheduledEvents(commands.Cog):
 
     async def cog_load(self):
         """Async hook that is called when the cog is loaded."""
+        # Wait until the bot is ready before starting tasks
+        await self.bot.wait_until_ready()
+
+        # Start the background tasks
+        self.check_scheduled_events.start()
+        self.daily_reset.start()
+        self.weekly_reset.start()
+
         # Schedule finding channels after bot is ready
         await self.find_channels()
 
@@ -177,20 +181,36 @@ class ScheduledEvents(commands.Cog):
         logger.info("Finding channels for announcements and tournaments")
 
         for guild in self.bot.guilds:
-            # Try to find announcement channel
-            announcement_channel = discord.utils.get(guild.text_channels, name="anúncios") or \
-                                  discord.utils.get(guild.text_channels, name="announcements") or \
-                                  discord.utils.get(guild.text_channels, name="geral") or \
-                                  discord.utils.get(guild.text_channels, name="general")
-
-            if announcement_channel:
-                self.announcement_channel_id = announcement_channel.id
-                logger.info(f"Set announcement channel to: {announcement_channel.name} ({announcement_channel.id})")
+            # Try to find announcement channel using TOKUGAWA_CHANNEL env variable
+            tokugawa_channel_name = os.environ.get('TOKUGAWA_CHANNEL')
+            if tokugawa_channel_name:
+                tokugawa_channel = discord.utils.get(guild.text_channels, name=tokugawa_channel_name)
+                if tokugawa_channel:
+                    self.announcement_channel_id = tokugawa_channel.id
+                    logger.info(f"Set announcement channel to TOKUGAWA_CHANNEL: {tokugawa_channel.name} ({tokugawa_channel.id})")
+                else:
+                    # Fallback to default channels if TOKUGAWA_CHANNEL not found
+                    announcement_channel = discord.utils.get(guild.text_channels, name="anúncios") or \
+                                          discord.utils.get(guild.text_channels, name="announcements") or \
+                                          discord.utils.get(guild.text_channels, name="geral") or \
+                                          discord.utils.get(guild.text_channels, name="general")
+                    if announcement_channel:
+                        self.announcement_channel_id = announcement_channel.id
+                        logger.info(f"TOKUGAWA_CHANNEL not found, using fallback: {announcement_channel.name} ({announcement_channel.id})")
+            else:
+                # No TOKUGAWA_CHANNEL set, use default channels
+                announcement_channel = discord.utils.get(guild.text_channels, name="anúncios") or \
+                                      discord.utils.get(guild.text_channels, name="announcements") or \
+                                      discord.utils.get(guild.text_channels, name="geral") or \
+                                      discord.utils.get(guild.text_channels, name="general")
+                if announcement_channel:
+                    self.announcement_channel_id = announcement_channel.id
+                    logger.info(f"Set announcement channel to: {announcement_channel.name} ({announcement_channel.id})")
 
             # Try to find tournament channel (can be the same as announcement channel)
             tournament_channel = discord.utils.get(guild.text_channels, name="torneios") or \
                                discord.utils.get(guild.text_channels, name="tournaments") or \
-                               announcement_channel  # Fall back to announcement channel
+                               self.bot.get_channel(self.announcement_channel_id) if self.announcement_channel_id else None
 
             if tournament_channel:
                 self.tournament_channel_id = tournament_channel.id
@@ -1796,6 +1816,24 @@ class ScheduledEvents(commands.Cog):
                 # Choose a random guild and channel
                 guild = random.choice(active_guilds)
 
+                # Check if we should use TOKUGAWA_CHANNEL for all events
+                tokugawa_channel_name = os.environ.get('TOKUGAWA_CHANNEL')
+
+                if tokugawa_channel_name:
+                    # Find the specified channel in the guild
+                    tokugawa_channel = discord.utils.get(guild.text_channels, name=tokugawa_channel_name)
+
+                    if tokugawa_channel and tokugawa_channel.permissions_for(guild.me).send_messages:
+                        # Use the specified channel for all events
+                        if event_type == 'minion':
+                            await self.trigger_minion_event(tokugawa_channel)
+                        elif event_type == 'villain':
+                            await self.trigger_villain_event(tokugawa_channel)
+                        elif event_type == 'collectible':
+                            await self.trigger_collectible_event(tokugawa_channel)
+                        return
+
+                # If TOKUGAWA_CHANNEL not found or not set, use random channel selection
                 # Find suitable channels (text channels that are not announcement channels)
                 suitable_channels = [
                     channel for channel in guild.text_channels
