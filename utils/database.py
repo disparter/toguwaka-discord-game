@@ -43,6 +43,20 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
+    # Check if events table exists and if it has the completed column
+    try:
+        cursor.execute("PRAGMA table_info(events)")
+        columns = cursor.fetchall()
+        has_completed_column = any(col[1] == 'completed' for col in columns)
+
+        if not has_completed_column:
+            logger.info("Adding 'completed' column to events table")
+            cursor.execute("ALTER TABLE events ADD COLUMN completed BOOLEAN DEFAULT 0")
+            conn.commit()
+    except sqlite3.Error as e:
+        # If the table doesn't exist yet, this will be handled by the CREATE TABLE statement below
+        logger.info(f"Checking events table: {e}")
+
     # Create players table
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS players (

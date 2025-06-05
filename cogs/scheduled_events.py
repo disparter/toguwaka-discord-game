@@ -234,6 +234,36 @@ class ScheduledEvents(commands.Cog):
                 logger.info(f"Loaded {len(db_events)} active events from database")
             else:
                 logger.info("No active events found in database")
+
+                # If no active events found, retry creating events even if the daily flag is set
+                today_date = datetime.now().strftime('%Y%m%d')
+                daily_flag_name = f"daily_events_triggered_{today_date}"
+
+                logger.info("No active events found. Retrying event creation even if daily flag is set.")
+
+                # Get current hour to check time conditions
+                current_hour = datetime.now().hour
+
+                # Morning announcements at 8:00
+                if current_hour >= 8:
+                    logger.info("Retrying daily morning announcements")
+                    await self.send_daily_announcements()
+
+                # Daily subject announcement at 9:00
+                if current_hour >= 9:
+                    logger.info("Retrying daily subject announcement")
+
+                    # If DAILY_SUBJECT is empty, select a new daily subject
+                    if not DAILY_SUBJECT or not DAILY_SUBJECT.get('subject'):
+                        logger.info("Selecting daily subject for retry")
+                        await self.select_daily_subject()
+
+                    # Announce the daily subject and start the quiz
+                    await self.announce_daily_subject()
+
+                # Set the flag to indicate daily events have been triggered
+                set_system_flag(daily_flag_name, "true")
+                logger.info(f"Reset daily events triggered flag: {daily_flag_name}")
         except Exception as e:
             logger.error(f"Error loading active events from database: {e}")
 
@@ -3923,6 +3953,15 @@ async def setup(bot):
     cog = ScheduledEvents(bot)
     await bot.add_cog(cog)
     logger.info("ScheduledEvents cog loaded")
+
+    # Explicitly add the quiz command group to the bot's command tree
+    try:
+        bot.tree.add_command(cog.quiz_group)
+        logger.info(f"Explicitly added quiz command group to command tree: /quiz")
+    except app_commands.errors.CommandAlreadyRegistered:
+        logger.info(f"Quiz command group already registered: /quiz")
+    except Exception as e:
+        logger.error(f"Error adding quiz command group: {e}")
 
     # Register commands using the CommandRegistrar
     await CommandRegistrar.register_commands(bot, cog)
