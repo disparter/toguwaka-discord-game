@@ -2605,24 +2605,36 @@ class ScheduledEvents(commands.Cog):
             quiz_event = ACTIVE_EVENTS.get(event_id)
 
             if not quiz_event:
-                await interaction.response.send_message("Não há nenhum quiz ativo hoje.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Não há nenhum quiz ativo hoje.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz availability in evaluate_quiz_answer")
                 return
 
             # Get player
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message("Você precisa estar registrado para participar do quiz.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Você precisa estar registrado para participar do quiz.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking player registration in evaluate_quiz_answer")
                 return
 
             # Check if player already participated
             if interaction.user.id in quiz_event['participants']:
-                await interaction.response.send_message("Você já participou do quiz de hoje.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Você já participou do quiz de hoje.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking participation in evaluate_quiz_answer")
                 return
 
             # Get question and correct answer
             questions = quiz_event['data']['questions']
             if question_index >= len(questions):
-                await interaction.response.send_message("Pergunta inválida.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Pergunta inválida.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking question validity in evaluate_quiz_answer")
                 return
 
             question = questions[question_index]
@@ -2743,23 +2755,33 @@ class ScheduledEvents(commands.Cog):
             if technique_learned:
                 rewards_description += f"\n- Técnica aprendida: **{technique_learned['name']}**"
 
-            await interaction.response.send_message(
-                embed=create_basic_embed(
-                    title=f"Resultado do Quiz de {subject}",
-                    description=(
-                        f"{result_message}\n\n"
-                        f"{rewards_description}"
+            try:
+                await interaction.response.send_message(
+                    embed=create_basic_embed(
+                        title=f"Resultado do Quiz de {subject}",
+                        description=(
+                            f"{result_message}\n\n"
+                            f"{rewards_description}"
+                        ),
+                        color=0x00FF00 if is_correct else 0xFF0000
                     ),
-                    color=0x00FF00 if is_correct else 0xFF0000
-                ),
-                ephemeral=True
-            )
+                    ephemeral=True
+                )
+            except discord.errors.NotFound:
+                logger.warning(f"Interaction expired for user {interaction.user.id} when sending quiz result")
+            except Exception as e2:
+                logger.error(f"Error sending quiz result: {e2}")
 
             logger.info(f"Player {player['name']} completed quiz with grade {final_grade}")
 
         except Exception as e:
             logger.error(f"Error evaluating quiz answer: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
+            try:
+                await interaction.response.send_message("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
+            except discord.errors.NotFound:
+                logger.warning(f"Interaction expired for user {interaction.user.id} in evaluate_quiz_answer error handler")
+            except Exception as e2:
+                logger.error(f"Error sending error message in evaluate_quiz_answer: {e2}")
 
     async def check_monthly_grades(self):
         """Check if it's the end of the month and evaluate monthly grades."""
@@ -3630,24 +3652,36 @@ class ScheduledEvents(commands.Cog):
             quiz_event = ACTIVE_EVENTS.get(event_id)
 
             if not quiz_event:
-                await interaction.response.send_message("Não há nenhum quiz ativo hoje. Aguarde o anúncio da próxima aula!", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Não há nenhum quiz ativo hoje. Aguarde o anúncio da próxima aula!", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz availability")
                 return
 
             # Get player
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message("Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking player registration")
                 return
 
             # Check if player already participated
             if interaction.user.id in quiz_event['participants']:
-                await interaction.response.send_message("Você já participou do quiz de hoje. Volte amanhã para um novo quiz!", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Você já participou do quiz de hoje. Volte amanhã para um novo quiz!", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking participation")
                 return
 
             # Get a random question from the quiz
             questions = quiz_event['data']['questions']
             if not questions:
-                await interaction.response.send_message("Este quiz não possui perguntas. Por favor, informe um administrador.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Este quiz não possui perguntas. Por favor, informe um administrador.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz questions")
                 return
 
             question_index = random.randint(0, len(questions) - 1)
@@ -3676,42 +3710,60 @@ class ScheduledEvents(commands.Cog):
 
             # Handle select menu interaction
             async def select_callback(select_interaction):
-                if select_interaction.user.id != interaction.user.id:
-                    await select_interaction.response.send_message("Este não é o seu quiz!", ephemeral=True)
-                    return
+                try:
+                    if select_interaction.user.id != interaction.user.id:
+                        await select_interaction.response.send_message("Este não é o seu quiz!", ephemeral=True)
+                        return
 
-                # Get selected answer
-                answer_index = int(select_interaction.data['values'][0])
+                    # Get selected answer
+                    answer_index = int(select_interaction.data['values'][0])
 
-                # Evaluate answer
-                await self.evaluate_quiz_answer(select_interaction, question_index, answer_index)
+                    # Evaluate answer
+                    await self.evaluate_quiz_answer(select_interaction, question_index, answer_index)
 
-                # Disable the select menu
-                select.disabled = True
-                await interaction.edit_original_response(view=view)
+                    # Disable the select menu
+                    select.disabled = True
+                    try:
+                        await interaction.edit_original_response(view=view)
+                    except discord.errors.NotFound:
+                        logger.warning(f"Interaction expired for user {interaction.user.id} when updating quiz view")
+                except Exception as e:
+                    logger.error(f"Error in select_callback: {e}")
+                    try:
+                        await select_interaction.response.send_message("Ocorreu um erro ao processar sua resposta.", ephemeral=True)
+                    except discord.errors.NotFound:
+                        logger.warning(f"Interaction expired for user {select_interaction.user.id} in select_callback error handler")
 
             select.callback = select_callback
 
             # Send the quiz question
             subject = quiz_event['data']['subject']
-            await interaction.response.send_message(
-                embed=create_basic_embed(
-                    title=f"Quiz de {subject}",
-                    description=(
-                        f"**Pergunta:** {question['question']}\n\n"
-                        f"Escolha a resposta correta no menu abaixo."
+            try:
+                await interaction.response.send_message(
+                    embed=create_basic_embed(
+                        title=f"Quiz de {subject}",
+                        description=(
+                            f"**Pergunta:** {question['question']}\n\n"
+                            f"Escolha a resposta correta no menu abaixo."
+                        ),
+                        color=0x4169E1
                     ),
-                    color=0x4169E1
-                ),
-                view=view,
-                ephemeral=True
-            )
-
-            logger.info(f"Player {player['name']} started quiz for subject {subject}")
+                    view=view,
+                    ephemeral=True
+                )
+                logger.info(f"Player {player['name']} started quiz for subject {subject}")
+            except discord.errors.NotFound:
+                logger.warning(f"Interaction expired for user {interaction.user.id} when sending quiz question")
+                return
 
         except Exception as e:
             logger.error(f"Error in slash_quiz_participate: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao iniciar o quiz.", ephemeral=True)
+            try:
+                await interaction.response.send_message("Ocorreu um erro ao iniciar o quiz.", ephemeral=True)
+            except discord.errors.NotFound:
+                logger.warning(f"Interaction expired for user {interaction.user.id} in error handler")
+            except Exception as e2:
+                logger.error(f"Error sending error message: {e2}")
 
     @quiz_group.command(name="notas", description="Ver suas notas nas diferentes matérias")
     async def slash_quiz_grades(self, interaction: discord.Interaction):
@@ -3720,7 +3772,10 @@ class ScheduledEvents(commands.Cog):
             # Get player
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message("Você precisa estar registrado para ver suas notas. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Você precisa estar registrado para ver suas notas. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking player registration in grades")
                 return
 
             # Get current month and year
@@ -3732,7 +3787,10 @@ class ScheduledEvents(commands.Cog):
             grades = get_player_grades(interaction.user.id, month=current_month, year=current_year)
 
             if not grades:
-                await interaction.response.send_message("Você ainda não possui notas registradas neste mês.", ephemeral=True)
+                try:
+                    await interaction.response.send_message("Você ainda não possui notas registradas neste mês.", ephemeral=True)
+                except discord.errors.NotFound:
+                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking grades")
                 return
 
             # Group grades by subject
@@ -3876,7 +3934,12 @@ class ScheduledEvents(commands.Cog):
 
         except Exception as e:
             logger.error(f"Error in slash_ranking: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao exibir o ranking.", ephemeral=True)
+            try:
+                await interaction.response.send_message("Ocorreu um erro ao exibir o ranking.", ephemeral=True)
+            except discord.errors.NotFound:
+                logger.warning(f"Interaction expired for user {interaction.user.id} in slash_ranking error handler")
+            except Exception as e2:
+                logger.error(f"Error sending error message in slash_ranking: {e2}")
 
     @app_commands.command(name="eventos", description="Ver eventos do dia na Academia Tokugawa")
     @app_commands.describe(mostrar_concluidos="Mostrar eventos concluídos")
@@ -3942,7 +4005,12 @@ class ScheduledEvents(commands.Cog):
 
         except Exception as e:
             logger.error(f"Error in slash_eventos: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao exibir os eventos.", ephemeral=True)
+            try:
+                await interaction.response.send_message("Ocorreu um erro ao exibir os eventos.", ephemeral=True)
+            except discord.errors.NotFound:
+                logger.warning(f"Interaction expired for user {interaction.user.id} in slash_eventos error handler")
+            except Exception as e2:
+                logger.error(f"Error sending error message in slash_eventos: {e2}")
 
 async def setup(bot):
     """Add the cog to the bot."""
