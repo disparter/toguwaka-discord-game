@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Download image file
-        uses: actions/download-artifact@vv3.1.2
+        uses: actions/download-artifact@v3.1.2
         with:
           name: image-file
           path: .
