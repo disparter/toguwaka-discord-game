@@ -16,8 +16,6 @@ jobs:
   build:
     name: Build and Push Image
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.build-image.outputs.image }} # Captura saída "image"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -44,8 +42,13 @@ jobs:
           docker push $IMAGE_NAME
           docker tag $IMAGE_NAME ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
-          echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
-          echo "Image built: $IMAGE_NAME"
+          echo $IMAGE_NAME > image.txt
+
+      - name: Upload image file
+        uses: actions/upload-artifact@v3
+        with:
+          name: image-file
+          path: image.txt
 
   deploy:
     name: Deploy to ECS
@@ -59,24 +62,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Debug generated image
-        run: | 
-          echo "Generated image is: ${{ needs.build.outputs.image }}"
+      - name: Download image file
+        uses: actions/download-artifact@v3
+        with:
+          name: image-file
 
-      - name: Download current task definition
-        id: download-taskdef
+      - name: Load image value
         run: |
-          aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
-            --query taskDefinition > task-definition.json
+          IMAGE=$(cat image.txt)
+          echo "Using image: $IMAGE"
+          echo "image=$IMAGE" >> $GITHUB_ENV
 
       - name: Update ECS task definition with new image
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: current-task-definition.json
           container-name: tokugawa-bot
-          image: ${{ needs.build.outputs.image }} # Resolução corrigida
+          image: ${{ env.image }}
 
       - name: Deploy to ECS
         id: deploy-ecs
