@@ -3,6 +3,7 @@ import json
 import os
 import logging
 from pathlib import Path
+from datetime import datetime
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -200,6 +201,15 @@ def init_db():
     INSERT OR IGNORE INTO clubs (club_id, name, description, leader_id, members_count, reputation)
     VALUES (?, ?, ?, ?, ?, ?)
     ''', default_clubs)
+
+    # Create system_flags table for storing system-wide flags
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS system_flags (
+        flag_name TEXT PRIMARY KEY,
+        flag_value TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
 
     # Insert default quiz questions
     default_questions = [
@@ -718,6 +728,61 @@ def get_top_clubs_by_activity(week=None, year=None, limit=3):
     except sqlite3.Error as e:
         logger.error(f"Error getting top clubs by activity: {e}")
         return []
+    finally:
+        conn.close()
+
+def get_system_flag(flag_name):
+    """Get the value of a system flag.
+
+    Args:
+        flag_name (str): The name of the flag to retrieve
+
+    Returns:
+        str: The value of the flag, or None if the flag doesn't exist
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+        SELECT flag_value FROM system_flags
+        WHERE flag_name = ?
+        ''', (flag_name,))
+
+        result = cursor.fetchone()
+        return result[0] if result else None
+    except sqlite3.Error as e:
+        logger.error(f"Error getting system flag {flag_name}: {e}")
+        return None
+    finally:
+        conn.close()
+
+def set_system_flag(flag_name, flag_value):
+    """Set the value of a system flag.
+
+    Args:
+        flag_name (str): The name of the flag to set
+        flag_value (str): The value to set for the flag
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+        INSERT OR REPLACE INTO system_flags (flag_name, flag_value, updated_at)
+        VALUES (?, ?, CURRENT_TIMESTAMP)
+        ''', (flag_name, flag_value))
+
+        conn.commit()
+        logger.info(f"Set system flag {flag_name} to {flag_value}")
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error setting system flag {flag_name}: {e}")
+        return False
     finally:
         conn.close()
 
