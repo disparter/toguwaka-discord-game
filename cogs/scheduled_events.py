@@ -166,7 +166,7 @@ class ScheduledEvents(commands.Cog):
         """Async hook that is called when the cog is loaded."""
         # Add command groups to the bot's command tree
         self.bot.tree.add_command(self.quiz_group)
-        self.bot.tree.add_command(self.minion)
+        self.bot.tree.add_command(self.slash_minion)
         self.bot.tree.add_command(self.slash_villain)
         logger.info("Added ScheduledEvents commands to the command tree")
 
