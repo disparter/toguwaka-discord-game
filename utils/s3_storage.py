@@ -23,9 +23,16 @@ def get_s3_client():
     try:
         # Get the AWS region from environment or default to us-east-1
         aws_region = os.environ.get('AWS_REGION', 'us-east-1')
-        
-        # Create and return S3 client
-        return boto3.client('s3', region_name=aws_region)
+
+        # Create a session with the default credential provider chain
+        # This will check for credentials in the following order:
+        # 1. Environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+        # 2. Shared credential file (~/.aws/credentials)
+        # 3. IAM role for EC2/ECS
+        session = boto3.Session(region_name=aws_region)
+
+        # Create and return S3 client from the session
+        return session.client('s3')
     except Exception as e:
         logger.error(f"Failed to create S3 client: {e}")
         return None
@@ -38,11 +45,11 @@ def upload_db_to_s3():
     if not LOCAL_DB_PATH.exists():
         logger.error(f"Local database file not found at {LOCAL_DB_PATH}")
         return False
-    
+
     s3_client = get_s3_client()
     if not s3_client:
         return False
-    
+
     try:
         # Upload the file
         s3_client.upload_file(
@@ -63,15 +70,15 @@ def download_db_from_s3():
     """
     # Ensure the data directory exists
     os.makedirs(os.path.dirname(LOCAL_DB_PATH), exist_ok=True)
-    
+
     s3_client = get_s3_client()
     if not s3_client:
         return False
-    
+
     try:
         # Check if the file exists in S3
         s3_client.head_object(Bucket=S3_BUCKET, Key='tokugawa.db')
-        
+
         # Download the file
         s3_client.download_file(
             S3_BUCKET,
@@ -95,7 +102,7 @@ def ensure_s3_bucket_exists():
     s3_client = get_s3_client()
     if not s3_client:
         return False
-    
+
     try:
         # Check if the bucket exists
         s3_client.head_bucket(Bucket=S3_BUCKET)
@@ -107,7 +114,7 @@ def ensure_s3_bucket_exists():
             try:
                 # Get the AWS region from environment or default to us-east-1
                 aws_region = os.environ.get('AWS_REGION', 'us-east-1')
-                
+
                 # Create the bucket
                 s3_client.create_bucket(
                     Bucket=S3_BUCKET,
