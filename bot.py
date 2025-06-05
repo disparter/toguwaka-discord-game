@@ -106,7 +106,8 @@ initial_extensions = [
     'cogs.activities',
     'cogs.economy',
     'cogs.clubs',
-    'cogs.scheduled_events'
+    'cogs.scheduled_events',
+    'cogs.junie_interaction'
 ]
 
 async def load_extensions():
