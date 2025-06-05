@@ -56,9 +56,54 @@ class PlayerStatus(commands.Cog):
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
-            # Create and send inventory embed
+            # Create inventory embed
             embed = create_inventory_embed(player)
-            await interaction.response.send_message(embed=embed)
+
+            # Create view with buttons for consumable items
+            view = discord.ui.View(timeout=60)
+
+            # Check if player has consumable items
+            has_consumables = False
+            for item_id, item in player['inventory'].items():
+                if item['type'] == 'consumable':
+                    has_consumables = True
+                    # Create button for each consumable item
+                    button = discord.ui.Button(
+                        label=f"Usar {item['name']}",
+                        custom_id=f"use_{item_id}",
+                        style=discord.ButtonStyle.primary
+                    )
+
+                    # Define callback for button
+                    async def button_callback(button_interaction, item_id=item_id):
+                        if button_interaction.user.id != interaction.user.id:
+                            await button_interaction.response.send_message("Este não é o seu inventário!", ephemeral=True)
+                            return
+
+                        # Call the use_item command from economy cog
+                        economy_cog = self.bot.get_cog('Economy')
+                        if economy_cog:
+                            await economy_cog.slash_use_item(button_interaction, int(item_id))
+                        else:
+                            await button_interaction.response.send_message("Erro ao usar o item. Tente usar o comando `/economia usar` diretamente.", ephemeral=True)
+
+                    button.callback = button_callback
+                    view.add_item(button)
+
+            # Add a note about using items if there are consumables
+            if has_consumables:
+                embed.add_field(
+                    name="Usar Itens",
+                    value="Clique nos botões abaixo para usar itens consumíveis ou use o comando `/economia usar <id>`.",
+                    inline=False
+                )
+
+            # Send the embed with or without buttons
+            if has_consumables:
+                await interaction.response.send_message(embed=embed, view=view)
+            else:
+                await interaction.response.send_message(embed=embed)
+
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /status inventario")
@@ -120,8 +165,25 @@ class PlayerStatus(commands.Cog):
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
-        # Create and send inventory embed
+        # Create inventory embed
         embed = create_inventory_embed(player)
+
+        # Check if player has consumable items
+        has_consumables = False
+        for item_id, item in player['inventory'].items():
+            if item['type'] == 'consumable':
+                has_consumables = True
+                break
+
+        # Add a note about using items if there are consumables
+        if has_consumables:
+            embed.add_field(
+                name="Usar Itens",
+                value="Use o comando `!usar <id>` para usar itens consumíveis.",
+                inline=False
+            )
+
+        # Send the embed
         await ctx.send(embed=embed)
 
     @commands.command(name="top")
