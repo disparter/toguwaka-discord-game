@@ -119,17 +119,26 @@ async def load_extensions():
         except Exception as e:
             logger.error(f'Failed to load extension {extension}: {e}')
 
+# Flag to track whether commands have been synced
+commands_synced = False
+
 @bot.event
 async def on_ready():
     """Event triggered when the bot is ready and connected to Discord."""
+    global commands_synced
     logger.info(f'{bot.user.name} has connected to Discord!')
     logger.info(f'Bot is in {len(bot.guilds)} guilds')
 
     # Set bot status
     await bot.change_presence(activity=discord.Game(name="Academia Tokugawa"))
 
-    # Sync commands with guild
-    await sync_commands()
+    # Sync commands with guild only if they haven't been synced already
+    if not commands_synced:
+        await sync_commands()
+        commands_synced = True
+        logger.info("Commands synced successfully")
+    else:
+        logger.info("Commands already synced, skipping sync")
 
 @bot.command(name='ping')
 async def ping(ctx):

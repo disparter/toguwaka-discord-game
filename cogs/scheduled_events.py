@@ -166,9 +166,7 @@ class ScheduledEvents(commands.Cog):
         """Async hook that is called when the cog is loaded."""
         # Add command groups to the bot's command tree
         self.bot.tree.add_command(self.quiz_group)
-        self.bot.tree.add_command(self.slash_minion)
-        self.bot.tree.add_command(self.slash_villain)
-        logger.info("Added ScheduledEvents commands to the command tree")
+        logger.info("Added quiz_group command to the command tree")
 
         # Register the on_ready event listener
         self.bot.add_listener(self.on_ready_init, "on_ready")
@@ -3766,5 +3764,12 @@ class ScheduledEvents(commands.Cog):
 async def setup(bot):
     """Add the cog to the bot."""
     import json
-    await bot.add_cog(ScheduledEvents(bot))
+    from utils.command_registrar import CommandRegistrar
+
+    # Create and add the cog
+    cog = ScheduledEvents(bot)
+    await bot.add_cog(cog)
     logger.info("ScheduledEvents cog loaded")
+
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)
