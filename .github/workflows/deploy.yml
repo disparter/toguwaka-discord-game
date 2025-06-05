@@ -45,7 +45,7 @@ jobs:
           echo $IMAGE_NAME > image.txt
 
       - name: Upload image file
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v2
         with:
           name: image-file
           path: image.txt
@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Download image file
-        uses: actions/download-artifact@v3.1.2
+        uses: actions/download-artifact@v2
         with:
           name: image-file
           path: .
