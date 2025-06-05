@@ -8,7 +8,7 @@ import json
 import sqlite3
 from datetime import datetime, timedelta, time
 import pytz
-from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players
+from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from utils.game_mechanics import calculate_level_from_exp
 
@@ -66,6 +66,87 @@ CLUB_BUFFS = {
     # }
 }
 
+# Dictionary to store the current day's subject
+DAILY_SUBJECT = {
+    # 'subject': 'Matemática',
+    # 'emoji': '🧮',
+    # 'description': 'Hoje é dia de Matemática! Participe do quiz para ganhar notas e XP!',
+    # 'difficulty': 1,  # 1-5
+    # 'questions': []
+}
+
+# Dictionary to store subject grades for quick access
+SUBJECT_GRADES = {
+    # user_id: {
+    #     'subject': {
+    #         'month': {
+    #             'year': grade
+    #         }
+    #     }
+    # }
+}
+
+# Dictionary to define voting categories
+VOTING_CATEGORIES = {
+    'most_beautiful': {
+        'name': 'Aluno Mais Bonito',
+        'description': 'Vote no aluno que você considera o mais bonito da Academia!',
+        'attribute': 'charisma',
+        'emoji': '✨',
+        'reward_reputation': 50,
+        'reward_buff': {'type': 'charisma', 'value': 10, 'duration': 7}  # 7 days
+    },
+    'most_funny': {
+        'name': 'Aluno Mais Engraçado',
+        'description': 'Vote no aluno que você considera o mais engraçado da Academia!',
+        'attribute': 'charisma',
+        'emoji': '😂',
+        'reward_reputation': 50,
+        'reward_buff': {'type': 'charisma', 'value': 10, 'duration': 7}
+    },
+    'most_intelligent': {
+        'name': 'Aluno Mais Inteligente',
+        'description': 'Vote no aluno que você considera o mais inteligente da Academia!',
+        'attribute': 'intellect',
+        'emoji': '🧠',
+        'reward_reputation': 50,
+        'reward_buff': {'type': 'intellect', 'value': 10, 'duration': 7}
+    },
+    'most_powerful': {
+        'name': 'Aluno Mais Poderoso',
+        'description': 'Vote no aluno que você considera o mais poderoso da Academia!',
+        'attribute': 'power_stat',
+        'emoji': '💪',
+        'reward_reputation': 50,
+        'reward_buff': {'type': 'power_stat', 'value': 10, 'duration': 7}
+    }
+}
+
+# Dictionary to store active votes
+ACTIVE_VOTES = {
+    # 'category': {
+    #     'start_time': datetime,
+    #     'end_time': datetime,
+    #     'week': week_number,
+    #     'year': year,
+    #     'votes': {
+    #         voter_id: candidate_id
+    #     }
+    # }
+}
+
+# Dictionary to store the current week's theme
+WEEKLY_THEME = {
+    # 'theme': 'Semana da Ciência',
+    # 'description': 'Durante esta semana, todas as atividades relacionadas a Física e Biologia concedem +50% de XP!',
+    # 'start_date': datetime,
+    # 'end_date': datetime,
+    # 'buffs': {
+    #     'subjects': ['Física', 'Biologia'],
+    #     'exp_multiplier': 1.5
+    # }
+}
+
 class ScheduledEvents(commands.Cog):
     """Cog for scheduled and automated events."""
 
@@ -114,6 +195,10 @@ class ScheduledEvents(commands.Cog):
             if now.hour == 8 and now.minute == 0:
                 await self.send_daily_announcements()
 
+            # Check for daily subject announcement (9:00)
+            if now.hour == 9 and now.minute == 0:
+                await self.announce_daily_subject()
+
             # Check for random events based on player activity
             await self.check_random_events()
 
@@ -125,7 +210,7 @@ class ScheduledEvents(commands.Cog):
 
     @tasks.loop(time=time(hour=0, minute=0))  # Run at midnight
     async def daily_reset(self):
-        """Reset daily player progress and generate new buffs."""
+        """Reset daily player progress, generate new buffs, and select daily subject."""
         try:
             # Reset daily player progress
             PLAYER_PROGRESS['daily'] = {}
@@ -133,9 +218,212 @@ class ScheduledEvents(commands.Cog):
             # Generate new club buffs
             await self.generate_club_buffs()
 
+            # Select daily subject
+            await self.select_daily_subject()
+
+            # Check monthly grades (will only run on the last day of the month)
+            await self.check_monthly_grades()
+
             logger.info("Daily reset completed")
         except Exception as e:
             logger.error(f"Error in daily_reset: {e}")
+
+    async def select_daily_subject(self):
+        """Select a random subject for the day and prepare quiz questions."""
+        try:
+            # Define available subjects with their properties
+            subjects = [
+                {
+                    'subject': 'Matemática',
+                    'emoji': '🧮',
+                    'description': 'Hoje é dia de Matemática! Participe do quiz para ganhar notas e XP!',
+                    'difficulty': 2,
+                    'questions': [
+                        {
+                            'question': 'Quanto é 15 × 7?',
+                            'options': ['95', '105', '115', '125'],
+                            'correct': 1,  # 105
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Se 3x + 7 = 22, qual é o valor de x?',
+                            'options': ['3', '5', '7', '9'],
+                            'correct': 1,  # 5
+                            'difficulty': 2
+                        },
+                        {
+                            'question': 'Qual é a área de um círculo com raio 4?',
+                            'options': ['16π', '8π', '4π', '12π'],
+                            'correct': 0,  # 16π
+                            'difficulty': 3
+                        }
+                    ]
+                },
+                {
+                    'subject': 'Física',
+                    'emoji': '⚛️',
+                    'description': 'Hoje é dia de Física! Participe do quiz para ganhar notas e XP!',
+                    'difficulty': 3,
+                    'questions': [
+                        {
+                            'question': 'Qual é a unidade de medida de força no Sistema Internacional?',
+                            'options': ['Watt', 'Newton', 'Joule', 'Pascal'],
+                            'correct': 1,  # Newton
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Qual é a fórmula da Segunda Lei de Newton?',
+                            'options': ['F = ma', 'E = mc²', 'v = d/t', 'P = mg'],
+                            'correct': 0,  # F = ma
+                            'difficulty': 2
+                        },
+                        {
+                            'question': 'O que é um quantum?',
+                            'options': ['Uma partícula subatômica', 'Uma quantidade discreta de energia', 'Um tipo de onda', 'Um campo magnético'],
+                            'correct': 1,  # Uma quantidade discreta de energia
+                            'difficulty': 3
+                        }
+                    ]
+                },
+                {
+                    'subject': 'Biologia',
+                    'emoji': '🧬',
+                    'description': 'Hoje é dia de Biologia! Participe do quiz para ganhar notas e XP!',
+                    'difficulty': 2,
+                    'questions': [
+                        {
+                            'question': 'Qual é a organela responsável pela respiração celular?',
+                            'options': ['Mitocôndria', 'Ribossomo', 'Complexo de Golgi', 'Lisossomo'],
+                            'correct': 0,  # Mitocôndria
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Qual é o processo pelo qual as plantas produzem seu próprio alimento?',
+                            'options': ['Respiração', 'Fotossíntese', 'Digestão', 'Fermentação'],
+                            'correct': 1,  # Fotossíntese
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'O que é um alelo?',
+                            'options': ['Um tipo de célula', 'Uma forma alternativa de um gene', 'Um tipo de proteína', 'Um organismo unicelular'],
+                            'correct': 1,  # Uma forma alternativa de um gene
+                            'difficulty': 2
+                        }
+                    ]
+                },
+                {
+                    'subject': 'Artes Marciais',
+                    'emoji': '🥋',
+                    'description': 'Hoje é dia de Artes Marciais! Participe do quiz para ganhar notas e XP!',
+                    'difficulty': 1,
+                    'questions': [
+                        {
+                            'question': 'Qual arte marcial se originou no Japão e significa "caminho suave"?',
+                            'options': ['Karatê', 'Judô', 'Taekwondo', 'Kung Fu'],
+                            'correct': 1,  # Judô
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Qual é a cor do cinturão mais alto no Karatê tradicional?',
+                            'options': ['Preto', 'Vermelho', 'Branco', 'Marrom'],
+                            'correct': 0,  # Preto
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Qual arte marcial utiliza principalmente movimentos circulares e é conhecida por sua fluidez?',
+                            'options': ['Muay Thai', 'Capoeira', 'Aikido', 'Boxe'],
+                            'correct': 2,  # Aikido
+                            'difficulty': 2
+                        }
+                    ]
+                },
+                {
+                    'subject': 'Habilidades Especiais',
+                    'emoji': '✨',
+                    'description': 'Hoje é dia de Habilidades Especiais! Participe do quiz para ganhar notas e XP!',
+                    'difficulty': 3,
+                    'questions': [
+                        {
+                            'question': 'Qual é o nome da habilidade de mover objetos com a mente?',
+                            'options': ['Telepatia', 'Telecinese', 'Clarividência', 'Precognição'],
+                            'correct': 1,  # Telecinese
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Qual habilidade permite ver o futuro?',
+                            'options': ['Telepatia', 'Empatia', 'Precognição', 'Clarividência'],
+                            'correct': 2,  # Precognição
+                            'difficulty': 2
+                        },
+                        {
+                            'question': 'Qual é o nome da habilidade de se curar rapidamente?',
+                            'options': ['Regeneração', 'Cura', 'Imortalidade', 'Vitalidade'],
+                            'correct': 0,  # Regeneração
+                            'difficulty': 1
+                        }
+                    ]
+                },
+                {
+                    'subject': 'Atletismo',
+                    'emoji': '🏃',
+                    'description': 'Hoje é dia de Atletismo! Participe do quiz para ganhar notas e XP!',
+                    'difficulty': 1,
+                    'questions': [
+                        {
+                            'question': 'Qual é a distância de uma maratona em quilômetros?',
+                            'options': ['21,0975 km', '42,195 km', '10 km', '100 km'],
+                            'correct': 1,  # 42,195 km
+                            'difficulty': 1
+                        },
+                        {
+                            'question': 'Qual é o recorde mundial dos 100 metros rasos masculino?',
+                            'options': ['9,58s', '9,69s', '9,82s', '9,95s'],
+                            'correct': 0,  # 9,58s
+                            'difficulty': 2
+                        },
+                        {
+                            'question': 'Qual destes não é um evento de atletismo nas Olimpíadas?',
+                            'options': ['Lançamento de dardo', 'Salto com vara', 'Corrida de obstáculos', 'Levantamento de peso'],
+                            'correct': 3,  # Levantamento de peso
+                            'difficulty': 2
+                        }
+                    ]
+                }
+            ]
+
+            # Check if there's a weekly theme that affects subject selection
+            if WEEKLY_THEME and 'subjects' in WEEKLY_THEME.get('buffs', {}):
+                # Filter subjects based on weekly theme
+                themed_subjects = [s for s in subjects if s['subject'] in WEEKLY_THEME['buffs']['subjects']]
+                if themed_subjects:
+                    # Higher chance to select themed subjects
+                    if random.random() < 0.7:  # 70% chance to select a themed subject
+                        selected_subject = random.choice(themed_subjects)
+                    else:
+                        selected_subject = random.choice(subjects)
+                else:
+                    selected_subject = random.choice(subjects)
+            else:
+                # Random selection if no theme
+                selected_subject = random.choice(subjects)
+
+            # Update global DAILY_SUBJECT
+            DAILY_SUBJECT.clear()
+            DAILY_SUBJECT.update(selected_subject)
+
+            logger.info(f"Selected daily subject: {DAILY_SUBJECT['subject']}")
+
+        except Exception as e:
+            logger.error(f"Error selecting daily subject: {e}")
+            # Fallback to a default subject
+            DAILY_SUBJECT.clear()
+            DAILY_SUBJECT.update({
+                'subject': 'Matemática',
+                'emoji': '🧮',
+                'description': 'Hoje é dia de Matemática! Participe do quiz para ganhar notas e XP!',
+                'difficulty': 1,
+                'questions': []
+            })
 
     async def generate_club_buffs(self):
         """Generate random buffs for clubs based on reputation."""
@@ -700,17 +988,63 @@ class ScheduledEvents(commands.Cog):
 
                 # Run battles
                 for battle_num in range(1, num_battles + 1):
-                    # Monarchs select fighters
+                    # Check if monarchs choose democracy mode
+                    team1_democracy = random.random() < 0.3  # 30% chance for democracy mode
+                    team2_democracy = random.random() < 0.3  # 30% chance for democracy mode
+
+                    # Apply democracy mode effects
+                    democracy_messages = []
+
+                    if team1_democracy:
+                        # Get monarch player
+                        monarch1_player = get_player(monarch1['user_id'])
+                        if monarch1_player:
+                            # Apply -10 XP penalty to monarch
+                            update_player(monarch1['user_id'], exp=monarch1_player['exp'] - 10)
+
+                            # Apply +10 XP bonus to all team members
+                            for member in team1_fighters:
+                                if member['user_id'] != monarch1['user_id']:  # Skip monarch who already got -10
+                                    member_player = get_player(member['user_id'])
+                                    if member_player:
+                                        update_player(member['user_id'], exp=member_player['exp'] + 10)
+
+                            democracy_messages.append(f"O Monarca de {team1_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
+
+                    if team2_democracy:
+                        # Get monarch player
+                        monarch2_player = get_player(monarch2['user_id'])
+                        if monarch2_player:
+                            # Apply -10 XP penalty to monarch
+                            update_player(monarch2['user_id'], exp=monarch2_player['exp'] - 10)
+
+                            # Apply +10 XP bonus to all team members
+                            for member in team2_fighters:
+                                if member['user_id'] != monarch2['user_id']:  # Skip monarch who already got -10
+                                    member_player = get_player(member['user_id'])
+                                    if member_player:
+                                        update_player(member['user_id'], exp=member_player['exp'] + 10)
+
+                            democracy_messages.append(f"O Monarca de {team2_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
+
+                    # Monarchs select fighters (democracy mode means random selection)
                     fighter1 = random.choice(team1_fighters)
                     fighter2 = random.choice(team2_fighters)
+
+                    # Create description with democracy messages if any
+                    description = ""
+                    if democracy_messages:
+                        description += "\n".join(democracy_messages) + "\n\n"
+
+                    description += (
+                        f"O Monarca de {team1_name} escolheu **{fighter1['name']}**!\n"
+                        f"O Monarca de {team2_name} escolheu **{fighter2['name']}**!"
+                    )
 
                     await channel.send(
                         embed=create_basic_embed(
                             title=f"Batalha {battle_num}",
-                            description=(
-                                f"O Monarca de {team1_name} escolheu **{fighter1['name']}**!\n"
-                                f"O Monarca de {team2_name} escolheu **{fighter2['name']}**!"
-                            ),
+                            description=description,
                             color=0xFF5733
                         )
                     )
@@ -953,16 +1287,63 @@ class ScheduledEvents(commands.Cog):
                         'club_id': player.get('club_id'),
                         'exp_gained': progress['exp_gained'],
                         'duels_won': progress['duels_won'],
-                        'events_completed': progress['events_completed']
+                        'events_completed': progress['events_completed'],
+                        'reputation': player.get('reputation', 0)
                     })
 
-            # Sort by exp gained
-            daily_players.sort(key=lambda x: x['exp_gained'], reverse=True)
+            # Get weekly rankings
+            weekly_players = []
+            for user_id, progress in PLAYER_PROGRESS['weekly'].items():
+                player = get_player(user_id)
+                if player:
+                    weekly_players.append({
+                        'user_id': user_id,
+                        'name': player['name'],
+                        'level': player['level'],
+                        'club_id': player.get('club_id'),
+                        'exp_gained': progress['exp_gained'],
+                        'duels_won': progress['duels_won'],
+                        'events_completed': progress['events_completed'],
+                        'reputation': player.get('reputation', 0)
+                    })
 
-            # Get top 5 players
+            # Get overall top players
+            overall_players = get_top_players(10)
+
+            # Get top players by reputation from database
+            reputation_players = []
+            try:
+                # Use the database function to get top players by reputation
+                top_by_reputation = get_top_players_by_reputation(10)
+                for player in top_by_reputation:
+                    reputation_players.append({
+                        'user_id': player['user_id'],
+                        'name': player['name'],
+                        'level': player['level'],
+                        'club_id': player.get('club_id'),
+                        'reputation': player.get('reputation', 0)
+                    })
+            except Exception as e:
+                logger.error(f"Error getting top players by reputation: {e}")
+                # Fallback to using daily players if database function fails
+                for player in daily_players:
+                    if player['reputation'] > 0:
+                        reputation_players.append(player)
+
+            # Sort players
+            daily_players.sort(key=lambda x: x['exp_gained'], reverse=True)
+            weekly_players.sort(key=lambda x: x['exp_gained'], reverse=True)
+            reputation_players.sort(key=lambda x: x['reputation'], reverse=True)
+
+            # Get top players for each category
             top_daily = daily_players[:5]
+            top_weekly = weekly_players[:5]
+            top_reputation = reputation_players[:5]
 
             # Create daily ranking embed
+            embeds = []
+
+            # Daily ranking embed
             if top_daily:
                 ranking_text = ""
                 for i, player in enumerate(top_daily, 1):
@@ -984,8 +1365,65 @@ class ScheduledEvents(commands.Cog):
                     color=0x00FF00  # Green
                 )
 
+            embeds.append(daily_embed)
+
+            # Weekly ranking embed
+            if top_weekly:
+                ranking_text = ""
+                for i, player in enumerate(top_weekly, 1):
+                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
+                    club = get_club(player['club_id']) if player.get('club_id') else None
+                    club_name = club['name'] if club else "Sem clube"
+                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
+                    ranking_text += f"   EXP: +{player['exp_gained']} | Duelos: {player['duels_won']} | Eventos: {player['events_completed']}\n\n"
+
+                weekly_embed = create_basic_embed(
+                    title="📈 Ranking Semanal da Academia Tokugawa 📈",
+                    description=ranking_text or "Nenhuma atividade registrada esta semana.",
+                    color=0x1E90FF  # Blue
+                )
+
+                embeds.append(weekly_embed)
+
+            # Overall ranking embed
+            if overall_players:
+                ranking_text = ""
+                for i, player in enumerate(overall_players, 1):
+                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
+                    club = get_club(player.get('club_id')) if player.get('club_id') else None
+                    club_name = club['name'] if club else "Sem clube"
+                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
+                    ranking_text += f"   EXP Total: {player['exp']} | Poder: {player['power']}\n\n"
+
+                overall_embed = create_basic_embed(
+                    title="🏆 Ranking Geral da Academia Tokugawa 🏆",
+                    description=ranking_text or "Nenhum estudante registrado.",
+                    color=0xFFD700  # Gold
+                )
+
+                embeds.append(overall_embed)
+
+            # Reputation ranking embed
+            if top_reputation:
+                ranking_text = ""
+                for i, player in enumerate(top_reputation, 1):
+                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
+                    club = get_club(player['club_id']) if player.get('club_id') else None
+                    club_name = club['name'] if club else "Sem clube"
+                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
+                    ranking_text += f"   Reputação: {player['reputation']} pontos\n\n"
+
+                reputation_embed = create_basic_embed(
+                    title="⭐ Ranking de Reputação da Academia Tokugawa ⭐",
+                    description=ranking_text or "Nenhum estudante com reputação registrada.",
+                    color=0xFFA500  # Orange
+                )
+
+                embeds.append(reputation_embed)
+
             # Generate daily news
             news_embed = await self.generate_daily_news()
+            embeds.append(news_embed)
 
             # Send morning message
             greeting_messages = [
@@ -996,10 +1434,16 @@ class ScheduledEvents(commands.Cog):
                 "O Conselho Estudantil saúda todos os estudantes nesta bela manhã!"
             ]
 
+            # Send the first message with greeting and daily ranking
             await channel.send(
                 content=random.choice(greeting_messages),
-                embeds=[daily_embed, news_embed]
+                embed=embeds[0]  # Daily ranking
             )
+
+            # Send the rest of the embeds in groups of 2 to avoid Discord's embed limit
+            for i in range(1, len(embeds), 2):
+                group = embeds[i:i+2]
+                await channel.send(embeds=group)
 
             logger.info("Daily announcements sent")
         except Exception as e:
@@ -1042,48 +1486,53 @@ class ScheduledEvents(commands.Cog):
                     elif buff_type == 'attribute':
                         buff_description = f"+{buff_value}% de chance de aumentar atributos"
 
-                    # Generate news content
+                    # Generate news content with more creative messages
                     news_items = [
-                        f"O clube **{featured_club['name']}** ganhou destaque hoje! Todos os membros recebem {buff_description}.",
-                        f"O reitor da academia enviou sua benção aos **{featured_club['name']}** por sua performance incrível!",
-                        f"Hoje é o dia do **{featured_club['name']}**! Todos os membros recebem {buff_description}.",
-                        f"Os **{featured_club['name']}** demonstraram grande valor e recebem {buff_description} hoje!"
+                        f"🌟 O clube **{featured_club['name']}** ganhou destaque hoje! Todos os membros recebem {buff_description}.",
+                        f"🏆 O reitor da academia enviou sua benção aos **{featured_club['name']}** por sua performance incrível! {buff_description} para todos os membros!",
+                        f"🎉 Hoje é o dia do **{featured_club['name']}**! Chequem seus clubes para saber mais sobre as atividades! Todos os membros recebem {buff_description}.",
+                        f"⭐ Os **{featured_club['name']}** demonstraram grande valor e recebem {buff_description} hoje!",
+                        f"📢 Atenção! O Conselho Estudantil reconhece a contribuição dos **{featured_club['name']}** para a Academia! {buff_description} para todos os membros!"
                     ]
                 else:
                     news_items = [
-                        "Nenhum clube se destacou o suficiente para receber bônus hoje.",
-                        "O Conselho Estudantil está avaliando o desempenho dos clubes para futuros benefícios.",
-                        "Hoje é um dia tranquilo na Academia Tokugawa."
+                        "📝 Nenhum clube se destacou o suficiente para receber bônus hoje.",
+                        "🔍 O Conselho Estudantil está avaliando o desempenho dos clubes para futuros benefícios.",
+                        "☀️ Hoje é um dia tranquilo na Academia Tokugawa."
                     ]
             else:
                 news_items = [
-                    "Nenhum clube ativo foi encontrado na Academia Tokugawa.",
-                    "O Conselho Estudantil está recrutando novos membros para os clubes!",
-                    "Hoje é um dia tranquilo na Academia Tokugawa."
+                    "📣 Nenhum clube ativo foi encontrado na Academia Tokugawa.",
+                    "🔄 O Conselho Estudantil está recrutando novos membros para os clubes!",
+                    "🌤️ Hoje é um dia tranquilo na Academia Tokugawa."
                 ]
 
-            # Add random news items
+            # Add random news items with more variety and creativity
             random_news = [
-                "Um novo Vilão misterioso foi avistado próximo à Academia! Fiquem alertas!",
-                "O Festival dos Poderes está se aproximando! Preparem-se para demonstrar suas habilidades!",
-                "Rumores indicam que um artefato poderoso foi descoberto na biblioteca da Academia.",
-                "O Conselho Estudantil anunciou melhorias nas instalações de treinamento!",
-                "Uma competição de talentos será realizada em breve! Comecem a praticar!",
-                "Visitantes de uma academia rival foram vistos observando nossos estudantes.",
-                "Uma nova técnica secreta foi descoberta por um dos professores!",
-                "O diretor da Academia está planejando um anúncio importante para esta semana."
+                "⚠️ Um novo Vilão misterioso foi avistado próximo à Academia! Fiquem alertas para possíveis invasões!",
+                "🎭 O Festival dos Poderes está se aproximando! Preparem-se para demonstrar suas habilidades e ganhar prêmios exclusivos!",
+                "📚 Rumores indicam que um artefato poderoso foi descoberto na biblioteca da Academia. Quem o encontrará primeiro?",
+                "🏗️ O Conselho Estudantil anunciou melhorias nas instalações de treinamento! Espere bônus de EXP nos próximos dias!",
+                "🎤 Uma competição de talentos será realizada em breve! Comecem a praticar para impressionar os juízes!",
+                "👀 Visitantes de uma academia rival foram vistos observando nossos estudantes. Estejam preparados para possíveis desafios!",
+                "🔮 Uma nova técnica secreta foi descoberta por um dos professores! Participem das aulas para aprendê-la!",
+                "📣 O diretor da Academia está planejando um anúncio importante para esta semana. O que será?",
+                "🌪️ Anomalias climáticas foram detectadas ao redor da Academia! Estejam preparados para eventos inesperados!",
+                "🎁 Minions foram avistados carregando itens valiosos! Fiquem atentos para coletá-los!",
+                "🏅 Hoje é o dia do 'Festival dos Poderes'! Chequem seus clubes para saber mais sobre as atividades!",
+                "🌟 Uma estrela cadente foi avistada sobre a Academia! Dizem que ela traz sorte para quem a vê primeiro!"
             ]
 
-            # Add 1-2 random news items
-            for _ in range(random.randint(1, 2)):
+            # Add 2-3 random news items for more content
+            for _ in range(random.randint(2, 3)):
                 news_items.append(random.choice(random_news))
                 random_news.remove(news_items[-1])  # Prevent duplicates
 
-            # Create news embed
+            # Create news embed with a more engaging title
             news_text = "\n\n".join([f"• {item}" for item in news_items])
 
             news_embed = create_basic_embed(
-                title="📰 Notícias do Conselho Estudantil 📰",
+                title="📰 Notícias Diárias do Conselho Estudantil 📰",
                 description=news_text,
                 color=0x4169E1  # Royal Blue
             )
@@ -1124,18 +1573,63 @@ class ScheduledEvents(commands.Cog):
             elif 23 <= current_hour or current_hour <= 6:  # Night hours
                 hour_multiplier = 0.5
 
-            # Adjust chance based on recent activity
-            activity_count = PLAYER_ACTIVITY.get(current_hour, {}).get('count', 0)
-            activity_multiplier = min(3.0, max(0.5, 1.0 + (activity_count / 10)))
+            # Calculate total activity across all hours with more weight on recent hours
+            total_activity = 0
+            recent_activity = 0
+            for hour, data in PLAYER_ACTIVITY.items():
+                hours_ago = (current_hour - hour) % 24
+                recency_weight = max(0.1, 1.0 - (hours_ago / 24))  # More recent = higher weight
+                total_activity += data.get('count', 0)
+                if hours_ago <= 3:  # Last 3 hours
+                    recent_activity += data.get('count', 0)
+
+            # Adjust chance based on recent activity (more responsive to spikes in activity)
+            current_activity = PLAYER_ACTIVITY.get(current_hour, {}).get('count', 0)
+            activity_multiplier = min(4.0, max(0.5, 1.0 + (current_activity / 5) + (recent_activity / 20)))
+
+            # If there's been a sudden spike in activity, increase chance significantly
+            if current_activity > 0 and current_activity > sum(data.get('count', 0) for h, data in PLAYER_ACTIVITY.items() if h != current_hour) / max(1, len(PLAYER_ACTIVITY) - 1) * 2:
+                activity_multiplier *= 1.5
+                logger.info(f"Activity spike detected! Multiplier increased to {activity_multiplier}")
 
             final_chance = base_chance * hour_multiplier * activity_multiplier
 
+            # Log the chance calculation for debugging
+            logger.info(f"Event chance: {final_chance:.4f} (base: {base_chance}, hour: {hour_multiplier}, activity: {activity_multiplier})")
+
             # Roll for event
             if random.random() < final_chance:
-                # Choose a random event type
+                # Choose a random event type with dynamic weights based on recent events
+                # More rare events become more likely if they haven't happened in a while
                 event_types = ['minion', 'villain', 'collectible']
-                weights = [0.6, 0.3, 0.1]  # 60% minion, 30% villain, 10% collectible
-                event_type = random.choices(event_types, weights=weights, k=1)[0]
+
+                # Default weights
+                base_weights = [0.6, 0.3, 0.1]  # 60% minion, 30% villain, 10% collectible
+
+                # Adjust weights based on recent events (last 10 events)
+                recent_events = [event['data']['type'] for event_id, event in ACTIVE_EVENTS.items() 
+                                if 'data' in event and 'type' in event['data']][-10:]
+
+                adjusted_weights = base_weights.copy()
+                if recent_events:
+                    # Count occurrences of each event type
+                    event_counts = {event_type: recent_events.count(event_type) for event_type in event_types}
+
+                    # Adjust weights - less frequent events get higher weights
+                    total_events = len(recent_events)
+                    for i, event_type in enumerate(event_types):
+                        count = event_counts.get(event_type, 0)
+                        if count == 0:  # If event hasn't happened recently, increase its chance
+                            adjusted_weights[i] *= 1.5
+                        elif count / total_events > base_weights[i] * 1.5:  # If event is happening too often
+                            adjusted_weights[i] *= 0.7
+
+                # Normalize weights
+                weight_sum = sum(adjusted_weights)
+                normalized_weights = [w / weight_sum for w in adjusted_weights]
+
+                event_type = random.choices(event_types, weights=normalized_weights, k=1)[0]
+                logger.info(f"Selected event type: {event_type} with weights {normalized_weights}")
 
                 # Choose a random guild and channel
                 guild = random.choice(active_guilds)
@@ -1166,19 +1660,102 @@ class ScheduledEvents(commands.Cog):
     async def trigger_minion_event(self, channel):
         """Trigger a random minion appearance event."""
         try:
-            # Create minion event
-            minion_types = ['Slime', 'Goblin', 'Esqueleto', 'Zumbi', 'Fantasma', 'Kobold', 'Imp']
-            minion_name = random.choice(minion_types)
+            # Create minion event with expanded types and rarities
+            minion_types = {
+                'common': ['Slime', 'Goblin', 'Esqueleto', 'Zumbi', 'Rato Gigante', 'Kobold', 'Imp'],
+                'uncommon': ['Ogro', 'Harpia', 'Lobo Sombrio', 'Aranha Venenosa', 'Golem de Pedra'],
+                'rare': ['Minotauro', 'Quimera', 'Basilisco', 'Manticora', 'Hidra Jovem'],
+                'epic': ['Dragão Menor', 'Behemoth', 'Kraken Jovem', 'Fênix Sombria'],
+                'legendary': ['Leviatã', 'Dragão Ancião', 'Titã Elemental', 'Beholder']
+            }
+
+            # Select rarity with weighted probability
+            rarity_weights = {'common': 0.6, 'uncommon': 0.25, 'rare': 0.1, 'epic': 0.04, 'legendary': 0.01}
+            rarity = random.choices(list(rarity_weights.keys()), 
+                                   weights=list(rarity_weights.values()), k=1)[0]
+
+            # Select minion from the chosen rarity
+            minion_name = random.choice(minion_types[rarity])
+
+            # Determine rewards based on rarity
+            reward_multipliers = {
+                'common': 1.0,
+                'uncommon': 2.0,
+                'rare': 3.5,
+                'epic': 5.0,
+                'legendary': 10.0
+            }
+
+            base_exp = random.randint(10, 30)
+            base_tusd = random.randint(5, 15)
+            base_reputation = random.randint(1, 5)
+
+            exp_reward = int(base_exp * reward_multipliers[rarity])
+            tusd_reward = int(base_tusd * reward_multipliers[rarity])
+            reputation_reward = int(base_reputation * reward_multipliers[rarity])
+
+            # Rarity colors
+            rarity_colors = {
+                'common': 0x808080,  # Gray
+                'uncommon': 0x00FF00,  # Green
+                'rare': 0x0000FF,  # Blue
+                'epic': 0x800080,  # Purple
+                'legendary': 0xFFA500  # Orange
+            }
+
+            # Rarity indicators
+            rarity_indicators = {
+                'common': '',
+                'uncommon': '★',
+                'rare': '★★',
+                'epic': '★★★',
+                'legendary': '★★★★'
+            }
+
+            # Create dynamic descriptions based on rarity
+            descriptions = {
+                'common': [
+                    f"Um {minion_name} invadiu a Academia Tokugawa!\n\n",
+                    f"Um {minion_name} foi avistado nos corredores da Academia!\n\n",
+                    f"Cuidado! Um {minion_name} está causando problemas na Academia!\n\n"
+                ],
+                'uncommon': [
+                    f"Um {minion_name} perigoso está ameaçando os estudantes da Academia!\n\n",
+                    f"Alerta! Um {minion_name} foi detectado próximo ao refeitório!\n\n",
+                    f"Um {minion_name} está destruindo equipamentos da Academia!\n\n"
+                ],
+                'rare': [
+                    f"Um poderoso {minion_name} está causando caos na Academia Tokugawa!\n\n",
+                    f"Emergência! Um {minion_name} invadiu o laboratório principal!\n\n",
+                    f"Um {minion_name} está desafiando os estudantes para combate!\n\n"
+                ],
+                'epic': [
+                    f"ALERTA MÁXIMO! Um {minion_name} extremamente perigoso foi detectado!\n\n",
+                    f"Um temível {minion_name} está destruindo parte da Academia!\n\n",
+                    f"Um {minion_name} está ameaçando a segurança de toda a Academia!\n\n"
+                ],
+                'legendary': [
+                    f"EMERGÊNCIA TOTAL! Um lendário {minion_name} está atacando a Academia!\n\n",
+                    f"Um {minion_name} de poder inimaginável apareceu! Todos os estudantes estão em perigo!\n\n",
+                    f"A Academia está sob ataque de um {minion_name} ancestral! Precisamos de heróis!\n\n"
+                ]
+            }
+
+            description = random.choice(descriptions[rarity])
+            description += f"Seja o primeiro a derrotá-lo usando o comando `/minion atacar` para ganhar:\n"
+            description += f"• {exp_reward} EXP\n"
+            description += f"• {tusd_reward} TUSD\n"
+            description += f"• {reputation_reward} pontos de Reputação"
 
             # Create event embed
             embed = create_basic_embed(
-                title=f"⚠️ Um {minion_name} apareceu! ⚠️",
-                description=(
-                    f"Um {minion_name} invadiu a Academia Tokugawa!\n\n"
-                    f"Seja o primeiro a derrotá-lo usando o comando `/minion atacar` para ganhar recompensas!"
-                ),
-                color=0xFF0000  # Red
+                title=f"⚠️ {rarity_indicators[rarity]} Um {minion_name} apareceu! {rarity_indicators[rarity]} ⚠️",
+                description=description,
+                color=rarity_colors[rarity]
             )
+
+            # Add rarity footer
+            embed.set_footer(text=f"Raridade: {rarity.capitalize()}")
 
             # Send the announcement
             message = await channel.send(embed=embed)
@@ -1194,42 +1771,149 @@ class ScheduledEvents(commands.Cog):
                 'data': {
                     'type': 'minion',
                     'name': minion_name,
+                    'rarity': rarity,
                     'defeated': False,
-                    'exp_reward': random.randint(10, 30),
-                    'tusd_reward': random.randint(5, 15)
+                    'exp_reward': exp_reward,
+                    'tusd_reward': tusd_reward,
+                    'reputation_reward': reputation_reward
                 }
             }
 
-            logger.info(f"Triggered minion event in channel {channel.name}")
+            logger.info(f"Triggered {rarity} minion event ({minion_name}) in channel {channel.name}")
         except Exception as e:
             logger.error(f"Error triggering minion event: {e}")
 
     async def trigger_villain_event(self, channel):
         """Trigger a random villain invasion event."""
         try:
-            # Create villain event
-            villain_types = [
-                'Lorde das Sombras', 'Mestre do Caos', 'Imperador do Gelo', 
-                'Rainha das Chamas', 'Senhor dos Pesadelos', 'Caçador de Almas'
-            ]
-            villain_name = random.choice(villain_types)
+            # Create villain event with expanded types and tiers
+            villain_tiers = {
+                'tier1': {
+                    'names': [
+                        'Lorde das Sombras', 'Mestre do Caos', 'Imperador do Gelo', 
+                        'Rainha das Chamas', 'Senhor dos Pesadelos', 'Caçador de Almas'
+                    ],
+                    'title': 'Vilão',
+                    'color': 0x800080,  # Purple
+                    'emoji': '🔥',
+                    'multiplier': 1.0,
+                    'duration': 30  # minutes
+                },
+                'tier2': {
+                    'names': [
+                        'General Apocalipse', 'Devorador de Mentes', 'Arquimago Corrompido',
+                        'Ceifador de Almas', 'Comandante Sanguinário', 'Destruidor de Mundos'
+                    ],
+                    'title': 'Vilão Poderoso',
+                    'color': 0xCC0000,  # Dark Red
+                    'emoji': '⚡',
+                    'multiplier': 1.5,
+                    'duration': 45  # minutes
+                },
+                'tier3': {
+                    'names': [
+                        'Lorde Supremo Voidbringer', 'Imperatriz Eterna das Trevas', 'Titã Primordial',
+                        'Avatar da Destruição', 'Entidade Cósmica Malévola', 'Deus Antigo Desperto'
+                    ],
+                    'title': 'Vilão Lendário',
+                    'color': 0xFF0000,  # Bright Red
+                    'emoji': '☠️',
+                    'multiplier': 2.5,
+                    'duration': 60  # minutes
+                }
+            }
 
-            # Determine villain strength based on server activity
-            base_strength = 100
+            # Determine tier based on recent activity and time of day
+            now = datetime.now()
+            current_hour = now.hour
+
+            # Higher tier chance during peak hours and with more activity
             activity_count = sum(data.get('count', 0) for hour, data in PLAYER_ACTIVITY.items())
-            villain_strength = base_strength + (activity_count * 10)
+            recent_activity = sum(data.get('count', 0) for hour, data in PLAYER_ACTIVITY.items() 
+                                if (current_hour - hour) % 24 <= 3)  # Last 3 hours
+
+            # Base chances for each tier
+            tier_chances = {'tier1': 0.7, 'tier2': 0.25, 'tier3': 0.05}
+
+            # Adjust based on time of day
+            if 17 <= current_hour <= 22:  # Evening hours - more chance for higher tiers
+                tier_chances['tier1'] -= 0.2
+                tier_chances['tier2'] += 0.1
+                tier_chances['tier3'] += 0.1
+
+            # Adjust based on activity
+            if activity_count > 20 or recent_activity > 10:  # High activity
+                tier_chances['tier1'] -= 0.1
+                tier_chances['tier2'] -= 0.05
+                tier_chances['tier3'] += 0.15
+
+            # Select tier
+            tier = random.choices(
+                list(tier_chances.keys()),
+                weights=list(tier_chances.values()),
+                k=1
+            )[0]
+
+            # Get tier data
+            tier_data = villain_tiers[tier]
+
+            # Select villain name
+            villain_name = random.choice(tier_data['names'])
+
+            # Determine villain strength based on server activity and tier
+            base_strength = 100
+            activity_multiplier = max(1.0, min(3.0, 1.0 + (activity_count / 20)))
+            tier_multiplier = tier_data['multiplier']
+
+            villain_strength = int(base_strength * activity_multiplier * tier_multiplier)
+
+            # Calculate rewards based on tier and strength
+            base_exp_reward = 50
+            base_tusd_reward = 25
+            base_reputation_reward = 10
+
+            exp_reward = int(base_exp_reward * tier_multiplier)
+            tusd_reward = int(base_tusd_reward * tier_multiplier)
+            reputation_reward = int(base_reputation_reward * tier_multiplier)
+
+            # Create dynamic descriptions based on tier
+            descriptions = {
+                'tier1': [
+                    f"O temível **{villain_name}** está invadindo a Academia Tokugawa!",
+                    f"**{villain_name}** foi avistado nos portões da Academia! Todos em alerta!",
+                    f"A Academia está sob ataque de **{villain_name}**! Preparem-se para o combate!"
+                ],
+                'tier2': [
+                    f"ALERTA MÁXIMO! O poderoso **{villain_name}** está causando destruição na Academia!",
+                    f"**{villain_name}** rompeu as defesas da Academia! Todos os estudantes são convocados!",
+                    f"Um inimigo formidável, **{villain_name}**, está desafiando os heróis da Academia!"
+                ],
+                'tier3': [
+                    f"EMERGÊNCIA TOTAL! O lendário **{villain_name}** está ameaçando toda a existência da Academia!",
+                    f"O temido **{villain_name}** surgiu das sombras! A sobrevivência da Academia está em jogo!",
+                    f"**{villain_name}** - uma ameaça de proporções catastróficas - está atacando! Todos os heróis são necessários!"
+                ]
+            }
+
+            description = random.choice(descriptions[tier]) + "\n\n"
+            description += f"**Força do Vilão:** {villain_strength} HP\n\n"
+            description += f"Todos os estudantes devem se unir para derrotá-lo! Use o comando `/vilao atacar` para combater esta ameaça!\n\n"
+            description += f"**Recompensas por participação:**\n"
+            description += f"• {exp_reward} EXP (base)\n"
+            description += f"• {tusd_reward} TUSD (base)\n"
+            description += f"• {reputation_reward} pontos de Reputação (base)\n\n"
+            description += f"**Quanto mais estudantes participarem, maiores serão as recompensas para todos!**"
 
             # Create event embed
             embed = create_basic_embed(
-                title=f"🔥 ALERTA: {villain_name} está invadindo a Academia! 🔥",
-                description=(
-                    f"O temível **{villain_name}** está invadindo a Academia Tokugawa!\n\n"
-                    f"Força do Vilão: {villain_strength} HP\n\n"
-                    f"Todos os estudantes devem se unir para derrotá-lo! Use o comando `/vilao atacar` para combater esta ameaça!\n\n"
-                    f"Quanto mais estudantes participarem, maiores serão as recompensas para todos!"
-                ),
-                color=0x800080  # Purple
+                title=f"{tier_data['emoji']} ALERTA: {tier_data['title']} {villain_name} está invadindo a Academia! {tier_data['emoji']}",
+                description=description,
+                color=tier_data['color']
             )
+
+            # Add footer with time remaining
+            duration_minutes = tier_data['duration']
+            embed.set_footer(text=f"Evento ativo por {duration_minutes} minutos | Tier: {tier[-1]}")
 
             # Send the announcement
             message = await channel.send(
@@ -1243,56 +1927,176 @@ class ScheduledEvents(commands.Cog):
                 'channel_id': channel.id,
                 'message_id': message.id,
                 'start_time': datetime.now(),
-                'end_time': datetime.now() + timedelta(minutes=30),  # 30 minute duration
+                'end_time': datetime.now() + timedelta(minutes=tier_data['duration']),
                 'participants': [],
                 'data': {
                     'type': 'villain',
                     'name': villain_name,
+                    'tier': tier,
                     'strength': villain_strength,
                     'current_hp': villain_strength,
                     'defeated': False,
-                    'base_exp_reward': 50,
-                    'base_tusd_reward': 25
+                    'base_exp_reward': exp_reward,
+                    'base_tusd_reward': tusd_reward,
+                    'base_reputation_reward': reputation_reward,
+                    'team_bonus_threshold': 5  # Number of participants needed for team bonus
                 }
             }
 
-            logger.info(f"Triggered villain event in channel {channel.name}")
+            logger.info(f"Triggered {tier} villain event ({villain_name}) in channel {channel.name}")
         except Exception as e:
             logger.error(f"Error triggering villain event: {e}")
 
     async def trigger_collectible_event(self, channel):
         """Trigger a random collectible item appearance event."""
         try:
-            # Create collectible event
-            collectible_types = [
-                'Pergaminho Antigo', 'Cristal Misterioso', 'Amuleto Encantado', 
-                'Poção Brilhante', 'Fragmento de Artefato', 'Livro de Feitiços'
-            ]
-            collectible_name = random.choice(collectible_types)
+            # Create collectible event with expanded types and categories
+            collectible_categories = {
+                'ancient': {
+                    'items': [
+                        'Pergaminho Antigo', 'Tomo Ancestral', 'Relíquia Histórica', 
+                        'Manuscrito Arcano', 'Artefato Perdido', 'Inscrição Rúnica'
+                    ],
+                    'emoji': '📜',
+                    'description': 'conhecimento ancestral',
+                    'buff': 'intellect'
+                },
+                'magical': {
+                    'items': [
+                        'Cristal Misterioso', 'Amuleto Encantado', 'Orbe Arcano', 
+                        'Poção Brilhante', 'Essência Mágica', 'Pedra Elemental'
+                    ],
+                    'emoji': '✨',
+                    'description': 'poder mágico',
+                    'buff': 'power_stat'
+                },
+                'artifact': {
+                    'items': [
+                        'Fragmento de Artefato', 'Engrenagem Misteriosa', 'Dispositivo Estranho', 
+                        'Componente Tecnológico', 'Mecanismo Antigo', 'Núcleo Energético'
+                    ],
+                    'emoji': '⚙️',
+                    'description': 'tecnologia avançada',
+                    'buff': 'dexterity'
+                },
+                'spiritual': {
+                    'items': [
+                        'Amuleto Espiritual', 'Talismã Protetor', 'Símbolo Sagrado', 
+                        'Ícone Abençoado', 'Medalhão Divino', 'Selo Celestial'
+                    ],
+                    'emoji': '🔮',
+                    'description': 'energia espiritual',
+                    'buff': 'charisma'
+                }
+            }
 
-            # Determine rarity
+            # Select a random category
+            category = random.choice(list(collectible_categories.keys()))
+            category_data = collectible_categories[category]
+
+            # Select a random item from the category
+            collectible_name = random.choice(category_data['items'])
+
+            # Determine rarity with weighted probability
             rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary']
             weights = [0.4, 0.3, 0.2, 0.08, 0.02]  # 40% common, 2% legendary
             rarity = random.choices(rarities, weights=weights, k=1)[0]
 
             # Rarity colors
             rarity_colors = {
-                'common': 0x808080,
-                'uncommon': 0x00FF00,
-                'rare': 0x0000FF,
-                'epic': 0x800080,
-                'legendary': 0xFFA500
+                'common': 0x808080,      # Gray
+                'uncommon': 0x00FF00,    # Green
+                'rare': 0x0000FF,        # Blue
+                'epic': 0x800080,        # Purple
+                'legendary': 0xFFA500    # Orange
             }
+
+            # Rarity indicators
+            rarity_indicators = {
+                'common': '',
+                'uncommon': '★',
+                'rare': '★★',
+                'epic': '★★★',
+                'legendary': '★★★★'
+            }
+
+            # Rarity translations to Portuguese
+            rarity_pt = {
+                'common': 'comum',
+                'uncommon': 'incomum',
+                'rare': 'raro',
+                'epic': 'épico',
+                'legendary': 'lendário'
+            }
+
+            # Determine rewards based on rarity
+            reward_multipliers = {
+                'common': 1.0,
+                'uncommon': 2.0,
+                'rare': 3.5,
+                'epic': 5.0,
+                'legendary': 10.0
+            }
+
+            # Base rewards
+            base_exp = random.randint(5, 15)
+            base_tusd = random.randint(3, 10)
+            base_reputation = random.randint(1, 3)
+            base_buff_duration = 24  # hours
+
+            # Calculate actual rewards
+            exp_reward = int(base_exp * reward_multipliers[rarity])
+            tusd_reward = int(base_tusd * reward_multipliers[rarity])
+            reputation_reward = int(base_reputation * reward_multipliers[rarity])
+            buff_value = int(5 * reward_multipliers[rarity])
+            buff_duration = int(base_buff_duration * reward_multipliers[rarity])
+
+            # Create dynamic descriptions based on rarity and category
+            descriptions = {
+                'common': [
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** foi avistado na Academia Tokugawa!",
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** apareceu nos corredores da Academia!",
+                    f"Alguém deixou um {rarity_pt[rarity]} **{collectible_name}** na sala de aula!"
+                ],
+                'uncommon': [
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** emitindo uma fraca aura foi encontrado!",
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** com propriedades interessantes apareceu!",
+                    f"Um objeto incomum, um {rarity_pt[rarity]} **{collectible_name}**, foi detectado na Academia!"
+                ],
+                'rare': [
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** de grande poder foi descoberto!",
+                    f"Um valioso {rarity_pt[rarity]} **{collectible_name}** apareceu misteriosamente!",
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** com propriedades únicas foi avistado!"
+                ],
+                'epic': [
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** de poder extraordinário surgiu na Academia!",
+                    f"Um impressionante {rarity_pt[rarity]} **{collectible_name}** está emanando energia poderosa!",
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** de origem misteriosa apareceu!"
+                ],
+                'legendary': [
+                    f"Um LENDÁRIO **{collectible_name}** de poder inimaginável foi descoberto!",
+                    f"Um artefato de eras passadas, um {rarity_pt[rarity]} **{collectible_name}**, apareceu!",
+                    f"Um {rarity_pt[rarity]} **{collectible_name}** que poucos já viram em vida foi encontrado!"
+                ]
+            }
+
+            description = random.choice(descriptions[rarity]) + "\n\n"
+            description += f"Este item contém {category_data['description']} que pode aumentar seus atributos!\n\n"
+            description += f"Seja o primeiro a coletá-lo usando o comando `/item coletar` para ganhar:\n"
+            description += f"• {exp_reward} EXP\n"
+            description += f"• {tusd_reward} TUSD\n"
+            description += f"• {reputation_reward} pontos de Reputação\n"
+            description += f"• +{buff_value}% de {category_data['buff'].capitalize()} por {buff_duration} horas"
 
             # Create event embed
             embed = create_basic_embed(
-                title=f"✨ Um {collectible_name} apareceu! ✨",
-                description=(
-                    f"Um {rarity} **{collectible_name}** foi avistado na Academia Tokugawa!\n\n"
-                    f"Seja o primeiro a coletá-lo usando o comando `/item coletar` para adicioná-lo ao seu inventário!"
-                ),
+                title=f"{category_data['emoji']} {rarity_indicators[rarity]} Um {collectible_name} apareceu! {rarity_indicators[rarity]} {category_data['emoji']}",
+                description=description,
                 color=rarity_colors.get(rarity, 0x1E90FF)
             )
+
+            # Add rarity footer
+            embed.set_footer(text=f"Raridade: {rarity_pt[rarity].capitalize()} | Categoria: {category.capitalize()}")
 
             # Send the announcement
             message = await channel.send(embed=embed)
@@ -1310,12 +2114,19 @@ class ScheduledEvents(commands.Cog):
                     'name': collectible_name,
                     'rarity': rarity,
                     'collected': False,
+                    'exp_reward': exp_reward,
+                    'tusd_reward': tusd_reward,
+                    'reputation_reward': reputation_reward,
                     'item': {
                         'name': collectible_name,
-                        'description': f"Um {rarity} item coletado durante um evento especial.",
+                        'description': f"Um {rarity_pt[rarity]} {category} item coletado durante um evento especial. Contém {category_data['description']}.",
                         'type': 'collectible',
                         'rarity': rarity,
-                        'effects': {}
+                        'effects': {
+                            'attribute': category_data['buff'],
+                            'value': buff_value,
+                            'duration': buff_duration
+                        }
                     }
                 }
             }
@@ -1323,6 +2134,262 @@ class ScheduledEvents(commands.Cog):
             logger.info(f"Triggered collectible event in channel {channel.name}")
         except Exception as e:
             logger.error(f"Error triggering collectible event: {e}")
+
+    async def announce_daily_subject(self):
+        """Announce the daily subject and start the quiz event."""
+        try:
+            if not DAILY_SUBJECT:
+                logger.error("No daily subject selected")
+                return
+
+            if not self.announcement_channel_id:
+                # Try to find a general or announcements channel
+                for guild in self.bot.guilds:
+                    general_channel = discord.utils.get(guild.text_channels, name="geral") or \
+                                     discord.utils.get(guild.text_channels, name="general") or \
+                                     discord.utils.get(guild.text_channels, name="anúncios") or \
+                                     discord.utils.get(guild.text_channels, name="announcements")
+                    if general_channel:
+                        self.announcement_channel_id = general_channel.id
+                        break
+
+            if not self.announcement_channel_id:
+                logger.error("No announcement channel set and couldn't find a suitable channel")
+                return
+
+            channel = self.bot.get_channel(self.announcement_channel_id)
+            if not channel:
+                logger.error(f"Could not find announcement channel with ID {self.announcement_channel_id}")
+                return
+
+            # Create subject announcement embed
+            embed = create_basic_embed(
+                title=f"{DAILY_SUBJECT['emoji']} Aula de {DAILY_SUBJECT['subject']} {DAILY_SUBJECT['emoji']}",
+                description=(
+                    f"{DAILY_SUBJECT['description']}\n\n"
+                    f"**Dificuldade:** {'⭐' * DAILY_SUBJECT['difficulty']}\n\n"
+                    f"Para participar do quiz e ganhar notas, use o comando `/quiz participar`.\n"
+                    f"O quiz estará disponível durante todo o dia de hoje!"
+                ),
+                color=0x4169E1  # Royal Blue
+            )
+
+            # Send the announcement
+            await channel.send(
+                content="@everyone Uma nova aula começou na Academia Tokugawa!",
+                embed=embed
+            )
+
+            # Store event data
+            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
+            ACTIVE_EVENTS[event_id] = {
+                'channel_id': channel.id,
+                'message_id': None,  # No specific message to track
+                'start_time': datetime.now(),
+                'end_time': datetime.now().replace(hour=23, minute=59, second=59),  # End at midnight
+                'participants': [],
+                'data': {
+                    'type': 'daily_subject',
+                    'subject': DAILY_SUBJECT['subject'],
+                    'difficulty': DAILY_SUBJECT['difficulty'],
+                    'questions': DAILY_SUBJECT['questions']
+                }
+            }
+
+            logger.info(f"Daily subject announced: {DAILY_SUBJECT['subject']}")
+        except Exception as e:
+            logger.error(f"Error announcing daily subject: {e}")
+
+    async def evaluate_quiz_answer(self, interaction, question_index, answer_index):
+        """Evaluate a quiz answer and update player's grade."""
+        try:
+            # Get the active quiz event
+            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
+            quiz_event = ACTIVE_EVENTS.get(event_id)
+
+            if not quiz_event:
+                await interaction.response.send_message("Não há nenhum quiz ativo hoje.", ephemeral=True)
+                return
+
+            # Get player
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message("Você precisa estar registrado para participar do quiz.", ephemeral=True)
+                return
+
+            # Check if player already participated
+            if interaction.user.id in quiz_event['participants']:
+                await interaction.response.send_message("Você já participou do quiz de hoje.", ephemeral=True)
+                return
+
+            # Get question and correct answer
+            questions = quiz_event['data']['questions']
+            if question_index >= len(questions):
+                await interaction.response.send_message("Pergunta inválida.", ephemeral=True)
+                return
+
+            question = questions[question_index]
+            correct_answer_index = question['correct']
+
+            # Check if answer is correct
+            is_correct = answer_index == correct_answer_index
+
+            # Calculate grade based on difficulty and correctness
+            max_grade = 10.0
+            question_difficulty = question['difficulty']
+            subject_difficulty = quiz_event['data']['difficulty']
+
+            # Base grade for participation
+            base_grade = 5.0
+
+            # Additional grade for correct answer, weighted by difficulty
+            difficulty_multiplier = (question_difficulty + subject_difficulty) / 2
+            correct_bonus = (max_grade - base_grade) * (difficulty_multiplier / 3)
+
+            final_grade = base_grade
+            if is_correct:
+                final_grade += correct_bonus
+
+            # Round to one decimal place
+            final_grade = round(final_grade, 1)
+
+            # Get current month and year
+            now = datetime.now()
+            current_month = now.month
+            current_year = now.year
+
+            # Update player's grade in the database
+            subject = quiz_event['data']['subject']
+            update_player_grade(interaction.user.id, subject, final_grade, current_month, current_year)
+
+            # Add player to participants
+            quiz_event['participants'].append(interaction.user.id)
+
+            # Calculate XP reward based on grade and difficulty
+            xp_reward = int(final_grade * (subject_difficulty + 1))
+
+            # Apply club buffs if any
+            if player.get('club_id') and player['club_id'] in CLUB_BUFFS:
+                buff = CLUB_BUFFS[player['club_id']]
+                if buff['type'] == 'exp':
+                    xp_reward = int(xp_reward * (1 + buff['value'] / 100))
+
+            # Apply weekly theme buff if applicable
+            if WEEKLY_THEME and 'subjects' in WEEKLY_THEME.get('buffs', {}) and subject in WEEKLY_THEME['buffs']['subjects']:
+                xp_multiplier = WEEKLY_THEME['buffs'].get('exp_multiplier', 1.0)
+                xp_reward = int(xp_reward * xp_multiplier)
+
+            # Update player XP
+            update_player(
+                interaction.user.id,
+                exp=player['exp'] + xp_reward
+            )
+
+            # Track progress for rankings
+            if interaction.user.id not in PLAYER_PROGRESS['daily']:
+                PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+            if interaction.user.id not in PLAYER_PROGRESS['weekly']:
+                PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+
+            PLAYER_PROGRESS['daily'][interaction.user.id]['exp_gained'] += xp_reward
+            PLAYER_PROGRESS['daily'][interaction.user.id]['events_completed'] += 1
+            PLAYER_PROGRESS['weekly'][interaction.user.id]['exp_gained'] += xp_reward
+            PLAYER_PROGRESS['weekly'][interaction.user.id]['events_completed'] += 1
+
+            # Send result message
+            if is_correct:
+                result_message = f"✅ Resposta correta! Sua nota foi {final_grade}/10.0"
+            else:
+                correct_option = question['options'][correct_answer_index]
+                result_message = f"❌ Resposta incorreta. A resposta correta era: {correct_option}\nSua nota foi {final_grade}/10.0"
+
+            await interaction.response.send_message(
+                embed=create_basic_embed(
+                    title=f"Resultado do Quiz de {subject}",
+                    description=(
+                        f"{result_message}\n\n"
+                        f"**Recompensas:**\n"
+                        f"- +{xp_reward} EXP\n"
+                        f"- Nota registrada para o mês de {now.strftime('%B/%Y')}"
+                    ),
+                    color=0x00FF00 if is_correct else 0xFF0000
+                ),
+                ephemeral=True
+            )
+
+            logger.info(f"Player {player['name']} completed quiz with grade {final_grade}")
+
+        except Exception as e:
+            logger.error(f"Error evaluating quiz answer: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
+
+    async def check_monthly_grades(self):
+        """Check if it's the end of the month and evaluate monthly grades."""
+        try:
+            now = datetime.now()
+
+            # Check if it's the last day of the month
+            tomorrow = now + timedelta(days=1)
+            if now.month != tomorrow.month:
+                logger.info("End of month detected, evaluating monthly grades")
+
+                # Get all players
+                conn = sqlite3.connect('data/tokugawa.db')
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+
+                cursor.execute("SELECT user_id, name FROM players")
+                players = cursor.fetchall()
+                conn.close()
+
+                for player in players:
+                    user_id = player['user_id']
+                    name = player['name']
+
+                    # Get player's grades for this month
+                    grades = get_monthly_average_grades(user_id, now.month, now.year)
+
+                    if grades:
+                        # Calculate how many subjects the player passed
+                        passing_grade = 6.0
+                        passed_subjects = [g for g in grades if g['average_grade'] >= passing_grade]
+
+                        if passed_subjects:
+                            # Calculate rewards based on number of passed subjects
+                            num_passed = len(passed_subjects)
+                            xp_reward = 50 * num_passed
+                            reputation_reward = 10 * num_passed
+
+                            # Update player
+                            player_data = get_player(user_id)
+                            if player_data:
+                                update_player(
+                                    user_id,
+                                    exp=player_data['exp'] + xp_reward
+                                )
+
+                                # Update reputation
+                                update_player_reputation(user_id, reputation_reward)
+
+                                logger.info(f"Player {name} passed {num_passed} subjects, awarded {xp_reward} XP and {reputation_reward} reputation")
+
+                # If there's an announcement channel, send a message
+                if self.announcement_channel_id:
+                    channel = self.bot.get_channel(self.announcement_channel_id)
+                    if channel:
+                        await channel.send(
+                            embed=create_basic_embed(
+                                title="📚 Avaliação Mensal da Academia Tokugawa 📚",
+                                description=(
+                                    f"O mês de {now.strftime('%B/%Y')} chegou ao fim!\n\n"
+                                    f"As notas mensais foram avaliadas e os alunos que obtiveram média igual ou superior a 6,0 em qualquer matéria receberam recompensas!\n\n"
+                                    f"Parabéns a todos os alunos que se dedicaram aos estudos este mês!"
+                                ),
+                                color=0x4169E1
+                            )
+                        )
+        except Exception as e:
+            logger.error(f"Error checking monthly grades: {e}")
 
     async def cleanup_expired_events(self):
         """Clean up expired events."""
@@ -2000,6 +3067,159 @@ class ScheduledEvents(commands.Cog):
         except Exception as e:
             logger.error(f"Error in slash_turfwars: {e}")
             await interaction.response.send_message("Ocorreu um erro ao processar o comando.", ephemeral=True)
+
+    # Quiz command group
+    quiz_group = app_commands.Group(name="quiz", description="Comandos relacionados aos quizzes diários da Academia Tokugawa")
+
+    @quiz_group.command(name="participar", description="Participar do quiz diário da matéria atual")
+    async def slash_quiz_participate(self, interaction: discord.Interaction):
+        """Participate in the daily subject quiz."""
+        try:
+            # Get the active quiz event
+            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
+            quiz_event = ACTIVE_EVENTS.get(event_id)
+
+            if not quiz_event:
+                await interaction.response.send_message("Não há nenhum quiz ativo hoje. Aguarde o anúncio da próxima aula!", ephemeral=True)
+                return
+
+            # Get player
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message("Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
+
+            # Check if player already participated
+            if interaction.user.id in quiz_event['participants']:
+                await interaction.response.send_message("Você já participou do quiz de hoje. Volte amanhã para um novo quiz!", ephemeral=True)
+                return
+
+            # Get a random question from the quiz
+            questions = quiz_event['data']['questions']
+            if not questions:
+                await interaction.response.send_message("Este quiz não possui perguntas. Por favor, informe um administrador.", ephemeral=True)
+                return
+
+            question_index = random.randint(0, len(questions) - 1)
+            question = questions[question_index]
+
+            # Create options for the select menu
+            options = []
+            for i, option_text in enumerate(question['options']):
+                options.append(
+                    discord.SelectOption(
+                        label=option_text,
+                        value=str(i),
+                        description=f"Opção {i+1}"
+                    )
+                )
+
+            # Create select menu for answering
+            select = discord.ui.Select(
+                placeholder="Escolha sua resposta",
+                options=options
+            )
+
+            # Create view with select menu
+            view = discord.ui.View(timeout=60)  # 60 seconds timeout
+            view.add_item(select)
+
+            # Handle select menu interaction
+            async def select_callback(select_interaction):
+                if select_interaction.user.id != interaction.user.id:
+                    await select_interaction.response.send_message("Este não é o seu quiz!", ephemeral=True)
+                    return
+
+                # Get selected answer
+                answer_index = int(select_interaction.data['values'][0])
+
+                # Evaluate answer
+                await self.evaluate_quiz_answer(select_interaction, question_index, answer_index)
+
+                # Disable the select menu
+                select.disabled = True
+                await interaction.edit_original_response(view=view)
+
+            select.callback = select_callback
+
+            # Send the quiz question
+            subject = quiz_event['data']['subject']
+            await interaction.response.send_message(
+                embed=create_basic_embed(
+                    title=f"Quiz de {subject}",
+                    description=(
+                        f"**Pergunta:** {question['question']}\n\n"
+                        f"Escolha a resposta correta no menu abaixo."
+                    ),
+                    color=0x4169E1
+                ),
+                view=view,
+                ephemeral=True
+            )
+
+            logger.info(f"Player {player['name']} started quiz for subject {subject}")
+
+        except Exception as e:
+            logger.error(f"Error in slash_quiz_participate: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao iniciar o quiz.", ephemeral=True)
+
+    @quiz_group.command(name="notas", description="Ver suas notas nas diferentes matérias")
+    async def slash_quiz_grades(self, interaction: discord.Interaction):
+        """View your grades in different subjects."""
+        try:
+            # Get player
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message("Você precisa estar registrado para ver suas notas. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
+
+            # Get current month and year
+            now = datetime.now()
+            current_month = now.month
+            current_year = now.year
+
+            # Get player's grades
+            grades = get_player_grades(interaction.user.id, month=current_month, year=current_year)
+
+            if not grades:
+                await interaction.response.send_message("Você ainda não possui notas registradas neste mês.", ephemeral=True)
+                return
+
+            # Group grades by subject
+            subjects_grades = {}
+            for grade in grades:
+                subject = grade['subject']
+                if subject not in subjects_grades:
+                    subjects_grades[subject] = []
+                subjects_grades[subject].append(grade['grade'])
+
+            # Calculate average for each subject
+            averages = {}
+            for subject, grades_list in subjects_grades.items():
+                averages[subject] = sum(grades_list) / len(grades_list)
+
+            # Create embed with grades
+            description = f"**Notas do mês de {now.strftime('%B/%Y')}:**\n\n"
+
+            for subject, average in averages.items():
+                # Determine if passing or failing
+                status = "✅ Aprovado" if average >= 6.0 else "❌ Reprovado"
+                description += f"**{subject}:** {average:.1f}/10.0 - {status}\n"
+
+            await interaction.response.send_message(
+                embed=create_basic_embed(
+                    title=f"Boletim de {player['name']}",
+                    description=description,
+                    color=0x4169E1
+                ),
+                ephemeral=True
+            )
+
+            logger.info(f"Player {player['name']} viewed their grades")
+
+        except Exception as e:
+            logger.error(f"Error in slash_quiz_grades: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao buscar suas notas.", ephemeral=True)
 
     @app_commands.command(name="ranking", description="Ver rankings diários e semanais da Academia Tokugawa")
     @app_commands.describe(tipo="Tipo de ranking a ser exibido")
