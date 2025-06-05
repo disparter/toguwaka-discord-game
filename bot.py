@@ -2,7 +2,6 @@ import os
 import asyncio
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 import logging
 
 # Set up logging
@@ -12,13 +11,43 @@ logging.basicConfig(
 )
 logger = logging.getLogger('tokugawa_bot')
 
-# Load environment variables
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+# Configure CloudWatch logging if running in AWS
+if os.environ.get('AWS_EXECUTION_ENV') is not None:
+    try:
+        import watchtower
+        import boto3
+
+        # Get the AWS region from environment or default to us-east-1
+        aws_region = os.environ.get('AWS_REGION', 'us-east-1')
+
+        # Create CloudWatch logs client
+        cloudwatch_client = boto3.client('logs', region_name=aws_region)
+
+        # Create CloudWatch handler
+        cloudwatch_handler = watchtower.CloudWatchLogHandler(
+            log_group='/ecs/tokugawa-bot',
+            stream_name='discord-bot-logs',
+            boto3_client=cloudwatch_client
+        )
+
+        # Add CloudWatch handler to logger
+        logger.addHandler(cloudwatch_handler)
+        logger.info("CloudWatch logging enabled")
+    except ImportError:
+        logger.warning("watchtower package not installed, CloudWatch logging disabled")
+    except Exception as e:
+        logger.error(f"Failed to set up CloudWatch logging: {e}")
+
+# Get environment variables
+TOKEN = os.environ.get('DISCORD_TOKEN')
+if not TOKEN:
+    logger.error("DISCORD_TOKEN environment variable is not set!")
+    raise ValueError("DISCORD_TOKEN environment variable is required")
+
 # Check if we should use privileged intents (default: True)
-USE_PRIVILEGED_INTENTS = os.getenv('USE_PRIVILEGED_INTENTS', 'True').lower() != 'false'
+USE_PRIVILEGED_INTENTS = os.environ.get('USE_PRIVILEGED_INTENTS', 'True').lower() != 'false'
 # Get guild ID for command registration (if provided)
-GUILD_ID = os.getenv('GUILD_ID')
+GUILD_ID = os.environ.get('GUILD_ID')
 
 # Set up intents
 # Note: The members and message_content intents are privileged intents

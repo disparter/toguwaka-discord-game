@@ -24,7 +24,45 @@ Em Academia Tokugawa, os jogadores assumem o papel de alunos com superpoderes, b
 - pip (gerenciador de pacotes Python)
 - Um token de bot do Discord
 
-### Configuração
+### Opções de Implantação
+
+Você pode executar o bot de duas maneiras:
+
+1. **Instalação Local**: Configuração tradicional em sua máquina local
+2. **Contêiner Docker**: Execução em contêiner para melhor portabilidade e implantação
+3. **AWS Fargate**: Hospedagem na nuvem para disponibilidade contínua
+
+#### Instalação Local
+
+Siga as instruções abaixo para uma instalação tradicional.
+
+#### Contêiner Docker
+
+Para executar o bot em um contêiner Docker:
+
+1. Certifique-se de ter o Docker instalado em sua máquina
+2. Construa a imagem Docker:
+   ```bash
+   docker build -t tokugawa-bot .
+   ```
+3. Execute o contêiner, passando as variáveis de ambiente necessárias:
+   ```bash
+   docker run -d --name tokugawa-discord-bot \
+     -e DISCORD_TOKEN=seu_token_aqui \
+     -e USE_PRIVILEGED_INTENTS=True \
+     -e GUILD_ID=seu_id_do_servidor_aqui \
+     tokugawa-bot
+   ```
+
+#### AWS Fargate
+
+Para implantação no AWS Fargate, consulte o arquivo [AWS_FARGATE_SETUP.md](AWS_FARGATE_SETUP.md) para instruções detalhadas sobre:
+- Publicação da imagem no Amazon ECR
+- Configuração de Task Definition no ECS
+- Criação e execução de um serviço no AWS Fargate
+- Monitoramento e atualização do bot
+
+### Configuração Local
 
 1. Clone este repositório:
 ```bash
