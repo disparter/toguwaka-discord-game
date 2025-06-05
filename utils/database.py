@@ -9,6 +9,9 @@ logger = logging.getLogger('tokugawa_bot')
 # Database file path
 DB_PATH = Path('data/tokugawa.db')
 
+# Flag to indicate if we're running in AWS
+IS_AWS = os.environ.get('AWS_EXECUTION_ENV') is not None
+
 def ensure_data_dir():
     """Ensure the data directory exists."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -16,6 +19,25 @@ def ensure_data_dir():
 def init_db():
     """Initialize the database with required tables."""
     ensure_data_dir()
+
+    # If running in AWS, try to download the database from S3
+    if IS_AWS:
+        try:
+            from utils.s3_storage import download_db_from_s3, ensure_s3_bucket_exists
+
+            # Ensure the S3 bucket exists
+            if ensure_s3_bucket_exists():
+                # Try to download the database from S3
+                if download_db_from_s3():
+                    logger.info("Downloaded database from S3")
+                else:
+                    logger.warning("Failed to download database from S3, will create a new one")
+            else:
+                logger.warning("Failed to ensure S3 bucket exists, will create a local database")
+        except ImportError:
+            logger.warning("s3_storage module not available, skipping S3 download")
+        except Exception as e:
+            logger.error(f"Error downloading database from S3: {e}")
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -191,13 +213,41 @@ def create_player(user_id, name, power, strength_level, club_id):
 
         conn.commit()
         logger.info(f"Created new player: {name} (ID: {user_id})")
-        return True
+        result = True
+
+        # Sync to S3 if running in AWS
+        if IS_AWS and result:
+            sync_db_to_s3()
+
+        return result
     except sqlite3.Error as e:
         conn.rollback()
         logger.error(f"Error creating player: {e}")
         return False
     finally:
         conn.close()
+
+def sync_db_to_s3():
+    """Sync the local database to S3 if running in AWS."""
+    if not IS_AWS:
+        return True
+
+    try:
+        from utils.s3_storage import upload_db_to_s3
+
+        # Upload the database to S3
+        if upload_db_to_s3():
+            logger.info("Uploaded database to S3")
+            return True
+        else:
+            logger.warning("Failed to upload database to S3")
+            return False
+    except ImportError:
+        logger.warning("s3_storage module not available, skipping S3 upload")
+        return False
+    except Exception as e:
+        logger.error(f"Error uploading database to S3: {e}")
+        return False
 
 def update_player(user_id, **kwargs):
     """Update player data in the database."""
@@ -219,7 +269,13 @@ def update_player(user_id, **kwargs):
         ''', values)
 
         conn.commit()
-        return cursor.rowcount > 0
+        result = cursor.rowcount > 0
+
+        # Sync to S3 if running in AWS
+        if IS_AWS and result:
+            sync_db_to_s3()
+
+        return result
     except sqlite3.Error as e:
         conn.rollback()
         logger.error(f"Error updating player: {e}")
