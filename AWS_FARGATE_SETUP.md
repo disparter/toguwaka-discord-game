@@ -14,21 +14,21 @@ Este documento contém instruções para configurar e implantar o bot Discord To
 ### Criar um Repositório ECR
 
 ```bash
-aws ecr create-repository --repository-name tokugawa-discord-bot --region <sua-região>
+aws ecr create-repository --repository-name tokugawa-discord-bot --region us-east-1
 ```
 
 ### Autenticar o Docker com ECR
 
 ```bash
-aws ecr get-login-password --region <sua-região> | docker login --username AWS --password-stdin <seu-id-conta>.dkr.ecr.<sua-região>.amazonaws.com
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 959903454321.dkr.ecr.us-east-1.amazonaws.com
 ```
 
 ### Construir e Enviar a Imagem Manualmente (Opcional)
 
 ```bash
 docker build -t tokugawa-discord-bot .
-docker tag tokugawa-discord-bot:latest <seu-id-conta>.dkr.ecr.<sua-região>.amazonaws.com/tokugawa-discord-bot:latest
-docker push <seu-id-conta>.dkr.ecr.<sua-região>.amazonaws.com/tokugawa-discord-bot:latest
+docker tag tokugawa-discord-bot:latest 959903454321.dkr.ecr.us-east-1.amazonaws.com/tokugawa-discord-bot:latest
+docker push 959903454321.dkr.ecr.us-east-1.amazonaws.com/tokugawa-discord-bot:latest
 ```
 
 ## 2. Configurar uma Task Definition no ECS
@@ -43,7 +43,7 @@ docker push <seu-id-conta>.dkr.ecr.<sua-região>.amazonaws.com/tokugawa-discord-
    - **CPU e Memória**: 0.5 vCPU e 1GB de memória (ajuste conforme necessário)
    - **Adicione um contêiner**:
      - **Nome do contêiner**: tokugawa-bot
-     - **Imagem**: <seu-id-conta>.dkr.ecr.<sua-região>.amazonaws.com/tokugawa-discord-bot:latest
+     - **Imagem**: 959903454321.dkr.ecr.us-east-1.amazonaws.com/tokugawa-discord-bot:latest
      - **Limites de memória**: Soft limit de 512 MB
      - **Mapeamentos de porta**: Não necessário para bots Discord
      - **Variáveis de ambiente**:
@@ -51,6 +51,45 @@ docker push <seu-id-conta>.dkr.ecr.<sua-região>.amazonaws.com/tokugawa-discord-
        - USE_PRIVILEGED_INTENTS: True
        - GUILD_ID: <seu-id-guild>
      - **Configurações de log**: Ative o CloudWatch logs
+
+{
+"family": "tokugawa-bot-task-definition",
+"executionRoleArn": "arn:aws:iam::959903454321:role/<TASK_EXECUTION_ROLE>",
+"taskRoleArn": "arn:aws:iam::959903454321:role/<TASK_ROLE>",
+"networkMode": "awsvpc",
+"containerDefinitions": [
+{
+"name": "tokugawa-bot",
+"image": "959903454321.dkr.ecr.us-east-1.amazonaws.com/tokugawa-discord-bot:latest",
+"memoryReservation": 512,
+"cpu": 256,
+"essential": true,
+"environment": [
+{ "name": "DISCORD_TOKEN", "value": "<seu-token-discord>" },
+{ "name": "USE_PRIVILEGED_INTENTS", "value": "True" },
+{ "name": "GUILD_ID", "value": "<seu-id-guild>" }
+],
+"logConfiguration": {
+"logDriver": "awslogs",
+"options": {
+"awslogs-group": "/ecs/tokugawa-bot",
+"awslogs-region": "us-east-1",
+"awslogs-stream-prefix": "ecs"
+}
+}
+}
+],
+"cpu": "512",
+"memory": "1024",
+"requiresCompatibilities": ["FARGATE"],
+"networkConfiguration": {
+"awsvpcConfiguration": {
+"assignPublicIp": "ENABLED",
+"securityGroups": ["<SECURITY_GROUP_ID>"],
+"subnets": ["<SUBNET_1_ID>", "<SUBNET_2_ID>"]
+}
+}
+}
 
 ## 3. Criar e Executar um Serviço no AWS Fargate
 

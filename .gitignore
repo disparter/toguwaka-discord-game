@@ -33,3 +33,14 @@ ENV/
 # Project specific
 .env
 data/tokugawa.db
+/function.zip
+/function_religar.zip
+/current-task-definition.json
+/response.json
+/trust-policy.json
+/response_religar.json
+/aws_subnet_creation_commands.sh
+/a_w_s_subnet_creation_guide.sh
+/.idea/
+/lambda_religar.py
+/lambda_function.py

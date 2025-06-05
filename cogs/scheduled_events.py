@@ -164,7 +164,40 @@ class ScheduledEvents(commands.Cog):
         PLAYER_PROGRESS['daily'] = {}
         PLAYER_PROGRESS['weekly'] = {}
 
+        # Schedule finding channels after bot is ready
+        self.bot.loop.create_task(self.find_channels())
+
         logger.info("ScheduledEvents cog initialized")
+
+    async def find_channels(self):
+        """Find and set announcement and tournament channels."""
+        await self.bot.wait_until_ready()
+        logger.info("Finding channels for announcements and tournaments")
+
+        for guild in self.bot.guilds:
+            # Try to find announcement channel
+            announcement_channel = discord.utils.get(guild.text_channels, name="anúncios") or \
+                                  discord.utils.get(guild.text_channels, name="announcements") or \
+                                  discord.utils.get(guild.text_channels, name="geral") or \
+                                  discord.utils.get(guild.text_channels, name="general")
+
+            if announcement_channel:
+                self.announcement_channel_id = announcement_channel.id
+                logger.info(f"Set announcement channel to: {announcement_channel.name} ({announcement_channel.id})")
+
+            # Try to find tournament channel (can be the same as announcement channel)
+            tournament_channel = discord.utils.get(guild.text_channels, name="torneios") or \
+                               discord.utils.get(guild.text_channels, name="tournaments") or \
+                               announcement_channel  # Fall back to announcement channel
+
+            if tournament_channel:
+                self.tournament_channel_id = tournament_channel.id
+                logger.info(f"Set tournament channel to: {tournament_channel.name} ({tournament_channel.id})")
+
+        if not self.announcement_channel_id:
+            logger.warning("Could not find a suitable announcement channel")
+        if not self.tournament_channel_id:
+            logger.warning("Could not find a suitable tournament channel")
 
     def cog_unload(self):
         """Clean up when cog is unloaded."""
@@ -177,6 +210,7 @@ class ScheduledEvents(commands.Cog):
         """Check for scheduled events every minute."""
         try:
             now = datetime.now()
+            logger.info(f"Checking scheduled events at {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
             # Update player activity for the current hour
             current_hour = now.hour
@@ -184,19 +218,23 @@ class ScheduledEvents(commands.Cog):
                 PLAYER_ACTIVITY[current_hour] = {'count': 0, 'last_updated': now}
 
             # Check for Wednesday tournament (18:00)
-            if now.weekday() == 2 and now.hour == 18 and now.minute == 0:
+            if now.weekday() == 2 and now.hour == 18 and now.minute < 5:
+                logger.info("Time for Wednesday tournament")
                 await self.start_wednesday_tournament()
 
             # Check for Sunday Turf Wars (14:00)
-            if now.weekday() == 6 and now.hour == 14 and now.minute == 0:
+            if now.weekday() == 6 and now.hour == 14 and now.minute < 5:
+                logger.info("Time for Sunday Turf Wars")
                 await self.start_turf_wars()
 
             # Check for daily morning announcements (8:00)
-            if now.hour == 8 and now.minute == 0:
+            if now.hour == 8 and now.minute < 5:
+                logger.info("Time for daily morning announcements")
                 await self.send_daily_announcements()
 
             # Check for daily subject announcement (9:00)
-            if now.hour == 9 and now.minute == 0:
+            if now.hour == 9 and now.minute < 5:
+                logger.info("Time for daily subject announcement")
                 await self.announce_daily_subject()
 
             # Check for random events based on player activity
@@ -212,21 +250,49 @@ class ScheduledEvents(commands.Cog):
     async def daily_reset(self):
         """Reset daily player progress, generate new buffs, and select daily subject."""
         try:
+            logger.info("Starting daily reset")
+
             # Reset daily player progress
             PLAYER_PROGRESS['daily'] = {}
+            logger.info("Reset daily player progress")
 
             # Generate new club buffs
             await self.generate_club_buffs()
+            logger.info("Generated new club buffs")
 
             # Select daily subject
             await self.select_daily_subject()
+            logger.info("Selected daily subject")
 
             # Check monthly grades (will only run on the last day of the month)
             await self.check_monthly_grades()
+            logger.info("Checked monthly grades")
 
-            logger.info("Daily reset completed")
+            logger.info("Daily reset completed successfully")
         except Exception as e:
             logger.error(f"Error in daily_reset: {e}")
+            # Try to select a default subject if selection failed
+            try:
+                if not DAILY_SUBJECT or not DAILY_SUBJECT.get('subject'):
+                    logger.info("Attempting to set default subject after error")
+                    DAILY_SUBJECT.clear()
+                    DAILY_SUBJECT.update({
+                        'subject': 'Matemática',
+                        'emoji': '🧮',
+                        'description': 'Hoje é dia de Matemática! Participe do quiz para ganhar notas e XP!',
+                        'difficulty': 1,
+                        'questions': [
+                            {
+                                'question': 'Quanto é 2 + 2?',
+                                'options': ['3', '4', '5', '6'],
+                                'correct': 1,  # 4
+                                'difficulty': 1
+                            }
+                        ]
+                    })
+                    logger.info(f"Set default subject: {DAILY_SUBJECT['subject']}")
+            except Exception as inner_e:
+                logger.error(f"Error setting default subject: {inner_e}")
 
     async def select_daily_subject(self):
         """Select a random subject for the day and prepare quiz questions."""
@@ -502,25 +568,29 @@ class ScheduledEvents(commands.Cog):
     async def start_wednesday_tournament(self):
         """Start the Wednesday tournament event."""
         try:
+            logger.info("Preparing to start Wednesday tournament")
+
+            # If we don't have a channel ID, try to find one
             if not self.tournament_channel_id:
-                # Try to find a general or announcements channel
-                for guild in self.bot.guilds:
-                    general_channel = discord.utils.get(guild.text_channels, name="geral") or \
-                                     discord.utils.get(guild.text_channels, name="general") or \
-                                     discord.utils.get(guild.text_channels, name="anúncios") or \
-                                     discord.utils.get(guild.text_channels, name="announcements")
-                    if general_channel:
-                        self.tournament_channel_id = general_channel.id
-                        break
+                logger.info("No tournament channel set, trying to find one")
+                await self.find_channels()
 
             if not self.tournament_channel_id:
-                logger.error("No tournament channel set and couldn't find a suitable channel")
+                logger.error("No tournament channel available for Wednesday tournament")
                 return
 
             channel = self.bot.get_channel(self.tournament_channel_id)
             if not channel:
                 logger.error(f"Could not find tournament channel with ID {self.tournament_channel_id}")
-                return
+                # Try to find channels again
+                logger.info("Trying to find channels again")
+                await self.find_channels()
+                channel = self.bot.get_channel(self.tournament_channel_id)
+                if not channel:
+                    logger.error("Still could not find tournament channel after retry")
+                    return
+
+            logger.info(f"Found tournament channel: {channel.name} ({channel.id})")
 
             # Create tournament embed
             embed = create_basic_embed(
@@ -805,25 +875,29 @@ class ScheduledEvents(commands.Cog):
     async def start_turf_wars(self):
         """Start the Sunday Turf Wars event."""
         try:
+            logger.info("Preparing to start Sunday Turf Wars")
+
+            # If we don't have a channel ID, try to find one
             if not self.tournament_channel_id:
-                # Try to find a general or announcements channel
-                for guild in self.bot.guilds:
-                    general_channel = discord.utils.get(guild.text_channels, name="geral") or \
-                                     discord.utils.get(guild.text_channels, name="general") or \
-                                     discord.utils.get(guild.text_channels, name="anúncios") or \
-                                     discord.utils.get(guild.text_channels, name="announcements")
-                    if general_channel:
-                        self.tournament_channel_id = general_channel.id
-                        break
+                logger.info("No tournament channel set, trying to find one")
+                await self.find_channels()
 
             if not self.tournament_channel_id:
-                logger.error("No tournament channel set and couldn't find a suitable channel")
+                logger.error("No tournament channel available for Sunday Turf Wars")
                 return
 
             channel = self.bot.get_channel(self.tournament_channel_id)
             if not channel:
                 logger.error(f"Could not find tournament channel with ID {self.tournament_channel_id}")
-                return
+                # Try to find channels again
+                logger.info("Trying to find channels again")
+                await self.find_channels()
+                channel = self.bot.get_channel(self.tournament_channel_id)
+                if not channel:
+                    logger.error("Still could not find tournament channel after retry")
+                    return
+
+            logger.info(f"Found tournament channel: {channel.name} ({channel.id})")
 
             # Reset teams
             TURF_WARS_TEAMS.clear()
@@ -1255,25 +1329,29 @@ class ScheduledEvents(commands.Cog):
     async def send_daily_announcements(self):
         """Send daily announcements, rankings, and news."""
         try:
+            logger.info("Preparing to send daily announcements")
+
+            # If we don't have a channel ID, try to find one
             if not self.announcement_channel_id:
-                # Try to find a general or announcements channel
-                for guild in self.bot.guilds:
-                    general_channel = discord.utils.get(guild.text_channels, name="geral") or \
-                                     discord.utils.get(guild.text_channels, name="general") or \
-                                     discord.utils.get(guild.text_channels, name="anúncios") or \
-                                     discord.utils.get(guild.text_channels, name="announcements")
-                    if general_channel:
-                        self.announcement_channel_id = general_channel.id
-                        break
+                logger.info("No announcement channel set, trying to find one")
+                await self.find_channels()
 
             if not self.announcement_channel_id:
-                logger.error("No announcement channel set and couldn't find a suitable channel")
+                logger.error("No announcement channel available for daily announcements")
                 return
 
             channel = self.bot.get_channel(self.announcement_channel_id)
             if not channel:
                 logger.error(f"Could not find announcement channel with ID {self.announcement_channel_id}")
-                return
+                # Try to find channels again
+                logger.info("Trying to find channels again")
+                await self.find_channels()
+                channel = self.bot.get_channel(self.announcement_channel_id)
+                if not channel:
+                    logger.error("Still could not find announcement channel after retry")
+                    return
+
+            logger.info(f"Found announcement channel: {channel.name} ({channel.id})")
 
             # Get daily rankings
             daily_players = []
@@ -2140,27 +2218,46 @@ class ScheduledEvents(commands.Cog):
         try:
             if not DAILY_SUBJECT:
                 logger.error("No daily subject selected")
-                return
+                # Try to set a default subject
+                try:
+                    logger.info("Setting default subject for announcement")
+                    DAILY_SUBJECT.clear()
+                    DAILY_SUBJECT.update({
+                        'subject': 'Matemática',
+                        'emoji': '🧮',
+                        'description': 'Hoje é dia de Matemática! Participe do quiz para ganhar notas e XP!',
+                        'difficulty': 1,
+                        'questions': [
+                            {
+                                'question': 'Quanto é 2 + 2?',
+                                'options': ['3', '4', '5', '6'],
+                                'correct': 1,  # 4
+                                'difficulty': 1
+                            }
+                        ]
+                    })
+                    logger.info(f"Set default subject: {DAILY_SUBJECT['subject']}")
+                except Exception as e:
+                    logger.error(f"Error setting default subject: {e}")
+                    return
+
+            # If we still don't have a channel ID, try to find one
+            if not self.announcement_channel_id:
+                await self.find_channels()
 
             if not self.announcement_channel_id:
-                # Try to find a general or announcements channel
-                for guild in self.bot.guilds:
-                    general_channel = discord.utils.get(guild.text_channels, name="geral") or \
-                                     discord.utils.get(guild.text_channels, name="general") or \
-                                     discord.utils.get(guild.text_channels, name="anúncios") or \
-                                     discord.utils.get(guild.text_channels, name="announcements")
-                    if general_channel:
-                        self.announcement_channel_id = general_channel.id
-                        break
-
-            if not self.announcement_channel_id:
-                logger.error("No announcement channel set and couldn't find a suitable channel")
+                logger.error("No announcement channel available for daily subject announcement")
                 return
 
             channel = self.bot.get_channel(self.announcement_channel_id)
             if not channel:
                 logger.error(f"Could not find announcement channel with ID {self.announcement_channel_id}")
-                return
+                # Try to find channels again
+                await self.find_channels()
+                channel = self.bot.get_channel(self.announcement_channel_id)
+                if not channel:
+                    logger.error("Still could not find announcement channel after retry")
+                    return
 
             # Create subject announcement embed
             embed = create_basic_embed(
