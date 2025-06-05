@@ -9,9 +9,9 @@ import sqlite3
 import os
 from datetime import datetime, timedelta, time
 import pytz
-from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag
+from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag, store_cooldown, update_player_grade, get_monthly_average_grades, update_player_reputation, get_player_grades
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
-from utils.game_mechanics import calculate_level_from_exp
+from utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -349,6 +349,36 @@ class ScheduledEvents(commands.Cog):
         self.daily_reset.cancel()
         self.weekly_reset.cancel()
 
+    async def recover_player_hp(self):
+        """Recover HP for all players."""
+        try:
+            from utils.database import get_all_players, update_player
+
+            # Get all players
+            players = get_all_players()
+            recovered_count = 0
+
+            for player in players:
+                user_id = player['user_id']
+                current_hp = player.get('hp', 100)
+                max_hp = player.get('max_hp', 100)
+
+                # Only update if HP is less than max_hp
+                if current_hp < max_hp:
+                    # Recover 10% of max_hp, rounded up
+                    recovery_amount = max(1, int(max_hp * 0.1))
+                    new_hp = min(max_hp, current_hp + recovery_amount)
+
+                    # Update player HP
+                    update_player(user_id, hp=new_hp)
+                    recovered_count += 1
+
+            if recovered_count > 0:
+                logger.info(f"Recovered HP for {recovered_count} players")
+
+        except Exception as e:
+            logger.error(f"Error recovering player HP: {e}")
+
     @tasks.loop(minutes=5)
     async def check_scheduled_events(self):
         """Check for scheduled events every 5 minutes."""
@@ -360,6 +390,10 @@ class ScheduledEvents(commands.Cog):
             current_hour = now.hour
             if current_hour not in PLAYER_ACTIVITY:
                 PLAYER_ACTIVITY[current_hour] = {'count': 0, 'last_updated': now}
+
+            # Recover player HP every hour (when minutes are 0-5)
+            if now.minute < 5:
+                await self.recover_player_hp()
 
             # Check for Wednesday tournament (18:00)
             if now.weekday() == 2 and now.hour == 18 and now.minute < 5:
@@ -2175,7 +2209,7 @@ class ScheduledEvents(commands.Cog):
                     'color': 0x800080,  # Purple
                     'emoji': '🔥',
                     'multiplier': 1.0,
-                    'duration': 30  # minutes
+                    'duration': 60  # minutes (increased from 30)
                 },
                 'tier2': {
                     'names': [
@@ -2186,7 +2220,7 @@ class ScheduledEvents(commands.Cog):
                     'color': 0xCC0000,  # Dark Red
                     'emoji': '⚡',
                     'multiplier': 1.5,
-                    'duration': 45  # minutes
+                    'duration': 90  # minutes (increased from 45)
                 },
                 'tier3': {
                     'names': [
@@ -2197,7 +2231,7 @@ class ScheduledEvents(commands.Cog):
                     'color': 0xFF0000,  # Bright Red
                     'emoji': '☠️',
                     'multiplier': 2.5,
-                    'duration': 60  # minutes
+                    'duration': 120  # minutes (increased from 60)
                 }
             }
 
@@ -3123,11 +3157,15 @@ class ScheduledEvents(commands.Cog):
             await interaction.response.send_message("Ocorreu um erro ao interagir com o minion.", ephemeral=True)
 
     @app_commands.command(name="vilao", description="Combater vilões que invadem a Academia")
-    @app_commands.describe(acao="Ação a ser realizada contra o vilão")
+    @app_commands.describe(
+        acao="Ação a ser realizada contra o vilão",
+        alvo="ID do vilão a ser atacado (deixe em branco para listar vilões ou use 'todos' para atacar todos)"
+    )
     @app_commands.choices(acao=[
-        app_commands.Choice(name="atacar", value="attack")
+        app_commands.Choice(name="atacar", value="attack"),
+        app_commands.Choice(name="listar", value="list")
     ])
-    async def slash_villain(self, interaction: discord.Interaction, acao: str):
+    async def slash_villain(self, interaction: discord.Interaction, acao: str, alvo: str = None):
         """Combat villains that invade the Academy."""
         try:
             # Check if player exists

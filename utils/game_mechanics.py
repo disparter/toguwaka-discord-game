@@ -4,6 +4,10 @@ import logging
 
 logger = logging.getLogger('tokugawa_bot')
 
+# HP factor constants
+HP_FACTOR_THRESHOLD = 0.5  # Below 50% HP, attributes start to be affected
+HP_FACTOR_MIN = 0.7  # At 0% HP, attributes would be at 70% (though players can't reach 0 HP)
+
 # Experience required for each level
 # Formula: base_exp * (level ^ 1.5)
 BASE_EXP = 100
@@ -109,18 +113,36 @@ def calculate_duel_outcome(challenger, opponent, duel_type):
         "strategic": {"intellect": 0.4, "dexterity": 0.3, "power_stat": 0.2, "charisma": 0.1},
         "social": {"charisma": 0.7, "intellect": 0.2, "dexterity": 0.05, "power_stat": 0.05}
     }
-    
+
     # Default to physical if invalid type
     weights = attribute_weights.get(duel_type, attribute_weights["physical"])
-    
+
+    # Apply HP factor to attributes if available
+    challenger_attributes = challenger.copy()
+    opponent_attributes = opponent.copy()
+
+    # Apply HP factor to challenger if HP data is available
+    if 'hp' in challenger and 'max_hp' in challenger:
+        hp_factor = calculate_hp_factor(challenger['hp'], challenger['max_hp'])
+        for attr in ['dexterity', 'power_stat', 'intellect', 'charisma']:
+            if attr in challenger_attributes:
+                challenger_attributes[attr] = challenger_attributes[attr] * hp_factor
+
+    # Apply HP factor to opponent if HP data is available
+    if 'hp' in opponent and 'max_hp' in opponent:
+        hp_factor = calculate_hp_factor(opponent['hp'], opponent['max_hp'])
+        for attr in ['dexterity', 'power_stat', 'intellect', 'charisma']:
+            if attr in opponent_attributes:
+                opponent_attributes[attr] = opponent_attributes[attr] * hp_factor
+
     # Calculate weighted scores
-    challenger_score = sum(challenger[attr] * weight for attr, weight in weights.items())
-    opponent_score = sum(opponent[attr] * weight for attr, weight in weights.items())
-    
+    challenger_score = sum(challenger_attributes[attr] * weight for attr, weight in weights.items())
+    opponent_score = sum(opponent_attributes[attr] * weight for attr, weight in weights.items())
+
     # Add randomness factor (±20%)
     challenger_score *= random.uniform(0.8, 1.2)
     opponent_score *= random.uniform(0.8, 1.2)
-    
+
     # Determine winner
     if challenger_score > opponent_score:
         winner = challenger
@@ -130,27 +152,62 @@ def calculate_duel_outcome(challenger, opponent, duel_type):
         winner = opponent
         loser = challenger
         win_margin = opponent_score - challenger_score
-    
+
     # Calculate rewards based on margin and level difference
     level_diff = abs(winner["level"] - loser["level"])
     exp_reward = int(30 + (win_margin / 5) + (level_diff * 5))
     tusd_reward = int(10 + (win_margin / 10) + (level_diff * 2))
-    
+
+    # Calculate HP loss for the loser based on win margin
+    # Higher win margins cause more HP loss
+    hp_loss = min(30, max(5, int(win_margin / 3)))
+
     return {
         "winner": winner,
         "loser": loser,
         "exp_reward": exp_reward,
         "tusd_reward": tusd_reward,
         "duel_type": duel_type,
-        "win_margin": win_margin
+        "win_margin": win_margin,
+        "hp_loss": hp_loss
     }
+
+def calculate_hp_factor(current_hp, max_hp):
+    """Calculate the factor that affects player attributes based on HP.
+
+    When HP is above the threshold (default 50%), there's no effect (factor = 1.0).
+    When HP is below the threshold, attributes are reduced linearly down to the minimum factor.
+
+    Args:
+        current_hp (int): Player's current HP
+        max_hp (int): Player's maximum HP
+
+    Returns:
+        float: Factor to multiply attributes by (between HP_FACTOR_MIN and 1.0)
+    """
+    # Ensure we don't divide by zero
+    if max_hp <= 0:
+        return 1.0
+
+    # Calculate HP percentage
+    hp_percentage = current_hp / max_hp
+
+    # If HP is above the threshold, no effect
+    if hp_percentage >= HP_FACTOR_THRESHOLD:
+        return 1.0
+
+    # Calculate factor based on how far below threshold the HP is
+    # Map hp_percentage from [0, HP_FACTOR_THRESHOLD] to [HP_FACTOR_MIN, 1.0]
+    factor = HP_FACTOR_MIN + (1.0 - HP_FACTOR_MIN) * (hp_percentage / HP_FACTOR_THRESHOLD)
+
+    return factor
 
 def generate_duel_narration(duel_result):
     """Generate a narrative description of a duel."""
     winner = duel_result["winner"]
     loser = duel_result["loser"]
     duel_type = duel_result["duel_type"]
-    
+
     # Intro based on duel type
     intros = {
         "physical": [
@@ -170,7 +227,7 @@ def generate_duel_narration(duel_result):
             f"A influência social estava em jogo enquanto {winner['name']} e {loser['name']} mediam forças!"
         ]
     }
-    
+
     # Middle part based on margin
     if duel_result["win_margin"] > 20:
         middles = [
@@ -182,16 +239,16 @@ def generate_duel_narration(duel_result):
             f"Foi uma disputa acirrada, com ambos os lados mostrando grande habilidade.",
             f"{winner['name']} e {loser['name']} estavam muito equilibrados, mas no final a vitória pendeu para um lado."
         ]
-    
+
     # Conclusion
     conclusions = [
         f"No final, {winner['name']} emergiu vitorioso, conquistando {duel_result['exp_reward']} de experiência e {duel_result['tusd_reward']} TUSD!",
         f"A vitória foi de {winner['name']}, que ganhou {duel_result['exp_reward']} de experiência e {duel_result['tusd_reward']} TUSD pelo seu desempenho!"
     ]
-    
+
     # Combine parts
     narration = f"{random.choice(intros.get(duel_type, intros['physical']))}\n\n"
     narration += f"{random.choice(middles)}\n\n"
     narration += f"{random.choice(conclusions)}"
-    
+
     return narration
