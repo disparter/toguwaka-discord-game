@@ -45,7 +45,7 @@ jobs:
           echo $IMAGE_NAME > image.txt
 
       - name: Upload image file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: image-file
           path: image.txt
