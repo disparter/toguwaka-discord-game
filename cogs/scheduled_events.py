@@ -281,9 +281,9 @@ class ScheduledEvents(commands.Cog):
         self.daily_reset.cancel()
         self.weekly_reset.cancel()
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def check_scheduled_events(self):
-        """Check for scheduled events every minute."""
+        """Check for scheduled events every 5 minutes."""
         try:
             now = datetime.now()
             logger.info(f"Checking scheduled events at {now.strftime('%Y-%m-%d %H:%M:%S')}")
@@ -330,7 +330,10 @@ class ScheduledEvents(commands.Cog):
                         set_system_flag(daily_flag_name, "true")
                         logger.info(f"Set daily events triggered flag: {daily_flag_name}")
             else:
-                logger.info(f"Daily events already triggered today: {daily_flag_name}")
+                # Only log this message once per hour to reduce log clutter
+                current_minute = now.minute
+                if current_minute < 5:
+                    logger.info(f"Daily events already triggered today: {daily_flag_name}")
 
             # Check for "Dia de Matéria" event (first day of the month at 10:00)
             if now.day == 1 and now.hour == 10 and now.minute < 5:
