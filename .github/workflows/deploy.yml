@@ -20,6 +20,7 @@ env:
   ECS_CLUSTER: tokugawa-bot-cluster
   ECS_SERVICE: tokugawa-bot-service
   CONTAINER_NAME: tokugawa-bot
+  ECS_TASK_DEFINITION: tokugawa-bot-task-definition
 
 jobs:
   build:
