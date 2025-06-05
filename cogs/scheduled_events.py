@@ -237,6 +237,11 @@ class ScheduledEvents(commands.Cog):
                 logger.info("Time for daily subject announcement")
                 await self.announce_daily_subject()
 
+            # Check for "Dia de Matéria" event (first day of the month at 10:00)
+            if now.day == 1 and now.hour == 10 and now.minute < 5:
+                logger.info("Time for Dia de Matéria event")
+                await self.check_dia_de_materia_event()
+
             # Check for random events based on player activity
             await self.check_random_events()
 
@@ -549,14 +554,91 @@ class ScheduledEvents(commands.Cog):
 
     @tasks.loop(time=time(hour=0, minute=0))  # Run at midnight on Monday
     async def weekly_reset(self):
-        """Reset weekly player progress."""
+        """Reset weekly player progress and update club rankings."""
         try:
             # Only reset on Monday
             if datetime.now().weekday() == 0:
+                # Reset weekly player progress
                 PLAYER_PROGRESS['weekly'] = {}
                 logger.info("Weekly reset completed")
+
+                # Update club reputation based on weekly activities
+                from utils.database import update_club_reputation_weekly
+                if update_club_reputation_weekly():
+                    logger.info("Updated club reputation based on weekly activities")
+
+                    # Announce top clubs
+                    await self.announce_top_clubs()
+                else:
+                    logger.error("Failed to update club reputation")
         except Exception as e:
             logger.error(f"Error in weekly_reset: {e}")
+
+    async def announce_top_clubs(self):
+        """Announce the top three clubs of the week."""
+        try:
+            # Get top clubs by activity
+            from utils.database import get_top_clubs_by_activity
+            top_clubs = get_top_clubs_by_activity(limit=3)
+
+            if not top_clubs:
+                logger.info("No club activities recorded this week")
+                return
+
+            # If we don't have a channel ID, try to find one
+            if not self.announcement_channel_id:
+                await self.find_channels()
+
+            if not self.announcement_channel_id:
+                logger.error("No announcement channel available for top clubs announcement")
+                return
+
+            channel = self.bot.get_channel(self.announcement_channel_id)
+            if not channel:
+                logger.error(f"Could not find announcement channel with ID {self.announcement_channel_id}")
+                # Try to find channels again
+                await self.find_channels()
+                channel = self.bot.get_channel(self.announcement_channel_id)
+                if not channel:
+                    logger.error("Still could not find announcement channel after retry")
+                    return
+
+            # Create ranking message
+            club_ranking = ""
+            for i, club in enumerate(top_clubs):
+                position = i + 1
+                if position == 1:
+                    prefix = "🥇"
+                elif position == 2:
+                    prefix = "🥈"
+                elif position == 3:
+                    prefix = "🥉"
+                else:
+                    prefix = f"{position}º"
+
+                club_ranking += f"{prefix} {club['name']} ({club['total_points']} pontos)\n"
+
+            # Create announcement embed
+            embed = create_basic_embed(
+                title="🏆 Ranking Semanal de Clubes 🏆",
+                description=(
+                    f"Os clubes de destaque desta semana são:\n\n"
+                    f"{club_ranking}\n"
+                    f"Continue contribuindo para seu clube!"
+                ),
+                color=0xFFD700  # Gold
+            )
+
+            # Send the announcement
+            await channel.send(
+                content="@everyone O ranking semanal de clubes foi atualizado!",
+                embed=embed
+            )
+
+            logger.info(f"Announced top clubs: {', '.join([club['name'] for club in top_clubs])}")
+
+        except Exception as e:
+            logger.error(f"Error announcing top clubs: {e}")
 
     @check_scheduled_events.before_loop
     @daily_reset.before_loop
@@ -2529,6 +2611,79 @@ class ScheduledEvents(commands.Cog):
         except Exception as e:
             logger.error(f"Error checking monthly grades: {e}")
 
+    async def check_dia_de_materia_event(self):
+        """Check if it's time to create the 'Dia de Matéria' event."""
+        try:
+            now = datetime.now()
+
+            # Create event ID for the current month
+            event_id = f"dia_de_materia_{now.strftime('%Y%m')}"
+
+            # Check if the event already exists
+            if event_id in ACTIVE_EVENTS:
+                logger.info(f"'Dia de Matéria' event already exists for {now.strftime('%B/%Y')}")
+                return
+
+            # If we don't have a channel ID, try to find one
+            if not self.announcement_channel_id:
+                await self.find_channels()
+
+            if not self.announcement_channel_id:
+                logger.error("No announcement channel available for 'Dia de Matéria' event")
+                return
+
+            channel = self.bot.get_channel(self.announcement_channel_id)
+            if not channel:
+                logger.error(f"Could not find announcement channel with ID {self.announcement_channel_id}")
+                # Try to find channels again
+                await self.find_channels()
+                channel = self.bot.get_channel(self.announcement_channel_id)
+                if not channel:
+                    logger.error("Still could not find announcement channel after retry")
+                    return
+
+            # Calculate event end date (last day of the current month)
+            next_month = now.replace(day=28) + timedelta(days=4)  # Move to next month
+            end_date = next_month.replace(day=1) - timedelta(days=1)  # Last day of current month
+            end_date = end_date.replace(hour=23, minute=59, second=59)  # End at midnight
+
+            # Create event announcement embed
+            embed = create_basic_embed(
+                title="📚 Evento: Dia de Matéria 📚",
+                description=(
+                    "Prepare-se! O evento 'Dia de Matéria' está programado para começar em breve e testará suas habilidades intelectuais.\n\n"
+                    "Durante este evento, você terá a oportunidade de demonstrar seu conhecimento em diversas matérias e ganhar recompensas especiais!\n\n"
+                    "Fique atento aos anúncios diários para participar dos quizzes e melhorar suas notas!"
+                ),
+                color=0x4169E1  # Royal Blue
+            )
+
+            # Send the announcement
+            message = await channel.send(
+                content="@everyone Um novo evento mensal está chegando!",
+                embed=embed
+            )
+
+            # Store event data
+            ACTIVE_EVENTS[event_id] = {
+                'channel_id': channel.id,
+                'message_id': message.id,
+                'start_time': now,
+                'end_time': end_date,
+                'participants': [],
+                'data': {
+                    'type': 'dia_de_materia',
+                    'month': now.month,
+                    'year': now.year,
+                    'description': "Evento mensal que testa suas habilidades intelectuais em diversas matérias."
+                }
+            }
+
+            logger.info(f"Created 'Dia de Matéria' event for {now.strftime('%B/%Y')}")
+
+        except Exception as e:
+            logger.error(f"Error creating 'Dia de Matéria' event: {e}")
+
     async def cleanup_expired_events(self):
         """Clean up expired events."""
         try:
@@ -2557,6 +2712,25 @@ class ScheduledEvents(commands.Cog):
                                 )
                         except Exception as e:
                             logger.error(f"Error sending villain escape message: {e}")
+
+                    # Handle Dia de Matéria event cleanup
+                    elif 'dia_de_materia' in event_id:
+                        try:
+                            channel = self.bot.get_channel(event_data['channel_id'])
+                            if channel:
+                                await channel.send(
+                                    embed=create_basic_embed(
+                                        title="📚 Evento: Dia de Matéria - Encerrado 📚",
+                                        description=(
+                                            f"O evento 'Dia de Matéria' do mês de {event_data['data']['month']}/{event_data['data']['year']} foi encerrado!\n\n"
+                                            f"Esperamos que você tenha aproveitado para melhorar suas habilidades intelectuais.\n\n"
+                                            f"Um novo evento começará no próximo mês. Fique atento!"
+                                        ),
+                                        color=0x4169E1  # Royal Blue
+                                    )
+                                )
+                        except Exception as e:
+                            logger.error(f"Error sending Dia de Matéria end message: {e}")
 
             # Remove expired events
             for event_id in expired_events:

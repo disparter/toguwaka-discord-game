@@ -155,6 +155,38 @@ def init_db():
     )
     ''')
 
+    # Create quiz_questions table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS quiz_questions (
+        question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        question TEXT NOT NULL,
+        options TEXT NOT NULL,  -- JSON array of options
+        correct_option INTEGER NOT NULL,
+        difficulty INTEGER NOT NULL DEFAULT 1,
+        category TEXT NOT NULL,  -- Subject or theme
+        attribute TEXT,  -- Related player attribute (intellect, charisma, dexterity, power)
+        min_level INTEGER DEFAULT 1,  -- Minimum player level for this question
+        tusd_reward INTEGER DEFAULT 10,  -- TUSD reward for correct answer
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+
+    # Create club_activities table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS club_activities (
+        activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        club_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        activity_type TEXT NOT NULL,  -- 'duel_win', 'exploration', etc.
+        points INTEGER NOT NULL,  -- Contribution points
+        week INTEGER NOT NULL,
+        year INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (club_id) REFERENCES clubs(club_id),
+        FOREIGN KEY (user_id) REFERENCES players(user_id)
+    )
+    ''')
+
     # Insert default clubs
     default_clubs = [
         (1, "Clube das Chamas", "Mestres do fogo e das artes marciais explosivas.", None, 0, 100),
@@ -168,6 +200,35 @@ def init_db():
     INSERT OR IGNORE INTO clubs (club_id, name, description, leader_id, members_count, reputation)
     VALUES (?, ?, ?, ?, ?, ?)
     ''', default_clubs)
+
+    # Insert default quiz questions
+    default_questions = [
+        # Intellect questions
+        ("Qual é o símbolo químico do ouro?", json.dumps(["Au", "Ag", "Fe", "Cu"]), 0, 2, "Ciências", "intellect", 1, 15),
+        ("Quem escreveu 'Dom Quixote'?", json.dumps(["Shakespeare", "Cervantes", "Machado de Assis", "Dante Alighieri"]), 1, 2, "Literatura", "intellect", 1, 15),
+        ("Qual é a capital da Austrália?", json.dumps(["Sydney", "Melbourne", "Canberra", "Brisbane"]), 2, 2, "Geografia", "intellect", 1, 15),
+
+        # Charisma questions
+        ("Qual destas é uma técnica eficaz de comunicação?", json.dumps(["Interromper frequentemente", "Evitar contato visual", "Escuta ativa", "Falar muito rápido"]), 2, 2, "Comunicação", "charisma", 1, 15),
+        ("O que significa empatia?", json.dumps(["Manipular emoções", "Capacidade de entender sentimentos alheios", "Esconder seus sentimentos", "Expressar raiva"]), 1, 2, "Psicologia", "charisma", 1, 15),
+
+        # Dexterity questions
+        ("Qual esporte utiliza mais a coordenação motora fina?", json.dumps(["Futebol", "Tiro com arco", "Natação", "Corrida"]), 1, 2, "Esportes", "dexterity", 1, 15),
+        ("Qual instrumento musical requer maior destreza manual?", json.dumps(["Bateria", "Violino", "Flauta", "Piano"]), 1, 2, "Música", "dexterity", 1, 15),
+
+        # Power questions
+        ("Qual exercício é melhor para desenvolver força?", json.dumps(["Yoga", "Pilates", "Agachamento", "Alongamento"]), 2, 2, "Educação Física", "power_stat", 1, 15),
+        ("Qual personagem de Unordinary possui a habilidade mais poderosa?", json.dumps(["John", "Seraphina", "Arlo", "Remi"]), 1, 3, "Unordinary", "power_stat", 3, 25),
+
+        # High-level questions
+        ("Qual é o teorema fundamental do cálculo?", json.dumps(["Relaciona a derivada com a integral", "Define números complexos", "Explica a teoria dos conjuntos", "Prova a existência de números primos infinitos"]), 0, 3, "Matemática Avançada", "intellect", 5, 30),
+        ("Na série Unordinary, qual é a classificação de poder de John?", json.dumps(["7.0", "7.5", "8.0", "Desconhecido"]), 1, 3, "Unordinary", "intellect", 5, 30)
+    ]
+
+    cursor.executemany('''
+    INSERT OR IGNORE INTO quiz_questions (question, options, correct_option, difficulty, category, attribute, min_level, tusd_reward)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', default_questions)
 
     conn.commit()
     conn.close()
@@ -495,6 +556,218 @@ def get_top_players_by_reputation(limit=10):
     conn.close()
 
     return [dict(player) for player in players]
+
+def get_quiz_questions(player_data=None, category=None, attribute=None, count=3):
+    """Get quiz questions based on player data, category, and/or attribute."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    query = "SELECT * FROM quiz_questions WHERE 1=1"
+    params = []
+
+    # Filter by player level if player_data is provided
+    if player_data:
+        player_level = player_data.get('level', 1)
+        query += " AND min_level <= ?"
+        params.append(player_level)
+
+    # Filter by category if provided
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+
+    # Filter by attribute if provided
+    if attribute:
+        query += " AND attribute = ?"
+        params.append(attribute)
+
+    # If player data is provided, prioritize questions related to their strongest attributes
+    if player_data:
+        # Find player's strongest attribute
+        attributes = {
+            'intellect': player_data.get('intellect', 5),
+            'charisma': player_data.get('charisma', 5),
+            'dexterity': player_data.get('dexterity', 5),
+            'power_stat': player_data.get('power_stat', 5)
+        }
+        strongest_attribute = max(attributes, key=attributes.get)
+
+        # Order by matching the strongest attribute first, then by random
+        query += f" ORDER BY CASE WHEN attribute = ? THEN 1 ELSE 2 END, RANDOM()"
+        params.append(strongest_attribute)
+    else:
+        # Just random order if no player data
+        query += " ORDER BY RANDOM()"
+
+    # Limit the number of questions
+    query += " LIMIT ?"
+    params.append(count)
+
+    cursor.execute(query, params)
+    questions = cursor.fetchall()
+    conn.close()
+
+    result = []
+    for q in questions:
+        question_dict = dict(q)
+        # Parse JSON options
+        question_dict['options'] = json.loads(question_dict['options'])
+        result.append(question_dict)
+
+    return result
+
+def record_quiz_answer(user_id, question_id, is_correct):
+    """Record a quiz answer and award TUSD if correct."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        # Get the question to determine the reward
+        cursor.execute("SELECT tusd_reward FROM quiz_questions WHERE question_id = ?", (question_id,))
+        question = cursor.fetchone()
+
+        if not question:
+            logger.error(f"Question with ID {question_id} not found")
+            conn.close()
+            return False
+
+        tusd_reward = question[0] if is_correct else 0
+
+        # Update player's TUSD if correct
+        if is_correct and tusd_reward > 0:
+            cursor.execute('''
+            UPDATE players 
+            SET tusd = tusd + ?
+            WHERE user_id = ?
+            ''', (tusd_reward, user_id))
+
+            logger.info(f"Awarded {tusd_reward} TUSD to player {user_id} for correct quiz answer")
+
+        conn.commit()
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error recording quiz answer: {e}")
+        return False
+    finally:
+        conn.close()
+
+def record_club_activity(user_id, activity_type, points=1):
+    """Record a club activity for a player's club."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        # Get player's club
+        cursor.execute("SELECT club_id FROM players WHERE user_id = ?", (user_id,))
+        player = cursor.fetchone()
+
+        if not player or not player[0]:
+            logger.info(f"Player {user_id} has no club, skipping activity recording")
+            conn.close()
+            return False
+
+        club_id = player[0]
+
+        # Get current week and year
+        now = datetime.now()
+        year, week, _ = now.isocalendar()
+
+        # Record the activity
+        cursor.execute('''
+        INSERT INTO club_activities (club_id, user_id, activity_type, points, week, year)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ''', (club_id, user_id, activity_type, points, week, year))
+
+        logger.info(f"Recorded {activity_type} activity for club {club_id} by player {user_id}")
+
+        conn.commit()
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error recording club activity: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_top_clubs_by_activity(week=None, year=None, limit=3):
+    """Get top clubs by activity points for a specific week."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # If week and year are not provided, use current week
+    if week is None or year is None:
+        now = datetime.now()
+        year, week, _ = now.isocalendar()
+
+    try:
+        cursor.execute('''
+        SELECT c.club_id, c.name, c.description, SUM(ca.points) as total_points
+        FROM clubs c
+        JOIN club_activities ca ON c.club_id = ca.club_id
+        WHERE ca.week = ? AND ca.year = ?
+        GROUP BY c.club_id
+        ORDER BY total_points DESC
+        LIMIT ?
+        ''', (week, year, limit))
+
+        clubs = cursor.fetchall()
+        return [dict(club) for club in clubs]
+    except sqlite3.Error as e:
+        logger.error(f"Error getting top clubs by activity: {e}")
+        return []
+    finally:
+        conn.close()
+
+def update_club_reputation_weekly():
+    """Update club reputation based on weekly activities."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        # Get current week and year
+        now = datetime.now()
+        year, week, _ = now.isocalendar()
+
+        # Get previous week
+        prev_week = week - 1
+        prev_year = year
+        if prev_week <= 0:
+            prev_week = 52  # Last week of previous year
+            prev_year -= 1
+
+        # Get club activity totals for the previous week
+        cursor.execute('''
+        SELECT club_id, SUM(points) as total_points
+        FROM club_activities
+        WHERE week = ? AND year = ?
+        GROUP BY club_id
+        ''', (prev_week, prev_year))
+
+        club_points = cursor.fetchall()
+
+        # Update club reputation based on activity points
+        for club_id, points in club_points:
+            reputation_change = points // 2  # Convert points to reputation (adjust ratio as needed)
+
+            cursor.execute('''
+            UPDATE clubs
+            SET reputation = reputation + ?
+            WHERE club_id = ?
+            ''', (reputation_change, club_id))
+
+            logger.info(f"Updated club {club_id} reputation by {reputation_change} based on {points} activity points")
+
+        conn.commit()
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error updating club reputation: {e}")
+        return False
+    finally:
+        conn.close()
 
 # Initialize the database when the module is imported
 init_db()
