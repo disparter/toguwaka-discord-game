@@ -13,6 +13,15 @@
         "arn:aws:s3:::tokugawa-db-storage",
         "arn:aws:s3:::tokugawa-db-storage/*"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
     }
   ]
 }
