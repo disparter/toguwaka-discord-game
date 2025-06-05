@@ -10,7 +10,7 @@ from utils.embeds import create_basic_embed, create_event_embed, create_duel_emb
 from utils.game_mechanics import (
     get_random_training_outcome, get_random_event, 
     calculate_duel_outcome, generate_duel_narration,
-    calculate_level_from_exp
+    calculate_level_from_exp, calculate_hp_factor
 )
 
 logger = logging.getLogger('tokugawa_bot')
@@ -302,10 +302,17 @@ class Activities(commands.Cog):
                     # Add level up bonus
                     winner_update["tusd"] += new_level * 50
 
-                # Update loser (half exp, no TUSD)
+                # Update loser (half exp, no TUSD, and HP loss)
                 loser_update = {
                     "exp": duel_result["loser"]["exp"] + (duel_result["exp_reward"] // 2)
                 }
+
+                # Apply HP loss to loser if HP system is available
+                if 'hp' in duel_result["loser"] and 'max_hp' in duel_result["loser"]:
+                    current_hp = duel_result["loser"]["hp"]
+                    hp_loss = duel_result.get("hp_loss", 10)  # Default to 10 if not specified
+                    new_hp = max(1, current_hp - hp_loss)  # Ensure HP doesn't go below 1
+                    loser_update["hp"] = new_hp
 
                 # Check for level up
                 new_level = calculate_level_from_exp(loser_update["exp"])

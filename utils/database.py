@@ -43,6 +43,35 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
+    # Check if we need to add HP columns to existing players
+    try:
+        cursor.execute("PRAGMA table_info(players)")
+        columns = cursor.fetchall()
+        has_hp_column = any(col[1] == 'hp' for col in columns)
+        has_max_hp_column = any(col[1] == 'max_hp' for col in columns)
+
+        if not has_hp_column:
+            logger.info("Adding 'hp' column to players table")
+            cursor.execute("ALTER TABLE players ADD COLUMN hp INTEGER DEFAULT 100")
+            conn.commit()
+
+        if not has_max_hp_column:
+            logger.info("Adding 'max_hp' column to players table")
+            cursor.execute("ALTER TABLE players ADD COLUMN max_hp INTEGER DEFAULT 100")
+            conn.commit()
+
+        # Update existing players to have default HP values if they don't already
+        cursor.execute("UPDATE players SET hp = 100 WHERE hp IS NULL")
+        cursor.execute("UPDATE players SET max_hp = 100 WHERE max_hp IS NULL")
+        conn.commit()
+
+        rows_updated = cursor.rowcount
+        if rows_updated > 0:
+            logger.info(f"Updated {rows_updated} players with default HP values")
+    except sqlite3.Error as e:
+        logger.info(f"Checking players table for HP columns: {e}")
+        # If there's an error, it will be handled by the CREATE TABLE statement below
+
     # Check if events table exists and if it has the completed column
     try:
         cursor.execute("PRAGMA table_info(events)")
@@ -75,6 +104,8 @@ def init_db():
         inventory TEXT DEFAULT '{}',
         techniques TEXT DEFAULT '{}',
         reputation INTEGER DEFAULT 0,
+        hp INTEGER DEFAULT 100,
+        max_hp INTEGER DEFAULT 100,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (club_id) REFERENCES clubs(club_id)
@@ -425,6 +456,23 @@ def get_top_players(limit=10):
     ORDER BY p.level DESC, p.exp DESC
     LIMIT ?
     ''', (limit,))
+
+    players = cursor.fetchall()
+    conn.close()
+
+    return [dict(player) for player in players]
+
+def get_all_players():
+    """Get all players from the database."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    SELECT p.*, c.name as club_name 
+    FROM players p
+    LEFT JOIN clubs c ON p.club_id = c.club_id
+    ''')
 
     players = cursor.fetchall()
     conn.close()
