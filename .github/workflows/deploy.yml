@@ -25,6 +25,7 @@ env:
 jobs:
   validate:
     name: Validate Configuration
+    environment: production
     runs-on: ubuntu-latest
     steps:
       - name: Check required secrets
@@ -81,6 +82,7 @@ jobs:
   build:
     name: Build and Push Image
     needs: validate
+    environment: production
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.build-image.outputs.image }}
@@ -149,6 +151,7 @@ jobs:
   deploy:
     name: Deploy to ECS
     needs: build
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
@@ -258,6 +261,7 @@ jobs:
   test:
     name: Test Deployment
     needs: deploy
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
