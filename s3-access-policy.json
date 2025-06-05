@@ -4,10 +4,7 @@
     {
       "Effect": "Allow",
       "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:ListBucket",
-        "s3:CreateBucket"
+        "s3:*"
       ],
       "Resource": [
         "arn:aws:s3:::tokugawa-db-storage",
