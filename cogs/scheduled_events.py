@@ -2393,6 +2393,38 @@ class ScheduledEvents(commands.Cog):
             PLAYER_PROGRESS['weekly'][interaction.user.id]['exp_gained'] += xp_reward
             PLAYER_PROGRESS['weekly'][interaction.user.id]['events_completed'] += 1
 
+            # Check if player learns a technique (only if answer is correct)
+            technique_learned = None
+            if is_correct:
+                # 30% chance to learn a technique if answer is correct
+                if random.random() < 0.3:
+                    try:
+                        # Import TECHNIQUES from economy.py
+                        from cogs.economy import TECHNIQUES
+
+                        # Get player's techniques
+                        techniques = player['techniques']
+
+                        # Filter techniques the player doesn't have yet
+                        available_techniques = [t for t in TECHNIQUES if str(t["id"]) not in techniques]
+
+                        if available_techniques:
+                            # Select a random technique to learn
+                            technique = random.choice(available_techniques)
+
+                            # Add technique to player's techniques
+                            techniques[str(technique["id"])] = technique
+
+                            # Update player in database
+                            update_player(
+                                interaction.user.id,
+                                techniques=json.dumps(techniques)
+                            )
+
+                            technique_learned = technique
+                    except Exception as e:
+                        logger.error(f"Error learning technique: {e}")
+
             # Send result message
             if is_correct:
                 result_message = f"✅ Resposta correta! Sua nota foi {final_grade}/10.0"
@@ -2400,14 +2432,23 @@ class ScheduledEvents(commands.Cog):
                 correct_option = question['options'][correct_answer_index]
                 result_message = f"❌ Resposta incorreta. A resposta correta era: {correct_option}\nSua nota foi {final_grade}/10.0"
 
+            # Build rewards description
+            rewards_description = (
+                f"**Recompensas:**\n"
+                f"- +{xp_reward} EXP\n"
+                f"- Nota registrada para o mês de {now.strftime('%B/%Y')}"
+            )
+
+            # Add technique learned if any
+            if technique_learned:
+                rewards_description += f"\n- Técnica aprendida: **{technique_learned['name']}**"
+
             await interaction.response.send_message(
                 embed=create_basic_embed(
                     title=f"Resultado do Quiz de {subject}",
                     description=(
                         f"{result_message}\n\n"
-                        f"**Recompensas:**\n"
-                        f"- +{xp_reward} EXP\n"
-                        f"- Nota registrada para o mês de {now.strftime('%B/%Y')}"
+                        f"{rewards_description}"
                     ),
                     color=0x00FF00 if is_correct else 0xFF0000
                 ),

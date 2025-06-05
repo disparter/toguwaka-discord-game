@@ -132,6 +132,76 @@ TECHNIQUES = [
         "description": "Libera todo seu poder de uma vez. +20% de chance de vencer qualquer tipo de duelo.",
         "type": "all",
         "effects": {"duel_boost": {"type": "all", "amount": 0.2}}
+    },
+    {
+        "id": 6,
+        "name": "Punho de Aço",
+        "description": "Fortalece os punhos para um impacto devastador. +35% de chance de vencer duelos físicos.",
+        "type": "physical",
+        "effects": {"duel_boost": {"type": "physical", "amount": 0.35}}
+    },
+    {
+        "id": 7,
+        "name": "Barreira Mental",
+        "description": "Cria uma barreira que protege contra ataques mentais. +35% de chance de vencer duelos mentais.",
+        "type": "mental",
+        "effects": {"duel_boost": {"type": "mental", "amount": 0.35}}
+    },
+    {
+        "id": 8,
+        "name": "Tática Avançada",
+        "description": "Utiliza táticas de guerra avançadas. +35% de chance de vencer duelos estratégicos.",
+        "type": "strategic",
+        "effects": {"duel_boost": {"type": "strategic", "amount": 0.35}}
+    },
+    {
+        "id": 9,
+        "name": "Persuasão Suprema",
+        "description": "Técnica de persuasão que dobra a vontade dos outros. +35% de chance de vencer duelos sociais.",
+        "type": "social",
+        "effects": {"duel_boost": {"type": "social", "amount": 0.35}}
+    },
+    {
+        "id": 10,
+        "name": "Concentração Total",
+        "description": "Foca toda sua energia em um único objetivo. +25% de chance de vencer qualquer tipo de duelo.",
+        "type": "all",
+        "effects": {"duel_boost": {"type": "all", "amount": 0.25}}
+    },
+    {
+        "id": 11,
+        "name": "Técnica do Dragão",
+        "description": "Técnica ancestral que canaliza a força de um dragão. +40% de chance de vencer duelos físicos.",
+        "type": "physical",
+        "effects": {"duel_boost": {"type": "physical", "amount": 0.4}}
+    },
+    {
+        "id": 12,
+        "name": "Ilusão Suprema",
+        "description": "Cria ilusões tão reais que confundem até os mais perspicazes. +40% de chance de vencer duelos mentais.",
+        "type": "mental",
+        "effects": {"duel_boost": {"type": "mental", "amount": 0.4}}
+    },
+    {
+        "id": 13,
+        "name": "Xadrez Dimensional",
+        "description": "Visualiza o duelo como um jogo de xadrez multidimensional. +40% de chance de vencer duelos estratégicos.",
+        "type": "strategic",
+        "effects": {"duel_boost": {"type": "strategic", "amount": 0.4}}
+    },
+    {
+        "id": 14,
+        "name": "Aura de Liderança",
+        "description": "Emana uma aura que inspira respeito e admiração. +40% de chance de vencer duelos sociais.",
+        "type": "social",
+        "effects": {"duel_boost": {"type": "social", "amount": 0.4}}
+    },
+    {
+        "id": 15,
+        "name": "Despertar Interior",
+        "description": "Desperta todo o potencial oculto dentro de si. +30% de chance de vencer qualquer tipo de duelo.",
+        "type": "all",
+        "effects": {"duel_boost": {"type": "all", "amount": 0.3}}
     }
 ]
 
@@ -551,6 +621,45 @@ class Economy(commands.Cog):
 
                 # TODO: Implement club reputation update
                 use_message = f"Você usou {item_data['name']} e aumentou sua reputação no clube {club['name']}!"
+
+            elif "potion" in item_data["effects"]:
+                # Handle potion effects
+                potion_type = item_data["effects"]["potion"]["type"]
+                amount = item_data["effects"]["potion"]["amount"]
+
+                if potion_type == "training":
+                    # Training potion increases experience
+                    update_data["exp"] = player["exp"] + amount
+                    use_message = f"Você bebeu {item_data['name']} e ganhou {amount} de experiência! Seu treinamento foi acelerado."
+
+                elif potion_type == "attribute":
+                    # Attribute potion increases a specific attribute
+                    attribute = item_data["effects"]["potion"]["attribute"]
+                    if attribute in ["dexterity", "intellect", "charisma", "power_stat"]:
+                        update_data[attribute] = player[attribute] + amount
+                        attribute_names = {
+                            "dexterity": "Destreza",
+                            "intellect": "Intelecto",
+                            "charisma": "Carisma",
+                            "power_stat": "Poder"
+                        }
+                        use_message = f"Você bebeu {item_data['name']} e aumentou seu atributo de {attribute_names[attribute]} em {amount} pontos!"
+                    else:
+                        await interaction.response.send_message(f"{interaction.user.mention}, esta poção tem um atributo inválido.")
+                        return
+
+                elif potion_type == "currency":
+                    # Currency potion increases TUSD
+                    update_data["tusd"] = player["tusd"] + amount
+                    use_message = f"Você bebeu {item_data['name']} e ganhou {amount} TUSD! Sua carteira está mais cheia."
+
+                elif potion_type == "health":
+                    # Health potion would be used in combat (not implemented yet)
+                    use_message = f"Você bebeu {item_data['name']} e se sente revigorado! Sua saúde foi restaurada."
+
+                else:
+                    await interaction.response.send_message(f"{interaction.user.mention}, este tipo de poção não é reconhecido.")
+                    return
 
             else:
                 await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado no momento.")
@@ -990,6 +1099,45 @@ class Economy(commands.Cog):
 
             # TODO: Implement club reputation update
             use_message = f"Você usou {item_data['name']} e aumentou sua reputação no clube {club['name']}!"
+
+        elif "potion" in item_data["effects"]:
+            # Handle potion effects
+            potion_type = item_data["effects"]["potion"]["type"]
+            amount = item_data["effects"]["potion"]["amount"]
+
+            if potion_type == "training":
+                # Training potion increases experience
+                update_data["exp"] = player["exp"] + amount
+                use_message = f"Você bebeu {item_data['name']} e ganhou {amount} de experiência! Seu treinamento foi acelerado."
+
+            elif potion_type == "attribute":
+                # Attribute potion increases a specific attribute
+                attribute = item_data["effects"]["potion"]["attribute"]
+                if attribute in ["dexterity", "intellect", "charisma", "power_stat"]:
+                    update_data[attribute] = player[attribute] + amount
+                    attribute_names = {
+                        "dexterity": "Destreza",
+                        "intellect": "Intelecto",
+                        "charisma": "Carisma",
+                        "power_stat": "Poder"
+                    }
+                    use_message = f"Você bebeu {item_data['name']} e aumentou seu atributo de {attribute_names[attribute]} em {amount} pontos!"
+                else:
+                    await ctx.send(f"{ctx.author.mention}, esta poção tem um atributo inválido.")
+                    return
+
+            elif potion_type == "currency":
+                # Currency potion increases TUSD
+                update_data["tusd"] = player["tusd"] + amount
+                use_message = f"Você bebeu {item_data['name']} e ganhou {amount} TUSD! Sua carteira está mais cheia."
+
+            elif potion_type == "health":
+                # Health potion would be used in combat (not implemented yet)
+                use_message = f"Você bebeu {item_data['name']} e se sente revigorado! Sua saúde foi restaurada."
+
+            else:
+                await ctx.send(f"{ctx.author.mention}, este tipo de poção não é reconhecido.")
+                return
 
         else:
             await ctx.send(f"{ctx.author.mention}, este item não pode ser usado no momento.")
