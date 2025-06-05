@@ -2875,7 +2875,7 @@ class ScheduledEvents(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Find active villain event in this channel
@@ -2891,12 +2891,12 @@ class ScheduledEvents(commands.Cog):
                     break
 
             if not active_villain:
-                await interaction.response.send_message("Não há vilões ativos neste canal no momento.", ephemeral=True)
+                await interaction.response.send_message("Não há vilões ativos neste canal no momento.")
                 return
 
             # Check if player already participated
             if interaction.user.id in active_villain['participants']:
-                await interaction.response.send_message("Você já atacou este vilão. Aguarde outros estudantes se juntarem à batalha!", ephemeral=True)
+                await interaction.response.send_message("Você já atacou este vilão. Aguarde outros estudantes se juntarem à batalha!")
                 return
 
             # Handle attack action
@@ -3018,7 +3018,7 @@ class ScheduledEvents(commands.Cog):
 
         except Exception as e:
             logger.error(f"Error in slash_villain: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao combater o vilão.", ephemeral=True)
+            await interaction.response.send_message("Ocorreu um erro ao combater o vilão.")
 
     @app_commands.command(name="item", description="Coletar itens que aparecem na Academia")
     @app_commands.describe(acao="Ação a ser realizada com o item")
