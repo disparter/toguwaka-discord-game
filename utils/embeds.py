@@ -27,7 +27,7 @@ def create_player_embed(player, club=None):
             5: 0x808080   # Clube de Combate - Gray
         }
         color = club_colors.get(club.get('club_id', 0), 0x1E90FF)
-    
+
     # Create embed
     embed = discord.Embed(
         title=f"{player['name']} - Nível {player['level']}",
@@ -37,7 +37,7 @@ def create_player_embed(player, club=None):
         color=color,
         timestamp=datetime.utcnow()
     )
-    
+
     # Add attributes
     embed.add_field(
         name="Atributos",
@@ -47,7 +47,7 @@ def create_player_embed(player, club=None):
               f"**Poder:** {player['power_stat']} ⚡",
         inline=True
     )
-    
+
     # Add experience progress
     exp_progress = calculate_exp_progress(player['exp'], player['level'])
     progress_bar = create_progress_bar(exp_progress)
@@ -57,10 +57,10 @@ def create_player_embed(player, club=None):
               f"EXP: {player['exp']}",
         inline=True
     )
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
 
 def create_club_embed(club):
@@ -74,7 +74,7 @@ def create_club_embed(club):
         5: 0x808080   # Clube de Combate - Gray
     }
     color = club_colors.get(club.get('club_id', 0), 0x1E90FF)
-    
+
     # Create embed
     embed = discord.Embed(
         title=club['name'],
@@ -82,7 +82,7 @@ def create_club_embed(club):
         color=color,
         timestamp=datetime.utcnow()
     )
-    
+
     # Add club stats
     embed.add_field(
         name="Estatísticas",
@@ -91,17 +91,17 @@ def create_club_embed(club):
               f"**Líder:** {club.get('leader_name', 'Nenhum')}",
         inline=True
     )
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
 
 def create_duel_embed(duel_result):
     """Create an embed displaying duel results."""
     winner = duel_result["winner"]
     loser = duel_result["loser"]
-    
+
     # Determine color based on duel type
     duel_colors = {
         "physical": 0xFF0000,  # Red
@@ -110,7 +110,7 @@ def create_duel_embed(duel_result):
         "social": 0xFFD700     # Gold
     }
     color = duel_colors.get(duel_result["duel_type"], 0x1E90FF)
-    
+
     # Create embed
     embed = discord.Embed(
         title=f"Resultado do Duelo: {duel_result['duel_type'].capitalize()}",
@@ -118,23 +118,23 @@ def create_duel_embed(duel_result):
         color=color,
         timestamp=datetime.utcnow()
     )
-    
+
     # Add winner and loser info
     embed.add_field(
         name="Vencedor",
         value=f"**{winner['name']}**\nNível {winner['level']}\nGanhou {duel_result['exp_reward']} EXP e {duel_result['tusd_reward']} TUSD",
         inline=True
     )
-    
+
     embed.add_field(
         name="Perdedor",
         value=f"**{loser['name']}**\nNível {loser['level']}\nGanhou {duel_result['exp_reward']//2} EXP",
         inline=True
     )
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
 
 def create_event_embed(event):
@@ -146,7 +146,7 @@ def create_event_embed(event):
         "neutral": 0xFFFF00    # Yellow
     }
     color = event_colors.get(event["type"], 0x1E90FF)
-    
+
     # Create embed
     embed = discord.Embed(
         title=event["title"],
@@ -154,7 +154,7 @@ def create_event_embed(event):
         color=color,
         timestamp=datetime.utcnow()
     )
-    
+
     # Add effects if any
     effects = []
     for key, value in event["effect"].items():
@@ -168,17 +168,17 @@ def create_event_embed(event):
             effects.append("**Duelo:** Desafio para um duelo!")
         elif key == "item":
             effects.append("**Item:** Recebeu um item especial!")
-    
+
     if effects:
         embed.add_field(
             name="Efeitos",
             value="\n".join(effects),
             inline=False
         )
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
 
 def create_inventory_embed(player):
@@ -189,14 +189,15 @@ def create_inventory_embed(player):
         color=0x1E90FF,
         timestamp=datetime.utcnow()
     )
-    
+
     # Add items if any
     if player['inventory']:
         items_text = []
         for item_id, item in player['inventory'].items():
             rarity = RARITIES.get(item['rarity'], RARITIES['common'])
-            items_text.append(f"{rarity['emoji']} **{item['name']}** - {item['description']}")
-        
+            item_type = item['type'].capitalize()
+            items_text.append(f"{rarity['emoji']} **{item['name']}** (ID: {item_id}, Tipo: {item_type}) - {item['description']}")
+
         embed.add_field(
             name="Itens",
             value="\n".join(items_text) if items_text else "Nenhum item no inventário.",
@@ -208,13 +209,13 @@ def create_inventory_embed(player):
             value="Nenhum item no inventário.",
             inline=False
         )
-    
+
     # Add techniques if any
     if player['techniques']:
         techniques_text = []
         for tech_id, tech in player['techniques'].items():
             techniques_text.append(f"⚡ **{tech['name']}** - {tech['description']}")
-        
+
         embed.add_field(
             name="Técnicas",
             value="\n".join(techniques_text) if techniques_text else "Nenhuma técnica aprendida.",
@@ -226,10 +227,10 @@ def create_inventory_embed(player):
             value="Nenhuma técnica aprendida.",
             inline=False
         )
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
 
 def create_progress_bar(percentage, length=10):
@@ -245,21 +246,21 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
         color=0xFFD700,  # Gold
         timestamp=datetime.utcnow()
     )
-    
+
     if not players:
         embed.description = "Nenhum jogador encontrado."
         return embed
-    
+
     # Create leaderboard text
     leaderboard_text = ""
     for i, player in enumerate(players, 1):
         medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
         club_name = player.get('club_name', 'Sem clube')
         leaderboard_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
-    
+
     embed.description = leaderboard_text
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
