@@ -26,6 +26,8 @@ jobs:
   build:
     name: Build and Push Image
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -77,8 +79,8 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: tokugawa-bot # Atualize com o valor correto
-          image: ${{ steps.build-image.outputs.image }}
+          container-name: tokugawa-bot
+          image: ${{ needs.build.outputs.image }}
 
 
       - name: Deploy to ECS
