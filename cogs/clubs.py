@@ -139,32 +139,12 @@ class Clubs(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
+    from utils.command_registrar import CommandRegistrar
+
+    # Create and add the cog
     cog = Clubs(bot)
     await bot.add_cog(cog)
     logger.info("Clubs cog loaded")
 
-    # Add the club_group to the bot's command tree
-    try:
-        bot.tree.add_command(cog.club_group)
-        logger.info(f"Added club_group to command tree: /{cog.club_group.name}")
-    except discord.app_commands.errors.CommandAlreadyRegistered:
-        logger.info(f"Club_group already registered: /{cog.club_group.name}")
-
-    # Add a direct test command to the bot's command tree
-    @bot.tree.command(name="teste_direto", description="Comando de teste direto para verificar se os comandos estão sendo sincronizados")
-    async def direct_test(interaction: discord.Interaction):
-        """Direct test command to verify that commands are being synced."""
-        try:
-            await interaction.response.send_message("Teste direto bem-sucedido! Os comandos estão sendo sincronizados corretamente.")
-        except discord.errors.NotFound:
-            # If the interaction has expired, log it but don't try to respond
-            logger.warning(f"Interaction expired for user {interaction.user.id} when using /teste_direto")
-        except Exception as e:
-            logger.error(f"Error in direct_test: {e}")
-
-    # Log the slash commands that were added
-    for cmd in cog.__cog_app_commands__:
-        logger.info(f"Clubs cog added slash command: /{cmd.name}")
-
-    # Log the direct test command that was added
-    logger.info(f"Added direct test command: /teste_direto")
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)

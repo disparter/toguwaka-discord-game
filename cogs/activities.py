@@ -743,17 +743,12 @@ class Activities(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
+    from utils.command_registrar import CommandRegistrar
+
+    # Create and add the cog
     cog = Activities(bot)
     await bot.add_cog(cog)
     logger.info("Activities cog loaded")
 
-    # Add the activity_group to the bot's command tree
-    try:
-        bot.tree.add_command(cog.activity_group)
-        logger.info(f"Added activity_group to command tree: /{cog.activity_group.name}")
-    except discord.app_commands.errors.CommandAlreadyRegistered:
-        logger.info(f"Activity_group already registered: /{cog.activity_group.name}")
-
-    # Log the slash commands that were added
-    for cmd in cog.__cog_app_commands__:
-        logger.info(f"Activities cog added slash command: /{cmd.name}")
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)
