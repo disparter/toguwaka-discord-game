@@ -225,6 +225,49 @@ class ScheduledEvents(commands.Cog):
         except Exception as e:
             logger.error(f"Error checking for active daily events after restart: {e}")
 
+        # Load active events from database
+        try:
+            logger.info("Loading active events from database")
+            from utils.database import get_active_events
+
+            db_events = get_active_events()
+            if db_events:
+                # Update the ACTIVE_EVENTS dictionary with events from the database
+                global ACTIVE_EVENTS
+                ACTIVE_EVENTS.update(db_events)
+                logger.info(f"Loaded {len(db_events)} active events from database")
+            else:
+                logger.info("No active events found in database")
+        except Exception as e:
+            logger.error(f"Error loading active events from database: {e}")
+
+        # Load cooldowns from database
+        try:
+            logger.info("Loading cooldowns from database")
+            from utils.database import get_cooldowns, clear_expired_cooldowns
+
+            # First clear any expired cooldowns
+            removed = clear_expired_cooldowns()
+            if removed > 0:
+                logger.info(f"Cleared {removed} expired cooldowns from database")
+
+            # Then load active cooldowns
+            db_cooldowns = get_cooldowns()
+            if db_cooldowns:
+                # Update the COOLDOWNS dictionary with cooldowns from the database
+                from cogs.activities import COOLDOWNS
+
+                for user_id, commands in db_cooldowns.items():
+                    if user_id not in COOLDOWNS:
+                        COOLDOWNS[user_id] = {}
+                    COOLDOWNS[user_id].update(commands)
+
+                logger.info(f"Loaded cooldowns for {len(db_cooldowns)} users from database")
+            else:
+                logger.info("No active cooldowns found in database")
+        except Exception as e:
+            logger.error(f"Error loading cooldowns from database: {e}")
+
         # Remove the listener to prevent it from being called multiple times
         self.bot.remove_listener(self.on_ready_init, "on_ready")
         logger.info("ScheduledEvents on_ready initialization completed")
@@ -2043,11 +2086,14 @@ class ScheduledEvents(commands.Cog):
 
             # Store event data
             event_id = f"minion_{datetime.now().timestamp()}"
-            ACTIVE_EVENTS[event_id] = {
+            start_time = datetime.now()
+            end_time = start_time + timedelta(minutes=5)  # 5 minute duration
+
+            event_data = {
                 'channel_id': channel.id,
                 'message_id': message.id,
-                'start_time': datetime.now(),
-                'end_time': datetime.now() + timedelta(minutes=5),  # 5 minute duration
+                'start_time': start_time,
+                'end_time': end_time,
                 'participants': [],
                 'data': {
                     'type': 'minion',
@@ -2059,6 +2105,31 @@ class ScheduledEvents(commands.Cog):
                     'reputation_reward': reputation_reward
                 }
             }
+
+            # Store in memory
+            ACTIVE_EVENTS[event_id] = event_data
+
+            # Store in database
+            try:
+                from utils.database import store_event
+
+                # Extract data for database storage
+                store_event(
+                    event_id=event_id,
+                    name=f"Minion: {minion_name}",
+                    description=f"Um minion {rarity} apareceu na Academia!",
+                    event_type="minion",
+                    channel_id=channel.id,
+                    message_id=message.id,
+                    start_time=start_time,
+                    end_time=end_time,
+                    participants=[],
+                    data=event_data['data'],
+                    completed=False
+                )
+                logger.info(f"Stored minion event {event_id} in database")
+            except Exception as e:
+                logger.error(f"Error storing minion event in database: {e}")
 
             logger.info(f"Triggered {rarity} minion event ({minion_name}) in channel {channel.name}")
         except Exception as e:
@@ -2855,7 +2926,27 @@ class ScheduledEvents(commands.Cog):
 
             # Remove expired events
             for event_id in expired_events:
+                # Get event data before removing it
+                event_data = ACTIVE_EVENTS.get(event_id)
+
+                # Remove from memory
                 ACTIVE_EVENTS.pop(event_id, None)
+
+                # Update in database
+                if event_data:
+                    try:
+                        from utils.database import update_event_status
+
+                        # Mark as completed in database
+                        update_event_status(
+                            event_id=event_id,
+                            completed=True,
+                            participants=event_data.get('participants', []),
+                            data=event_data.get('data', {})
+                        )
+                        logger.info(f"Marked event {event_id} as completed in database")
+                    except Exception as e:
+                        logger.error(f"Error updating event status in database: {e}")
 
         except Exception as e:
             logger.error(f"Error cleaning up expired events: {e}")
@@ -3760,6 +3851,72 @@ class ScheduledEvents(commands.Cog):
         except Exception as e:
             logger.error(f"Error in slash_ranking: {e}")
             await interaction.response.send_message("Ocorreu um erro ao exibir o ranking.", ephemeral=True)
+
+    @app_commands.command(name="eventos", description="Ver eventos do dia na Academia Tokugawa")
+    @app_commands.describe(mostrar_concluidos="Mostrar eventos concluídos")
+    async def slash_eventos(self, interaction: discord.Interaction, mostrar_concluidos: bool = True):
+        """View today's events at Tokugawa Academy."""
+        try:
+            # Import the necessary function
+            from utils.database import get_events_by_date
+            from utils.embeds import create_db_event_embed
+
+            # Get today's events
+            today_events = get_events_by_date(include_completed=mostrar_concluidos)
+
+            if not today_events:
+                embed = create_basic_embed(
+                    title="📅 Eventos da Academia Tokugawa 📅",
+                    description="Não há eventos programados para hoje.",
+                    color=0x1E90FF  # Blue
+                )
+                await interaction.response.send_message(embed=embed)
+                return
+
+            # Separate active and completed events
+            active_events = [e for e in today_events if not e.get('completed', False)]
+            completed_events = [e for e in today_events if e.get('completed', False)]
+
+            # Create initial response
+            embed = create_basic_embed(
+                title="📅 Eventos da Academia Tokugawa 📅",
+                description=f"Eventos para {datetime.now().strftime('%d/%m/%Y')}",
+                color=0x1E90FF  # Blue
+            )
+
+            # Add summary
+            summary = []
+            if active_events:
+                summary.append(f"**Eventos ativos:** {len(active_events)}")
+            if completed_events and mostrar_concluidos:
+                summary.append(f"**Eventos concluídos:** {len(completed_events)}")
+
+            if summary:
+                embed.add_field(
+                    name="Resumo",
+                    value="\n".join(summary),
+                    inline=False
+                )
+
+            await interaction.response.send_message(embed=embed)
+
+            # Send active events
+            if active_events:
+                await interaction.followup.send("**📌 Eventos Ativos:**")
+                for event in active_events:
+                    event_embed = create_db_event_embed(event)
+                    await interaction.followup.send(embed=event_embed)
+
+            # Send completed events if requested
+            if completed_events and mostrar_concluidos:
+                await interaction.followup.send("**✅ Eventos Concluídos:**")
+                for event in completed_events:
+                    event_embed = create_db_event_embed(event)
+                    await interaction.followup.send(embed=event_embed)
+
+        except Exception as e:
+            logger.error(f"Error in slash_eventos: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao exibir os eventos.", ephemeral=True)
 
 async def setup(bot):
     """Add the cog to the bot."""

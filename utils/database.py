@@ -111,17 +111,32 @@ def init_db():
     )
     ''')
 
-    # Create events table
+    # Create enhanced events table
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS events (
-        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
         type TEXT NOT NULL,
-        start_date TIMESTAMP,
-        end_date TIMESTAMP,
-        active BOOLEAN DEFAULT 0,
-        participants TEXT DEFAULT '[]'
+        channel_id INTEGER,
+        message_id INTEGER,
+        start_time TIMESTAMP,
+        end_time TIMESTAMP,
+        completed BOOLEAN DEFAULT 0,
+        participants TEXT DEFAULT '[]',
+        data TEXT DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+
+    # Create cooldowns table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS cooldowns (
+        user_id INTEGER NOT NULL,
+        command TEXT NOT NULL,
+        expiry_time TIMESTAMP NOT NULL,
+        PRIMARY KEY (user_id, command),
+        FOREIGN KEY (user_id) REFERENCES players(user_id)
     )
     ''')
 
@@ -831,6 +846,352 @@ def update_club_reputation_weekly():
         conn.rollback()
         logger.error(f"Error updating club reputation: {e}")
         return False
+    finally:
+        conn.close()
+
+def store_event(event_id, name, description, event_type, channel_id, message_id, start_time, end_time, participants=None, data=None, completed=False):
+    """Store an event in the database.
+
+    Args:
+        event_id (str): Unique identifier for the event
+        name (str): Name of the event
+        description (str): Description of the event
+        event_type (str): Type of event (e.g., 'tournament', 'quiz', 'duel')
+        channel_id (int): Discord channel ID where the event is taking place
+        message_id (int): Discord message ID announcing the event
+        start_time (datetime): When the event starts
+        end_time (datetime): When the event ends
+        participants (list, optional): List of participant user IDs. Defaults to None.
+        data (dict, optional): Additional event data. Defaults to None.
+        completed (bool, optional): Whether the event is completed. Defaults to False.
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Convert datetime objects to strings if needed
+    if isinstance(start_time, datetime):
+        start_time = start_time.isoformat()
+    if isinstance(end_time, datetime):
+        end_time = end_time.isoformat()
+
+    # Convert participants list to JSON string
+    if participants is None:
+        participants = []
+    participants_json = json.dumps(participants)
+
+    # Convert data dict to JSON string
+    if data is None:
+        data = {}
+    data_json = json.dumps(data)
+
+    try:
+        cursor.execute('''
+        INSERT OR REPLACE INTO events 
+        (event_id, name, description, type, channel_id, message_id, start_time, end_time, completed, participants, data)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (event_id, name, description, event_type, channel_id, message_id, start_time, end_time, completed, participants_json, data_json))
+
+        conn.commit()
+        logger.info(f"Stored event {event_id} in database")
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error storing event {event_id}: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_event(event_id):
+    """Get an event from the database by ID.
+
+    Args:
+        event_id (str): The ID of the event to retrieve
+
+    Returns:
+        dict: Event data or None if not found
+    """
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+        SELECT * FROM events WHERE event_id = ?
+        ''', (event_id,))
+
+        event = cursor.fetchone()
+        if not event:
+            return None
+
+        # Convert to dict and parse JSON fields
+        event_dict = dict(event)
+        event_dict['participants'] = json.loads(event_dict['participants'])
+        event_dict['data'] = json.loads(event_dict['data'])
+
+        return event_dict
+    except sqlite3.Error as e:
+        logger.error(f"Error getting event {event_id}: {e}")
+        return None
+    finally:
+        conn.close()
+
+def get_events_by_date(date=None, include_completed=True):
+    """Get events for a specific date.
+
+    Args:
+        date (datetime, optional): The date to get events for. Defaults to today.
+        include_completed (bool, optional): Whether to include completed events. Defaults to True.
+
+    Returns:
+        list: List of event dictionaries
+    """
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # Default to today if no date provided
+    if date is None:
+        date = datetime.now().date()
+
+    # Format date for SQL query (start and end of day)
+    date_start = datetime.combine(date, datetime.min.time()).isoformat()
+    date_end = datetime.combine(date, datetime.max.time()).isoformat()
+
+    try:
+        if include_completed:
+            cursor.execute('''
+            SELECT * FROM events 
+            WHERE (start_time BETWEEN ? AND ?) OR (end_time BETWEEN ? AND ?)
+            ORDER BY start_time ASC
+            ''', (date_start, date_end, date_start, date_end))
+        else:
+            cursor.execute('''
+            SELECT * FROM events 
+            WHERE ((start_time BETWEEN ? AND ?) OR (end_time BETWEEN ? AND ?)) AND completed = 0
+            ORDER BY start_time ASC
+            ''', (date_start, date_end, date_start, date_end))
+
+        events = cursor.fetchall()
+
+        # Convert to list of dicts and parse JSON fields
+        result = []
+        for event in events:
+            event_dict = dict(event)
+            event_dict['participants'] = json.loads(event_dict['participants'])
+            event_dict['data'] = json.loads(event_dict['data'])
+            result.append(event_dict)
+
+        return result
+    except sqlite3.Error as e:
+        logger.error(f"Error getting events for date {date}: {e}")
+        return []
+    finally:
+        conn.close()
+
+def update_event_status(event_id, completed=True, participants=None, data=None):
+    """Update an event's status and data.
+
+    Args:
+        event_id (str): The ID of the event to update
+        completed (bool, optional): Whether the event is completed. Defaults to True.
+        participants (list, optional): Updated list of participants. Defaults to None.
+        data (dict, optional): Updated event data. Defaults to None.
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        # First get the current event to update only specified fields
+        current_event = get_event(event_id)
+        if not current_event:
+            logger.error(f"Event {event_id} not found for update")
+            return False
+
+        # Update participants if provided
+        if participants is not None:
+            participants_json = json.dumps(participants)
+        else:
+            participants_json = current_event['participants']
+            if isinstance(participants_json, list):
+                participants_json = json.dumps(participants_json)
+
+        # Update data if provided
+        if data is not None:
+            data_json = json.dumps(data)
+        else:
+            data_json = current_event['data']
+            if isinstance(data_json, dict):
+                data_json = json.dumps(data_json)
+
+        cursor.execute('''
+        UPDATE events
+        SET completed = ?, participants = ?, data = ?
+        WHERE event_id = ?
+        ''', (completed, participants_json, data_json, event_id))
+
+        conn.commit()
+        logger.info(f"Updated event {event_id} status to completed={completed}")
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error updating event {event_id}: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_active_events():
+    """Get all active (non-completed) events.
+
+    Returns:
+        dict: Dictionary of active events with event_id as keys
+    """
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+        SELECT * FROM events WHERE completed = 0
+        ''')
+
+        events = cursor.fetchall()
+
+        # Convert to dict of dicts with event_id as keys
+        result = {}
+        for event in events:
+            event_dict = dict(event)
+            event_dict['participants'] = json.loads(event_dict['participants'])
+            event_dict['data'] = json.loads(event_dict['data'])
+
+            # Format for compatibility with ACTIVE_EVENTS structure
+            event_id = event_dict['event_id']
+            result[event_id] = {
+                'channel_id': event_dict['channel_id'],
+                'message_id': event_dict['message_id'],
+                'start_time': event_dict['start_time'],
+                'end_time': event_dict['end_time'],
+                'participants': event_dict['participants'],
+                'data': event_dict['data']
+            }
+
+        return result
+    except sqlite3.Error as e:
+        logger.error(f"Error getting active events: {e}")
+        return {}
+    finally:
+        conn.close()
+
+def store_cooldown(user_id, command, expiry_time):
+    """Store a cooldown in the database.
+
+    Args:
+        user_id (int): The user ID
+        command (str): The command name
+        expiry_time (float): Timestamp when the cooldown expires
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Convert timestamp to datetime
+    expiry_datetime = datetime.fromtimestamp(expiry_time).isoformat()
+
+    try:
+        cursor.execute('''
+        INSERT OR REPLACE INTO cooldowns (user_id, command, expiry_time)
+        VALUES (?, ?, ?)
+        ''', (user_id, command, expiry_datetime))
+
+        conn.commit()
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error storing cooldown for user {user_id}, command {command}: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_cooldowns(user_id=None):
+    """Get cooldowns from the database.
+
+    Args:
+        user_id (int, optional): The user ID to get cooldowns for. If None, get all cooldowns.
+
+    Returns:
+        dict: Dictionary of cooldowns with user_id and command as keys
+    """
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        if user_id is not None:
+            cursor.execute('''
+            SELECT * FROM cooldowns WHERE user_id = ?
+            ''', (user_id,))
+        else:
+            cursor.execute('''
+            SELECT * FROM cooldowns
+            ''')
+
+        cooldowns = cursor.fetchall()
+
+        # Convert to nested dict structure
+        result = {}
+        for cooldown in cooldowns:
+            user_id = cooldown['user_id']
+            command = cooldown['command']
+
+            # Convert ISO format to timestamp
+            expiry_time = datetime.fromisoformat(cooldown['expiry_time']).timestamp()
+
+            if user_id not in result:
+                result[user_id] = {}
+
+            result[user_id][command] = expiry_time
+
+        return result
+    except sqlite3.Error as e:
+        logger.error(f"Error getting cooldowns: {e}")
+        return {}
+    finally:
+        conn.close()
+
+def clear_expired_cooldowns():
+    """Remove expired cooldowns from the database.
+
+    Returns:
+        int: Number of cooldowns removed
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        now = datetime.now().isoformat()
+
+        cursor.execute('''
+        DELETE FROM cooldowns WHERE expiry_time < ?
+        ''', (now,))
+
+        removed = cursor.rowcount
+        conn.commit()
+
+        if removed > 0:
+            logger.info(f"Removed {removed} expired cooldowns")
+
+        return removed
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error clearing expired cooldowns: {e}")
+        return 0
     finally:
         conn.close()
 

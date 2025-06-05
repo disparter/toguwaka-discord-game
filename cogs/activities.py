@@ -439,7 +439,15 @@ class Activities(commands.Cog):
             COOLDOWNS[user_id] = {}
 
         duration = COOLDOWN_DURATIONS.get(command, 3600)  # Default 1 hour
-        COOLDOWNS[user_id][command] = datetime.now().timestamp() + duration
+        expiry_time = datetime.now().timestamp() + duration
+        COOLDOWNS[user_id][command] = expiry_time
+
+        # Store cooldown in database
+        try:
+            from utils.database import store_cooldown
+            store_cooldown(user_id, command, expiry_time)
+        except Exception as e:
+            logger.error(f"Error storing cooldown in database: {e}")
 
     @commands.command(name="treinar")
     async def train(self, ctx):

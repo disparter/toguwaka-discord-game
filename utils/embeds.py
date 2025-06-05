@@ -26,25 +26,31 @@ def create_player_embed(player, club=None):
             4: 0x00FF00,  # Elementalistas - Green
             5: 0x808080   # Clube de Combate - Gray
         }
-        color = club_colors.get(club.get('club_id', 0), 0x1E90FF)
+        color = club_colors.get(club['club_id'], 0x1E90FF)
 
     # Create embed
     embed = discord.Embed(
-        title=f"{player['name']} - Nível {player['level']}",
-        description=f"**Poder:** {player['power']} {STRENGTH_LEVELS[player['strength_level']]}\n"
-                    f"**Clube:** {club['name'] if club else 'Nenhum'}\n"
-                    f"**TUSD:** {player['tusd']} 💰",
+        title=f"Perfil de {player['name']}",
+        description=f"**Poder:** {player['power']}\n**Nível de Força:** {STRENGTH_LEVELS.get(player['strength_level'], 'Desconhecido')}",
         color=color,
         timestamp=datetime.utcnow()
     )
 
+    # Add club information if available
+    if club:
+        embed.add_field(
+            name="Clube",
+            value=f"**{club['name']}**\n{club['description']}",
+            inline=False
+        )
+
     # Add attributes
     embed.add_field(
         name="Atributos",
-        value=f"**Destreza:** {player['dexterity']} 🏃‍♂️\n"
+        value=f"**Destreza:** {player['dexterity']} 🏃\n"
               f"**Intelecto:** {player['intellect']} 🧠\n"
-              f"**Carisma:** {player['charisma']} 💬\n"
-              f"**Poder:** {player['power_stat']} ⚡",
+              f"**Carisma:** {player['charisma']} 💫\n"
+              f"**Poder:** {player['power_stat']} 💪",
         inline=True
     )
 
@@ -73,7 +79,7 @@ def create_club_embed(club):
         4: 0x00FF00,  # Elementalistas - Green
         5: 0x808080   # Clube de Combate - Gray
     }
-    color = club_colors.get(club.get('club_id', 0), 0x1E90FF)
+    color = club_colors.get(club['club_id'], 0x1E90FF)
 
     # Create embed
     embed = discord.Embed(
@@ -106,15 +112,14 @@ def create_duel_embed(duel_result):
     duel_colors = {
         "physical": 0xFF0000,  # Red
         "mental": 0x800080,    # Purple
-        "strategic": 0x0000FF, # Blue
         "social": 0xFFD700     # Gold
     }
-    color = duel_colors.get(duel_result["duel_type"], 0x1E90FF)
+    color = duel_colors.get(duel_result["type"], 0x1E90FF)
 
     # Create embed
     embed = discord.Embed(
-        title=f"Resultado do Duelo: {duel_result['duel_type'].capitalize()}",
-        description=duel_result.get("narration", ""),
+        title=f"Resultado do Duelo: {duel_result['type'].capitalize()}",
+        description=duel_result["narration"],
         color=color,
         timestamp=datetime.utcnow()
     )
@@ -263,4 +268,136 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
 
+    return embed
+
+def create_db_event_embed(event, show_participants=True):
+    """Create an embed displaying an event from the database.
+    
+    Args:
+        event (dict): Event data from the database
+        show_participants (bool): Whether to show participants list
+        
+    Returns:
+        discord.Embed: The created embed
+    """
+    # Determine if event is active or completed
+    is_completed = event.get('completed', False)
+    
+    # Set color based on event status
+    if is_completed:
+        color = 0x808080  # Gray for completed events
+    else:
+        # Use different colors based on event type
+        event_colors = {
+            "tournament": 0xFFD700,  # Gold
+            "turf_wars": 0xFF4500,   # Orange-Red
+            "quiz": 0x1E90FF,        # Dodger Blue
+            "duel": 0xFF0000,        # Red
+            "minion": 0x800080,      # Purple
+            "villain": 0x000000,     # Black
+            "item": 0x008000,        # Green
+        }
+        color = event_colors.get(event.get('type', ''), 0x1E90FF)  # Default blue
+    
+    # Format times
+    start_time = event.get('start_time', '')
+    end_time = event.get('end_time', '')
+    
+    # Try to parse ISO format strings to datetime objects
+    try:
+        if isinstance(start_time, str):
+            start_time = datetime.fromisoformat(start_time)
+        if isinstance(end_time, str):
+            end_time = datetime.fromisoformat(end_time)
+    except (ValueError, TypeError):
+        # If parsing fails, use the original values
+        pass
+    
+    # Create embed
+    embed = discord.Embed(
+        title=event.get('name', 'Evento'),
+        description=event.get('description', 'Sem descrição disponível.'),
+        color=color,
+        timestamp=datetime.utcnow()
+    )
+    
+    # Add event details
+    embed.add_field(
+        name="Tipo",
+        value=event.get('type', 'Desconhecido').capitalize(),
+        inline=True
+    )
+    
+    embed.add_field(
+        name="Status",
+        value="Concluído" if is_completed else "Ativo",
+        inline=True
+    )
+    
+    # Format and add times
+    if start_time:
+        if isinstance(start_time, datetime):
+            start_str = start_time.strftime("%d/%m/%Y %H:%M")
+        else:
+            start_str = start_time
+        embed.add_field(
+            name="Início",
+            value=start_str,
+            inline=True
+        )
+    
+    if end_time:
+        if isinstance(end_time, datetime):
+            end_str = end_time.strftime("%d/%m/%Y %H:%M")
+        else:
+            end_str = end_time
+        embed.add_field(
+            name="Término",
+            value=end_str,
+            inline=True
+        )
+    
+    # Add participants if requested and available
+    if show_participants and event.get('participants'):
+        participants = event.get('participants', [])
+        if participants:
+            # Limit to first 10 participants if there are many
+            if len(participants) > 10:
+                participants_text = "\n".join([f"<@{p}>" for p in participants[:10]]) + f"\n... e mais {len(participants) - 10} participantes"
+            else:
+                participants_text = "\n".join([f"<@{p}>" for p in participants])
+                
+            embed.add_field(
+                name=f"Participantes ({len(participants)})",
+                value=participants_text,
+                inline=False
+            )
+    
+    # Add additional data if available
+    data = event.get('data', {})
+    if data and isinstance(data, dict):
+        # Extract and display relevant data based on event type
+        if event.get('type') == 'tournament':
+            if 'winner' in data:
+                embed.add_field(
+                    name="Vencedor",
+                    value=f"<@{data['winner']}>",
+                    inline=True
+                )
+        elif event.get('type') == 'turf_wars':
+            if 'teams' in data:
+                teams_text = []
+                for team_name, team_data in data['teams'].items():
+                    score = team_data.get('score', 0)
+                    teams_text.append(f"**{team_name}**: {score} pontos")
+                if teams_text:
+                    embed.add_field(
+                        name="Times",
+                        value="\n".join(teams_text),
+                        inline=False
+                    )
+    
+    # Add footer
+    embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
+    
     return embed
