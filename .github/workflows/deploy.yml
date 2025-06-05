@@ -91,6 +91,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Setup DNS resolution
+      run: |
+        echo "Configuring DNS settings..."
+        cat /etc/resolv.conf
+        # Add Google and Cloudflare public DNS servers
+        echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+        echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+        echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
+        echo "Updated DNS configuration:"
+        cat /etc/resolv.conf
+
     - name: Configure AWS credentials
       id: aws-credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -155,6 +166,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup DNS resolution
+      run: |
+        echo "Configuring DNS settings..."
+        cat /etc/resolv.conf
+        # Add Google and Cloudflare public DNS servers
+        echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+        echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+        echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
+        echo "Updated DNS configuration:"
+        cat /etc/resolv.conf
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -265,6 +287,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup DNS resolution
+      run: |
+        echo "Configuring DNS settings..."
+        cat /etc/resolv.conf
+        # Add Google and Cloudflare public DNS servers
+        echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+        echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+        echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
+        echo "Updated DNS configuration:"
+        cat /etc/resolv.conf
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
