@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -45,7 +45,7 @@ jobs:
           echo $IMAGE_NAME > image.txt
 
       - name: Upload image file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: image-file
           path: image.txt
@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Download image file
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v2
         with:
           name: image-file
           path: .
@@ -73,6 +73,13 @@ jobs:
           IMAGE=$(cat image.txt)
           echo "Using image: $IMAGE"
           echo "image=$IMAGE" >> $GITHUB_ENV
+
+      - name: Download current task definition
+        id: download-taskdef
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
+            --query taskDefinition > current-task-definition.json
 
       - name: Update ECS task definition with new image
         id: task-def
