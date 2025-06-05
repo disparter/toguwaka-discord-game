@@ -160,15 +160,16 @@ class ScheduledEvents(commands.Cog):
         PLAYER_PROGRESS['daily'] = {}
         PLAYER_PROGRESS['weekly'] = {}
 
-        # Add command groups to the bot's command tree
-        self.bot.tree.add_command(self.quiz_group)
-        self.bot.tree.add_command(self.minion)
-        self.bot.tree.add_command(self.slash_villain)
-
         logger.info("ScheduledEvents cog initialized")
 
     async def cog_load(self):
         """Async hook that is called when the cog is loaded."""
+        # Add command groups to the bot's command tree
+        self.bot.tree.add_command(self.quiz_group)
+        self.bot.tree.add_command(self.minion)
+        self.bot.tree.add_command(self.slash_villain)
+        logger.info("Added ScheduledEvents commands to the command tree")
+
         # Register the on_ready event listener
         self.bot.add_listener(self.on_ready_init, "on_ready")
         logger.info("Registered on_ready event for ScheduledEvents initialization")
