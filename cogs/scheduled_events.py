@@ -175,6 +175,27 @@ class ScheduledEvents(commands.Cog):
         # Schedule finding channels after bot is ready
         await self.find_channels()
 
+        # Check if there are any active daily events after server restart
+        try:
+            logger.info("Checking for active daily events after server restart")
+            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
+
+            # If there's no active daily subject event, activate it
+            if event_id not in ACTIVE_EVENTS:
+                logger.info("No active daily events found after server restart. Activating daily quiz.")
+
+                # If DAILY_SUBJECT is empty, select a new daily subject
+                if not DAILY_SUBJECT or not DAILY_SUBJECT.get('subject'):
+                    logger.info("Selecting daily subject after server restart")
+                    await self.select_daily_subject()
+
+                # Announce the daily subject and start the quiz
+                await self.announce_daily_subject()
+            else:
+                logger.info(f"Active daily event found: {event_id}")
+        except Exception as e:
+            logger.error(f"Error checking for active daily events after restart: {e}")
+
     async def find_channels(self):
         """Find and set announcement and tournament channels."""
         await self.bot.wait_until_ready()
