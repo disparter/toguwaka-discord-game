@@ -1,2 +1,4 @@
 discord.py==2.3.2
 python-dotenv==1.0.0
+watchtower==3.0.1
+boto3==1.28.38

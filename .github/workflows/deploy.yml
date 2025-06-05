@@ -1,0 +1,300 @@
+name: Deploy to AWS Fargate
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: tokugawa-discord-bot
+  ECS_CLUSTER: tokugawa-bot-cluster
+  ECS_SERVICE: tokugawa-bot-service
+  ECS_TASK_DEFINITION: tokugawa-bot-task-definition
+  CONTAINER_NAME: tokugawa-bot
+
+jobs:
+  validate:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required secrets
+        run: |
+          echo "Validating required secrets and environment variables..."
+
+          # Check for required secrets
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "::error::AWS_ACCESS_KEY_ID secret is not set"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+            echo "::error::AWS_SECRET_ACCESS_KEY secret is not set"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.AWS_REGION }}" ]; then
+            echo "::error::AWS_REGION secret is not set"
+            exit 1
+          fi
+
+          echo "All required secrets are set"
+
+          # Validate environment variables
+          if [ -z "${{ env.ECR_REPOSITORY }}" ]; then
+            echo "::error::ECR_REPOSITORY environment variable is not set"
+            exit 1
+          fi
+
+          if [ -z "${{ env.ECS_CLUSTER }}" ]; then
+            echo "::error::ECS_CLUSTER environment variable is not set"
+            exit 1
+          fi
+
+          if [ -z "${{ env.ECS_SERVICE }}" ]; then
+            echo "::error::ECS_SERVICE environment variable is not set"
+            exit 1
+          fi
+
+          if [ -z "${{ env.ECS_TASK_DEFINITION }}" ]; then
+            echo "::error::ECS_TASK_DEFINITION environment variable is not set"
+            exit 1
+          fi
+
+          if [ -z "${{ env.CONTAINER_NAME }}" ]; then
+            echo "::error::CONTAINER_NAME environment variable is not set"
+            exit 1
+          fi
+
+          echo "All required environment variables are set"
+          echo "Configuration validation successful"
+
+  build:
+    name: Build and Push Image
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      id: aws-credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Verify ECR Login
+      run: |
+        if [ -z "${{ steps.login-ecr.outputs.registry }}" ]; then
+          echo "::error::Failed to login to Amazon ECR. Registry output is empty."
+          exit 1
+        else
+          echo "Successfully logged in to Amazon ECR registry: ${{ steps.login-ecr.outputs.registry }}"
+        fi
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        echo "Building Docker image..."
+        # Build a docker container and push it to ECR
+        if ! docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .; then
+          echo "::error::Failed to build Docker image"
+          exit 1
+        fi
+        echo "Docker image built successfully"
+
+        echo "Pushing image to ECR with tag: $IMAGE_TAG"
+        if ! docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG; then
+          echo "::error::Failed to push Docker image to ECR"
+          exit 1
+        fi
+        echo "Image pushed to ECR successfully"
+
+        # Also tag as latest
+        echo "Tagging image as latest..."
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+        echo "Pushing latest tag to ECR..."
+        if ! docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest; then
+          echo "::warning::Failed to push latest tag to ECR, but continuing with deployment"
+        else
+          echo "Latest tag pushed to ECR successfully"
+        fi
+
+        # Save the image URI for later use (using the new GitHub Actions output syntax)
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "Image URI saved for deployment: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  deploy:
+    name: Deploy to ECS
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Download task definition
+      id: download-taskdef
+      run: |
+        echo "Downloading current task definition..."
+        if ! aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} \
+          --query taskDefinition > task-definition.json; then
+          echo "::error::Failed to download task definition"
+          exit 1
+        fi
+        echo "Task definition downloaded successfully"
+
+        # Verify task definition file exists and is valid JSON
+        if [ ! -f task-definition.json ]; then
+          echo "::error::Task definition file not created"
+          exit 1
+        fi
+
+        if ! jq empty task-definition.json 2>/dev/null; then
+          echo "::error::Task definition is not valid JSON"
+          exit 1
+        fi
+
+        echo "Task definition validated"
+
+    - name: Update ECS task definition with new image
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ needs.build.outputs.image }}
+
+    - name: Verify task definition update
+      run: |
+        echo "Verifying updated task definition..."
+        if [ ! -f ${{ steps.task-def.outputs.task-definition }} ]; then
+          echo "::error::Updated task definition file not found"
+          exit 1
+        fi
+
+        if ! jq empty ${{ steps.task-def.outputs.task-definition }} 2>/dev/null; then
+          echo "::error::Updated task definition is not valid JSON"
+          exit 1
+        fi
+
+        # Verify the image was updated correctly
+        UPDATED_IMAGE=$(jq -r '.containerDefinitions[0].image' ${{ steps.task-def.outputs.task-definition }})
+        if [ "$UPDATED_IMAGE" != "${{ needs.build.outputs.image }}" ]; then
+          echo "::error::Image not updated correctly in task definition"
+          echo "Expected: ${{ needs.build.outputs.image }}"
+          echo "Found: $UPDATED_IMAGE"
+          exit 1
+        fi
+
+        echo "Task definition updated successfully with image: $UPDATED_IMAGE"
+
+    - name: Deploy to Amazon ECS
+      id: deploy-ecs
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
+
+    - name: Verify deployment
+      run: |
+        echo "Verifying deployment..."
+        # Check if the service is stable and running the new task definition
+        SERVICE_STATUS=$(aws ecs describe-services --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_SERVICE }} --query 'services[0].status' --output text)
+
+        if [ "$SERVICE_STATUS" != "ACTIVE" ]; then
+          echo "::warning::Service is not in ACTIVE state. Current state: $SERVICE_STATUS"
+        else
+          echo "Service is in ACTIVE state"
+
+          # Get the current running task ARN
+          TASK_ARN=$(aws ecs list-tasks --cluster ${{ env.ECS_CLUSTER }} --service-name ${{ env.ECS_SERVICE }} --query 'taskArns[0]' --output text)
+
+          if [ "$TASK_ARN" != "None" ]; then
+            echo "Found running task: $TASK_ARN"
+
+            # Check task status
+            TASK_STATUS=$(aws ecs describe-tasks --cluster ${{ env.ECS_CLUSTER }} --tasks $TASK_ARN --query 'tasks[0].lastStatus' --output text)
+            echo "Task status: $TASK_STATUS"
+
+            if [ "$TASK_STATUS" == "RUNNING" ]; then
+              echo "✅ Deployment successful! Task is running."
+            else
+              echo "::warning::Task is not in RUNNING state. Current state: $TASK_STATUS"
+            fi
+          else
+            echo "::warning::No running tasks found for the service"
+          fi
+        fi
+
+  test:
+    name: Test Deployment
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Check service health
+      run: |
+        echo "Checking service health..."
+
+        # Get the current running task ARN
+        TASK_ARN=$(aws ecs list-tasks --cluster ${{ env.ECS_CLUSTER }} --service-name ${{ env.ECS_SERVICE }} --query 'taskArns[0]' --output text)
+
+        if [ "$TASK_ARN" != "None" ]; then
+          # Check if the task has been running for at least 1 minute
+          STARTED_AT=$(aws ecs describe-tasks --cluster ${{ env.ECS_CLUSTER }} --tasks $TASK_ARN --query 'tasks[0].startedAt' --output text)
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          echo "Task started at: $STARTED_AT"
+          echo "Current time: $NOW"
+
+          # Simple check to see if logs are being generated
+          echo "Checking for logs..."
+          LOGS=$(aws logs describe-log-streams --log-group-name /ecs/${{ env.ECS_TASK_DEFINITION }} --order-by LastEventTime --descending --limit 1 --query 'logStreams[0].logStreamName' --output text)
+
+          if [ "$LOGS" != "None" ]; then
+            echo "Found log stream: $LOGS"
+            echo "✅ Service appears to be healthy and generating logs"
+          else
+            echo "::warning::No log streams found. This might be normal if the service just started."
+          fi
+        else
+          echo "::warning::No running tasks found for the service"
+        fi
+
+        echo "Deployment test completed"
