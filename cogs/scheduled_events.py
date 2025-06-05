@@ -164,15 +164,20 @@ class ScheduledEvents(commands.Cog):
 
     async def cog_load(self):
         """Async hook that is called when the cog is loaded."""
-        # Wait until the bot is ready before starting tasks
-        await self.bot.wait_until_ready()
+        # Register the on_ready event listener
+        self.bot.add_listener(self.on_ready_init, "on_ready")
+        logger.info("Registered on_ready event for ScheduledEvents initialization")
+
+    async def on_ready_init(self):
+        """Initialize the cog after the bot is fully ready and logged in."""
+        logger.info("ScheduledEvents on_ready initialization started")
 
         # Start the background tasks
         self.check_scheduled_events.start()
         self.daily_reset.start()
         self.weekly_reset.start()
 
-        # Schedule finding channels after bot is ready
+        # Find channels for announcements and tournaments
         await self.find_channels()
 
         # Check if daily events have been triggered today using the database flag
@@ -216,9 +221,12 @@ class ScheduledEvents(commands.Cog):
         except Exception as e:
             logger.error(f"Error checking for active daily events after restart: {e}")
 
+        # Remove the listener to prevent it from being called multiple times
+        self.bot.remove_listener(self.on_ready_init, "on_ready")
+        logger.info("ScheduledEvents on_ready initialization completed")
+
     async def find_channels(self):
         """Find and set announcement and tournament channels."""
-        await self.bot.wait_until_ready()
         logger.info("Finding channels for announcements and tournaments")
 
         for guild in self.bot.guilds:
