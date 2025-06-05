@@ -164,10 +164,12 @@ class ScheduledEvents(commands.Cog):
         PLAYER_PROGRESS['daily'] = {}
         PLAYER_PROGRESS['weekly'] = {}
 
-        # Schedule finding channels after bot is ready
-        self.bot.loop.create_task(self.find_channels())
-
         logger.info("ScheduledEvents cog initialized")
+
+    async def cog_load(self):
+        """Async hook that is called when the cog is loaded."""
+        # Schedule finding channels after bot is ready
+        await self.find_channels()
 
     async def find_channels(self):
         """Find and set announcement and tournament channels."""
