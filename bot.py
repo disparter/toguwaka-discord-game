@@ -139,48 +139,45 @@ async def ping(ctx):
 # Function to sync commands with guild
 async def sync_commands():
     """Sync commands with guild if GUILD_ID is provided."""
-    if GUILD_ID:
-        try:
-            # Log all commands in the command tree before syncing
-            logger.info("Commands in command tree before syncing:")
-            for cmd in bot.tree.get_commands():
-                logger.info(f"Command in tree: /{cmd.name}")
+    try:
+        # Log all commands in the command tree before syncing
+        logger.info("Commands in command tree before syncing:")
+        for cmd in bot.tree.get_commands():
+            logger.info(f"Command in tree: /{cmd.name}")
 
-            guild = discord.Object(id=int(GUILD_ID))
-            # First sync commands to the guild
-            commands = await bot.tree.sync(guild=guild)
-            logger.info(f"Successfully synced {len(commands)} commands to guild ID: {GUILD_ID}")
+        # Always sync commands globally first to ensure all commands are registered
+        logger.info("Syncing commands globally...")
+        global_commands = await bot.tree.sync()
+        logger.info(f"Synced {len(global_commands)} commands globally")
+        for cmd in global_commands:
+            logger.info(f"Command synced globally: /{cmd.name}")
 
-            # Log each command that was synced
-            for cmd in commands:
-                logger.info(f"Command synced: /{cmd.name}")
+        # Then sync to guild if GUILD_ID is provided
+        if GUILD_ID:
+            try:
+                guild = discord.Object(id=int(GUILD_ID))
+                # Sync commands to the guild
+                commands = await bot.tree.sync(guild=guild)
+                logger.info(f"Successfully synced {len(commands)} commands to guild ID: {GUILD_ID}")
 
-            # If no commands were synced, log a warning
-            if not commands:
-                logger.warning("No commands were synced to the guild. Make sure commands are properly defined in cogs.")
+                # Log each command that was synced
+                for cmd in commands:
+                    logger.info(f"Command synced: /{cmd.name}")
 
-                # Try syncing globally as a fallback
-                logger.info("Trying to sync commands globally as a fallback...")
-                global_commands = await bot.tree.sync()
-                logger.info(f"Synced {len(global_commands)} commands globally")
-                for cmd in global_commands:
-                    logger.info(f"Command synced globally: /{cmd.name}")
-        except Exception as e:
-            logger.error(f"Failed to sync commands to guild: {e}")
-            logger.error(f"Exception type: {type(e).__name__}")
-            logger.error(f"Exception args: {e.args}")
-    else:
-        logger.info("No GUILD_ID provided. Commands will be registered globally (may take up to an hour).")
-        try:
-            # Sync commands globally
-            commands = await bot.tree.sync()
-            logger.info(f"Synced {len(commands)} commands globally")
-            for cmd in commands:
-                logger.info(f"Command synced globally: /{cmd.name}")
-        except Exception as e:
-            logger.error(f"Failed to sync commands globally: {e}")
-            logger.error(f"Exception type: {type(e).__name__}")
-            logger.error(f"Exception args: {e.args}")
+                # If no commands were synced, log a warning
+                if not commands:
+                    logger.warning("No commands were synced to the guild. Using global commands instead.")
+            except Exception as e:
+                logger.error(f"Failed to sync commands to guild: {e}")
+                logger.error(f"Exception type: {type(e).__name__}")
+                logger.error(f"Exception args: {e.args}")
+                logger.info("Using globally synced commands as fallback")
+        else:
+            logger.info("No GUILD_ID provided. Using globally synced commands.")
+    except Exception as e:
+        logger.error(f"Failed to sync commands: {e}")
+        logger.error(f"Exception type: {type(e).__name__}")
+        logger.error(f"Exception args: {e.args}")
 
 # Run the bot
 async def main():
