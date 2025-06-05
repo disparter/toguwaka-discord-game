@@ -9,7 +9,7 @@ import sqlite3
 import os
 from datetime import datetime, timedelta, time
 import pytz
-from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation
+from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from utils.game_mechanics import calculate_level_from_exp
 
@@ -175,24 +175,44 @@ class ScheduledEvents(commands.Cog):
         # Schedule finding channels after bot is ready
         await self.find_channels()
 
-        # Check if there are any active daily events after server restart
+        # Check if daily events have been triggered today using the database flag
         try:
             logger.info("Checking for active daily events after server restart")
-            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
+            today_date = datetime.now().strftime('%Y%m%d')
+            daily_flag_name = f"daily_events_triggered_{today_date}"
 
-            # If there's no active daily subject event, activate it
-            if event_id not in ACTIVE_EVENTS:
-                logger.info("No active daily events found after server restart. Activating daily quiz.")
+            # Check if the daily events flag exists and is set to "true"
+            daily_events_triggered = get_system_flag(daily_flag_name)
 
-                # If DAILY_SUBJECT is empty, select a new daily subject
-                if not DAILY_SUBJECT or not DAILY_SUBJECT.get('subject'):
-                    logger.info("Selecting daily subject after server restart")
-                    await self.select_daily_subject()
+            if daily_events_triggered != "true":
+                logger.info("Daily events not triggered yet. Checking time conditions.")
 
-                # Announce the daily subject and start the quiz
-                await self.announce_daily_subject()
+                # Get current hour to check time conditions
+                current_hour = datetime.now().hour
+
+                # Only check time conditions if daily events haven't been triggered
+                # Morning announcements at 8:00
+                if current_hour >= 8:
+                    logger.info("Time for daily morning announcements after restart")
+                    await self.send_daily_announcements()
+
+                # Daily subject announcement at 9:00
+                if current_hour >= 9:
+                    logger.info("Time for daily subject announcement after restart")
+
+                    # If DAILY_SUBJECT is empty, select a new daily subject
+                    if not DAILY_SUBJECT or not DAILY_SUBJECT.get('subject'):
+                        logger.info("Selecting daily subject after server restart")
+                        await self.select_daily_subject()
+
+                    # Announce the daily subject and start the quiz
+                    await self.announce_daily_subject()
+
+                # Set the flag to indicate daily events have been triggered
+                set_system_flag(daily_flag_name, "true")
+                logger.info(f"Set daily events triggered flag: {daily_flag_name}")
             else:
-                logger.info(f"Active daily event found: {event_id}")
+                logger.info(f"Daily events already triggered today: {daily_flag_name}")
         except Exception as e:
             logger.error(f"Error checking for active daily events after restart: {e}")
 
@@ -270,15 +290,34 @@ class ScheduledEvents(commands.Cog):
                 logger.info("Time for Sunday Turf Wars")
                 await self.start_turf_wars()
 
-            # Check for daily morning announcements (8:00)
-            if now.hour == 8 and now.minute < 5:
-                logger.info("Time for daily morning announcements")
-                await self.send_daily_announcements()
+            # Check for daily events using the database flag
+            today_date = now.strftime('%Y%m%d')
+            daily_flag_name = f"daily_events_triggered_{today_date}"
+            daily_events_triggered = get_system_flag(daily_flag_name)
 
-            # Check for daily subject announcement (9:00)
-            if now.hour == 9 and now.minute < 5:
-                logger.info("Time for daily subject announcement")
-                await self.announce_daily_subject()
+            # Only check time conditions if daily events haven't been triggered yet
+            if daily_events_triggered != "true":
+                # Check for daily morning announcements (8:00)
+                if now.hour == 8 and now.minute < 5:
+                    logger.info("Time for daily morning announcements")
+                    await self.send_daily_announcements()
+
+                    # Set the flag if it's time for morning announcements
+                    if now.hour == 8:
+                        set_system_flag(daily_flag_name, "true")
+                        logger.info(f"Set daily events triggered flag: {daily_flag_name}")
+
+                # Check for daily subject announcement (9:00)
+                if now.hour == 9 and now.minute < 5:
+                    logger.info("Time for daily subject announcement")
+                    await self.announce_daily_subject()
+
+                    # Set the flag if it's time for subject announcement
+                    if now.hour == 9:
+                        set_system_flag(daily_flag_name, "true")
+                        logger.info(f"Set daily events triggered flag: {daily_flag_name}")
+            else:
+                logger.info(f"Daily events already triggered today: {daily_flag_name}")
 
             # Check for "Dia de Matéria" event (first day of the month at 10:00)
             if now.day == 1 and now.hour == 10 and now.minute < 5:
@@ -299,6 +338,12 @@ class ScheduledEvents(commands.Cog):
         """Reset daily player progress, generate new buffs, and select daily subject."""
         try:
             logger.info("Starting daily reset")
+
+            # Reset the daily events triggered flag for the new day
+            today_date = datetime.now().strftime('%Y%m%d')
+            daily_flag_name = f"daily_events_triggered_{today_date}"
+            set_system_flag(daily_flag_name, "false")
+            logger.info(f"Reset daily events triggered flag: {daily_flag_name}")
 
             # Reset daily player progress
             PLAYER_PROGRESS['daily'] = {}
