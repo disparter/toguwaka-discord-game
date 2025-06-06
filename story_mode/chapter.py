@@ -77,13 +77,32 @@ class BaseChapter(Chapter):
         # Update player data
         player_data["story_progress"] = story_progress
 
+        # Debug log for choices
+        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - choices: {self.choices}")
+
+        # Get current dialogue choices if available
+        current_dialogue_choices = []
+        if self.dialogues and len(self.dialogues) > 0:
+            current_dialogue = self.dialogues[0]
+            if isinstance(current_dialogue, dict) and "choices" in current_dialogue:
+                current_dialogue_choices = current_dialogue.get("choices", [])
+
+        # Use dialogue-specific choices if available, otherwise use chapter-level choices
+        choices_to_display = current_dialogue_choices if current_dialogue_choices else self.choices
+
+        # Fallback message if no choices are available
+        if not choices_to_display:
+            logger.warning(f"No choices available for chapter {self.chapter_id}")
+            choices_to_display = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
+
         return {
             "player_data": player_data,
             "chapter_data": {
                 "id": self.chapter_id,
                 "title": self.title,
                 "description": self.description,
-                "current_dialogue": self.dialogues[0] if self.dialogues else None
+                "current_dialogue": self.dialogues[0] if self.dialogues else None,
+                "choices": choices_to_display
             }
         }
 
@@ -101,9 +120,18 @@ class BaseChapter(Chapter):
             # If we're past the dialogues, we're in the choice phase
             current_dialogue = {"choices": self.choices}
 
+        # Debug log for current dialogue and choices
+        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - current_dialogue_index: {current_dialogue_index}")
+        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - current_dialogue: {current_dialogue}")
+
+        dialogue_choices = current_dialogue.get("choices", [])
+        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - dialogue_choices: {dialogue_choices}")
+        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - choice_index: {choice_index}")
+
         # Check if the current dialogue has choices
         if "choices" in current_dialogue and choice_index < len(current_dialogue["choices"]):
             choice = current_dialogue["choices"][choice_index]
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - selected choice: {choice}")
 
             # Record the choice
             chapter_choices = story_progress.get("story_choices", {}).get(self.chapter_id, {})
@@ -130,6 +158,7 @@ class BaseChapter(Chapter):
                 story_progress["current_dialogue_index"] = current_dialogue_index + 1
         else:
             # If there are no choices, just move to the next dialogue
+            logger.warning(f"No valid choice found for index {choice_index} in chapter {self.chapter_id}, dialogue {current_dialogue_index}")
             story_progress["current_dialogue_index"] = current_dialogue_index + 1
 
         # Update player data
@@ -141,6 +170,22 @@ class BaseChapter(Chapter):
 
         if next_dialogue_index < len(self.dialogues):
             next_dialogue = self.dialogues[next_dialogue_index]
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - next_dialogue: {next_dialogue}")
+
+        # Get next dialogue choices if available
+        next_dialogue_choices = []
+        if next_dialogue and isinstance(next_dialogue, dict) and "choices" in next_dialogue:
+            next_dialogue_choices = next_dialogue.get("choices", [])
+
+        # Use dialogue-specific choices if available, otherwise use chapter-level choices
+        choices_to_display = next_dialogue_choices if next_dialogue_choices else self.choices
+
+        # Fallback message if no choices are available
+        if not choices_to_display and next_dialogue is not None:
+            logger.warning(f"No choices available for next dialogue in chapter {self.chapter_id}")
+            choices_to_display = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
+
+        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - choices_to_display: {choices_to_display}")
 
         return {
             "player_data": player_data,
@@ -149,7 +194,7 @@ class BaseChapter(Chapter):
                 "title": self.title,
                 "description": self.description,
                 "current_dialogue": next_dialogue,
-                "choices": self.choices if next_dialogue is None else next_dialogue.get("choices", [])
+                "choices": choices_to_display
             }
         }
 

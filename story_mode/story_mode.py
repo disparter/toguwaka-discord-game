@@ -13,6 +13,7 @@ from .consequences import DynamicConsequencesSystem
 from .powers import PowerEvolutionSystem
 from .seasonal_events import SeasonalEventSystem
 from .companions import CompanionSystem
+from .chapter_validator import ChapterValidator
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -51,6 +52,13 @@ class FileChapterLoader(ChapterLoader):
             if filename.endswith(".json"):
                 try:
                     file_path = os.path.join(self.chapters_dir, filename)
+
+                    # Validate the chapter file before loading
+                    is_valid = ChapterValidator.validate_chapter_file(file_path)
+                    if not is_valid:
+                        logger.error(f"Chapter file validation failed: {file_path}. Skipping this file.")
+                        continue
+
                     with open(file_path, 'r') as f:
                         chapters_data = json.load(f)
 
@@ -73,8 +81,19 @@ class FileChapterLoader(ChapterLoader):
         """
         Creates and registers a chapter from data.
         """
+        # Validate the chapter data before registering
+        if not ChapterValidator.validate_chapter(chapter_data, "memory", chapter_id):
+            logger.error(f"Chapter validation failed for {chapter_id}. This chapter will not be registered.")
+            return
+
         chapter_type = chapter_data.get("type", "default")
         chapter_class = self.chapter_types.get(chapter_type, BaseChapter)
+
+        # Ensure choices exist (fallback if validation somehow passed but choices are missing)
+        if "choices" not in chapter_data or not chapter_data["choices"]:
+            logger.warning(f"Chapter {chapter_id} has no choices. Adding a default fallback choice.")
+            chapter_data["choices"] = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
+
         chapter = chapter_class(chapter_id, chapter_data)
         self.chapters[chapter_id] = chapter
         logger.info(f"Registered chapter: {chapter.get_title()} (ID: {chapter_id})")
