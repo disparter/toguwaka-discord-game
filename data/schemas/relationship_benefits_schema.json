@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Relationship Benefits Schema",
+  "description": "Schema for validating relationship benefits data",
+  "type": "object",
+  "required": ["friendly", "close", "trusted", "romantic_interest", "dating", "committed"],
+  "properties": {
+    "friendly": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "close": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "trusted": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "romantic_interest": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "dating": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "committed": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

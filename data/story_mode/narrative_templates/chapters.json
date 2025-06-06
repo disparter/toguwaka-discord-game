@@ -1,0 +1,133 @@
+{
+  "story_chapter": {
+    "type": "story",
+    "title": "Título do Capítulo",
+    "description": "Breve descrição do capítulo",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Texto de introdução do capítulo."},
+      {"npc": "NPC_Nome", "text": "Diálogo inicial do NPC."},
+      {"npc": "NPC_Nome", "text": "Continuação do diálogo do NPC."}
+    ],
+    "choices": [
+      {"text": "Primeira opção de escolha", "next_dialogue": 4, "affinity_change": {"NPC_Nome": 3}},
+      {"text": "Segunda opção de escolha", "next_dialogue": 5},
+      {"text": "Terceira opção de escolha", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "NPC_Nome", "text": "Resposta à primeira escolha."},
+        {"npc": "Narrador", "text": "Descrição da consequência da primeira escolha."}
+      ],
+      "5": [
+        {"npc": "NPC_Nome", "text": "Resposta à segunda escolha."},
+        {"npc": "Narrador", "text": "Descrição da consequência da segunda escolha."}
+      ],
+      "6": [
+        {"npc": "NPC_Nome", "text": "Resposta à terceira escolha."},
+        {"npc": "Narrador", "text": "Descrição da consequência da terceira escolha."}
+      ]
+    },
+    "completion_exp": 200,
+    "completion_tusd": 300,
+    "next_chapter": "próximo_capítulo_id"
+  },
+  "branching_chapter": {
+    "type": "branching",
+    "title": "Título do Capítulo Ramificado",
+    "description": "Breve descrição do capítulo ramificado",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Texto de introdução do capítulo."},
+      {"npc": "NPC_Nome", "text": "Diálogo inicial do NPC."}
+    ],
+    "choices": [
+      {"text": "Escolha que leva ao primeiro ramo", "next_dialogue": 4},
+      {"text": "Escolha que leva ao segundo ramo", "next_dialogue": 5},
+      {"text": "Escolha que leva ao terceiro ramo", "next_dialogue": 6, "attribute_check": "atributo", "threshold": 10}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "NPC_Nome", "text": "Diálogo do primeiro ramo."},
+        {"npc": "Narrador", "text": "Descrição do primeiro ramo."}
+      ],
+      "5": [
+        {"npc": "NPC_Nome", "text": "Diálogo do segundo ramo."},
+        {"npc": "Narrador", "text": "Descrição do segundo ramo."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_6": [
+        {"npc": "NPC_Nome", "text": "Diálogo de sucesso no terceiro ramo."},
+        {"npc": "Narrador", "text": "Descrição do sucesso no terceiro ramo."}
+      ],
+      "failure_6": [
+        {"npc": "NPC_Nome", "text": "Diálogo de falha no terceiro ramo."},
+        {"npc": "Narrador", "text": "Descrição da falha no terceiro ramo."}
+      ]
+    },
+    "branches": {
+      "branch_1": {
+        "conditions": {
+          "choice": 0
+        },
+        "next_chapter": "capítulo_ramo_1"
+      },
+      "branch_2": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "capítulo_ramo_2"
+      },
+      "success_branch": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "success"
+        },
+        "next_chapter": "capítulo_sucesso"
+      },
+      "failure_branch": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "failure"
+        },
+        "next_chapter": "capítulo_falha"
+      }
+    },
+    "completion_exp": 300,
+    "completion_tusd": 400
+  },
+  "challenge_chapter": {
+    "type": "challenge",
+    "title": "Título do Capítulo de Desafio",
+    "description": "Breve descrição do capítulo de desafio",
+    "challenge_type": "combate",
+    "difficulty": "médio",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Texto de introdução do desafio."},
+      {"npc": "NPC_Nome", "text": "Diálogo explicando o desafio."}
+    ],
+    "challenge_description": "Descrição detalhada do desafio que o jogador enfrentará.",
+    "success_dialogues": [
+      {"npc": "Narrador", "text": "Descrição do sucesso no desafio."},
+      {"npc": "NPC_Nome", "text": "Parabéns por superar o desafio!"}
+    ],
+    "failure_dialogues": [
+      {"npc": "Narrador", "text": "Descrição da falha no desafio."},
+      {"npc": "NPC_Nome", "text": "Não se preocupe, você pode tentar novamente."}
+    ],
+    "rewards": {
+      "success": {
+        "exp": 400,
+        "tusd": 500,
+        "items": ["item_id_1", "item_id_2"],
+        "affinity_changes": {"NPC_Nome": 10}
+      },
+      "failure": {
+        "exp": 100,
+        "tusd": 50
+      }
+    },
+    "next_chapter": "próximo_capítulo_id"
+  }
+}

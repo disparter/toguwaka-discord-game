@@ -1,0 +1,315 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPC Schema",
+  "description": "Schema for validating NPC data in the story mode",
+  "type": "object",
+  "required": ["id", "name", "type", "description"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": ["student", "faculty", "staff", "visitor", "antagonist", "ally", "neutral"]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "backstory": {
+      "type": "string",
+      "minLength": 1
+    },
+    "personality": {
+      "type": "object",
+      "properties": {
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dislikes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fears": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "properties": {
+        "gender": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "height": {
+          "type": "string"
+        },
+        "build": {
+          "type": "string"
+        },
+        "hair": {
+          "type": "string"
+        },
+        "eyes": {
+          "type": "string"
+        },
+        "distinctive_features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clothing_style": {
+          "type": "string"
+        }
+      }
+    },
+    "abilities": {
+      "type": "object",
+      "properties": {
+        "power_type": {
+          "type": "string"
+        },
+        "power_description": {
+          "type": "string"
+        },
+        "power_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "special_skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "weaknesses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["friend", "rival", "enemy", "family", "mentor", "student", "romantic", "neutral"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "initial_affinity": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "role": {
+      "type": "object",
+      "properties": {
+        "club": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "position": {
+          "type": "string"
+        },
+        "importance": {
+          "type": "string",
+          "enum": ["main", "supporting", "minor", "background"]
+        },
+        "story_arc": {
+          "type": "string"
+        }
+      }
+    },
+    "dialogue_style": {
+      "type": "object",
+      "properties": {
+        "speech_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "catchphrases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tone": {
+          "type": "string"
+        },
+        "formality": {
+          "type": "string",
+          "enum": ["very_formal", "formal", "neutral", "casual", "very_casual"]
+        }
+      }
+    },
+    "quest_giver": {
+      "type": "boolean"
+    },
+    "available_in_chapters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "affinity_thresholds": {
+      "type": "object",
+      "properties": {
+        "friendship": {
+          "type": "integer"
+        },
+        "romance": {
+          "type": "integer"
+        },
+        "alliance": {
+          "type": "integer"
+        },
+        "respect": {
+          "type": "integer"
+        }
+      }
+    },
+    "affinity_rewards": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "threshold": {
+            "type": "integer"
+          },
+          "rewards": {
+            "type": "object",
+            "properties": {
+              "exp": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tusd": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "attribute_bonuses": {
+                "type": "object",
+                "properties": {
+                  "power_stat": {
+                    "type": "integer"
+                  },
+                  "intellect": {
+                    "type": "integer"
+                  },
+                  "charisma": {
+                    "type": "integer"
+                  },
+                  "dexterity": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "unlock_events": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "unlock_dialogues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing and filtering NPCs"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "type": { "enum": ["student"] } }
+      },
+      "then": {
+        "required": ["role"],
+        "properties": {
+          "role": {
+            "required": ["club"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "enum": ["faculty"] } }
+      },
+      "then": {
+        "required": ["abilities"],
+        "properties": {
+          "abilities": {
+            "required": ["power_type", "power_level"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "quest_giver": { "enum": [true] } }
+      },
+      "then": {
+        "required": ["affinity_thresholds"]
+      }
+    }
+  ]
+}

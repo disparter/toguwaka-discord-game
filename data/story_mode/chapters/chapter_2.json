@@ -169,8 +169,8 @@
     ],
     "additional_dialogues": {
       "4": [
-        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
-        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+        {"npc": "Narrador", "text": "Você segue os professores discretamente, mantendo distância segura e usando as sombras como cobertura."},
+        {"npc": "Narrador", "text": "Sua habilidade em se mover silenciosamente permite que você os acompanhe sem ser detectado."}
       ],
       "success_4": [
         {"npc": "Narrador", "text": "Você pede a Hikari que espere e segue os professores silenciosamente, mantendo distância segura."},
@@ -189,8 +189,8 @@
         {"npc": "Narrador", "text": "Apesar da reprimenda, você nota preocupação genuína nos olhos do professor, reforçando que algo sério está acontecendo."}
       ],
       "5": [
-        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
-        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+        {"npc": "Narrador", "text": "Você decide retornar à floresta durante a noite, quando haverá menos vigilância."},
+        {"npc": "Narrador", "text": "A escuridão oferecerá cobertura, permitindo que você investigue a anomalia mais de perto."}
       ],
       "success_5": [
         {"npc": "Narrador", "text": "Naquela noite, você retorna à borda da floresta. A lua cheia ilumina seu caminho enquanto você avança cautelosamente."},
@@ -537,5 +537,607 @@
     "completion_exp": 400,
     "completion_tusd": 500,
     "next_chapter": "2_6"
+  },
+  "2_6": {
+    "type": "story",
+    "title": "Revelações",
+    "description": "A verdade sobre a anomalia e o Evento Zero começa a se revelar.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Você chega ao escritório da Professora Chronos às 22h, conforme combinado. A porta se abre antes mesmo que você bata."},
+      {"npc": "Professora Chronos", "text": "Entre rapidamente. Não temos muito tempo."},
+      {"npc": "Narrador", "text": "O escritório está diferente de como você o viu durante o dia. Os relógios estão sincronizados agora, e um grande mapa holográfico flutua no centro da sala, mostrando pontos de luz em várias localizações do mundo."},
+      {"npc": "Professora Chronos", "text": "O que vou lhe mostrar agora é conhecido por apenas um pequeno grupo de pessoas. Sua vida mudará com este conhecimento."}
+    ],
+    "choices": [
+      {"text": "Estou pronto para a verdade", "next_dialogue": 4, "affinity_change": {"Professora Chronos": 5}},
+      {"text": "Por que está confiando em mim?", "next_dialogue": 5},
+      {"text": "Isso tem a ver com Hikari?", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "Sua determinação é admirável. Vamos ao que importa."},
+        {"npc": "Professora Chronos", "text": "Há 300 anos, um grupo de cientistas tentou acessar o que chamavam de 'energia fundamental' - a força que sustenta a própria realidade."},
+        {"npc": "Professora Chronos", "text": "O experimento deu terrivelmente errado. Em vez de controlar essa energia, eles criaram uma ruptura massiva na realidade - o Evento Zero."},
+        {"npc": "Professora Chronos", "text": "Essa ruptura liberou energias que alteraram permanentemente a estrutura genética de algumas pessoas, dando origem ao que hoje chamamos de poderes."}
+      ],
+      "5": [
+        {"npc": "Professora Chronos", "text": "Uma pergunta perspicaz. Não estou confiando apenas por confiar."},
+        {"npc": "Professora Chronos", "text": "Tenho observado você desde que entrou na academia. Sua afinidade com seu poder, sua curiosidade, sua capacidade de questionar..."},
+        {"npc": "Professora Chronos", "text": "Mais importante, você tem uma assinatura energética única que ressoou com a anomalia de uma forma que não vi em décadas."},
+        {"npc": "Professora Chronos", "text": "Isso sugere que você pode ter um papel importante nos eventos que estão por vir."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sua preocupação com seu mentorado é admirável. E sim, de certa forma, tem a ver com ele também."},
+        {"npc": "Professora Chronos", "text": "Hikari tem uma sensibilidade incomum à anomalia, assim como você. Isso não é coincidência."},
+        {"npc": "Professora Chronos", "text": "Algumas pessoas nascem com uma conexão natural mais forte com a energia fundamental. Vocês dois são exemplos disso."},
+        {"npc": "Professora Chronos", "text": "É por isso que seus poderes são tão fortes, apesar de Hikari não ter histórico familiar de habilidades."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O Evento Zero foi contido, mas nunca completamente fechado. Ao longo dos séculos, pequenas rupturas secundárias têm aparecido."},
+      {"npc": "Professora Chronos", "text": "A Academia Tokugawa foi fundada precisamente para estudar essas rupturas e treinar aqueles com poderes para ajudar a contê-las."},
+      {"npc": "Professora Chronos", "text": "Mas o Diretor atual tem uma visão diferente. Ele acredita que pode reabrir controladamente a ruptura original para dar poderes a toda a humanidade."},
+      {"npc": "Professora Chronos", "text": "O problema é que cada tentativa enfraquece ainda mais o tecido da realidade. A anomalia na floresta é uma consequência direta de seus experimentos."},
+      {"npc": "Narrador", "text": "Ela toca no mapa holográfico, que se aproxima da academia e mostra uma simulação da ruptura crescendo e eventualmente engolindo todo o campus."}
+    ],
+    "choices_2": [
+      {"text": "Como podemos impedir isso?", "next_dialogue": 7},
+      {"text": "Por que o Diretor arriscaria tanto?", "next_dialogue": 8},
+      {"text": "Quem mais sabe sobre isso?", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Professora Chronos", "text": "Direto ao ponto. Bom."},
+        {"npc": "Professora Chronos", "text": "Precisamos desativar o dispositivo que o Diretor está usando para estimular a ruptura. Isso não a fechará, mas impedirá que cresça."},
+        {"npc": "Professora Chronos", "text": "Depois, precisamos implementar um protocolo de contenção mais eficaz - um que trate a causa, não apenas os sintomas."},
+        {"npc": "Professora Chronos", "text": "Tenho trabalhado em uma solução há... muito tempo. Mas preciso de ajuda para implementá-la, e é aí que você entra."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "O Diretor não é mal-intencionado. Ele genuinamente acredita estar trabalhando pelo bem maior."},
+        {"npc": "Professora Chronos", "text": "Imagine um mundo onde todos têm poderes iguais - sem os 'privilegiados' e os 'comuns'. Uma verdadeira igualdade."},
+        {"npc": "Professora Chronos", "text": "Além disso, como mencionei, seus próprios poderes estão falhando. É um fenômeno raro que afeta alguns usuários mais antigos."},
+        {"npc": "Professora Chronos", "text": "Ele está desesperado para encontrar uma cura, não apenas para si, mas para todos que enfrentam o mesmo problema."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Um pequeno grupo de professores e ex-alunos forma o que chamamos de Guardiões da Ruptura."},
+        {"npc": "Professora Chronos", "text": "Temos monitorado e contido rupturas secundárias por gerações, operando nas sombras da história."},
+        {"npc": "Professora Chronos", "text": "Alguns membros da administração sabem partes da verdade, mas apenas o Diretor e os Guardiões conhecem toda a história."},
+        {"npc": "Professora Chronos", "text": "E agora, você."}
+      ]
+    },
+    "completion_exp": 500,
+    "completion_tusd": 600,
+    "next_chapter": "2_7"
+  },
+  "2_7": {
+    "type": "branching",
+    "title": "Escolhas e Consequências",
+    "description": "Suas decisões determinarão o futuro da Academia e possivelmente do mundo.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Nos dias seguintes à sua conversa com a Professora Chronos, você observa a academia com novos olhos."},
+      {"npc": "Narrador", "text": "Os professores, os estudantes, o próprio campus - tudo parece diferente quando você sabe a verdade sobre sua fundação e propósito."},
+      {"npc": "Hikari", "text": "Você está diferente desde aquela noite. Aconteceu alguma coisa?"},
+      {"npc": "Narrador", "text": "Você precisa decidir o quanto compartilhar com seu mentorado e qual caminho seguir."}
+    ],
+    "choices": [
+      {"text": "Contar tudo a Hikari e pedir sua ajuda", "next_dialogue": 4, "affinity_change": {"Hikari": 10}},
+      {"text": "Ajudar a Professora Chronos a desativar o dispositivo", "next_dialogue": 5},
+      {"text": "Confrontar o Diretor sobre seus experimentos", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Você decide que Hikari merece saber a verdade e o leva para um local isolado onde podem conversar em privado."},
+        {"npc": "Você", "text": "O que vou te contar vai parecer loucura, mas preciso que confie em mim."},
+        {"npc": "Narrador", "text": "Você revela tudo sobre o Evento Zero, a anomalia na floresta e os planos do Diretor."},
+        {"npc": "Hikari", "text": "Isso é... inacreditável. Mas explica por que meus poderes reagem tão fortemente perto da floresta."},
+        {"npc": "Hikari", "text": "O que podemos fazer? Como posso ajudar?"},
+        {"npc": "Você", "text": "A Professora Chronos tem um plano para desativar o dispositivo do Diretor. Precisamos de alguém que possa distrair os guardas enquanto entramos na floresta."},
+        {"npc": "Hikari", "text": "Posso fazer isso. Meus poderes de luz podem criar uma distração perfeita à distância."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você decide manter Hikari fora disso para sua própria segurança e se encontra com a Professora Chronos para planejar a missão."},
+        {"npc": "Professora Chronos", "text": "O plano é simples, mas perigoso. Precisamos entrar na floresta à noite, quando a segurança é mínima."},
+        {"npc": "Professora Chronos", "text": "O dispositivo tem três núcleos de energia que precisam ser desativados simultaneamente. Eu cuidarei de um, você do outro."},
+        {"npc": "Você", "text": "E o terceiro?"},
+        {"npc": "Professora Chronos", "text": "Tenho outro aliado que se juntará a nós. Alguém em quem confio completamente."},
+        {"npc": "Narrador", "text": "Naquela noite, você se encontra com a Professora Chronos na borda da floresta. Para sua surpresa, o terceiro membro da equipe é outro professor - o Professor Quantum, que leciona física avançada."},
+        {"npc": "Professor Quantum", "text": "Chronos me contou sobre você. Impressionante que um estudante tenha descoberto tanto. Vamos acabar com essa loucura."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você decide confrontar o Diretor diretamente, acreditando que ele deve ter uma explicação razoável ou que pode ser persuadido a parar."},
+        {"npc": "Narrador", "text": "Você vai ao seu escritório e, surpreendentemente, sua secretária permite que entre imediatamente, como se estivesse esperando por você."},
+        {"npc": "Diretor", "text": "Ah, estava me perguntando quando você viria. A Professora Chronos compartilhou suas... preocupações com você, presumo?"},
+        {"npc": "Você", "text": "Sim. Ela me contou sobre o Evento Zero e o que você está tentando fazer na floresta."},
+        {"npc": "Diretor", "text": "E deixe-me adivinhar: ela pintou um quadro de mim como um cientista louco disposto a destruir a realidade por ganho pessoal?"},
+        {"npc": "Diretor", "text": "A verdade raramente é tão simples. Venha comigo. Quero lhe mostrar algo que a Professora Chronos convenientemente omitiu."}
+      ]
+    },
+    "branches": {
+      "alliance_branch": {
+        "conditions": {
+          "choice": 0
+        },
+        "next_chapter": "2_8_alliance"
+      },
+      "sabotage_branch": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "2_8_sabotage"
+      },
+      "truth_branch": {
+        "conditions": {
+          "choice": 2
+        },
+        "next_chapter": "2_8_truth"
+      }
+    },
+    "completion_exp": 600,
+    "completion_tusd": 700
+  },
+  "2_8_alliance": {
+    "type": "story",
+    "title": "Aliança Improvável",
+    "description": "Você e Hikari formam uma aliança para ajudar a Professora Chronos.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Na noite seguinte, você e Hikari se encontram com a Professora Chronos na borda da floresta."},
+      {"npc": "Professora Chronos", "text": "Não esperava que você trouxesse seu mentorado, mas sua presença pode ser útil."},
+      {"npc": "Professora Chronos", "text": "O plano é o seguinte: Hikari criará uma distração luminosa no lado leste da floresta, atraindo os guardas."},
+      {"npc": "Professora Chronos", "text": "Enquanto isso, nós dois entraremos pelo oeste e desativaremos o dispositivo. Precisamos ser rápidos e precisos."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre os riscos", "next_dialogue": 4},
+      {"text": "Sugerir um plano alternativo", "next_dialogue": 5},
+      {"text": "Expressar confiança no plano", "next_dialogue": 6, "affinity_change": {"Professora Chronos": 5, "Hikari": 5}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "Os riscos são consideráveis. O dispositivo está protegido por campos de energia que podem reagir violentamente quando tentarmos desativá-lo."},
+        {"npc": "Professora Chronos", "text": "Além disso, a própria anomalia é instável. Aproximar-se dela pode afetar seus poderes de maneiras imprevisíveis."},
+        {"npc": "Professora Chronos", "text": "E, claro, se formos pegos, enfrentaremos sérias consequências acadêmicas. Possivelmente expulsão."},
+        {"npc": "Hikari", "text": "Ainda assim, o risco de não fazer nada parece maior, considerando o que você nos contou sobre a ruptura crescente."}
+      ],
+      "5": [
+        {"npc": "Você", "text": "E se, em vez de apenas desativar o dispositivo, nós o reprogramássemos para estabilizar a anomalia?"},
+        {"npc": "Professora Chronos", "text": "Interessante... isso exigiria conhecimento avançado dos sistemas do Diretor."},
+        {"npc": "Você", "text": "Hikari poderia usar seus poderes não apenas como distração, mas para alimentar temporariamente o dispositivo enquanto fazemos as alterações."},
+        {"npc": "Professora Chronos", "text": "Arriscado, mas brilhante. Se funcionar, poderíamos não apenas parar o crescimento da anomalia, mas começar a revertê-la."},
+        {"npc": "Hikari", "text": "Eu... acho que posso fazer isso. Meus poderes têm estado mais fortes perto da anomalia."}
+      ],
+      "6": [
+        {"npc": "Você", "text": "Confio em vocês dois. Vamos fazer isso acontecer."},
+        {"npc": "Hikari", "text": "Não vou decepcionar vocês. Este é o momento para o qual tenho treinado."},
+        {"npc": "Professora Chronos", "text": "Sua confiança é inspiradora. Com essa atitude, nossas chances de sucesso aumentam consideravelmente."},
+        {"npc": "Professora Chronos", "text": "Lembrem-se: não importa o que aconteça, o objetivo principal é impedir que a ruptura cresça. Todo o resto é secundário."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Vocês avançam conforme o plano. Hikari se posiciona a leste e, no momento combinado, cria um espetáculo impressionante de luzes que ilumina o céu noturno."},
+      {"npc": "Narrador", "text": "Como esperado, os guardas correm em direção à distração, deixando o caminho oeste praticamente livre."},
+      {"npc": "Narrador", "text": "Você e a Professora Chronos se movem rapidamente pela floresta até chegarem à clareira com o dispositivo e a anomalia."},
+      {"npc": "Professora Chronos", "text": "Lá está. O dispositivo tem três painéis de controle. Precisamos desativá-los simultaneamente."},
+      {"npc": "Narrador", "text": "Enquanto vocês se aproximam, a anomalia pulsa, como se sentisse sua presença. Você sente seus poderes flutuando - fortalecendo e enfraquecendo em ondas."}
+    ],
+    "choices_2": [
+      {"text": "Seguir o plano original e desativar o dispositivo", "next_dialogue": 7},
+      {"text": "Implementar seu plano alternativo de reprogramação", "next_dialogue": 8},
+      {"text": "Tentar comunicar-se com a anomalia usando seus poderes", "next_dialogue": 9, "attribute_check": "power_stat", "threshold": 15}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Você se posiciona em um dos painéis de controle, preparando-se para seguir o plano original."},
+        {"npc": "Narrador", "text": "A Professora Chronos acena, indicando que está pronta para iniciar a sequência de desativação."}
+      ],
+      "success_7": [
+        {"npc": "Narrador", "text": "Você e a Professora Chronos trabalham em perfeita sincronia, desativando os três painéis simultaneamente."},
+        {"npc": "Narrador", "text": "O dispositivo emite um zumbido decrescente e os campos de energia ao redor da anomalia começam a se dissipar."},
+        {"npc": "Professora Chronos", "text": "Conseguimos! A estimulação artificial parou. Agora a anomalia deve estabilizar naturalmente com o tempo."},
+        {"npc": "Narrador", "text": "De repente, vocês ouvem vozes se aproximando - os guardas estão voltando."},
+        {"npc": "Professora Chronos", "text": "Rápido, temos que sair daqui. Encontre Hikari e volte para os dormitórios. Nos encontraremos amanhã para discutir os próximos passos."}
+      ],
+      "failure_7": [
+        {"npc": "Narrador", "text": "Vocês tentam desativar os painéis, mas algo dá errado. Um dos sistemas de segurança dispara, emitindo um alarme estridente."},
+        {"npc": "Professora Chronos", "text": "Não! O Diretor adicionou proteções que não antecipei."},
+        {"npc": "Narrador", "text": "A anomalia pulsa violentamente em resposta ao alarme, e uma onda de energia se expande pela clareira, derrubando vocês dois."},
+        {"npc": "Narrador", "text": "Quando você recupera a consciência, está sendo arrastado para fora da floresta por guardas da academia."},
+        {"npc": "Guarda", "text": "Encontramos mais um, senhor. Este estava perto do epicentro."},
+        {"npc": "Diretor", "text": "Então você também está envolvido nesta sabotagem. Estou profundamente desapontado."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você decide implementar seu plano alternativo de reprogramação do dispositivo."},
+        {"npc": "Narrador", "text": "Explica rapidamente sua ideia à Professora Chronos, que considera por um momento antes de assentir."}
+      ],
+      "success_8": [
+        {"npc": "Narrador", "text": "Você explica rapidamente seu plano alternativo à Professora Chronos, que concorda relutantemente."},
+        {"npc": "Narrador", "text": "Vocês chamam Hikari, que se junta a vocês na clareira após criar uma última distração para os guardas."},
+        {"npc": "Hikari", "text": "Estou pronto. O que preciso fazer?"},
+        {"npc": "Narrador", "text": "Seguindo suas instruções, Hikari canaliza seus poderes de luz para o dispositivo enquanto você e a Professora reprogramam os painéis de controle."},
+        {"npc": "Narrador", "text": "O dispositivo zunbe e vibra, mas em vez de desligar, seus campos de energia mudam de cor, passando de azul para um verde estabilizador."},
+        {"npc": "Professora Chronos", "text": "Incrível! Você conseguiu reverter a polaridade do campo. Agora ele está contendo a anomalia em vez de estimulá-la."},
+        {"npc": "Narrador", "text": "A distorção no ar começa a diminuir visivelmente, e vocês sentem seus poderes estabilizando."}
+      ],
+      "failure_8": [
+        {"npc": "Narrador", "text": "Vocês tentam implementar o plano alternativo, mas a reprogramação é mais complexa do que anteciparam."},
+        {"npc": "Hikari", "text": "Não consigo manter isso por muito tempo! Meus poderes estão flutuando demais!"},
+        {"npc": "Narrador", "text": "Subitamente, o dispositivo emite um pulso de energia que derruba todos vocês. A anomalia expande-se momentaneamente antes de se contrair violentamente."},
+        {"npc": "Professora Chronos", "text": "Isso não é bom. Criamos uma instabilidade ainda maior. Precisamos sair daqui agora!"},
+        {"npc": "Narrador", "text": "Vocês mal conseguem escapar da clareira antes que uma segunda onda de energia se expanda, alertando toda a segurança do campus."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Você sente uma estranha conexão com a anomalia e decide tentar algo ousado."},
+        {"npc": "Narrador", "text": "Concentrando-se, você estende sua consciência em direção à distorção, tentando estabelecer algum tipo de contato."}
+      ],
+      "success_9": [
+        {"npc": "Narrador", "text": "Seguindo um instinto profundo, você estende sua consciência em direção à anomalia, usando seus poderes como uma ponte."},
+        {"npc": "Professora Chronos", "text": "O que você está fazendo? Isso é extremamente perigoso!"},
+        {"npc": "Narrador", "text": "Ignorando o aviso, você estabelece uma conexão com a ruptura. Imediatamente, sua mente é inundada com imagens e sensações alienígenas."},
+        {"npc": "Narrador", "text": "Você vê o Evento Zero como se estivesse lá - cientistas ao redor de um dispositivo similar, mas maior; uma explosão de energia; o tecido da realidade se rasgando."},
+        {"npc": "Narrador", "text": "Mais surpreendente ainda, você sente que a anomalia está... consciente. Não é apenas uma ruptura física, mas uma entidade que existe entre as dimensões."},
+        {"npc": "Narrador", "text": "De alguma forma, você consegue comunicar sua intenção de ajudar, de conter sem causar dano."},
+        {"npc": "Narrador", "text": "A anomalia responde, pulsando em um padrão que de alguma forma você entende. Ela retrai-se ligeiramente, facilitando o trabalho de contenção."},
+        {"npc": "Professora Chronos", "text": "Incrível... Ela está cooperando com você. Em todos os meus anos estudando as rupturas, nunca vi nada assim."}
+      ],
+      "failure_9": [
+        {"npc": "Narrador", "text": "Você tenta estabelecer uma conexão com a anomalia, mas a energia é muito intensa, muito alienígena."},
+        {"npc": "Narrador", "text": "Uma onda de informações caóticas invade sua mente, sobrecarregando seus sentidos. Você cai de joelhos, incapaz de manter a conexão."},
+        {"npc": "Professora Chronos", "text": "Eu avisei! Ninguém pode se comunicar diretamente com a ruptura. Ela não é uma entidade consciente, é uma ferida na própria realidade."},
+        {"npc": "Narrador", "text": "A tentativa fracassada parece ter agitado a anomalia, que pulsa mais intensamente. O dispositivo emite alertas, indicando aumento de instabilidade."},
+        {"npc": "Professora Chronos", "text": "Temos que voltar ao plano original. Rápido, antes que a situação piore!"}
+      ]
+    },
+    "completion_exp": 700,
+    "completion_tusd": 800,
+    "next_chapter": "2_9"
+  },
+  "2_8_sabotage": {
+    "type": "story",
+    "title": "Operação Noturna",
+    "description": "Você se une à Professora Chronos para desativar o dispositivo do Diretor.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Na noite designada, você se encontra com a Professora Chronos e o Professor Quantum na borda da floresta."},
+      {"npc": "Professor Quantum", "text": "As leituras indicam atividade mínima no local. A maioria dos guardas está no lado leste, perto dos dormitórios."},
+      {"npc": "Professora Chronos", "text": "Perfeito. Nosso plano é simples: entrar, desativar os três núcleos do dispositivo simultaneamente, e sair sem sermos detectados."},
+      {"npc": "Professora Chronos", "text": "Lembre-se: não estamos destruindo o dispositivo, apenas desativando-o. Destruí-lo poderia causar uma liberação descontrolada de energia."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre os riscos", "next_dialogue": 4},
+      {"text": "Sugerir melhorias ao plano", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 12},
+      {"text": "Expressar determinação", "next_dialogue": 6, "affinity_change": {"Professora Chronos": 3, "Professor Quantum": 3}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "Os riscos são consideráveis. O dispositivo está protegido por campos de energia que podem reagir violentamente quando tentarmos desativá-lo."},
+        {"npc": "Professor Quantum", "text": "Além disso, a própria anomalia é instável. Aproximar-se dela pode afetar seus poderes de maneiras imprevisíveis."},
+        {"npc": "Professora Chronos", "text": "E, claro, se formos pegos, enfrentaremos sérias consequências. Eu e Quantum poderíamos perder nossas posições, e você poderia ser expulso."},
+        {"npc": "Professor Quantum", "text": "Mas o risco de não fazer nada é ainda maior. Nossas simulações mostram que a ruptura poderia engolir todo o campus em questão de meses."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você analisa o plano e pensa em possíveis melhorias para aumentar as chances de sucesso."},
+        {"npc": "Narrador", "text": "Uma ideia começa a se formar em sua mente, baseada em seu conhecimento de sistemas de segurança."}
+      ],
+      "success_5": [
+        {"npc": "Você", "text": "E se usássemos os próprios sistemas de segurança contra eles? Poderíamos criar um loop de feedback nos sensores perimetrais."},
+        {"npc": "Professor Quantum", "text": "Elabore."},
+        {"npc": "Você", "text": "Se recalibrarmos os sensores para ignorar nossa presença mas reportarem falsos positivos em outras áreas, a segurança ficará confusa e dispersa."},
+        {"npc": "Professora Chronos", "text": "Brilhante! Isso nos daria mais tempo e menos chances de sermos detectados."},
+        {"npc": "Professor Quantum", "text": "Posso implementar isso. Tenho acesso aos códigos de calibração dos sensores como parte do comitê de segurança."}
+      ],
+      "failure_5": [
+        {"npc": "Você", "text": "E se criássemos uma distração em outro lugar do campus para atrair a atenção da segurança?"},
+        {"npc": "Professora Chronos", "text": "Muito arriscado. Qualquer incidente grande o suficiente para distrair toda a segurança também alertaria o Diretor."},
+        {"npc": "Professor Quantum", "text": "Além disso, não queremos envolver outros estudantes ou causar pânico. Precisamos ser cirúrgicos em nossa abordagem."},
+        {"npc": "Professora Chronos", "text": "Vamos nos ater ao plano original. É simples, mas tem as maiores chances de sucesso."}
+      ],
+      "6": [
+        {"npc": "Você", "text": "Estou pronto. Não importa o risco, sei que o que estamos fazendo é necessário."},
+        {"npc": "Professor Quantum", "text": "Sua coragem é admirável, jovem. Lembre-se dela quando estivermos lá dentro."},
+        {"npc": "Professora Chronos", "text": "Com essa atitude, nossas chances de sucesso aumentam consideravelmente. Vamos em frente."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Vocês avançam silenciosamente pela floresta, guiados por um pequeno dispositivo que o Professor Quantum carrega, que detecta os campos de energia do dispositivo principal."},
+      {"npc": "Narrador", "text": "À medida que se aproximam da clareira, você sente seus poderes flutuando - fortalecendo e enfraquecendo em ondas irregulares."},
+      {"npc": "Professor Quantum", "text": "É o efeito da anomalia. Concentre-se em manter seu poder estável. Respire fundo e visualize um núcleo imutável dentro de você."},
+      {"npc": "Narrador", "text": "Finalmente, vocês chegam à clareira. O dispositivo é ainda mais impressionante visto de perto - uma estrutura metálica complexa cercando uma distorção no próprio ar que emite uma luz azulada pulsante."},
+      {"npc": "Professora Chronos", "text": "Cada um de nós precisa desativar um núcleo. Eu ficarei com o principal, Quantum com o regulador de fluxo, e você com o estabilizador de campo."}
+    ],
+    "choices_2": [
+      {"text": "Seguir o plano e desativar seu núcleo designado", "next_dialogue": 7, "attribute_check": "dexterity", "threshold": 12},
+      {"text": "Oferecer-se para desativar o núcleo principal", "next_dialogue": 8, "attribute_check": "power_stat", "threshold": 15},
+      {"text": "Sugerir que todos desativem juntos o mesmo núcleo de cada vez", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Você se prepara para desativar o estabilizador de campo conforme o plano original."},
+        {"npc": "Narrador", "text": "Seus dedos pairam sobre o painel de controle, aguardando o sinal da Professora Chronos."}
+      ],
+      "success_7": [
+        {"npc": "Narrador", "text": "Você se aproxima do estabilizador de campo, seguindo as instruções precisas da Professora Chronos."},
+        {"npc": "Narrador", "text": "Com dedos ágeis e mente focada, você navega pelo complexo painel de controle, desativando sistemas de segurança e redirecionando fluxos de energia."},
+        {"npc": "Narrador", "text": "No momento combinado, os três executam a sequência final de desativação simultaneamente."},
+        {"npc": "Narrador", "text": "O dispositivo emite um zumbido decrescente e os campos de energia ao redor da anomalia começam a se dissipar."},
+        {"npc": "Professora Chronos", "text": "Perfeito! A estimulação artificial parou. A anomalia deve estabilizar naturalmente agora."},
+        {"npc": "Professor Quantum", "text": "Precisamos sair daqui. O Diretor certamente será alertado sobre a desativação."}
+      ],
+      "failure_7": [
+        {"npc": "Narrador", "text": "Você tenta seguir as instruções para desativar o estabilizador, mas os controles são mais complexos do que o esperado."},
+        {"npc": "Narrador", "text": "Seu nervosismo faz com que você pressione uma sequência incorreta, ativando um alarme silencioso."},
+        {"npc": "Professor Quantum", "text": "Algo está errado. Os sistemas de segurança secundários estão ativos."},
+        {"npc": "Professora Chronos", "text": "Temos que acelerar. Ignorem os protocolos de segurança e forcem a desativação!"},
+        {"npc": "Narrador", "text": "Vocês conseguem desativar os núcleos, mas não antes que o alarme alerte os guardas. Luzes e vozes se aproximam rapidamente da clareira."},
+        {"npc": "Professora Chronos", "text": "Corram! Nos encontramos no ponto de extração!"}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você sente uma estranha conexão com o núcleo principal e decide se oferecer para desativá-lo."},
+        {"npc": "Narrador", "text": "Algo em seus poderes parece ressoar com a energia da anomalia de uma forma única."}
+      ],
+      "success_8": [
+        {"npc": "Você", "text": "Deixe-me desativar o núcleo principal. Meus poderes parecem estar ressoando com a anomalia de uma forma única."},
+        {"npc": "Professora Chronos", "text": "É arriscado, mas... você pode estar certo. Sua assinatura energética tem características especiais."},
+        {"npc": "Narrador", "text": "Você se aproxima do núcleo principal, sentindo a energia da anomalia pulsando em sincronia com seus próprios poderes."},
+        {"npc": "Narrador", "text": "Instintivamente, você sabe quais controles manipular, como se a própria anomalia estivesse guiando suas ações."},
+        {"npc": "Narrador", "text": "Quando você completa a sequência de desativação, o dispositivo inteiro se desliga suavemente, sem os alarmes ou instabilidades que temiam."},
+        {"npc": "Professor Quantum", "text": "Extraordinário! Nunca vi uma desativação tão limpa de um sistema tão complexo."},
+        {"npc": "Professora Chronos", "text": "Você tem um dom natural para isso. Talvez mais do que um dom... uma conexão."}
+      ],
+      "failure_8": [
+        {"npc": "Você", "text": "Deixe-me tentar o núcleo principal. Sinto que posso fazer isso."},
+        {"npc": "Professora Chronos", "text": "Não recomendo. O núcleo principal é o mais complexo e perigoso."},
+        {"npc": "Narrador", "text": "Você insiste e se aproxima do núcleo principal. Inicialmente, parece que sua intuição estava certa - seus poderes ressoam com os controles."},
+        {"npc": "Narrador", "text": "Mas logo a energia se torna avassaladora. A anomalia reage à sua presença, expandindo-se subitamente."},
+        {"npc": "Narrador", "text": "Uma onda de energia o atinge, lançando-o para trás. O dispositivo emite alertas estridentes."},
+        {"npc": "Professor Quantum", "text": "Estabilizem os núcleos! Rápido, antes que entremos em cascata crítica!"},
+        {"npc": "Narrador", "text": "Os professores trabalham freneticamente para estabilizar o sistema enquanto você luta para se recuperar do impacto."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "E se trabalharmos juntos em cada núcleo, um por vez? Seria mais lento, mas mais seguro."},
+        {"npc": "Professor Quantum", "text": "Impossível. Os núcleos precisam ser desativados simultaneamente ou o sistema compensará automaticamente."},
+        {"npc": "Professora Chronos", "text": "Ele está certo. É por isso que precisamos de três pessoas. Confie no plano, foi meticulosamente elaborado."},
+        {"npc": "Narrador", "text": "Seguindo o plano original, cada um se posiciona em seu núcleo designado."},
+        {"npc": "Professora Chronos", "text": "No meu sinal. Três... dois... um... agora!"},
+        {"npc": "Narrador", "text": "Vocês executam a sequência de desativação simultaneamente. O dispositivo emite um zumbido decrescente e os campos de energia começam a se dissipar."},
+        {"npc": "Professor Quantum", "text": "Funcionou! A estimulação artificial parou. Agora precisamos sair daqui antes que os sistemas de backup alertem o Diretor."}
+      ]
+    },
+    "completion_exp": 700,
+    "completion_tusd": 800,
+    "next_chapter": "2_9"
+  },
+  "2_8_truth": {
+    "type": "story",
+    "title": "A Outra Face da Verdade",
+    "description": "O Diretor revela sua versão da história, complicando sua compreensão da situação.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O Diretor o leva por um corredor oculto atrás de sua estante de livros, descendo por um elevador que você nem sabia que existia."},
+      {"npc": "Diretor", "text": "A Academia Tokugawa tem muitos segredos. Alguns deles são mantidos até mesmo dos professores."},
+      {"npc": "Narrador", "text": "O elevador se abre para um vasto complexo subterrâneo, muito maior e mais avançado do que você poderia imaginar."},
+      {"npc": "Diretor", "text": "Bem-vindo ao verdadeiro coração da Academia Tokugawa - o Centro de Pesquisa do Evento Zero."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre o propósito do centro", "next_dialogue": 4},
+      {"text": "Questionar por que isso é mantido em segredo", "next_dialogue": 5},
+      {"text": "Perguntar sobre a Professora Chronos", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Diretor", "text": "Este centro tem um único propósito: entender e eventualmente replicar o Evento Zero de forma controlada."},
+        {"npc": "Diretor", "text": "Não para criar caos, como Chronos provavelmente sugeriu, mas para democratizar os poderes."},
+        {"npc": "Diretor", "text": "Pense nisso: em nosso mundo, apenas cerca de 5% da população nasce com habilidades especiais. Isso cria uma desigualdade fundamental."},
+        {"npc": "Diretor", "text": "Nosso objetivo é dar a todos a oportunidade de desenvolver poderes, eliminando essa divisão entre 'especiais' e 'comuns'."}
+      ],
+      "5": [
+        {"npc": "Diretor", "text": "Por necessidade. Há forças que se opõem ao nosso trabalho - pessoas que preferem manter o status quo de desigualdade."},
+        {"npc": "Diretor", "text": "Os Guardiões da Ruptura, como se autodenominam, acreditam que o Evento Zero foi um erro que nunca deveria ser repetido."},
+        {"npc": "Diretor", "text": "Eles não entendem que podemos controlar o processo agora, com tecnologia e conhecimento que não existiam há 300 anos."},
+        {"npc": "Diretor", "text": "Infelizmente, a Professora Chronos é uma de suas líderes mais dedicadas. Ela tem sabotado nosso progresso por anos."}
+      ],
+      "6": [
+        {"npc": "Diretor", "text": "Ah, Chronos. Uma das mentes mais brilhantes que já conheci, e também uma das mais obstinadas."},
+        {"npc": "Diretor", "text": "Ela faz parte de um grupo que se chama Guardiões da Ruptura. Eles acreditam que sua missão é impedir qualquer tentativa de replicar o Evento Zero."},
+        {"npc": "Diretor", "text": "O que ela provavelmente não lhe contou é que ela estava presente no Evento Zero original."},
+        {"npc": "Você", "text": "Isso é impossível. O Evento Zero foi há 300 anos."},
+        {"npc": "Diretor", "text": "Exatamente. Seus poderes de manipulação temporal foram amplificados pelo evento a um nível sem precedentes. Ela não envelhece como nós."},
+        {"npc": "Diretor", "text": "Sua experiência a traumatizou, e ela tem dedicado séculos a impedir que algo similar aconteça novamente - mesmo que isso signifique negar poderes ao resto da humanidade."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "O Diretor o guia através do centro, mostrando laboratórios, salas de simulação e, finalmente, uma câmara central onde uma versão menor da anomalia está contida em um campo de energia."},
+      {"npc": "Diretor", "text": "Esta é uma réplica controlada da ruptura original. Estamos estudando como canalizar sua energia de forma segura."},
+      {"npc": "Diretor", "text": "A anomalia na floresta não é um acidente ou efeito colateral, como Chronos provavelmente lhe disse. É uma extensão planejada deste experimento."},
+      {"npc": "Diretor", "text": "Precisávamos de um ambiente mais natural para testar como a energia dimensional interage com o mundo real."},
+      {"npc": "Narrador", "text": "Enquanto ele fala, você nota que seus olhos ocasionalmente cintilam com uma energia estranha, e suas mãos tremem ligeiramente."}
+    ],
+    "choices_2": [
+      {"text": "Perguntar sobre seus poderes em falha", "next_dialogue": 7, "affinity_change": {"Diretor": 5}},
+      {"text": "Questionar a segurança dos experimentos", "next_dialogue": 8},
+      {"text": "Oferecer ajuda com a pesquisa", "next_dialogue": 9, "affinity_change": {"Diretor": 10}}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Diretor", "text": "Você é observador. Sim, meus poderes estão falhando - um fenômeno raro que afeta alguns usuários mais antigos."},
+        {"npc": "Diretor", "text": "Começou há cinco anos. Pequenas falhas no início, agora períodos inteiros sem acesso às minhas habilidades."},
+        {"npc": "Diretor", "text": "Mas isso não é apenas sobre mim. Dezenas de pessoas enfrentam o mesmo problema, incluindo alguns estudantes mais velhos."},
+        {"npc": "Diretor", "text": "Nossa pesquisa sugere que a energia do Evento Zero que nos deu poderes está se dissipando em alguns indivíduos. Precisamos de uma 'recarga', por assim dizer."}
+      ],
+      "8": [
+        {"npc": "Diretor", "text": "Uma preocupação válida e que levamos muito a sério."},
+        {"npc": "Diretor", "text": "Cada experimento é precedido por meses de simulações. Temos sistemas de contenção redundantes e protocolos de emergência rigorosos."},
+        {"npc": "Diretor", "text": "O incidente que você testemunhou na floresta - o crescimento acelerado da anomalia - foi inesperado, admito. Mas já estamos implementando contramedidas."},
+        {"npc": "Diretor", "text": "O risco existe, sim, mas é calculado e gerenciável. E o potencial benefício para a humanidade supera enormemente esse risco."}
+      ],
+      "9": [
+        {"npc": "Diretor", "text": "Sua oferta é surpreendente e bem-vinda. Poucos estudantes teriam essa visão após ouvir apenas um lado da história."},
+        {"npc": "Diretor", "text": "Na verdade, você poderia ser extremamente valioso para nossa pesquisa. Seus poderes têm características únicas que nossos sensores detectaram."},
+        {"npc": "Diretor", "text": "Com sua ajuda, poderíamos acelerar significativamente nosso progresso e implementar protocolos de segurança ainda melhores."},
+        {"npc": "Diretor", "text": "Pense nisso: você poderia fazer parte de uma revolução que mudará fundamentalmente a sociedade humana para melhor."}
+      ]
+    },
+    "completion_exp": 700,
+    "completion_tusd": 800,
+    "next_chapter": "2_9"
+  },
+  "2_9": {
+    "type": "story",
+    "title": "Consequências",
+    "description": "As consequências de suas ações se desenrolam, afetando a academia e seu futuro.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Uma semana se passou desde os eventos na floresta. A atmosfera na academia mudou sutilmente - há mais seguranças, e os professores parecem tensos."},
+      {"npc": "Narrador", "text": "Em sua aula de Teoria dos Poderes Avançados, você nota que a Professora Chronos está ausente, substituída por um professor assistente."},
+      {"npc": "Hikari", "text": "Você ouviu os rumores? Dizem que houve algum tipo de acidente na floresta. E a Professora Chronos não aparece há dias."},
+      {"npc": "Narrador", "text": "Antes que você possa responder, um alto-falante anuncia: 'Atenção todos os estudantes. Reunião obrigatória no Grande Salão em 15 minutos.'"}
+    ],
+    "choices": [
+      {"text": "Ir imediatamente para o Grande Salão", "next_dialogue": 4},
+      {"text": "Tentar contatar a Professora Chronos primeiro", "next_dialogue": 5},
+      {"text": "Conversar com Hikari sobre o que realmente aconteceu", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Você decide ir diretamente para o Grande Salão, chegando cedo e conseguindo um lugar próximo ao palco."},
+        {"npc": "Narrador", "text": "Gradualmente, o salão se enche com estudantes confusos e professores de expressão grave."},
+        {"npc": "Narrador", "text": "Finalmente, o Diretor sobe ao palco. Ele parece cansado, mas determinado."},
+        {"npc": "Diretor", "text": "Estudantes e funcionários da Academia Tokugawa, obrigado por virem. Tenho vários anúncios importantes a fazer."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você tenta ligar para o número da Professora Chronos, mas a chamada vai direto para a caixa postal."},
+        {"npc": "Narrador", "text": "Decidindo arriscar, você passa rapidamente pelo escritório dela a caminho do Grande Salão."},
+        {"npc": "Narrador", "text": "A porta está trancada e selada com um aviso oficial: 'Acesso temporariamente restrito por ordem da administração.'"},
+        {"npc": "Narrador", "text": "Preocupado, você se apressa para o Grande Salão, que já está quase cheio. O Diretor está prestes a começar seu discurso."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você puxa Hikari para um canto tranquilo antes de irem para a reunião."},
+        {"npc": "Você", "text": "Hikari, preciso que você saiba a verdade sobre o que aconteceu na floresta."},
+        {"npc": "Narrador", "text": "Rapidamente, você resume os eventos recentes, incluindo o papel que você desempenhou."},
+        {"npc": "Hikari", "text": "Isso é... muito para processar. Mas explica por que você tem estado tão distante ultimamente."},
+        {"npc": "Hikari", "text": "O que acontece agora? Você acha que estamos em perigo?"},
+        {"npc": "Você", "text": "Não sei. Vamos para a reunião e descobrir."},
+        {"npc": "Narrador", "text": "Vocês chegam ao Grande Salão quando o Diretor está subindo ao palco."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Diretor", "text": "Primeiro, quero abordar os rumores sobre atividades incomuns na floresta norte. Sim, houve um incidente envolvendo nosso projeto de pesquisa avançada."},
+      {"npc": "Diretor", "text": "A situação está completamente sob controle, e não há motivo para preocupação. A área permanecerá restrita enquanto concluímos nossos estudos."},
+      {"npc": "Diretor", "text": "Segundo, é com pesar que anuncio que a Professora Chronos está em licença temporária por motivos pessoais. O Professor Quantum assumirá suas aulas até novo aviso."},
+      {"npc": "Narrador", "text": "Murmúrios percorrem o salão. Você nota olhares céticos entre alguns professores."},
+      {"npc": "Diretor", "text": "Finalmente, tenho o prazer de anunciar que estamos iniciando um novo programa de pesquisa para estudantes avançados. Detalhes serão enviados aos selecionados."}
+    ],
+    "choices_2": [
+      {"text": "Procurar o Professor Quantum após a reunião", "next_dialogue": 7},
+      {"text": "Investigar o que realmente aconteceu com a Professora Chronos", "next_dialogue": 8},
+      {"text": "Aceitar a situação e focar em seus estudos", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Após a reunião, você consegue encontrar o Professor Quantum enquanto ele sai do Grande Salão."},
+        {"npc": "Você", "text": "Professor, posso falar com você sobre a Professora Chronos?"},
+        {"npc": "Professor Quantum", "text": "Não aqui. Encontre-me no laboratório de física às 20h. Venha sozinho."},
+        {"npc": "Narrador", "text": "Naquela noite, você vai ao laboratório de física, que está vazio exceto pelo Professor Quantum."},
+        {"npc": "Professor Quantum", "text": "Chronos está bem, mas teve que se esconder. O Diretor descobriu seu envolvimento na... intervenção na floresta."},
+        {"npc": "Professor Quantum", "text": "Ela deixou uma mensagem para você: 'A batalha não acabou. Observe as estrelas no equinócio.'"},
+        {"npc": "Professor Quantum", "text": "Não posso dizer mais nada agora. Estamos sendo vigiados. Mas saiba que você não está sozinho nesta luta."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Nos dias seguintes, você discretamente investiga o desaparecimento da Professora Chronos."},
+        {"npc": "Narrador", "text": "Conversando com outros estudantes e funcionários, você descobre que ela foi vista pela última vez sendo escoltada para fora do campus por seguranças."},
+        {"npc": "Estudante", "text": "Ouvi dizer que ela estava gritando algo sobre 'ele estar cometendo o mesmo erro novamente' enquanto a levavam embora."},
+        {"npc": "Narrador", "text": "Em sua caixa de correio, você encontra um pequeno pendrive com uma nota: 'A verdade está aqui. Seja cauteloso. - C'"},
+        {"npc": "Narrador", "text": "O pendrive contém arquivos detalhando a história completa do Evento Zero e evidências das experiências perigosas do Diretor."},
+        {"npc": "Narrador", "text": "Também há uma mensagem codificada com coordenadas e uma data - aparentemente um ponto de encontro para o futuro."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Você decide que se envolver mais nessa situação complexa pode ser perigoso e opta por focar em seus estudos e treinamento."},
+        {"npc": "Narrador", "text": "Nas semanas seguintes, você nota mudanças sutis na academia - mais seguranças, câmeras adicionais, e um novo currículo que enfatiza 'uso responsável de poderes'."},
+        {"npc": "Narrador", "text": "Um dia, você recebe um e-mail do Diretor: 'Seu desempenho acadêmico e potencial chamaram minha atenção. Gostaria de convidá-lo para o Programa de Pesquisa Avançada.'"},
+        {"npc": "Narrador", "text": "O e-mail detalha uma oportunidade exclusiva de trabalhar em um projeto revolucionário sob orientação direta do Diretor."},
+        {"npc": "Narrador", "text": "No mesmo dia, você encontra uma nota anônima em seu livro de Teoria dos Poderes: 'Não confie no Diretor. Ele só quer usar seus poderes. Encontre-nos na antiga torre do relógio à meia-noite se quiser a verdade.'"}
+      ]
+    },
+    "completion_exp": 800,
+    "completion_tusd": 900,
+    "next_chapter": "2_10"
+  },
+  "2_10": {
+    "type": "branching",
+    "title": "Encruzilhada",
+    "description": "Você deve escolher um lado no conflito que definirá o futuro da Academia Tokugawa.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O semestre está chegando ao fim, e a tensão na academia é palpável. Os eventos recentes forçaram você a uma posição onde não pode mais permanecer neutro."},
+      {"npc": "Narrador", "text": "De um lado, o Diretor e seu Programa de Pesquisa Avançada, prometendo revolucionar o mundo dos poderes e eliminar desigualdades."},
+      {"npc": "Narrador", "text": "Do outro, os Guardiões da Ruptura, liderados pela Professora Chronos, determinados a impedir o que veem como uma catástrofe iminente."},
+      {"npc": "Narrador", "text": "E no meio de tudo isso, Hikari e outros estudantes, alheios ao verdadeiro conflito que se desenrola."}
+    ],
+    "choices": [
+      {"text": "Aliar-se ao Diretor e seu programa", "next_dialogue": 4},
+      {"text": "Juntar-se aos Guardiões da Ruptura", "next_dialogue": 5},
+      {"text": "Formar seu próprio caminho independente", "next_dialogue": 6, "attribute_check": "charisma", "threshold": 15}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Após cuidadosa consideração, você decide que a visão do Diretor de um mundo onde todos têm acesso a poderes é digna de apoio."},
+        {"npc": "Narrador", "text": "Você aceita o convite para o Programa de Pesquisa Avançada e começa a trabalhar diretamente com o Diretor e sua equipe."},
+        {"npc": "Diretor", "text": "Sua decisão de se juntar a nós é mais significativa do que você imagina. Seus poderes têm características únicas que podem ser a chave para nosso sucesso."},
+        {"npc": "Diretor", "text": "Juntos, faremos história. Não apenas para a Academia Tokugawa, mas para toda a humanidade."},
+        {"npc": "Narrador", "text": "Nos meses seguintes, você se torna parte integral do projeto, ajudando a desenvolver métodos mais seguros de canalizar a energia dimensional."},
+        {"npc": "Narrador", "text": "Ocasionalmente, você pensa na Professora Chronos e se pergunta se ela estava realmente errada, ou apenas vendo um lado diferente da mesma verdade."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você decide que os riscos dos experimentos do Diretor são grandes demais, e que a Professora Chronos e os Guardiões estão certos em sua cautela."},
+        {"npc": "Narrador", "text": "Seguindo as pistas deixadas para você, você encontra um local de reunião secreto onde os Guardiões se reúnem."},
+        {"npc": "Professora Chronos", "text": "Eu sabia que você viria. Sua percepção e coragem são exatamente o que precisamos nestes tempos sombrios."},
+        {"npc": "Professora Chronos", "text": "O Diretor está acelerando seus experimentos. Nossas fontes indicam que ele planeja uma 'demonstração' durante a cerimônia de encerramento do ano."},
+        {"npc": "Professora Chronos", "text": "Precisamos impedi-lo antes que seja tarde demais. E você, com seu acesso e habilidades únicas, é fundamental para nosso plano."},
+        {"npc": "Narrador", "text": "Você se torna um agente dos Guardiões, trabalhando nas sombras para monitorar e eventualmente sabotar os planos do Diretor."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você considera a possibilidade de formar seu próprio caminho, independente tanto do Diretor quanto dos Guardiões."},
+        {"npc": "Narrador", "text": "Talvez haja uma terceira alternativa que nenhum dos lados está considerando."}
+      ],
+      "success_6": [
+        {"npc": "Narrador", "text": "Você decide que ambos os lados têm pontos válidos, mas também falhas em suas abordagens. Um caminho diferente é necessário."},
+        {"npc": "Narrador", "text": "Reunindo um pequeno grupo de estudantes confiáveis, incluindo Hikari, você forma uma terceira facção dedicada a encontrar uma solução equilibrada."},
+        {"npc": "Você", "text": "Não podemos negar o potencial benefício de democratizar os poderes, mas também não podemos ignorar os riscos de manipular forças dimensionais."},
+        {"npc": "Hikari", "text": "Então qual é o plano?"},
+        {"npc": "Você", "text": "Vamos estudar tanto as pesquisas do Diretor quanto os métodos de contenção dos Guardiões. Deve haver um meio-termo - uma forma de avançar com segurança."},
+        {"npc": "Narrador", "text": "Sua iniciativa ganha apoio surpreendente de outros estudantes e até mesmo de alguns professores que também estavam desconfortáveis com a polarização."},
+        {"npc": "Narrador", "text": "Com o tempo, seu grupo se torna uma voz respeitada no debate, oferecendo perspectivas e soluções inovadoras que nenhum dos lados havia considerado."}
+      ],
+      "failure_6": [
+        {"npc": "Narrador", "text": "Você tenta formar um caminho independente, recrutando outros estudantes que compartilham suas preocupações."},
+        {"npc": "Narrador", "text": "No entanto, sem a influência necessária ou um plano claro, seu grupo luta para ser levado a sério por qualquer um dos lados."},
+        {"npc": "Estudante", "text": "Suas ideias são boas, mas como vamos implementá-las sem apoio da administração ou dos Guardiões?"},
+        {"npc": "Narrador", "text": "Eventualmente, seu grupo se dissolve, com alguns membros juntando-se ao Diretor e outros aos Guardiões."},
+        {"npc": "Narrador", "text": "Você se vê sozinho, forçado a escolher entre os dois lados ou permanecer à margem do conflito."}
+      ]
+    },
+    "branches": {
+      "director_branch": {
+        "conditions": {
+          "choice": 0
+        },
+        "next_chapter": "2_11_director"
+      },
+      "guardians_branch": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "2_11_guardians"
+      },
+      "independent_success_branch": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "success"
+        },
+        "next_chapter": "2_11_independent"
+      },
+      "independent_failure_branch": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "failure"
+        },
+        "next_chapter": "2_11_choice"
+      }
+    },
+    "completion_exp": 900,
+    "completion_tusd": 1000
   }
 }

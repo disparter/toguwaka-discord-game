@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Holidays Schema",
+  "description": "Schema for validating holidays data",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["date", "name", "description"],
+    "properties": {
+      "date": {
+        "type": "string",
+        "format": "date",
+        "description": "Date of the holiday in ISO format (YYYY-MM-DD)"
+      },
+      "name": {
+        "type": "string",
+        "description": "Name of the holiday"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the holiday"
+      },
+      "is_school_holiday": {
+        "type": "boolean",
+        "description": "Whether the holiday is a school holiday (no classes)",
+        "default": true
+      },
+      "event_id": {
+        "type": "string",
+        "description": "ID of an associated event, if any"
+      }
+    }
+  }
+}
