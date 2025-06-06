@@ -75,27 +75,52 @@ BASE_STORY_CHAPTERS = {
                 1: [  # Clube das Chamas
                     {"npc": "Kai Flameheart", "text": "Então você é o novato? Espero que tenha coragem suficiente para aguentar o calor do nosso treinamento!"},
                     {"npc": "Kai Flameheart", "text": "No Clube das Chamas, valorizamos a paixão e a intensidade. Nossos poderes são destrutivos, mas aprendemos a controlá-los."},
-                    {"npc": "Kai Flameheart", "text": "Estamos sempre em rivalidade com os Elementalistas, mas é uma competição saudável... na maioria das vezes."}
+                    {"npc": "Kai Flameheart", "text": "Estamos sempre em rivalidade com os Elementalistas, mas é uma competição saudável... na maioria das vezes."},
+                    {"npc": "Kai Flameheart", "text": "O que você acha? Está pronto para se juntar ao melhor clube da academia?", "choices": [
+                        {"text": "Com certeza! Mal posso esperar para começar o treinamento!", "next_dialogue": 4, "affinity_change": {"Kai Flameheart": 10, "Gaia Naturae": -5}},
+                        {"text": "Parece interessante, mas gostaria de conhecer os outros clubes também.", "next_dialogue": 4, "affinity_change": {"Kai Flameheart": -3}},
+                        {"text": "Não sei se esse estilo combina comigo, mas vou dar uma chance.", "next_dialogue": 4, "affinity_change": {"Kai Flameheart": 0}}
+                    ]}
                 ],
                 2: [  # Ilusionistas Mentais
                     {"npc": "Luna Mindweaver", "text": "Ah, uma nova mente para nossa coleção. Bem-vindo aos Ilusionistas Mentais."},
                     {"npc": "Luna Mindweaver", "text": "Aqui exploramos os recantos da mente e os limites da percepção. A realidade é apenas o que acreditamos que seja."},
-                    {"npc": "Luna Mindweaver", "text": "Tenha cuidado com o Conselho Político. Eles sempre têm segundas intenções... não que nós não tenhamos também."}
+                    {"npc": "Luna Mindweaver", "text": "Tenha cuidado com o Conselho Político. Eles sempre têm segundas intenções... não que nós não tenhamos também."},
+                    {"npc": "Luna Mindweaver", "text": "O que você acha? Sua mente está pronta para explorar os mistérios da percepção?", "choices": [
+                        {"text": "Fascinante! Sempre quis entender os segredos da mente.", "next_dialogue": 4, "affinity_change": {"Luna Mindweaver": 10, "Alexander Strategos": -5}},
+                        {"text": "Parece um pouco assustador, mas estou curioso.", "next_dialogue": 4, "affinity_change": {"Luna Mindweaver": 5}},
+                        {"text": "Não sei se gosto da ideia de alguém mexendo com minha mente.", "next_dialogue": 4, "affinity_change": {"Luna Mindweaver": -3}}
+                    ]}
                 ],
                 3: [  # Conselho Político
                     {"npc": "Alexander Strategos", "text": "Um novo peão no tabuleiro. Interessante. Bem-vindo ao Conselho Político."},
                     {"npc": "Alexander Strategos", "text": "Nosso clube controla a política estudantil da academia. Influência e estratégia são nossas armas."},
-                    {"npc": "Alexander Strategos", "text": "Os Ilusionistas pensam que podem ler nossas mentes, mas sempre estamos três passos à frente."}
+                    {"npc": "Alexander Strategos", "text": "Os Ilusionistas pensam que podem ler nossas mentes, mas sempre estamos três passos à frente."},
+                    {"npc": "Alexander Strategos", "text": "E então? Você tem o que é preciso para jogar o jogo do poder?", "choices": [
+                        {"text": "Absolutamente. Sempre gostei de estratégia e influência.", "next_dialogue": 4, "affinity_change": {"Alexander Strategos": 10, "Luna Mindweaver": -5}},
+                        {"text": "Talvez. Preciso entender melhor como funciona a política da academia.", "next_dialogue": 4, "affinity_change": {"Alexander Strategos": 3}},
+                        {"text": "Não gosto muito de jogos políticos, prefiro ser direto.", "next_dialogue": 4, "affinity_change": {"Alexander Strategos": -5, "Ryuji Battleborn": 3}}
+                    ]}
                 ],
                 4: [  # Elementalistas
                     {"npc": "Gaia Naturae", "text": "A natureza te trouxe até nós. Seja bem-vindo aos Elementalistas."},
                     {"npc": "Gaia Naturae", "text": "Estudamos a harmonia dos elementos e como utilizá-los em equilíbrio com o mundo ao nosso redor."},
-                    {"npc": "Gaia Naturae", "text": "O Clube das Chamas tem poder, mas falta-lhes controle e respeito pelos elementos."}
+                    {"npc": "Gaia Naturae", "text": "O Clube das Chamas tem poder, mas falta-lhes controle e respeito pelos elementos."},
+                    {"npc": "Gaia Naturae", "text": "Você sente a conexão com os elementos? Está disposto a aprender o caminho do equilíbrio?", "choices": [
+                        {"text": "Sim, sempre me senti conectado com a natureza e seus elementos.", "next_dialogue": 4, "affinity_change": {"Gaia Naturae": 10, "Kai Flameheart": -5}},
+                        {"text": "Acho fascinante o controle de múltiplos elementos, quero aprender mais.", "next_dialogue": 4, "affinity_change": {"Gaia Naturae": 5}},
+                        {"text": "Prefiro me especializar em um elemento poderoso do que dividir meu foco.", "next_dialogue": 4, "affinity_change": {"Gaia Naturae": -3, "Kai Flameheart": 3}}
+                    ]}
                 ],
                 5: [  # Clube de Combate
                     {"npc": "Ryuji Battleborn", "text": "Mais um guerreiro se junta às nossas fileiras. Mostre seu valor no Clube de Combate."},
                     {"npc": "Ryuji Battleborn", "text": "Aqui, aprimoramos nossas técnicas de luta e nos tornamos mais fortes a cada dia. A disciplina é nossa fundação."},
-                    {"npc": "Ryuji Battleborn", "text": "Todos os outros clubes têm suas forças, mas no final, é o guerreiro mais forte que permanece de pé."}
+                    {"npc": "Ryuji Battleborn", "text": "Todos os outros clubes têm suas forças, mas no final, é o guerreiro mais forte que permanece de pé."},
+                    {"npc": "Ryuji Battleborn", "text": "Você tem a disciplina e a determinação para se tornar um verdadeiro guerreiro?", "choices": [
+                        {"text": "Sim! Estou pronto para treinar duro e me tornar o mais forte!", "next_dialogue": 4, "affinity_change": {"Ryuji Battleborn": 10, "Alexander Strategos": -3}},
+                        {"text": "Acredito que a força vem do equilíbrio entre corpo e mente.", "next_dialogue": 4, "affinity_change": {"Ryuji Battleborn": 5, "Luna Mindweaver": 2}},
+                        {"text": "Prefiro usar estratégia a força bruta, mas estou disposto a aprender.", "next_dialogue": 4, "affinity_change": {"Ryuji Battleborn": -2, "Alexander Strategos": 5}}
+                    ]}
                 ]
             },
             "completion_exp": 75,
@@ -547,6 +572,74 @@ class StoryMode(commands.Cog):
         except Exception as e:
             logger.error(f"Error in check_player_for_events: {e}")
 
+    async def adicionar_afinidade(self, user_id, personagem, pontos):
+        """Add affinity points to a character relationship.
+
+        Args:
+            user_id (int): The user ID
+            personagem (str): The character name
+            pontos (int): The number of points to add (can be negative)
+
+        Returns:
+            dict: Updated relationship data or None if failed
+        """
+        try:
+            # Get player data
+            player = get_player(user_id)
+            if not player:
+                return None
+
+            # Get story progress
+            story_progress = player.get('story_progress', None)
+            if not story_progress:
+                return None
+            elif isinstance(story_progress, str):
+                story_progress = json.loads(story_progress)
+
+            # Make sure relacionamentos field exists
+            if 'relacionamentos' not in story_progress:
+                story_progress['relacionamentos'] = {}
+
+            # Initialize character if not exists
+            if personagem not in story_progress['relacionamentos']:
+                story_progress['relacionamentos'][personagem] = {
+                    "afinidade": 0,
+                    "status": "neutro"
+                }
+
+            # Add afinidade
+            current_afinidade = story_progress['relacionamentos'][personagem]['afinidade']
+            new_afinidade = current_afinidade + pontos
+
+            # Update status based on afinidade
+            if new_afinidade >= 100:
+                status = "romance"
+            elif new_afinidade >= 50:
+                status = "amigo"
+            elif new_afinidade >= 20:
+                status = "conhecido"
+            elif new_afinidade < 0:
+                status = "rival"
+            else:
+                status = "neutro"
+
+            # Update relationship
+            story_progress['relacionamentos'][personagem] = {
+                "afinidade": new_afinidade,
+                "status": status
+            }
+
+            # Update player in database
+            success = update_player(user_id, story_progress=json.dumps(story_progress))
+
+            if success:
+                return story_progress['relacionamentos'][personagem]
+            else:
+                return None
+        except Exception as e:
+            logger.error(f"Error in adicionar_afinidade: {e}")
+            return None
+
     def create_climactic_event_embed(self, event_name, event_data):
         """Create an embed for a climactic event."""
         embed = create_basic_embed(
@@ -749,7 +842,7 @@ class StoryMode(commands.Cog):
             # Check if player has story progress
             story_progress = player.get('story_progress', None)
             if not story_progress:
-                # Initialize story progress
+                # Initialize story progress with enhanced structure
                 story_progress = {
                     "current_year": 1,
                     "current_chapter": 1,
@@ -764,7 +857,13 @@ class StoryMode(commands.Cog):
                     "discovered_secrets": [],
                     "special_items": [],
                     "character_relationships": {},
-                    "story_choices": {}
+                    "story_choices": {},
+                    # New fields for bimester system
+                    "ano_corrente": 1,
+                    "bimestre_corrente": 1,
+                    "ferias": False,
+                    "relacionamentos": {},
+                    "progressao_historica": []
                 }
 
                 # Update player with initial story progress
@@ -883,6 +982,304 @@ class StoryMode(commands.Cog):
             logger.error(f"Error in slash_challenge: {e}")
             await interaction.response.send_message("Ocorreu um erro ao iniciar o desafio. Por favor, tente novamente mais tarde.")
 
+    @story_group.command(name="bimestre", description="Avançar para o próximo bimestre ou verificar o bimestre atual")
+    async def slash_bimestre(self, interaction: discord.Interaction):
+        """Advance to the next bimester or check the current bimester."""
+        try:
+            # Check if player exists
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
+                    f"Use /registro ingressar para criar seu personagem."
+                )
+                return
+
+            # Check if player has story progress
+            story_progress = player.get('story_progress', None)
+            if not story_progress:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não iniciou o modo história. "
+                    f"Use /historia iniciar para começar sua jornada!"
+                )
+                return
+            elif isinstance(story_progress, str):
+                # Parse JSON string to dict
+                story_progress = json.loads(story_progress)
+
+            # Make sure bimester fields exist
+            if 'bimestre_corrente' not in story_progress:
+                story_progress['bimestre_corrente'] = 1
+            if 'ano_corrente' not in story_progress:
+                story_progress['ano_corrente'] = 1
+            if 'ferias' not in story_progress:
+                story_progress['ferias'] = False
+            if 'progressao_historica' not in story_progress:
+                story_progress['progressao_historica'] = []
+
+            # Advance to next bimester
+            bimestre = story_progress['bimestre_corrente']
+            ano = story_progress['ano_corrente']
+            ferias = story_progress['ferias']
+
+            # If currently in vacation, end vacation and start next bimester
+            if ferias:
+                ferias = False
+                if bimestre == 2:  # After summer vacation
+                    bimestre = 3
+                elif bimestre == 4:  # After winter vacation
+                    bimestre = 1
+                    ano += 1
+
+                story_progress['progressao_historica'].append(f"Fim das férias - Ano {ano}, Bimestre {bimestre}")
+
+                # Update story progress
+                story_progress['bimestre_corrente'] = bimestre
+                story_progress['ano_corrente'] = ano
+                story_progress['ferias'] = ferias
+
+                # Update player in database
+                update_player(interaction.user.id, story_progress=json.dumps(story_progress))
+
+                # Create embed
+                embed = create_basic_embed(
+                    title=f"Fim das Férias!",
+                    description=f"As férias acabaram e um novo bimestre começa!\n\nAgora você está no {bimestre}º bimestre do Ano {ano}.",
+                    color=0x00FF00  # Green
+                )
+
+                await interaction.response.send_message(embed=embed)
+                return
+
+            # If not in vacation, advance to next bimester or vacation
+            if bimestre < 4:
+                # Check if it's time for summer vacation (after 2nd bimester)
+                if bimestre == 2:
+                    bimestre = 2  # Stay in bimester 2 but mark as vacation
+                    ferias = True
+                    story_progress['progressao_historica'].append(f"Início das férias de verão - Ano {ano}")
+                    vacation_message = "Férias de Verão! Tempo de descansar e se divertir!"
+                else:
+                    bimestre += 1
+                    story_progress['progressao_historica'].append(f"Início do Bimestre {bimestre} - Ano {ano}")
+                    vacation_message = None
+            else:
+                # End of year, winter vacation
+                bimestre = 4  # Stay in bimester 4 but mark as vacation
+                ferias = True
+                story_progress['progressao_historica'].append(f"Início das férias de inverno - Ano {ano}")
+                vacation_message = "Férias de Inverno! Tempo de celebrar o fim do ano letivo!"
+
+            # Update story progress
+            story_progress['bimestre_corrente'] = bimestre
+            story_progress['ano_corrente'] = ano
+            story_progress['ferias'] = ferias
+
+            # Update player in database
+            update_player(interaction.user.id, story_progress=json.dumps(story_progress))
+
+            # Create embed
+            if ferias:
+                embed = create_basic_embed(
+                    title=f"Férias!",
+                    description=f"{vacation_message}\n\nVocê está de férias após o {bimestre}º bimestre do Ano {ano}.",
+                    color=0x00BFFF  # Deep Sky Blue
+                )
+            else:
+                embed = create_basic_embed(
+                    title=f"Novo Bimestre!",
+                    description=f"Você avançou para o {bimestre}º bimestre do Ano {ano}.",
+                    color=0x9370DB  # Medium Purple
+                )
+
+            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            logger.error(f"Error in slash_bimestre: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao avançar o bimestre. Por favor, tente novamente mais tarde.")
+
+    @story_group.command(name="relacionamento", description="Verificar ou modificar seus relacionamentos com personagens")
+    async def slash_relacionamento(self, interaction: discord.Interaction, personagem: str = None, afinidade: int = None):
+        """Check or modify character relationships."""
+        try:
+            # Check if player exists
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
+                    f"Use /registro ingressar para criar seu personagem."
+                )
+                return
+
+            # Check if player has story progress
+            story_progress = player.get('story_progress', None)
+            if not story_progress:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não iniciou o modo história. "
+                    f"Use /historia iniciar para começar sua jornada!"
+                )
+                return
+            elif isinstance(story_progress, str):
+                # Parse JSON string to dict
+                story_progress = json.loads(story_progress)
+
+            # Make sure relacionamentos field exists
+            if 'relacionamentos' not in story_progress:
+                story_progress['relacionamentos'] = {}
+
+            # If no character specified, show all relationships
+            if not personagem:
+                if not story_progress['relacionamentos']:
+                    await interaction.response.send_message("Você ainda não desenvolveu relacionamentos com nenhum personagem.")
+                    return
+
+                # Create embed with all relationships
+                embed = create_basic_embed(
+                    title=f"Seus Relacionamentos",
+                    description=f"Veja sua afinidade com os personagens da Academia Tokugawa:",
+                    color=0xFF69B4  # Hot Pink
+                )
+
+                for char, data in story_progress['relacionamentos'].items():
+                    afinidade = data['afinidade']
+                    status = data['status']
+
+                    # Determine relationship level emoji
+                    if status == "romance":
+                        emoji = "❤️"
+                    elif status == "amigo":
+                        emoji = "🤝"
+                    elif afinidade >= 30:
+                        emoji = "😊"
+                    elif afinidade >= 10:
+                        emoji = "🙂"
+                    elif afinidade < 0:
+                        emoji = "😠"
+                    else:
+                        emoji = "😐"
+
+                    embed.add_field(
+                        name=f"{char} {emoji}",
+                        value=f"Afinidade: {afinidade}\nStatus: {status.capitalize()}",
+                        inline=True
+                    )
+
+                await interaction.response.send_message(embed=embed)
+                return
+
+            # If character and afinidade specified, modify relationship
+            if personagem and afinidade is not None:
+                # Initialize character if not exists
+                if personagem not in story_progress['relacionamentos']:
+                    story_progress['relacionamentos'][personagem] = {
+                        "afinidade": 0,
+                        "status": "neutro"
+                    }
+
+                # Add afinidade
+                current_afinidade = story_progress['relacionamentos'][personagem]['afinidade']
+                new_afinidade = current_afinidade + afinidade
+
+                # Update status based on afinidade
+                if new_afinidade >= 100:
+                    status = "romance"
+                elif new_afinidade >= 50:
+                    status = "amigo"
+                elif new_afinidade >= 20:
+                    status = "conhecido"
+                elif new_afinidade < 0:
+                    status = "rival"
+                else:
+                    status = "neutro"
+
+                # Update relationship
+                story_progress['relacionamentos'][personagem] = {
+                    "afinidade": new_afinidade,
+                    "status": status
+                }
+
+                # Update player in database
+                update_player(interaction.user.id, story_progress=json.dumps(story_progress))
+
+                # Determine message based on afinidade change
+                if afinidade > 0:
+                    message = f"Sua afinidade com {personagem} aumentou em {afinidade} pontos!"
+                    if status != story_progress['relacionamentos'][personagem]['status']:
+                        message += f"\nSeu relacionamento evoluiu para: {status.capitalize()}"
+                elif afinidade < 0:
+                    message = f"Sua afinidade com {personagem} diminuiu em {abs(afinidade)} pontos."
+                    if status != story_progress['relacionamentos'][personagem]['status']:
+                        message += f"\nSeu relacionamento mudou para: {status.capitalize()}"
+                else:
+                    message = f"Sua afinidade com {personagem} permanece em {new_afinidade} pontos."
+
+                # Create embed
+                embed = create_basic_embed(
+                    title=f"Relacionamento com {personagem}",
+                    description=message,
+                    color=0xFF69B4  # Hot Pink
+                )
+
+                embed.add_field(
+                    name="Afinidade Atual",
+                    value=f"{new_afinidade} pontos",
+                    inline=True
+                )
+
+                embed.add_field(
+                    name="Status",
+                    value=status.capitalize(),
+                    inline=True
+                )
+
+                await interaction.response.send_message(embed=embed)
+                return
+
+            # If only character specified, show relationship with that character
+            if personagem in story_progress['relacionamentos']:
+                char_data = story_progress['relacionamentos'][personagem]
+                afinidade = char_data['afinidade']
+                status = char_data['status']
+
+                # Determine relationship level emoji
+                if status == "romance":
+                    emoji = "❤️"
+                elif status == "amigo":
+                    emoji = "🤝"
+                elif afinidade >= 30:
+                    emoji = "😊"
+                elif afinidade >= 10:
+                    emoji = "🙂"
+                elif afinidade < 0:
+                    emoji = "😠"
+                else:
+                    emoji = "😐"
+
+                # Create embed
+                embed = create_basic_embed(
+                    title=f"Relacionamento com {personagem} {emoji}",
+                    description=f"Veja sua afinidade com {personagem}:",
+                    color=0xFF69B4  # Hot Pink
+                )
+
+                embed.add_field(
+                    name="Afinidade",
+                    value=f"{afinidade} pontos",
+                    inline=True
+                )
+
+                embed.add_field(
+                    name="Status",
+                    value=status.capitalize(),
+                    inline=True
+                )
+
+                await interaction.response.send_message(embed=embed)
+            else:
+                await interaction.response.send_message(f"Você ainda não desenvolveu um relacionamento com {personagem}.")
+        except Exception as e:
+            logger.error(f"Error in slash_relacionamento: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao verificar relacionamentos. Por favor, tente novamente mais tarde.")
+
     @story_group.command(name="status", description="Verificar seu progresso no modo história")
     async def slash_story_status(self, interaction: discord.Interaction):
         """Check story mode progress."""
@@ -921,6 +1318,19 @@ class StoryMode(commands.Cog):
             # Add challenge chapter info if in one
             if story_progress.get('current_challenge_chapter'):
                 current_status += f"\n**Capítulo de Desafio:** {story_progress['current_challenge_chapter']}"
+
+            # Add bimester info
+            bimestre = story_progress.get('bimestre_corrente', 1)
+            ano_escolar = story_progress.get('ano_corrente', 1)
+            ferias = story_progress.get('ferias', False)
+
+            if ferias:
+                if bimestre == 2:
+                    current_status += f"\n\n**Período Escolar:** Férias de Verão (Ano {ano_escolar})"
+                else:
+                    current_status += f"\n\n**Período Escolar:** Férias de Inverno (Ano {ano_escolar})"
+            else:
+                current_status += f"\n\n**Período Escolar:** {bimestre}º Bimestre do Ano {ano_escolar}"
 
             embed.add_field(
                 name="Progresso Atual",
@@ -999,6 +1409,44 @@ class StoryMode(commands.Cog):
                     inline=False
                 )
 
+            # Add relationship information
+            relacionamentos = story_progress.get('relacionamentos', {})
+            if relacionamentos:
+                # Sort relationships by affinity (highest first)
+                top_relationships = sorted(
+                    relacionamentos.items(), 
+                    key=lambda x: x[1]['afinidade'], 
+                    reverse=True
+                )[:3]  # Show top 3 relationships
+
+                relationships_text = ""
+                for char, data in top_relationships:
+                    afinidade = data['afinidade']
+                    status = data['status']
+
+                    # Determine relationship level emoji
+                    if status == "romance":
+                        emoji = "❤️"
+                    elif status == "amigo":
+                        emoji = "🤝"
+                    elif afinidade >= 30:
+                        emoji = "😊"
+                    elif afinidade >= 10:
+                        emoji = "🙂"
+                    elif afinidade < 0:
+                        emoji = "😠"
+                    else:
+                        emoji = "😐"
+
+                    relationships_text += f"{char} {emoji} - {status.capitalize()} ({afinidade} pontos)\n"
+
+                if relationships_text:
+                    embed.add_field(
+                        name="Principais Relacionamentos",
+                        value=relationships_text,
+                        inline=False
+                    )
+
             await interaction.response.send_message(embed=embed)
         except Exception as e:
             logger.error(f"Error in slash_story_status: {e}")
@@ -1017,6 +1465,34 @@ class StoryMode(commands.Cog):
         if current_dialogue >= len(chapter_data["dialogues"]):
             # Check if there are choices to make
             if "choices" in chapter_data:
+                # Get player data to check if they've already made this choice
+                player = get_player(user_id)
+                story_progress = player.get('story_progress', None)
+                if not story_progress:
+                    story_progress = {}
+                elif isinstance(story_progress, str):
+                    story_progress = json.loads(story_progress)
+
+                # Get current chapter info
+                year = story_progress.get('current_year', 1)
+                chapter = story_progress.get('current_chapter', 1)
+
+                # Check if player has already made a choice in this chapter
+                if 'story_choices' in story_progress:
+                    for choice in chapter_data["choices"]:
+                        choice_key = f"{year}-{chapter}-{choice['text']}"
+                        if choice_key in story_progress['story_choices'] and story_progress['story_choices'][choice_key]:
+                            # Player already made this choice, skip to next dialogue
+                            await channel.send(f"Você já escolheu '{choice['text']}' anteriormente. Continuando a história...")
+
+                            # Set the next dialogue based on this choice
+                            self.active_stories[user_id]["current_dialogue"] = choice['next_dialogue']
+
+                            # Continue the story
+                            await self.send_next_dialogue(user_id, channel)
+                            return
+
+                # If no previous choice was found, send the choices
                 await self.send_choices(user_id, channel, chapter_data["choices"])
             else:
                 # Complete the chapter
@@ -1086,9 +1562,31 @@ class StoryMode(commands.Cog):
                     # Process the choice
                     chosen = choices[index]
 
+                    # Get player data to update story progress
+                    player = get_player(user_id)
+                    story_progress = player.get('story_progress', None)
+                    if not story_progress:
+                        story_progress = {}
+                    elif isinstance(story_progress, str):
+                        story_progress = json.loads(story_progress)
+
+                    # Initialize story_choices if not present
+                    if 'story_choices' not in story_progress:
+                        story_progress['story_choices'] = {}
+
+                    # Get current chapter info
+                    year = story_progress.get('current_year', 1)
+                    chapter = story_progress.get('current_chapter', 1)
+
+                    # Record this choice in story_progress
+                    choice_key = f"{year}-{chapter}-{chosen['text']}"
+                    story_progress['story_choices'][choice_key] = True
+
+                    # Update player's story progress in database
+                    update_player(user_id, story_progress=json.dumps(story_progress))
+
                     # Check if there's an attribute check
                     if "attribute_check" in chosen:
-                        player = get_player(user_id)
                         attribute = chosen["attribute_check"]
                         threshold = chosen["threshold"]
 
@@ -1097,6 +1595,16 @@ class StoryMode(commands.Cog):
 
                             # Set the next dialogue based on successful check
                             self.active_stories[user_id]["current_dialogue"] = chosen["next_dialogue"]
+
+                            # Check if this choice affects character affinity
+                            if "affinity_change" in chosen:
+                                for char, points in chosen["affinity_change"].items():
+                                    relationship = await self.adicionar_afinidade(user_id, char, points)
+                                    if relationship and points != 0:
+                                        if points > 0:
+                                            await channel.send(f"💗 Sua afinidade com {char} aumentou em {points} pontos!")
+                                        else:
+                                            await channel.send(f"💔 Sua afinidade com {char} diminuiu em {abs(points)} pontos.")
 
                             # Continue the story
                             await self.send_next_dialogue(user_id, channel)
@@ -1113,6 +1621,16 @@ class StoryMode(commands.Cog):
 
                         # Set the next dialogue
                         self.active_stories[user_id]["current_dialogue"] = chosen["next_dialogue"]
+
+                        # Check if this choice affects character affinity
+                        if "affinity_change" in chosen:
+                            for char, points in chosen["affinity_change"].items():
+                                relationship = await self.adicionar_afinidade(user_id, char, points)
+                                if relationship and points != 0:
+                                    if points > 0:
+                                        await channel.send(f"💗 Sua afinidade com {char} aumentou em {points} pontos!")
+                                    else:
+                                        await channel.send(f"💔 Sua afinidade com {char} diminuiu em {abs(points)} pontos.")
 
                         # Continue the story
                         await self.send_next_dialogue(user_id, channel)
