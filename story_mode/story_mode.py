@@ -339,6 +339,19 @@ class StoryMode:
         # Start the chapter
         result = chapter.start(player_data)
 
+        # Log the result for debugging
+        logger.debug(f"[DEBUG_LOG] StoryMode start_story() - result keys: {result.keys()}")
+        if "chapter_data" in result:
+            logger.debug(f"[DEBUG_LOG] StoryMode start_story() - chapter_data keys: {result['chapter_data'].keys()}")
+            if "choices" in result["chapter_data"]:
+                logger.debug(f"[DEBUG_LOG] StoryMode start_story() - choices: {result['chapter_data']['choices']}")
+
+        # Check for shared dialogue in chapter data
+        if hasattr(chapter, 'data') and 'shared_dialogue' in chapter.data:
+            if "chapter_data" in result:
+                result["chapter_data"]["shared_dialogue"] = chapter.data.get('shared_dialogue', [])
+                logger.debug(f"[DEBUG_LOG] StoryMode start_story() - added shared_dialogue to result")
+
         # Check for events
         available_events = self.event_manager.check_for_events(result["player_data"])
         if available_events:
@@ -389,6 +402,13 @@ class StoryMode:
 
         # Process the choice
         result = chapter.process_choice(player_data, choice_index)
+
+        # Log the result for debugging
+        logger.debug(f"[DEBUG_LOG] StoryMode process_choice() - result keys: {result.keys()}")
+        if "chapter_data" in result:
+            logger.debug(f"[DEBUG_LOG] StoryMode process_choice() - chapter_data keys: {result['chapter_data'].keys()}")
+            if "choices" in result["chapter_data"]:
+                logger.debug(f"[DEBUG_LOG] StoryMode process_choice() - choices: {result['chapter_data']['choices']}")
 
         # Record the choice in the progress manager
         choice_key = f"choice_{choice_index}"
