@@ -201,7 +201,8 @@ def create_inventory_embed(player):
         for item_id, item in player['inventory'].items():
             rarity = RARITIES.get(item['rarity'], RARITIES['common'])
             item_type = item['type'].capitalize()
-            items_text.append(f"{rarity['emoji']} **{item['name']}** (ID: {item_id}, Tipo: {item_type}) - {item['description']}")
+            equipped_text = " [EQUIPADO]" if item.get('equipped', False) else ""
+            items_text.append(f"{rarity['emoji']} **{item['name']}**{equipped_text} (ID: {item_id}, Tipo: {item_type}) - {item['description']}")
 
         embed.add_field(
             name="Itens",
@@ -272,17 +273,17 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
 
 def create_db_event_embed(event, show_participants=True):
     """Create an embed displaying an event from the database.
-    
+
     Args:
         event (dict): Event data from the database
         show_participants (bool): Whether to show participants list
-        
+
     Returns:
         discord.Embed: The created embed
     """
     # Determine if event is active or completed
     is_completed = event.get('completed', False)
-    
+
     # Set color based on event status
     if is_completed:
         color = 0x808080  # Gray for completed events
@@ -298,11 +299,11 @@ def create_db_event_embed(event, show_participants=True):
             "item": 0x008000,        # Green
         }
         color = event_colors.get(event.get('type', ''), 0x1E90FF)  # Default blue
-    
+
     # Format times
     start_time = event.get('start_time', '')
     end_time = event.get('end_time', '')
-    
+
     # Try to parse ISO format strings to datetime objects
     try:
         if isinstance(start_time, str):
@@ -312,7 +313,7 @@ def create_db_event_embed(event, show_participants=True):
     except (ValueError, TypeError):
         # If parsing fails, use the original values
         pass
-    
+
     # Create embed
     embed = discord.Embed(
         title=event.get('name', 'Evento'),
@@ -320,20 +321,20 @@ def create_db_event_embed(event, show_participants=True):
         color=color,
         timestamp=datetime.utcnow()
     )
-    
+
     # Add event details
     embed.add_field(
         name="Tipo",
         value=event.get('type', 'Desconhecido').capitalize(),
         inline=True
     )
-    
+
     embed.add_field(
         name="Status",
         value="Concluído" if is_completed else "Ativo",
         inline=True
     )
-    
+
     # Format and add times
     if start_time:
         if isinstance(start_time, datetime):
@@ -345,7 +346,7 @@ def create_db_event_embed(event, show_participants=True):
             value=start_str,
             inline=True
         )
-    
+
     if end_time:
         if isinstance(end_time, datetime):
             end_str = end_time.strftime("%d/%m/%Y %H:%M")
@@ -356,7 +357,7 @@ def create_db_event_embed(event, show_participants=True):
             value=end_str,
             inline=True
         )
-    
+
     # Add participants if requested and available
     if show_participants and event.get('participants'):
         participants = event.get('participants', [])
@@ -366,13 +367,13 @@ def create_db_event_embed(event, show_participants=True):
                 participants_text = "\n".join([f"<@{p}>" for p in participants[:10]]) + f"\n... e mais {len(participants) - 10} participantes"
             else:
                 participants_text = "\n".join([f"<@{p}>" for p in participants])
-                
+
             embed.add_field(
                 name=f"Participantes ({len(participants)})",
                 value=participants_text,
                 inline=False
             )
-    
+
     # Add additional data if available
     data = event.get('data', {})
     if data and isinstance(data, dict):
@@ -396,8 +397,8 @@ def create_db_event_embed(event, show_participants=True):
                         value="\n".join(teams_text),
                         inline=False
                     )
-    
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
-    
+
     return embed
