@@ -7,7 +7,7 @@ from utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPF
 
 class HPFactorCalculator(IHPFactorCalculator):
     """Calculator for HP factor-related calculations."""
-    
+
     @staticmethod
     def calculate_factor(current_hp, max_hp):
         """Calculate the factor that affects player attributes based on HP.
@@ -25,6 +25,10 @@ class HPFactorCalculator(IHPFactorCalculator):
         # Ensure we don't divide by zero
         if max_hp <= 0:
             return 1.0
+
+        # Handle negative HP values
+        if current_hp < 0:
+            current_hp = 0
 
         # Calculate HP percentage
         hp_percentage = current_hp / max_hp
