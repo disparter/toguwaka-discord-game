@@ -1,0 +1,289 @@
+{
+  "kai_flameheart": {
+    "type": "student",
+    "name": "Kai Flameheart",
+    "background": {
+      "background": "Nascido em uma família de manipuladores de fogo, Kai sempre foi considerado um prodígio. Seus pais eram heróis conhecidos, mas morreram em uma missão quando ele tinha apenas 10 anos. Desde então, ele jurou se tornar o mais forte para proteger aqueles que ama.",
+      "motivation": "Tornar-se forte o suficiente para nunca mais perder alguém importante.",
+      "secrets": "Kai esconde que, em momentos de extrema emoção, perde o controle de seus poderes, o que já causou acidentes graves no passado."
+    },
+    "year": 2,
+    "club_id": 1,
+    "power": "Fogo",
+    "hierarchy_tier": 4,
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "E aí, novato! Pronto para sentir o calor do treinamento?"},
+        "friendly": {"text": "Ei, bom te ver! Como vai o treinamento?"},
+        "close": {"text": "Meu amigo! Estava esperando por você!"},
+        "trusted": {"text": "Finalmente você chegou! Tenho algo importante para te contar..."}
+      },
+      "training": {
+        "default": {"text": "Se quiser treinar comigo, vai ter que aguentar o calor. Não pego leve com ninguém."},
+        "friendly": {"text": "Vamos treinar juntos! Tenho algumas técnicas que acho que você vai gostar."},
+        "close": {"text": "Você tem melhorado muito! Vamos tentar algo mais avançado hoje?"},
+        "trusted": {"text": "Você é um dos poucos que consegue acompanhar meu ritmo. Vamos treinar aquela técnica secreta que te mostrei."}
+      },
+      "personal": {
+        "default": {"text": "Minha vida pessoal? Não é da sua conta."},
+        "friendly": {"text": "Meus pais eram heróis, sabia? Quero ser como eles um dia."},
+        "close": {"text": "Desde que perdi meus pais, tenho medo de perder pessoas próximas. Por isso treino tanto."},
+        "trusted": {"text": "Às vezes tenho pesadelos sobre o dia em que meus pais morreram. Não contei isso para mais ninguém."}
+      }
+    }
+  },
+  "luna_mindweaver": {
+    "type": "student",
+    "name": "Luna Mindweaver",
+    "background": {
+      "background": "Luna cresceu isolada devido à natureza de seus poderes. Capaz de ver os pensamentos dos outros desde criança, ela nunca conseguiu ter uma vida normal. A Academia Tokugawa foi o primeiro lugar onde ela encontrou pessoas que a entendiam.",
+      "motivation": "Encontrar um modo de controlar seus poderes para poder viver uma vida normal.",
+      "secrets": "Luna descobriu documentos secretos indicando que a academia está conduzindo experimentos com estudantes de alto potencial."
+    },
+    "year": 3,
+    "club_id": 2,
+    "power": "Telepatia",
+    "hierarchy_tier": 3,
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Ah, olá. Sua mente é... interessante."},
+        "friendly": {"text": "Que bom te ver! Seus pensamentos estão mais organizados hoje."},
+        "close": {"text": "Estava pensando em você! Literalmente, senti sua presença mental se aproximando."},
+        "trusted": {"text": "Finalmente alguém com quem posso ser completamente honesta. Não preciso fingir com você."}
+      },
+      "training": {
+        "default": {"text": "Quer treinar telepatia? Primeiro precisa aprender a proteger sua mente."},
+        "friendly": {"text": "Vamos praticar barreiras mentais hoje. Tente bloquear meus pensamentos."},
+        "close": {"text": "Você está ficando bom nisso! Conseguiu bloquear minha leitura por alguns segundos."},
+        "trusted": {"text": "Impressionante! Poucos conseguem resistir à minha telepatia como você."}
+      },
+      "secrets": {
+        "default": {"text": "Segredos? Não sei do que você está falando."},
+        "friendly": {"text": "Esta academia tem muitos segredos. Alguns deles são perigosos."},
+        "close": {"text": "Encontrei documentos estranhos na sala do diretor. Algo sobre 'Projeto Ascensão'."},
+        "trusted": {"text": "A academia está conduzindo experimentos com alunos poderosos. Precisamos descobrir mais sobre isso."}
+      }
+    }
+  },
+  "alexander_strategos": {
+    "type": "student",
+    "name": "Alexander Strategos",
+    "background": {
+      "background": "Filho de um político influente, Alexander cresceu nos bastidores do poder. Seu dom de persuasão se manifestou cedo, e ele logo aprendeu a manipular situações a seu favor. Veio para a academia não para aprender, mas para criar uma rede de contatos poderosos para o futuro.",
+      "motivation": "Construir uma base de poder para eventualmente entrar na política global.",
+      "secrets": "Alexander mantém um dossiê com segredos de todos os estudantes influentes, que usa como garantia quando necessário."
+    },
+    "year": 3,
+    "club_id": 3,
+    "power": "Persuasão",
+    "hierarchy_tier": 3,
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Ah, mais um peão no tabuleiro. Interessante."},
+        "friendly": {"text": "Um aliado potencial. Como vai? Alguma novidade interessante?"},
+        "close": {"text": "Meu caro amigo! Tenho uma proposta que pode nos beneficiar mutuamente."},
+        "trusted": {"text": "Finalmente alguém em quem posso confiar. Precisamos conversar em particular."}
+      },
+      "politics": {
+        "default": {"text": "A política da academia é complexa. Observe mais e fale menos, se quiser sobreviver."},
+        "friendly": {"text": "Sabia que o Conselho Estudantil tem mais poder que os professores em algumas decisões?"},
+        "close": {"text": "Estou planejando uma moção para aumentar os privilégios dos estudantes de elite. Posso contar com seu apoio?"},
+        "trusted": {"text": "Meu pai está pressionando o diretor para implementar um novo sistema de classificação. Isso vai mudar tudo na academia."}
+      },
+      "information": {
+        "default": {"text": "Informação? Tudo tem um preço, meu caro."},
+        "friendly": {"text": "Posso te contar alguns rumores interessantes, se você me ajudar com algo depois."},
+        "close": {"text": "Tenho informações sobre todos os líderes de clubes. O que gostaria de saber?"},
+        "trusted": {"text": "Vou te mostrar meu arquivo secreto. Tenho informações que poderiam derrubar metade da hierarquia da academia."}
+      }
+    }
+  },
+  "gaia_naturae": {
+    "type": "student",
+    "name": "Gaia Naturae",
+    "background": {
+      "background": "Gaia cresceu em uma comunidade isolada que venerava os elementos naturais. Quando seus poderes se manifestaram, ela foi considerada uma escolhida. Veio para a academia relutantemente, enviada pelos anciãos para aprender sobre o mundo moderno.",
+      "motivation": "Encontrar um equilíbrio entre o mundo moderno e suas tradições ancestrais.",
+      "secrets": "Gaia pode se comunicar com espíritos elementais, algo que esconde por temer ser considerada louca."
+    },
+    "year": 2,
+    "club_id": 4,
+    "power": "Controle Elemental",
+    "hierarchy_tier": 4,
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Os elementos sussurram sobre sua chegada. Seja bem-vindo."},
+        "friendly": {"text": "Sinto uma boa energia em você hoje. Os espíritos do ar estão agitados ao seu redor."},
+        "close": {"text": "Meu amigo! Os elementos se alegram com sua presença, assim como eu."},
+        "trusted": {"text": "Finalmente você chegou. Os espíritos me disseram que precisávamos conversar hoje."}
+      },
+      "elements": {
+        "default": {"text": "Os quatro elementos básicos - terra, água, fogo e ar - são a base de tudo. Respeite-os."},
+        "friendly": {"text": "Você tem afinidade com qual elemento? Posso sentir uma conexão especial em você."},
+        "close": {"text": "Sabia que cada pessoa tem um elemento dominante em sua aura? O seu parece ser {player_element}."},
+        "trusted": {"text": "Vou te contar um segredo: posso ver e falar com os espíritos elementais. Eles estão em toda parte, observando."}
+      },
+      "nature": {
+        "default": {"text": "A natureza está em desequilíbrio. Poucos percebem isso."},
+        "friendly": {"text": "Venho de uma comunidade que vive em harmonia com a natureza. A vida na cidade é... desafiadora."},
+        "close": {"text": "Às vezes vou ao bosque atrás da academia para meditar e me reconectar com os elementos. Você pode vir comigo um dia."},
+        "trusted": {"text": "Minha aldeia acredita que estamos à beira de uma catástrofe elemental. Vim para a academia buscar conhecimento para evitá-la."}
+      }
+    }
+  },
+  "ryuji_battleborn": {
+    "type": "student",
+    "name": "Ryuji Battleborn",
+    "background": {
+      "background": "Descendente de uma linhagem de guerreiros lendários, Ryuji treina desde que consegue se lembrar. Seu pai, extremamente rigoroso, nunca aceitou nada menos que a perfeição. Ryuji veio para a academia para provar seu valor e sair da sombra de seus ancestrais.",
+      "motivation": "Superar o legado de sua família e definir seu próprio caminho como guerreiro.",
+      "secrets": "Ryuji sofre de uma condição que enfraquece seu corpo após usar seus poderes no máximo, algo que esconde a todo custo."
+    },
+    "year": 3,
+    "club_id": 5,
+    "power": "Força Sobre-Humana",
+    "hierarchy_tier": 4,
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Hm. Outro novato. Mostre seu valor com ações, não palavras."},
+        "friendly": {"text": "Ah, é você. Vi seu último treino. Está melhorando."},
+        "close": {"text": "Meu companheiro de armas! Pronto para mais um dia de glória?"},
+        "trusted": {"text": "Meu amigo! Poucos conquistaram meu respeito como você. Vamos treinar juntos hoje?"}
+      },
+      "training": {
+        "default": {"text": "Quer treinar comigo? Prepare-se para dor. Não pego leve com ninguém."},
+        "friendly": {"text": "Seu estilo de luta é interessante. Tem potencial, mas precisa de disciplina."},
+        "close": {"text": "Você se tornou um oponente digno. Vamos tentar aquela técnica avançada hoje?"},
+        "trusted": {"text": "Poucos podem me acompanhar em um treino completo. Você ganhou o direito de conhecer as técnicas secretas da minha família."}
+      },
+      "personal": {
+        "default": {"text": "Minha vida pessoal não é assunto seu. Foque no treinamento."},
+        "friendly": {"text": "Minha família tem uma longa linhagem de guerreiros. A pressão para ser o melhor é... intensa."},
+        "close": {"text": "Meu pai nunca ficou satisfeito com nada que eu fizesse. Vim para a academia para provar meu valor."},
+        "trusted": {"text": "Tenho uma condição que me enfraquece após usar meus poderes ao máximo. Por favor, não conte a ninguém. Seria visto como fraqueza."}
+      }
+    }
+  },
+  "diretor_sombrio": {
+    "type": "faculty",
+    "name": "Diretor Sombrio",
+    "background": {
+      "background": "Antes conhecido como Prometheus, ele foi um dos primeiros usuários de poderes a se revelar ao mundo. Após testemunhar o preconceito e perseguição, decidiu criar um santuário para os jovens com habilidades especiais.",
+      "motivation": "Preparar a próxima geração para um inevitável conflito entre usuários de poderes e o resto da humanidade.",
+      "secrets": "O Diretor está lentamente perdendo o controle de seus poderes devido a um experimento fracassado, e busca desesperadamente um sucessor."
+    },
+    "position": "Diretor",
+    "subject": "Ética dos Poderes",
+    "years_teaching": 25,
+    "power": "Desconhecido",
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Ah, mais um jovem talento. Bem-vindo à Academia Tokugawa."},
+        "friendly": {"text": "Seus professores falam bem de você. Continue assim."},
+        "close": {"text": "Tenho observado seu progresso com grande interesse. Você tem um potencial raro."},
+        "trusted": {"text": "Finalmente a sós. Há assuntos importantes que precisamos discutir sobre o futuro da academia... e o seu."}
+      },
+      "academy": {
+        "default": {"text": "A Academia Tokugawa foi fundada para proteger e educar jovens com habilidades especiais. Nossa missão é nobre."},
+        "friendly": {"text": "Esta academia é mais do que uma escola - é um refúgio em um mundo que nem sempre entende pessoas como nós."},
+        "close": {"text": "Sabia que fundei esta academia após um... incidente desagradável envolvendo usuários de poderes e civis? A história tende a se repetir."},
+        "trusted": {"text": "A verdadeira missão da academia é preparar vocês para o inevitável conflito que virá. A humanidade sempre teme o que não compreende."}
+      },
+      "future": {
+        "default": {"text": "O futuro? Depende de como vocês, jovens, usarem seus dons."},
+        "friendly": {"text": "Estou ficando velho. Em breve, serão vocês que decidirão o destino dos usuários de poderes."},
+        "close": {"text": "Tenho grandes planos para você. Sua geração enfrentará desafios que a minha apenas vislumbrou."},
+        "trusted": {"text": "Meus poderes estão falhando. Preciso de um sucessor forte e visionário. Você poderia ser essa pessoa."}
+      }
+    }
+  },
+  "professora_chronos": {
+    "type": "faculty",
+    "name": "Professora Chronos",
+    "background": {
+      "background": "Uma misteriosa professora que parece saber demais sobre o futuro. Alguns alunos especulam que ela pode manipular o tempo, embora ela nunca tenha confirmado ou negado esses rumores.",
+      "motivation": "Garantir que certos eventos ocorram exatamente como devem para preservar a linha do tempo.",
+      "secrets": "Ela vem de um futuro distante onde usuários de poderes foram quase extintos, e está tentando mudar esse destino sutilmente."
+    },
+    "position": "Professora",
+    "subject": "História dos Poderes",
+    "years_teaching": 10,
+    "power": "Manipulação Temporal",
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Ah, você chegou. Exatamente no momento esperado."},
+        "friendly": {"text": "Estava esperando por você. Literalmente."},
+        "close": {"text": "Sua presença é reconfortante. Algumas linhas do tempo são mais... agradáveis que outras."},
+        "trusted": {"text": "Finalmente podemos conversar abertamente. O tempo é mais flexível do que as pessoas imaginam."}
+      },
+      "history": {
+        "default": {"text": "A história dos usuários de poderes é mais antiga do que os livros registram. Civilizações inteiras foram construídas e destruídas por causa de dons como os nossos."},
+        "friendly": {"text": "Sabia que houve outras academias como esta no passado? Todas acabaram de formas... trágicas."},
+        "close": {"text": "A história que ensino tem algumas... omissões estratégicas. Nem todos estão prontos para a verdade completa."},
+        "trusted": {"text": "Venho de um futuro onde quase todos os usuários de poderes foram exterminados. Estou aqui para mudar isso, sutilmente."}
+      },
+      "future": {
+        "default": {"text": "O futuro? É... complicado. E mais maleável do que você imagina."},
+        "friendly": {"text": "Suas escolhas importam mais do que você pensa. Cada decisão cria ramificações na linha do tempo."},
+        "close": {"text": "Já vi muitas versões do futuro. Algumas são brilhantes, outras... sombrias. Suas ações influenciarão qual delas se concretizará."},
+        "trusted": {"text": "Preciso da sua ajuda para mudar um evento específico que ocorrerá em breve. É crucial para evitar a catástrofe que vi em minha linha do tempo original."}
+      }
+    }
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "1_1": {
+    "type": "story",
+    "title": "Meu Primeiro Dia de Aula",
+    "description": "Seu primeiro dia na Academia Tokugawa. Conheça a escola e seus colegas.",
+    "dialogues": [
+      {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa! Estamos felizes em receber mais um estudante com habilidades especiais."},
+      {"npc": "Diretor", "text": "Aqui você aprenderá a controlar e aprimorar seus poderes, além de receber uma educação de primeira classe."},
+      {"npc": "Diretor", "text": "Lembre-se: com grandes poderes, vêm grandes responsabilidades. Esperamos que você honre o nome da nossa academia."},
+      {"npc": "Junie", "text": "Olá! Eu sou Junie, sua assistente virtual. Estou aqui para ajudar com qualquer dúvida que você tenha sobre a academia."},
+      {"npc": "Junie", "text": "A Academia Tokugawa não é uma escola comum. Aqui, os estudantes são classificados em uma hierarquia baseada em seus poderes."},
+      {"npc": "Junie", "text": "Os mais fortes ocupam posições de liderança, como Rei ou Rainha, Jack e Ás. Eles são responsáveis por manter a ordem."},
+      {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!"}
+    ],
+    "choices": [
+      {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7},
+      {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8},
+      {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9}
+    ],
+    "additional_dialogues": {
+      "7": [
+        {"npc": "Junie", "text": "Ótimo! Vamos começar pelo Clube das Chamas. Eles são conhecidos por seu treinamento intenso e foco em poderes destrutivos."},
+        {"npc": "Junie", "text": "Depois podemos visitar os Ilusionistas Mentais, o Conselho Político, os Elementalistas e o Clube de Combate."},
+        {"npc": "Junie", "text": "Cada clube tem sua própria filosofia e métodos de treinamento. Escolher o clube certo é importante para seu desenvolvimento."}
+      ],
+      "8": [
+        {"npc": "Junie", "text": "Entendo que queira descobrir a academia por conta própria. Isso mostra independência!"},
+        {"npc": "Junie", "text": "Apenas tome cuidado com as áreas restritas e respeite a hierarquia. Alguns estudantes mais poderosos podem não gostar de novatos em seus territórios."},
+        {"npc": "Junie", "text": "Se precisar de ajuda, estarei disponível a qualquer momento. Boa exploração!"}
+      ],
+      "9": [
+        {"npc": "Junie", "text": "Claro! A hierarquia da Academia Tokugawa é baseada no poder e habilidade dos estudantes."},
+        {"npc": "Junie", "text": "No topo estão os Reis e Rainhas - estudantes de nível 5 com poderes extraordinários. Eles são respeitados e temidos por todos."},
+        {"npc": "Junie", "text": "Logo abaixo estão os Jack e Ás - nível 4, a elite da academia, segundos apenas para o Rei/Rainha."},
+        {"npc": "Junie", "text": "O nível 3 é composto pela Elite - estudantes com habilidades excepcionais que se destacam em suas áreas."},
+        {"npc": "Junie", "text": "No nível 2 temos os estudantes Médio-Alto, com poderes acima da média, mas não excepcionais."},
+        {"npc": "Junie", "text": "O nível 1 é formado pelos estudantes Médios, com poderes medianos que formam a maioria da população estudantil."},
+        {"npc": "Junie", "text": "Por fim, no nível 0 estão os estudantes de Baixo nível, com poderes fracos ou sem poderes. Infelizmente, eles frequentemente enfrentam dificuldades sociais."},
+        {"npc": "Junie", "text": "Sua posição na hierarquia será determinada por suas habilidades, conquistas e como você se relaciona com os outros estudantes."},
+        {"npc": "Junie", "text": "Agora que você entende melhor nosso sistema, o que gostaria de fazer a seguir?"},
+        {"choices": [
+          {"text": "Vamos conhecer os clubes!", "next_dialogue": 7},
+          {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8}
+        ]}
+      ]
+    },
+    "completion_exp": 50,
+    "completion_tusd": 100,
+    "next_chapter": "1_2"
+  },
+  "1_2": {
+    "type": "story",
+    "title": "Registro no Clube",
+    "description": "Escolha um clube para se juntar e conheça seu líder.",
+    "dialogues": [
+      {"npc": "Junie", "text": "Agora é hora de escolher um clube! Cada clube tem seu próprio foco e atividades."},
+      {"npc": "Junie", "text": "Você já está registrado no clube {club_name}. Vamos conhecer o líder do clube!"}
+    ],
+    "club_leaders": {
+      "1": {"name": "Kai Flameheart", "description": "Um jovem de cabelos vermelhos e temperamento explosivo, mas com um coração leal."},
+      "2": {"name": "Luna Mindweaver", "description": "Uma garota misteriosa de olhos violeta que parece sempre saber o que você está pensando."},
+      "3": {"name": "Alexander Strategos", "description": "Um rapaz calculista de óculos que analisa cada situação como um jogo de xadrez."},
+      "4": {"name": "Gaia Naturae", "description": "Uma estudante serena conectada com a natureza, capaz de manipular todos os elementos."},
+      "5": {"name": "Ryuji Battleborn", "description": "Um lutador disciplinado que valoriza a força e a honra acima de tudo."}
+    },
+    "club_dialogues": {
+      "1": [
+        {"npc": "Kai Flameheart", "text": "Então você é o novato? Espero que tenha coragem suficiente para aguentar o calor do nosso treinamento!"},
+        {"npc": "Kai Flameheart", "text": "No Clube das Chamas, valorizamos a paixão e a intensidade. Nossos poderes são destrutivos, mas aprendemos a controlá-los."},
+        {"npc": "Kai Flameheart", "text": "Estamos sempre em rivalidade com os Elementalistas, mas é uma competição saudável... na maioria das vezes."},
+        {"npc": "Kai Flameheart", "text": "O que você acha? Está pronto para se juntar ao melhor clube da academia?", "choices": [
+          {"text": "Com certeza! Mal posso esperar para começar o treinamento!", "next_dialogue": 4, "affinity_change": {"Kai Flameheart": 10, "Gaia Naturae": -5}},
+          {"text": "Parece interessante, mas gostaria de conhecer os outros clubes também.", "next_dialogue": 4, "affinity_change": {"Kai Flameheart": -3}},
+          {"text": "Não sei se esse estilo combina comigo, mas vou dar uma chance.", "next_dialogue": 4, "affinity_change": {"Kai Flameheart": 0}}
+        ]}
+      ],
+      "2": [
+        {"npc": "Luna Mindweaver", "text": "Ah, uma nova mente para nossa coleção. Bem-vindo aos Ilusionistas Mentais."},
+        {"npc": "Luna Mindweaver", "text": "Aqui exploramos os recantos da mente e os limites da percepção. A realidade é apenas o que acreditamos que seja."},
+        {"npc": "Luna Mindweaver", "text": "Tenha cuidado com o Conselho Político. Eles sempre têm segundas intenções... não que nós não tenhamos também."},
+        {"npc": "Luna Mindweaver", "text": "O que você acha? Sua mente está pronta para explorar os mistérios da percepção?", "choices": [
+          {"text": "Fascinante! Sempre quis entender os segredos da mente.", "next_dialogue": 4, "affinity_change": {"Luna Mindweaver": 10, "Alexander Strategos": -5}},
+          {"text": "Parece um pouco assustador, mas estou curioso.", "next_dialogue": 4, "affinity_change": {"Luna Mindweaver": 5}},
+          {"text": "Não sei se gosto da ideia de alguém mexendo com minha mente.", "next_dialogue": 4, "affinity_change": {"Luna Mindweaver": -3}}
+        ]}
+      ],
+      "3": [
+        {"npc": "Alexander Strategos", "text": "Um novo peão no tabuleiro. Interessante. Bem-vindo ao Conselho Político."},
+        {"npc": "Alexander Strategos", "text": "Nosso clube controla a política estudantil da academia. Influência e estratégia são nossas armas."},
+        {"npc": "Alexander Strategos", "text": "Os Ilusionistas pensam que podem ler nossas mentes, mas sempre estamos três passos à frente."},
+        {"npc": "Alexander Strategos", "text": "E então? Você tem o que é preciso para jogar o jogo do poder?", "choices": [
+          {"text": "Absolutamente. Sempre gostei de estratégia e influência.", "next_dialogue": 4, "affinity_change": {"Alexander Strategos": 10, "Luna Mindweaver": -5}},
+          {"text": "Talvez. Preciso entender melhor como funciona a política da academia.", "next_dialogue": 4, "affinity_change": {"Alexander Strategos": 3}},
+          {"text": "Não gosto muito de jogos políticos, prefiro ser direto.", "next_dialogue": 4, "affinity_change": {"Alexander Strategos": -5, "Ryuji Battleborn": 3}}
+        ]}
+      ],
+      "4": [
+        {"npc": "Gaia Naturae", "text": "A natureza te trouxe até nós. Seja bem-vindo aos Elementalistas."},
+        {"npc": "Gaia Naturae", "text": "Estudamos a harmonia dos elementos e como utilizá-los em equilíbrio com o mundo ao nosso redor."},
+        {"npc": "Gaia Naturae", "text": "O Clube das Chamas tem poder, mas falta-lhes controle e respeito pelos elementos."},
+        {"npc": "Gaia Naturae", "text": "Você sente a conexão com os elementos? Está disposto a aprender o caminho do equilíbrio?", "choices": [
+          {"text": "Sim, sempre me senti conectado com a natureza e seus elementos.", "next_dialogue": 4, "affinity_change": {"Gaia Naturae": 10, "Kai Flameheart": -5}},
+          {"text": "Acho fascinante o controle de múltiplos elementos, quero aprender mais.", "next_dialogue": 4, "affinity_change": {"Gaia Naturae": 5}},
+          {"text": "Prefiro me especializar em um elemento poderoso do que dividir meu foco.", "next_dialogue": 4, "affinity_change": {"Gaia Naturae": -3, "Kai Flameheart": 3}}
+        ]}
+      ],
+      "5": [
+        {"npc": "Ryuji Battleborn", "text": "Mais um guerreiro se junta às nossas fileiras. Mostre seu valor no Clube de Combate."},
+        {"npc": "Ryuji Battleborn", "text": "Aqui, aprimoramos nossas técnicas de luta e nos tornamos mais fortes a cada dia. A disciplina é nossa fundação."},
+        {"npc": "Ryuji Battleborn", "text": "Todos os outros clubes têm suas forças, mas no final, é o guerreiro mais forte que permanece de pé."},
+        {"npc": "Ryuji Battleborn", "text": "Você tem a disciplina e a determinação para se tornar um verdadeiro guerreiro?", "choices": [
+          {"text": "Sim! Estou pronto para treinar duro e me tornar o mais forte!", "next_dialogue": 4, "affinity_change": {"Ryuji Battleborn": 10, "Alexander Strategos": -3}},
+          {"text": "Acredito que a força vem do equilíbrio entre corpo e mente.", "next_dialogue": 4, "affinity_change": {"Ryuji Battleborn": 5, "Luna Mindweaver": 2}},
+          {"text": "Prefiro usar estratégia a força bruta, mas estou disposto a aprender.", "next_dialogue": 4, "affinity_change": {"Ryuji Battleborn": -2, "Alexander Strategos": 5}}
+        ]}
+      ]
+    },
+    "completion_exp": 75,
+    "completion_tusd": 150,
+    "next_chapter": "1_3"
+  },
+  "1_3": {
+    "type": "branching",
+    "title": "Primeiro Desafio",
+    "description": "Enfrente seu primeiro desafio na academia e mostre seu valor.",
+    "dialogues": [
+      {"npc": "Junie", "text": "Agora que você está estabelecido em seu clube, é hora de enfrentar seu primeiro desafio."},
+      {"npc": "Junie", "text": "Cada estudante precisa provar seu valor para estabelecer sua posição na hierarquia da academia."},
+      {"npc": "Junie", "text": "Seu desafio será determinado pelo clube que você escolheu."}
+    ],
+    "club_specific_dialogues": {
+      "1": [
+        {"npc": "Kai Flameheart", "text": "Seu desafio é simples: controle seu fogo interior. Você deve acender e manter uma chama por uma hora sem que ela se apague ou saia de controle."},
+        {"npc": "Kai Flameheart", "text": "Isso parece fácil, mas muitos falham. O fogo reflete nossas emoções, e manter o equilíbrio é mais difícil do que parece."},
+        {"npc": "Kai Flameheart", "text": "Está pronto para começar?", "choices": [
+          {"text": "Sim, vou mostrar que posso controlar o fogo perfeitamente.", "next_dialogue": 4, "attribute_check": "power_stat", "threshold": 8},
+          {"text": "Vou tentar me concentrar e manter a calma durante o teste.", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 8},
+          {"text": "Posso fazer isso, mas preciso de algumas dicas primeiro.", "next_dialogue": 6}
+        ]}
+      ],
+      "2": [
+        {"npc": "Luna Mindweaver", "text": "Seu desafio é entrar na mente de outro estudante e encontrar um objeto específico que escondi lá. Sem ser detectado, é claro."},
+        {"npc": "Luna Mindweaver", "text": "A mente é um labirinto de pensamentos, memórias e emoções. Navegar por ela requer sutileza e precisão."},
+        {"npc": "Luna Mindweaver", "text": "Está pronto para mergulhar nas profundezas da consciência?", "choices": [
+          {"text": "Sim, vou entrar e sair sem deixar rastros.", "next_dialogue": 4, "attribute_check": "intellect", "threshold": 10},
+          {"text": "Vou usar minha intuição para encontrar o caminho certo.", "next_dialogue": 5, "attribute_check": "charisma", "threshold": 8},
+          {"text": "Isso parece invasivo. Não há outro desafio?", "next_dialogue": 6, "affinity_change": {"Luna Mindweaver": -5}}
+        ]}
+      ],
+      "3": [
+        {"npc": "Alexander Strategos", "text": "Seu desafio é negociar um acordo entre dois clubes rivais que estão em conflito por recursos da academia."},
+        {"npc": "Alexander Strategos", "text": "Você terá que usar persuasão, estratégia e talvez um pouco de manipulação para conseguir um resultado favorável para ambos."},
+        {"npc": "Alexander Strategos", "text": "Está pronto para mostrar suas habilidades diplomáticas?", "choices": [
+          {"text": "Sim, vou encontrar um compromisso que beneficie ambos os lados.", "next_dialogue": 4, "attribute_check": "charisma", "threshold": 10},
+          {"text": "Vou analisar a situação e encontrar a solução mais eficiente.", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 10},
+          {"text": "Prefiro usar minha influência para forçar um acordo.", "next_dialogue": 6, "attribute_check": "power_stat", "threshold": 8}
+        ]}
+      ],
+      "4": [
+        {"npc": "Gaia Naturae", "text": "Seu desafio é harmonizar os quatro elementos básicos: terra, água, fogo e ar. Você deve criar um pequeno ecossistema em equilíbrio."},
+        {"npc": "Gaia Naturae", "text": "Cada elemento tem sua própria natureza e tendência a dominar os outros. Encontrar o equilíbrio perfeito é a essência do nosso clube."},
+        {"npc": "Gaia Naturae", "text": "Está pronto para demonstrar sua conexão com os elementos?", "choices": [
+          {"text": "Sim, vou criar um ecossistema em perfeita harmonia.", "next_dialogue": 4, "attribute_check": "intellect", "threshold": 8},
+          {"text": "Vou me conectar com cada elemento individualmente primeiro.", "next_dialogue": 5, "attribute_check": "power_stat", "threshold": 8},
+          {"text": "Posso pedir ajuda a outro membro do clube?", "next_dialogue": 6, "affinity_change": {"Gaia Naturae": -3}}
+        ]}
+      ],
+      "5": [
+        {"npc": "Ryuji Battleborn", "text": "Seu desafio é simples: você deve me enfrentar em combate. Não espero que vença, apenas que mostre coragem e determinação."},
+        {"npc": "Ryuji Battleborn", "text": "Um verdadeiro guerreiro não teme a derrota, mas aprende com ela. Mostre-me sua força de vontade."},
+        {"npc": "Ryuji Battleborn", "text": "Está pronto para o combate?", "choices": [
+          {"text": "Sim, vou lutar com toda minha força!", "next_dialogue": 4, "attribute_check": "power_stat", "threshold": 10},
+          {"text": "Vou usar estratégia para compensar a diferença de poder.", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 10},
+          {"text": "Vou mostrar minha determinação, mesmo sabendo que não posso vencer.", "next_dialogue": 6, "affinity_change": {"Ryuji Battleborn": 5}}
+        ]}
+      ]
+    },
+    "challenge_results": {
+      "success": [
+        {"npc": "Junie", "text": "Parabéns! Você completou seu primeiro desafio com sucesso."},
+        {"npc": "Junie", "text": "Isso demonstra seu potencial e ajudará a estabelecer sua posição na hierarquia da academia."},
+        {"npc": "Junie", "text": "Continue assim e logo você será reconhecido por todos."}
+      ],
+      "failure": [
+        {"npc": "Junie", "text": "Infelizmente, você não conseguiu completar o desafio desta vez."},
+        {"npc": "Junie", "text": "Não se preocupe, isso é apenas o começo. Aprenda com esta experiência e tente novamente quando estiver pronto."},
+        {"npc": "Junie", "text": "A verdadeira força vem da perseverança diante do fracasso."}
+      ]
+    },
+    "branches": {
+      "success_branch": {
+        "conditions": {
+          "challenge_result": "success"
+        },
+        "next_chapter": "1_4_success"
+      },
+      "failure_branch": {
+        "conditions": {
+          "challenge_result": "failure"
+        },
+        "next_chapter": "1_4_failure"
+      }
+    },
+    "completion_exp": 100,
+    "completion_tusd": 200
+  },
+  "challenge_biblioteca_proibida": {
+    "type": "challenge",
+    "title": "O Segredo da Biblioteca",
+    "description": "Descubra um segredo oculto na biblioteca da academia que pode mudar sua compreensão sobre os poderes.",
+    "challenge_type": "exploration",
+    "difficulty": 2,
+    "dialogues": [
+      {"npc": "Junie", "text": "A biblioteca da Academia Tokugawa contém conhecimentos acumulados por séculos sobre usuários de poderes."},
+      {"npc": "Junie", "text": "Recentemente, ouvi rumores sobre uma seção restrita que contém informações sobre a origem dos poderes."},
+      {"npc": "Bibliotecária", "text": "Bem-vindo à biblioteca. Sinta-se à vontade para explorar as estantes, mas lembre-se: alguns conhecimentos são restritos aos estudantes de níveis mais altos."},
+      {"npc": "Estudante Misterioso", "text": "Psst! Você parece curioso. Já ouviu falar da Biblioteca Proibida? Dizem que contém segredos sobre a verdadeira natureza dos nossos poderes..."}
+    ],
+    "choices": [
+      {"text": "Pedir permissão para acessar a seção restrita", "next_dialogue": 4, "attribute_check": "charisma", "threshold": 12},
+      {"text": "Procurar uma entrada secreta", "next_dialogue": 5, "attribute_check": "dexterity", "threshold": 10},
+      {"text": "Pesquisar nos arquivos normais por pistas", "next_dialogue": 6, "attribute_check": "intellect", "threshold": 10}
+    ],
+    "hidden_secret_discovery": "Biblioteca Proibida",
+    "rewards": {
+      "exp": 150,
+      "tusd": 300,
+      "special_item": "Tomo do Conhecimento Proibido"
+    },
+    "completion_exp": 150,
+    "completion_tusd": 300
+  }
+}

@@ -1,185 +1,279 @@
-# Modo História da Academia Tokugawa
+# Academia Tokugawa - Modo História
+
+Este documento descreve a nova implementação do modo história do jogo Academia Tokugawa, utilizando os princípios SOLID de design de software.
 
 ## Visão Geral
 
-O Modo História é uma nova funcionalidade do jogo Academia Tokugawa que permite aos jogadores experimentarem uma narrativa progressiva e interativa. Neste modo, os jogadores seguirão uma história que se desenvolve ao longo de anos e capítulos, com diálogos, escolhas, desafios e recompensas.
+A nova arquitetura do modo história foi projetada para ser modular, extensível e de fácil manutenção. Ela segue os princípios SOLID:
 
-## Características Principais
+- **S**ingle Responsibility Principle (Princípio da Responsabilidade Única)
+- **O**pen/Closed Principle (Princípio Aberto/Fechado)
+- **L**iskov Substitution Principle (Princípio da Substituição de Liskov)
+- **I**nterface Segregation Principle (Princípio da Segregação de Interface)
+- **D**ependency Inversion Principle (Princípio da Inversão de Dependência)
 
-- **Progressão Individual**: Cada jogador progride na história em seu próprio ritmo
-- **Estrutura por Capítulos**: A história é dividida em anos e capítulos
-- **Diálogos Interativos**: Conversas com NPCs que reagem às suas escolhas
-- **Escolhas Significativas**: Decisões que afetam o desenrolar da história
-- **Verificações de Atributos**: Algumas escolhas requerem níveis mínimos de atributos
-- **Batalhas contra Vilões e Capangas**: Enfrente inimigos ao longo da história
-- **Recompensas**: Ganhe experiência e TUSD ao completar capítulos
-- **NPCs de Clubes**: Interaja com líderes e membros dos diferentes clubes
-- **Capítulos de Desafio**: Desafios especiais baseados no seu nível de força
+## Estrutura do Projeto
 
-## Como Jogar
+O sistema está organizado nos seguintes módulos:
 
-### Comandos Disponíveis
+```
+story_mode/
+├── interfaces.py     # Interfaces para os componentes do sistema
+├── chapter.py        # Implementações de capítulos
+├── event.py          # Implementações de eventos
+├── npc.py            # Implementações de NPCs
+├── progress.py       # Gerenciamento de progresso do jogador
+└── story_mode.py     # Classe principal que coordena os componentes
+```
 
-- **!historia** - Iniciar ou continuar o modo história (comando de texto)
-- **/historia iniciar** - Iniciar ou continuar o modo história (comando slash)
-- **/historia desafio** - Iniciar ou continuar um desafio baseado no seu nível de força (comando slash)
-- **/historia status** - Verificar seu progresso no modo história (comando slash)
+## Componentes Principais
 
-### Progresso da História
+### Interfaces (interfaces.py)
 
-O progresso na história é salvo automaticamente. Quando você completa um capítulo, o jogo avança automaticamente para o próximo. O progresso nos Capítulos de Desafio é rastreado separadamente da história principal, permitindo que você avance em ambos independentemente. Você pode verificar seu progresso atual em ambos usando o comando `/historia status`.
+Este arquivo define as interfaces para os principais componentes do sistema:
 
-## Conteúdo Atual
+- `Chapter`: Interface para capítulos da história
+- `Event`: Interface para eventos
+- `NPC`: Interface para personagens não-jogáveis
+- `ChapterLoader`: Interface para carregar capítulos
+- `EventManager`: Interface para gerenciar eventos
+- `StoryProgressManager`: Interface para gerenciar o progresso do jogador
 
-### História Principal
+### Capítulos (chapter.py)
 
-#### Ano 1, Capítulo 1: Meu Primeiro Dia de Aula
+Implementações da interface `Chapter`:
 
-Seu primeiro dia na Academia Tokugawa. Conheça a escola e seus colegas.
+- `BaseChapter`: Implementação base com funcionalidades comuns
+- `StoryChapter`: Capítulo padrão da história
+- `ChallengeChapter`: Capítulo de desafio com mecânicas especiais
+- `BranchingChapter`: Capítulo com múltiplos caminhos baseados nas escolhas do jogador
 
-- Diálogo com o Diretor da academia
-- Introdução à Junie, sua assistente virtual
-- Escolhas sobre como explorar a academia
+### Eventos (event.py)
 
-#### Ano 1, Capítulo 2: Registro no Clube
+Implementações da interface `Event`:
 
-Escolha um clube para se juntar e conheça seu líder.
+- `BaseEvent`: Implementação base com funcionalidades comuns
+- `ClimacticEvent`: Evento climático com grande impacto na história
+- `RandomEvent`: Evento aleatório que pode ocorrer a qualquer momento
+- `SeasonalEvent`: Evento sazonal que ocorre em períodos específicos do ano
 
-- Diálogo com Junie sobre os clubes disponíveis
-- Interação com o líder do seu clube
-- Informações sobre a rivalidade entre clubes
+Também inclui o `DefaultEventManager`, uma implementação da interface `EventManager`.
 
-#### Ano 1, Capítulo 3: Rivalidades e Alianças
+### NPCs (npc.py)
 
-Descubra as complexas relações entre os clubes e como elas afetam a hierarquia da academia.
+Implementações da interface `NPC`:
 
-- Diálogos com membros de diferentes clubes sobre alianças e rivalidades
-- Escolhas que afetam sua compreensão da política da academia
-- Informações específicas baseadas no seu clube
+- `BaseNPC`: Implementação base com funcionalidades comuns
+- `StudentNPC`: NPC estudante com atributos específicos
+- `FacultyNPC`: NPC membro da faculdade com atributos específicos
 
-#### Ano 1, Capítulo 4: O Segredo da Biblioteca
+Também inclui o `NPCManager`, uma classe para gerenciar NPCs.
 
-Descubra um segredo oculto na biblioteca da academia que pode mudar sua compreensão sobre os poderes.
+### Progresso (progress.py)
 
-- Exploração da biblioteca da academia
-- Descoberta da seção restrita com conhecimentos proibidos
-- Diferentes abordagens para acessar informações secretas
+Implementação da interface `StoryProgressManager`:
 
-#### Ano 1, Capítulo 5: O Primeiro Desafio
+- `DefaultStoryProgressManager`: Gerencia o progresso do jogador na história
 
-Enfrente seu primeiro grande desafio na academia: um estudante valentão que está intimidando os calouros.
+### Modo História (story_mode.py)
 
-- Diferentes abordagens baseadas em seus atributos
-- Verificações de atributos para determinar o sucesso
-- Confronto com Drake, o Valentão
-- Recompensas baseadas no resultado da batalha
+A classe principal que coordena todos os componentes:
 
-#### Ano 1, Capítulos 6-10
+- `FileChapterLoader`: Carrega capítulos de arquivos JSON
+- `StoryMode`: Classe principal que gerencia o fluxo da história
 
-Continue sua jornada no primeiro ano com desafios crescentes, incluindo:
-- Aula de Controle de Poder
-- Rivalidade entre Clubes
-- Torneio de Habilidades
-- Mistério na Biblioteca
-- Excursão ao Mundo Exterior
-- Segredos da Academia
-- Confronto com o Diretor Sombrio
+## Integração com o Discord (story_mode.py)
 
-#### Ano 2, Capítulo 1: Novo Começo
+Um novo cog que integra o sistema de modo história com o bot do Discord:
 
-Após os eventos do ano anterior, a Academia Tokugawa passa por mudanças significativas. Um novo semestre começa com novos desafios.
+- `StoryModeCog`: Implementa comandos slash para interagir com o sistema
 
-- Introdução ao novo diretor, Hikari
-- Mudanças na administração da academia
-- Encontro com Akira, um estudante transferido
-- Rumores sobre uma organização externa interessada nos estudantes
-- Escolhas que afetam sua relação com o novo diretor
+## Formato dos Dados
 
-#### Ano 2, Capítulo 2: A Organização Sombra
+### Capítulos
 
-Investigue os rumores sobre uma organização misteriosa que está recrutando estudantes com habilidades especiais.
+Os capítulos são definidos em arquivos JSON com a seguinte estrutura:
 
-- Descoberta de estudantes desaparecidos com habilidades excepcionais
-- Investigação sobre uma possível organização secreta
-- Encontro com um estudante misterioso que oferece informações
-- Confronto com um agente encapuzado
-- Diferentes abordagens para a investigação baseadas em seus atributos
+```json
+{
+  "1_1": {
+    "type": "story",
+    "title": "Meu Primeiro Dia de Aula",
+    "description": "Seu primeiro dia na Academia Tokugawa. Conheça a escola e seus colegas.",
+    "dialogues": [
+      {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa!"},
+      {"npc": "Junie", "text": "Olá! Eu sou Junie, sua assistente virtual."}
+    ],
+    "choices": [
+      {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 5},
+      {"text": "Prefiro explorar por conta própria.", "next_dialogue": 6}
+    ],
+    "completion_exp": 50,
+    "completion_tusd": 100,
+    "next_chapter": "1_2"
+  }
+}
+```
 
-### Capítulos de Desafio
+### Eventos
 
-Os Capítulos de Desafio são uma nova funcionalidade que permite aos jogadores enfrentar desafios especiais baseados em seu nível de força. Diferente da história principal, que segue uma progressão linear, os Capítulos de Desafio são acessíveis a qualquer momento e são adaptados ao seu nível atual de força.
+Os eventos são definidos em arquivos JSON com a seguinte estrutura:
 
-#### Como Funcionam os Capítulos de Desafio
+```json
+{
+  "torneio_anual": {
+    "type": "climactic",
+    "name": "Torneio Anual",
+    "description": "O maior evento da academia, onde estudantes de todos os anos competem por glória e reconhecimento.",
+    "requirements": {"level": 10},
+    "rewards": {"exp": 500, "tusd": 1000, "hierarchy_points": 3},
+    "frequency": "yearly",
+    "impact": "major",
+    "story_changes": {"hierarchy_tier": 3}
+  }
+}
+```
 
-- Cada nível de força (1-5) possui seus próprios capítulos de desafio
-- Os desafios aumentam em dificuldade conforme o nível de força
-- Complete desafios para ganhar experiência e TUSD extras
-- Seu progresso nos Capítulos de Desafio é independente da história principal
-- Use o comando `/historia desafio` para acessar os desafios disponíveis para seu nível atual
+### NPCs
 
-#### Desafios Disponíveis
+Os NPCs são definidos em arquivos JSON com a seguinte estrutura:
 
-##### Nível 1 de Força (⭐)
-- **Desafio de Força: Iniciante** - Um desafio para testar suas habilidades básicas
+```json
+{
+  "kai_flameheart": {
+    "type": "student",
+    "name": "Kai Flameheart",
+    "background": {
+      "background": "Nascido em uma família de manipuladores de fogo, Kai sempre foi considerado um prodígio.",
+      "motivation": "Tornar-se forte o suficiente para nunca mais perder alguém importante.",
+      "secrets": "Kai esconde que, em momentos de extrema emoção, perde o controle de seus poderes."
+    },
+    "year": 2,
+    "club_id": 1,
+    "power": "Fogo",
+    "hierarchy_tier": 4,
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "E aí, novato! Pronto para sentir o calor do treinamento?"},
+        "friendly": {"text": "Ei, bom te ver! Como vai o treinamento?"},
+        "close": {"text": "Meu amigo! Estava esperando por você!"}
+      }
+    }
+  }
+}
+```
 
-##### Nível 2 de Força (⭐⭐)
-- **Desafio de Força: Intermediário** - Um desafio mais complexo para estudantes que já desenvolveram um bom controle sobre seus poderes
+## Progresso do Jogador
 
-##### Nível 3 de Força (⭐⭐⭐)
-- **Desafio de Força: Avançado** - Um desafio significativo que requer habilidades bem desenvolvidas e controle preciso dos poderes
+O progresso do jogador é armazenado no campo `story_progress` do jogador com a seguinte estrutura:
 
-##### Nível 4 de Força (⭐⭐⭐⭐)
-- **Desafio de Força: Elite** - Um desafio extremamente difícil reservado para os estudantes mais talentosos da academia
+```json
+{
+  "current_year": 1,
+  "current_chapter": 1,
+  "current_challenge_chapter": null,
+  "completed_chapters": ["1_1", "1_2"],
+  "completed_challenge_chapters": [],
+  "available_chapters": ["1_3"],
+  "club_progress": {},
+  "villain_defeats": [],
+  "minion_defeats": [],
+  "hierarchy_tier": 1,
+  "hierarchy_points": 15,
+  "discovered_secrets": ["Biblioteca Proibida"],
+  "special_items": ["Tomo do Conhecimento Proibido"],
+  "character_relationships": {
+    "Kai Flameheart": 25,
+    "Luna Mindweaver": -10
+  },
+  "story_choices": {
+    "1_1": {
+      "dialogue_0_choice": 0,
+      "dialogue_3_choice": 1
+    }
+  },
+  "triggered_events": {
+    "torneio_anual": "2023-07-15T14:30:00"
+  }
+}
+```
 
-##### Nível 5 de Força (⭐⭐⭐⭐⭐)
-- **Desafio de Força: Lendário** - O desafio mais difícil da academia, reservado apenas para os estudantes com potencial lendário
+## Como Usar
 
-## Clubes e NPCs
+### Configuração Inicial
 
-### Clube das Chamas
-- **Kai Flameheart** (Líder) - Um jovem de cabelos vermelhos e temperamento explosivo, mas com um coração leal
-- **Ember** (Vice-líder) - Manipuladora de calor, calma e calculista
-- **Blaze** (Membro) - Possui corpo de magma, impulsivo e enérgico
+1. Crie os diretórios necessários:
+   ```
+   mkdir -p data/story_mode/chapters data/story_mode/events data/story_mode/npcs
+   ```
 
-### Ilusionistas Mentais
-- **Luna Mindweaver** (Líder) - Uma garota misteriosa de olhos violeta que parece sempre saber o que você está pensando
-- **Mirage** (Vice-líder) - Manipulador de memórias, gentil mas manipulador
-- **Enigma** (Membro) - Mestre da projeção astral, introvertido e observador
+2. Adicione arquivos JSON para capítulos, eventos e NPCs nos diretórios correspondentes.
 
-### Conselho Político
-- **Alexander Strategos** (Líder) - Um rapaz calculista de óculos que analisa cada situação como um jogo de xadrez
-- **Victoria** (Vice-líder) - Detectora de mentiras, justa e rigorosa
-- **Machiavelli** (Membro) - Manipulador emocional, astuto e oportunista
+3. Registre o cog no bot:
+   ```python
+   bot.load_extension("cogs.story_mode")
+   ```
 
-### Elementalistas
-- **Gaia Naturae** (Líder) - Uma estudante serena conectada com a natureza, capaz de manipular todos os elementos
-- **Aero** (Vice-líder) - Controlador do ar, livre e imprevisível
-- **Terra** (Membro) - Manipulador da terra, estável e confiável
+### Comandos do Discord
 
-### Clube de Combate
-- **Ryuji Battleborn** (Líder) - Um lutador disciplinado que valoriza a força e a honra acima de tudo
-- **Fist** (Vice-líder) - Mestre do impacto de choque, agressivo mas justo
-- **Shadow** (Membro) - Possuidor de velocidade extrema, silencioso e letal
+- `/historia`: Inicia ou continua o modo história
+- `/status_historia`: Mostra o status atual do progresso na história
+- `/relacionamento [personagem] [afinidade]`: Mostra ou altera relacionamentos com NPCs
+- `/evento [evento_id]`: Participa de eventos disponíveis
 
-## Próximas Atualizações
+## Extensão do Sistema
 
-O Modo História receberá atualizações regulares com novos capítulos, personagens e desafios. Fique atento para:
+### Adicionando Novos Capítulos
 
-- Novos capítulos para o Ano 1
-- Novos capítulos de desafio para cada nível de força
-- Eventos especiais baseados no seu clube
-- Vilões principais para cada ano
-- Desenvolvimento de relacionamentos com NPCs
-- Missões exclusivas de cada clube
-- Recompensas especiais para completar todos os desafios de um nível de força
+1. Crie um arquivo JSON em `data/story_mode/chapters/` com a definição do capítulo.
+2. Se necessário, crie uma nova classe que herde de `BaseChapter` para implementar comportamentos específicos.
 
-## Dicas
+### Adicionando Novos Eventos
 
-- Treine seus atributos para ter mais opções nas escolhas da história
-- Preste atenção às rivalidades entre clubes, elas podem afetar a história
-- Complete capítulos para ganhar experiência e TUSD extras
-- Experimente diferentes escolhas para ver como a história se desenvolve
-- Converse com Junie se tiver dúvidas sobre a academia ou o modo história
-- Tente os Capítulos de Desafio quando aumentar seu nível de força para ganhar recompensas adicionais
-- Equilibre seu progresso entre a história principal e os Capítulos de Desafio
-- Use os Capítulos de Desafio como uma forma de treinar para enfrentar vilões mais difíceis na história principal
+1. Crie um arquivo JSON em `data/story_mode/events/` com a definição do evento.
+2. Se necessário, crie uma nova classe que herde de `BaseEvent` para implementar comportamentos específicos.
+
+### Adicionando Novos NPCs
+
+1. Crie um arquivo JSON em `data/story_mode/npcs/` com a definição do NPC.
+2. Se necessário, crie uma nova classe que herde de `BaseNPC` para implementar comportamentos específicos.
+
+## Princípios SOLID Aplicados
+
+### Single Responsibility Principle
+
+Cada classe tem uma única responsabilidade:
+- `Chapter`: Gerenciar o conteúdo e progressão de um capítulo
+- `Event`: Gerenciar a ocorrência e efeitos de um evento
+- `NPC`: Gerenciar atributos e interações de um personagem
+- `StoryProgressManager`: Gerenciar o progresso do jogador
+
+### Open/Closed Principle
+
+O sistema é aberto para extensão, mas fechado para modificação:
+- Novas classes de capítulos, eventos e NPCs podem ser adicionadas sem modificar o código existente
+- O comportamento pode ser estendido através de herança e composição
+
+### Liskov Substitution Principle
+
+As subclasses podem ser usadas onde as classes base são esperadas:
+- Todas as implementações de `Chapter` podem ser usadas pelo `ChapterLoader`
+- Todas as implementações de `Event` podem ser usadas pelo `EventManager`
+- Todas as implementações de `NPC` podem ser usadas pelo `NPCManager`
+
+### Interface Segregation Principle
+
+As interfaces são específicas para seus casos de uso:
+- `Chapter` define apenas métodos relacionados a capítulos
+- `Event` define apenas métodos relacionados a eventos
+- `NPC` define apenas métodos relacionados a NPCs
+
+### Dependency Inversion Principle
+
+Módulos de alto nível não dependem de módulos de baixo nível, ambos dependem de abstrações:
+- `StoryMode` depende das interfaces `ChapterLoader`, `EventManager`, etc., não de implementações concretas
+- As implementações concretas podem ser substituídas sem afetar o sistema como um todo
+
+## Conclusão
+
+A nova arquitetura do modo história proporciona uma base sólida para expansão futura, permitindo adicionar novos capítulos, eventos e NPCs de forma modular e sem afetar o código existente. Os princípios SOLID garantem que o sistema seja flexível, extensível e de fácil manutenção.
