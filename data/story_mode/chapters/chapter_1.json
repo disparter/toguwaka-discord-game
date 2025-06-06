@@ -204,6 +204,448 @@
     "completion_exp": 100,
     "completion_tusd": 200
   },
+  "1_4_success": {
+    "type": "story",
+    "title": "Reconhecimento",
+    "description": "Após completar seu primeiro desafio com sucesso, você começa a ganhar reconhecimento na academia.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Dias se passaram desde que você completou seu primeiro desafio com sucesso. Você nota que outros estudantes começaram a olhar para você com mais respeito."},
+      {"npc": "Junie", "text": "Parabéns novamente pelo seu sucesso no desafio! Notícias viajam rápido na Academia Tokugawa."},
+      {"npc": "Junie", "text": "Seu desempenho impressionou não apenas seu líder de clube, mas também outros professores. Isso é um excelente começo para sua jornada aqui."},
+      {"npc": "Estudante", "text": "Ei, você é aquele novato que passou no desafio de primeira, não é? Impressionante. Talvez você não seja apenas mais um estudante comum."}
+    ],
+    "choices": [
+      {"text": "Agradecer humildemente pelo reconhecimento", "next_dialogue": 4, "affinity_change": {"Junie": 5}},
+      {"text": "Mostrar confiança em suas habilidades", "next_dialogue": 5, "affinity_change": {"Estudante": 3}},
+      {"text": "Perguntar sobre os próximos desafios", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Junie", "text": "Sua humildade é admirável. Muitos estudantes deixam o sucesso subir à cabeça, especialmente no início."},
+        {"npc": "Junie", "text": "Lembre-se que na Academia Tokugawa, o respeito é ganho não apenas pela força, mas também pelo caráter."},
+        {"npc": "Junie", "text": "Continue assim e você certamente subirá na hierarquia mais rápido do que imagina."}
+      ],
+      "5": [
+        {"npc": "Estudante", "text": "Gosto da sua confiança! É assim que se destaca por aqui."},
+        {"npc": "Estudante", "text": "Mas cuidado para não chamar muita atenção dos níveis superiores muito cedo. Alguns não gostam de novatos ambiciosos."},
+        {"npc": "Estudante", "text": "De qualquer forma, estarei de olho na sua carreira. Talvez possamos treinar juntos algum dia."}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "Ansioso para mais desafios? Isso mostra determinação!"},
+        {"npc": "Junie", "text": "O próximo grande teste será o Torneio Semestral, onde estudantes de todos os clubes competem para demonstrar suas habilidades."},
+        {"npc": "Junie", "text": "Ainda faltam algumas semanas, então você tem tempo para treinar. Seu líder de clube certamente terá exercícios específicos para prepará-lo."}
+      ]
+    },
+    "completion_exp": 150,
+    "completion_tusd": 250,
+    "next_chapter": "1_5"
+  },
+  "1_4_failure": {
+    "type": "story",
+    "title": "Aprendendo com o Fracasso",
+    "description": "Após não conseguir completar seu primeiro desafio, você precisa lidar com as consequências e encontrar força para continuar.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Dias se passaram desde sua tentativa malsucedida no desafio. Você nota alguns olhares de decepção e outros de simpatia dos colegas."},
+      {"npc": "Junie", "text": "Não fique desanimado com o resultado do desafio. Muitos estudantes falham na primeira tentativa."},
+      {"npc": "Junie", "text": "O importante agora é aprender com a experiência e se preparar melhor para a próxima oportunidade."},
+      {"npc": "Estudante Veterano", "text": "Ei, novato. Ouvi sobre o desafio. Não se preocupe, também falhei no meu primeiro teste. O que importa é como você reage ao fracasso."}
+    ],
+    "choices": [
+      {"text": "Pedir conselhos para melhorar", "next_dialogue": 4, "affinity_change": {"Estudante Veterano": 8}},
+      {"text": "Prometer que se esforçará mais da próxima vez", "next_dialogue": 5, "affinity_change": {"Junie": 5}},
+      {"text": "Questionar se realmente pertence à academia", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Estudante Veterano", "text": "Boa atitude! Primeiro, analise o que deu errado. Foi falta de controle? Concentração? Conhecimento?"},
+        {"npc": "Estudante Veterano", "text": "Depois, trabalhe especificamente nessas áreas. Encontre um mentor ou colega mais experiente para ajudar."},
+        {"npc": "Estudante Veterano", "text": "E lembre-se: ninguém nasce dominando seus poderes. É tudo questão de prática e perseverança."},
+        {"npc": "Estudante Veterano", "text": "Se quiser, posso te dar algumas dicas extras depois das aulas. Às vezes, tudo o que você precisa é de uma perspectiva diferente."}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "Essa é a atitude certa! A determinação é uma qualidade valiosa na Academia Tokugawa."},
+        {"npc": "Junie", "text": "Vou falar com seu líder de clube para organizar sessões extras de treinamento. Com preparação adequada, tenho certeza que você terá sucesso na próxima vez."},
+        {"npc": "Junie", "text": "Lembre-se que até os estudantes mais poderosos da academia enfrentaram fracassos em algum momento. O que os define é como superaram esses obstáculos."}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "É natural questionar-se após um fracasso, mas não deixe que a dúvida defina seu caminho."},
+        {"npc": "Junie", "text": "Você foi aceito na Academia Tokugawa porque vimos potencial em você. Um desafio não muda isso."},
+        {"npc": "Junie", "text": "Na verdade, sua capacidade de enfrentar adversidades e crescer com elas é parte do que avaliamos aqui."},
+        {"npc": "Junie", "text": "Dê tempo a si mesmo para processar essa experiência, mas não desista. Às vezes, os maiores sucessos vêm após os fracassos mais dolorosos."}
+      ]
+    },
+    "completion_exp": 100,
+    "completion_tusd": 150,
+    "next_chapter": "1_5"
+  },
+  "challenge_biblioteca_proibida": {
+    "type": "challenge",
+    "title": "O Segredo da Biblioteca",
+    "description": "Descubra um segredo oculto na biblioteca da academia que pode mudar sua compreensão sobre os poderes.",
+    "challenge_type": "exploration",
+    "difficulty": 2,
+    "dialogues": [
+      {"npc": "Junie", "text": "A biblioteca da Academia Tokugawa contém conhecimentos acumulados por séculos sobre usuários de poderes."},
+      {"npc": "Junie", "text": "Recentemente, ouvi rumores sobre uma seção restrita que contém informações sobre a origem dos poderes."},
+      {"npc": "Bibliotecária", "text": "Bem-vindo à biblioteca. Sinta-se à vontade para explorar as estantes, mas lembre-se: alguns conhecimentos são restritos aos estudantes de níveis mais altos."},
+      {"npc": "Estudante Misterioso", "text": "Psst! Você parece curioso. Já ouviu falar da Biblioteca Proibida? Dizem que contém segredos sobre a verdadeira natureza dos nossos poderes..."}
+    ],
+    "choices": [
+      {"text": "Pedir permissão para acessar a seção restrita", "next_dialogue": 4, "attribute_check": "charisma", "threshold": 12},
+      {"text": "Procurar uma entrada secreta", "next_dialogue": 5, "attribute_check": "dexterity", "threshold": 10},
+      {"text": "Pesquisar nos arquivos normais por pistas", "next_dialogue": 6, "attribute_check": "intellect", "threshold": 10}
+    ],
+    "hidden_secret_discovery": "Biblioteca Proibida",
+    "rewards": {
+      "exp": 150,
+      "tusd": 300,
+      "special_item": "Tomo do Conhecimento Proibido"
+    },
+    "completion_exp": 150,
+    "completion_tusd": 300
+  },
+  "1_7": {
+    "type": "story",
+    "title": "Segredos Revelados",
+    "description": "Após descobrir o Tomo do Conhecimento Proibido, você começa a desvendar segredos sobre a verdadeira natureza dos poderes e da Academia Tokugawa.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Dias se passaram desde que você encontrou o Tomo do Conhecimento Proibido. Suas páginas antigas contêm informações fascinantes e perturbadoras sobre a origem dos poderes."},
+      {"npc": "Narrador", "text": "Segundo o livro, os poderes não são uma evolução natural da humanidade, como ensinado oficialmente, mas sim o resultado de um evento cataclísmico ocorrido há séculos."},
+      {"npc": "Narrador", "text": "Enquanto você reflete sobre essas revelações em seu quarto, alguém bate à sua porta."}
+    ],
+    "choices": [
+      {"text": "Esconder o livro e abrir a porta", "next_dialogue": 3},
+      {"text": "Perguntar quem é antes de abrir", "next_dialogue": 4},
+      {"text": "Ignorar a batida e continuar lendo", "next_dialogue": 5}
+    ],
+    "additional_dialogues": {
+      "3": [
+        {"npc": "Narrador", "text": "Você rapidamente esconde o livro sob o colchão e abre a porta."},
+        {"npc": "Professora Chronos", "text": "Olá. Espero não estar interrompendo nada importante."},
+        {"npc": "Professora Chronos", "text": "Percebi uma... perturbação recentemente. Como se alguém tivesse descoberto algo que não deveria. Sabe algo sobre isso?", "choices": [
+          {"text": "Negar qualquer conhecimento", "next_dialogue": 6, "attribute_check": "charisma", "threshold": 12},
+          {"text": "Admitir parcialmente, testando sua reação", "next_dialogue": 7},
+          {"text": "Mudar de assunto, perguntando sobre a aula", "next_dialogue": 8}
+        ]}
+      ],
+      "4": [
+        {"npc": "Narrador", "text": "Você esconde o livro e pergunta quem está batendo."},
+        {"npc": "Professora Chronos", "text": "Sou eu, Professora Chronos. Podemos conversar?"},
+        {"npc": "Narrador", "text": "Você abre a porta, tentando parecer casual."},
+        {"npc": "Professora Chronos", "text": "Obrigada. Vim porque senti uma... anomalia temporal recentemente. Como se alguém tivesse alterado o curso dos eventos ao descobrir algo importante.", "choices": [
+          {"text": "Perguntar mais sobre essa 'anomalia temporal'", "next_dialogue": 9},
+          {"text": "Fingir confusão e ignorância", "next_dialogue": 10, "attribute_check": "charisma", "threshold": 10},
+          {"text": "Perguntar diretamente se ela sabe sobre o livro", "next_dialogue": 11}
+        ]}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você decide ignorar a batida e continua lendo. A pessoa insiste, batendo mais forte."},
+        {"npc": "Professora Chronos", "text": "Sei que está aí. E também sei o que encontrou. Precisamos conversar, pelo seu próprio bem."},
+        {"npc": "Narrador", "text": "Percebendo que não há como evitar, você esconde o livro e abre a porta."},
+        {"npc": "Professora Chronos", "text": "Finalmente. Alguns segredos são perigosos demais para serem explorados sozinho.", "choices": [
+          {"text": "Perguntar como ela sabia sobre o livro", "next_dialogue": 12},
+          {"text": "Negar que encontrou algo", "next_dialogue": 13, "attribute_check": "charisma", "threshold": 15},
+          {"text": "Pedir que ela explique o que sabe sobre os poderes", "next_dialogue": 14}
+        ]}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_6": [
+        {"npc": "Narrador", "text": "Você mantém a compostura perfeitamente, negando qualquer conhecimento com convicção."},
+        {"npc": "Professora Chronos", "text": "Hmm... Talvez eu tenha me enganado. Ou talvez você seja melhor em esconder segredos do que imaginei."},
+        {"npc": "Professora Chronos", "text": "De qualquer forma, tenha cuidado. Nem todos na academia apreciam estudantes curiosos. Alguns segredos são mantidos assim por boas razões."},
+        {"npc": "Narrador", "text": "Ela se vira para sair, mas para na porta."},
+        {"npc": "Professora Chronos", "text": "Ah, e se por acaso encontrar um livro antigo com capa de couro vermelho... venha falar comigo imediatamente. É para sua própria segurança."}
+      ],
+      "failure_6": [
+        {"npc": "Narrador", "text": "Você tenta negar, mas sua voz treme ligeiramente e seus olhos desviam involuntariamente para onde o livro está escondido."},
+        {"npc": "Professora Chronos", "text": "Você não é um bom mentiroso. Posso ver a verdade em seus olhos... e na distorção temporal ao seu redor."},
+        {"npc": "Professora Chronos", "text": "O Tomo do Conhecimento Proibido não é uma leitura para iniciantes. Onde o encontrou?"},
+        {"npc": "Narrador", "text": "Percebendo que não adianta mais negar, você admite ter encontrado o livro na biblioteca."},
+        {"npc": "Professora Chronos", "text": "Entendo. Bem, já que você já começou a ler, talvez seja melhor que entenda completamente. Mas não aqui. Venha ao meu escritório amanhã após as aulas."}
+      ],
+      "7": [
+        {"npc": "Narrador", "text": "Você decide testar o terreno, admitindo parcialmente."},
+        {"npc": "Você", "text": "Encontrei alguns livros interessantes na biblioteca sobre a história dos poderes. Há algo errado nisso?"},
+        {"npc": "Professora Chronos", "text": "Depende dos livros. A história oficial é... incompleta, digamos assim."},
+        {"npc": "Professora Chronos", "text": "Se encontrou o que acho que encontrou, você agora carrega um fardo perigoso. O conhecimento tem consequências."},
+        {"npc": "Professora Chronos", "text": "Venha ao meu escritório amanhã após as aulas. Há mais que você precisa saber, e este não é o lugar para discutir tais assuntos."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você tenta mudar de assunto."},
+        {"npc": "Você", "text": "Na verdade, eu estava estudando para sua aula. Tenho algumas dúvidas sobre o último tema que discutimos."},
+        {"npc": "Professora Chronos", "text": "Uma tentativa admirável de desviar a conversa, mas inútil com alguém que já viu esta cena se desenrolar dezenas de vezes."},
+        {"npc": "Professora Chronos", "text": "O livro que encontrou - sim, eu sei sobre ele - contém verdades perigosas. Verdades que muitos na administração prefeririam manter escondidas."},
+        {"npc": "Professora Chronos", "text": "Venha ao meu escritório amanhã após as aulas. Continuaremos esta conversa em um local mais... apropriado."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "Anomalia temporal? O que exatamente isso significa, professora?"},
+        {"npc": "Professora Chronos", "text": "Interessante que esta seja sua primeira pergunta. A maioria questionaria como posso sentir tais coisas."},
+        {"npc": "Professora Chronos", "text": "Digamos que certos conhecimentos criam... ondulações no tecido do tempo. Especialmente conhecimentos que podem mudar fundamentalmente como alguém vê o mundo."},
+        {"npc": "Professora Chronos", "text": "O Tomo que você encontrou é um desses catalisadores. Sim, eu sei sobre ele. E sei que você o tem."},
+        {"npc": "Professora Chronos", "text": "Precisamos conversar mais, mas não aqui. Venha ao meu escritório amanhã após as aulas."}
+      ],
+      "10": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_10": [
+        {"npc": "Narrador", "text": "Você finge confusão de forma convincente."},
+        {"npc": "Você", "text": "Anomalia temporal? Desculpe, professora, mas não faço ideia do que está falando. Isso tem algo a ver com a aula de História dos Poderes?"},
+        {"npc": "Professora Chronos", "text": "Sua atuação é impressionante. Quase acreditaria nela, se não pudesse literalmente ver as linhas temporais se ramificando ao seu redor."},
+        {"npc": "Professora Chronos", "text": "Vou respeitar sua escolha de fingir ignorância, por enquanto. Mas quando estiver pronto para discutir o que encontrou, minha porta estará aberta."},
+        {"npc": "Narrador", "text": "Ela se vira para sair, mas para na porta."},
+        {"npc": "Professora Chronos", "text": "Apenas um conselho: tenha cuidado com quem mais descobre sobre sua... leitura extracurricular. Nem todos têm suas melhores intenções em mente."}
+      ],
+      "failure_10": [
+        {"npc": "Narrador", "text": "Você tenta parecer confuso, mas sua expressão e linguagem corporal o traem."},
+        {"npc": "Professora Chronos", "text": "Sua confusão é tão falsa quanto a história oficial que ensinamos sobre os poderes."},
+        {"npc": "Professora Chronos", "text": "O Tomo do Conhecimento Proibido tem esse nome por um motivo. Não porque o conhecimento em si é proibido, mas porque as consequências de sua divulgação seriam... catastróficas."},
+        {"npc": "Professora Chronos", "text": "Venha ao meu escritório amanhã após as aulas. Há mais que você precisa saber, e este não é o lugar para discutir tais assuntos."}
+      ],
+      "11": [
+        {"npc": "Você", "text": "Você sabe sobre o livro que encontrei? O Tomo do Conhecimento Proibido?"},
+        {"npc": "Professora Chronos", "text": "Direto ao ponto. Isso é refrescante."},
+        {"npc": "Professora Chronos", "text": "Sim, sei sobre o livro. Na verdade, fui eu quem o escreveu... ou melhor, quem o escreverá, em uma linha temporal que espero evitar."},
+        {"npc": "Narrador", "text": "Suas palavras enigmáticas deixam você confuso."},
+        {"npc": "Professora Chronos", "text": "Isso deve ser muito para processar. Venha ao meu escritório amanhã após as aulas. Explicarei tudo o que puder, dentro dos limites do que é seguro para você saber neste momento."}
+      ],
+      "12": [
+        {"npc": "Você", "text": "Como você sabia sobre o livro? Você estava me espionando?"},
+        {"npc": "Professora Chronos", "text": "Espionar? Não, nada tão mundano. Digamos que tenho uma... sensibilidade para momentos pivotais na linha do tempo."},
+        {"npc": "Professora Chronos", "text": "A descoberta daquele livro por um estudante sempre cria uma bifurcação significativa nos possíveis futuros. Já vi isso acontecer antes... muitas vezes."},
+        {"npc": "Narrador", "text": "Suas palavras enigmáticas deixam você com mais perguntas do que respostas."},
+        {"npc": "Professora Chronos", "text": "Sei que isso parece confuso agora. Venha ao meu escritório amanhã após as aulas, e explicarei o que puder."}
+      ],
+      "13": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_13": [
+        {"npc": "Narrador", "text": "Com uma atuação digna de prêmio, você nega ter encontrado qualquer coisa incomum."},
+        {"npc": "Você", "text": "Não sei do que está falando, professora. Estive apenas estudando para as provas, nada mais."},
+        {"npc": "Professora Chronos", "text": "..."},
+        {"npc": "Professora Chronos", "text": "Impressionante. Sua capacidade de negar a realidade é quase tão forte quanto sua afinidade com o poder. Isso será útil nos dias que virão."},
+        {"npc": "Professora Chronos", "text": "Vou respeitar sua escolha por enquanto. Mas quando os eventos começarem a se desenrolar, e acredite, eles vão, minha porta estará aberta."},
+        {"npc": "Narrador", "text": "Ela se vira para sair, mas para na porta."},
+        {"npc": "Professora Chronos", "text": "Ah, e guarde bem esse livro que você 'não encontrou'. Há pessoas na academia que fariam qualquer coisa para recuperá-lo... ou silenciar quem o leu."}
+      ],
+      "failure_13": [
+        {"npc": "Narrador", "text": "Você tenta negar, mas sua mentira é transparente."},
+        {"npc": "Professora Chronos", "text": "Por favor, não insulte minha inteligência. Posso literalmente ver as ondulações temporais que o livro causou ao seu redor."},
+        {"npc": "Professora Chronos", "text": "O Tomo do Conhecimento Proibido não é apenas um livro - é um catalisador. Um ponto de divergência na linha do tempo."},
+        {"npc": "Professora Chronos", "text": "Agora que você o leu, há coisas que precisa saber. Venha ao meu escritório amanhã após as aulas."}
+      ],
+      "14": [
+        {"npc": "Você", "text": "O que você sabe sobre a verdadeira origem dos poderes? O livro menciona um evento cataclísmico."},
+        {"npc": "Professora Chronos", "text": "Então você já leu essa parte. Sim, o 'Evento Zero', como alguns o chamam."},
+        {"npc": "Professora Chronos", "text": "A história oficial - que os poderes são uma evolução natural da humanidade - é uma mentira conveniente. A verdade é mais complexa... e muito mais perigosa."},
+        {"npc": "Professora Chronos", "text": "Este não é o lugar para discutir tais assuntos. As paredes da academia têm ouvidos, literalmente em alguns casos."},
+        {"npc": "Professora Chronos", "text": "Venha ao meu escritório amanhã após as aulas. Lá poderemos falar mais livremente."}
+      ]
+    },
+    "completion_exp": 200,
+    "completion_tusd": 300,
+    "next_chapter": "1_8"
+  },
+  "1_8": {
+    "type": "story",
+    "title": "A Verdade do Tempo",
+    "description": "A Professora Chronos revela segredos surpreendentes sobre a origem dos poderes e sua própria identidade.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "No dia seguinte, após as aulas, você se dirige ao escritório da Professora Chronos conforme combinado."},
+      {"npc": "Narrador", "text": "Seu escritório é diferente de qualquer outro na academia. As paredes estão cobertas de relógios de todos os tipos, todos marcando horas diferentes. Estranhos símbolos e diagramas cobrem um quadro enorme."},
+      {"npc": "Professora Chronos", "text": "Bem-vindo. Pontual, como esperado. Sente-se, temos muito a discutir."},
+      {"npc": "Professora Chronos", "text": "Primeiro, devo confirmar: você leu sobre o Evento Zero no Tomo, correto?"}
+    ],
+    "choices": [
+      {"text": "Sim, li sobre um evento cataclísmico que deu origem aos poderes", "next_dialogue": 4},
+      {"text": "Li algumas partes, mas não entendi completamente", "next_dialogue": 5},
+      {"text": "Ainda estou desconfiado. Por que deveria confiar em você?", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "Bem, então você já sabe que a história oficial é uma fabricação. Os poderes não surgiram gradualmente através de evolução."},
+        {"npc": "Professora Chronos", "text": "Há aproximadamente 300 anos, um evento cataclísmico ocorreu - uma ruptura na própria realidade. As causas exatas são... complicadas."},
+        {"npc": "Professora Chronos", "text": "O que importa é que essa ruptura liberou energias que alteraram fundamentalmente a estrutura genética de algumas pessoas, permitindo-lhes manipular aspectos da realidade - o que chamamos de 'poderes'."},
+        {"npc": "Professora Chronos", "text": "Mas há algo que o Tomo não menciona, porque seu autor não sabia na época em que foi escrito."},
+        {"npc": "Professora Chronos", "text": "O Evento Zero não foi um acidente. Foi provocado deliberadamente."}
+      ],
+      "5": [
+        {"npc": "Professora Chronos", "text": "Compreensível. O Tomo foi escrito em uma linguagem deliberadamente obscura para evitar que leitores casuais compreendessem seu verdadeiro significado."},
+        {"npc": "Professora Chronos", "text": "Em termos simples: há aproximadamente 300 anos, ocorreu um evento que os poucos que sabem chamam de 'Evento Zero' - uma ruptura na própria realidade."},
+        {"npc": "Professora Chronos", "text": "Essa ruptura liberou energias que alteraram fundamentalmente a estrutura genética de algumas pessoas, permitindo-lhes manipular aspectos da realidade - o que chamamos de 'poderes'."},
+        {"npc": "Professora Chronos", "text": "A história oficial - que os poderes são uma evolução natural - foi criada para ocultar a verdade: que o Evento Zero não foi um acidente, mas sim provocado deliberadamente."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Uma pergunta perfeitamente razoável. Não tenho como provar que sou confiável além de qualquer dúvida."},
+        {"npc": "Professora Chronos", "text": "Mas posso mostrar algo que talvez o convença da seriedade da situação."},
+        {"npc": "Narrador", "text": "Ela estende a mão e, para seu espanto, o ar ao redor dela parece ondular. Subitamente, o tempo na sala parece... parar. Os relógios congelam, a poeira no ar fica suspensa, e até mesmo o som do seu próprio coração parece silenciar."},
+        {"npc": "Professora Chronos", "text": "Meu poder não é apenas entender o tempo, mas manipulá-lo. Sou o que chamam de Cronômante - talvez a última."},
+        {"npc": "Narrador", "text": "Com outro gesto, tudo volta ao normal."},
+        {"npc": "Professora Chronos", "text": "Agora, sobre o Evento Zero que você leu no Tomo..."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "A Academia Tokugawa não foi fundada apenas para educar jovens com poderes. Seu propósito original era mais sombrio: estudar os poderes para replicar o Evento Zero em escala controlada."},
+      {"npc": "Professora Chronos", "text": "O fundador, Prometheus - agora conhecido como Diretor Sombrio - acreditava que poderia usar esse conhecimento para dar poderes a toda a humanidade. Uma visão nobre, mas perigosamente ingênua."},
+      {"npc": "Professora Chronos", "text": "O que ele não sabia - o que poucos sabem - é que cada tentativa de replicar o Evento Zero enfraquece o tecido da realidade. Eventualmente, isso levará a um colapso total."},
+      {"npc": "Professora Chronos", "text": "Sei disso porque... não sou deste tempo. Venho de um futuro onde esse colapso já começou. Um futuro que estou tentando evitar."},
+      {"npc": "Narrador", "text": "Suas revelações deixam você atordoado. Se o que ela diz é verdade, as implicações são enormes."}
+    ],
+    "choices_2": [
+      {"text": "O que posso fazer para ajudar?", "next_dialogue": 7},
+      {"text": "Por que está me contando isso? Sou apenas um estudante.", "next_dialogue": 8},
+      {"text": "Como sei que não é você quem está manipulando tudo isso?", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Professora Chronos", "text": "Sua disposição para ajudar é admirável. E, na verdade, você tem um papel importante a desempenhar."},
+        {"npc": "Professora Chronos", "text": "O Tomo do Conhecimento Proibido não apareceu na biblioteca por acaso. Eu o coloquei lá, esperando que a pessoa certa o encontrasse."},
+        {"npc": "Professora Chronos", "text": "Em todas as linhas temporais que observei, você é um ponto de convergência - alguém cujas escolhas têm impacto desproporcional no futuro."},
+        {"npc": "Professora Chronos", "text": "Por enquanto, continue seus estudos normalmente, mas fique atento. Observe o Diretor e seus associados mais próximos. Reporte qualquer atividade suspeita diretamente a mim."},
+        {"npc": "Professora Chronos", "text": "E mais importante: não revele a ninguém o que descobriu ou o que conversamos hoje. Há espiões do Diretor em toda parte, inclusive entre os estudantes."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "Você não é 'apenas' um estudante. Nunca foi."},
+        {"npc": "Professora Chronos", "text": "Em todas as linhas temporais que observei, você é o que chamamos de 'Nexus Temporal' - alguém cujas escolhas têm impacto desproporcional no fluxo dos eventos."},
+        {"npc": "Professora Chronos", "text": "Não sei exatamente por quê. Talvez seja algo em sua estrutura genética, ou talvez seja simplesmente destino. O que sei é que você é importante."},
+        {"npc": "Professora Chronos", "text": "O Tomo encontrou você porque precisava encontrá-lo. E agora, preciso de sua ajuda para impedir que o Diretor cometa um erro catastrófico."},
+        {"npc": "Professora Chronos", "text": "Por enquanto, continue seus estudos normalmente, mas observe. Reporte qualquer atividade suspeita diretamente a mim. E não confie em ninguém com o que sabe."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Uma excelente pergunta. Saudável ceticismo."},
+        {"npc": "Professora Chronos", "text": "Não tenho como provar minhas intenções além de qualquer dúvida. Posso apenas oferecer isto: se quisesse manipulá-lo para fins nefastos, por que revelaria tanto?"},
+        {"npc": "Professora Chronos", "text": "Além disso, você já leu o Tomo. Ele confirma parte do que contei, não? E foi escrito muito antes de nos conhecermos."},
+        {"npc": "Professora Chronos", "text": "No final, terá que confiar em seu próprio julgamento. Observe os eventos que se desenrolarão nos próximos meses. Veja por si mesmo se minhas palavras se provam verdadeiras."},
+        {"npc": "Professora Chronos", "text": "Enquanto isso, sugiro cautela. Continue seus estudos normalmente, mas fique atento. E não revele a ninguém o que sabe."}
+      ]
+    },
+    "completion_exp": 250,
+    "completion_tusd": 350,
+    "next_chapter": "1_9"
+  },
+  "1_9": {
+    "type": "branching",
+    "title": "Escolhas e Consequências",
+    "description": "Suas descobertas recentes o forçam a tomar decisões difíceis que terão consequências de longo prazo.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Semanas se passaram desde sua conversa com a Professora Chronos. Você tem observado o Diretor e seus associados, notando padrões suspeitos."},
+      {"npc": "Narrador", "text": "Durante esse tempo, continuou estudando o Tomo secretamente, descobrindo mais sobre o Evento Zero e suas consequências."},
+      {"npc": "Narrador", "text": "Hoje, enquanto caminhava pelo campus, notou o Diretor e vários professores seniores entrando em um prédio raramente usado nos fundos da academia."}
+    ],
+    "choices": [
+      {"text": "Seguir discretamente para investigar", "next_dialogue": 3, "attribute_check": "dexterity", "threshold": 12},
+      {"text": "Informar a Professora Chronos imediatamente", "next_dialogue": 4},
+      {"text": "Ignorar e focar nos estudos, como recomendado", "next_dialogue": 5}
+    ],
+    "additional_dialogues": {
+      "3": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_3": [
+        {"npc": "Narrador", "text": "Com movimentos silenciosos e cuidadosos, você segue o grupo até o prédio abandonado, mantendo distância segura."},
+        {"npc": "Narrador", "text": "Eles entram no prédio, e você consegue se aproximar de uma janela lateral sem ser notado. De lá, observa uma cena perturbadora."},
+        {"npc": "Narrador", "text": "O Diretor e os professores estão reunidos em torno de um estranho dispositivo circular. No centro do círculo, há o que parece ser um fragmento de cristal pulsante."},
+        {"npc": "Diretor Sombrio", "text": "Os testes preliminares foram promissores. O fragmento responde bem à energia que aplicamos. Acredito que estamos próximos de uma ruptura controlada."},
+        {"npc": "Professor Desconhecido", "text": "Mas, senhor, os cálculos sugerem instabilidade crescente. Se continuarmos aumentando a potência..."},
+        {"npc": "Diretor Sombrio", "text": "Não temos escolha! Meus poderes estão falhando rapidamente. Precisamos de resultados antes que seja tarde demais."},
+        {"npc": "Narrador", "text": "Você ouve passos se aproximando e decide que é hora de sair. Com as informações obtidas, você se retira discretamente."}
+      ],
+      "failure_3": [
+        {"npc": "Narrador", "text": "Você tenta seguir o grupo discretamente, mas acaba tropeçando em um arbusto, fazendo barulho suficiente para chamar atenção."},
+        {"npc": "Narrador", "text": "Um dos professores olha para trás, notando sua presença."},
+        {"npc": "Professor Desconhecido", "text": "Diretor, parece que temos companhia. Um de seus estudantes parece muito curioso."},
+        {"npc": "Diretor Sombrio", "text": "Ah, {player_name}. Que coincidência encontrá-lo aqui, tão longe dos dormitórios e salas de aula."},
+        {"npc": "Narrador", "text": "O olhar do Diretor é penetrante, como se pudesse ver através de você."},
+        {"npc": "Diretor Sombrio", "text": "Talvez você gostaria de se juntar a nós? Estamos apenas inspecionando algumas instalações antigas. Nada interessante, receio."},
+        {"npc": "Narrador", "text": "Você percebe que ele está mentindo, mas também sente que está em perigo."},
+        {"npc": "Você", "text": "Desculpe, senhor. Estava apenas explorando o campus e me perdi. Vou voltar para os dormitórios agora."},
+        {"npc": "Diretor Sombrio", "text": "Sim, faça isso. E, {player_name}? A curiosidade é uma virtude admirável, mas também pode ser... perigosa. Lembre-se disso."}
+      ],
+      "4": [
+        {"npc": "Narrador", "text": "Você decide não arriscar e vai imediatamente procurar a Professora Chronos."},
+        {"npc": "Narrador", "text": "Você a encontra em seu escritório, aparentemente esperando por você."},
+        {"npc": "Professora Chronos", "text": "Você os viu, não é? O Diretor e os outros, entrando no Laboratório Abandonado."},
+        {"npc": "Você", "text": "Como você sabia?"},
+        {"npc": "Professora Chronos", "text": "Eu vi esta possibilidade. É um dos momentos cruciais que tenho monitorado."},
+        {"npc": "Professora Chronos", "text": "Eles estão acelerando os experimentos. O Diretor está ficando desesperado à medida que seus poderes falham."},
+        {"npc": "Professora Chronos", "text": "Precisamos agir logo, mas precisamos ser inteligentes. Confrontá-los diretamente seria suicídio."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você decide seguir o conselho da Professora Chronos e não se envolver diretamente. Em vez disso, volta para seus estudos."},
+        {"npc": "Narrador", "text": "Mais tarde naquele dia, você nota uma vibração estranha percorrendo o campus. As luzes piscam momentaneamente, e você sente uma sensação de desorientação."},
+        {"npc": "Narrador", "text": "Quando tudo volta ao normal, você recebe uma mensagem urgente da Professora Chronos pedindo para encontrá-la imediatamente."},
+        {"npc": "Professora Chronos", "text": "Eles fizeram. Um teste preliminar do dispositivo. Você sentiu a perturbação?"},
+        {"npc": "Você", "text": "Sim, o que foi aquilo?"},
+        {"npc": "Professora Chronos", "text": "Uma mini-ruptura. Pequena, controlada, mas ainda assim perigosa. Estão brincando com forças que mal compreendem."},
+        {"npc": "Professora Chronos", "text": "O tempo está se esgotando. Precisamos impedi-los antes que causem danos irreparáveis à realidade."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "Chegamos a um ponto crítico. O Diretor está tentando recriar o Evento Zero em escala menor, usando um fragmento do cristal original que causou a primeira ruptura."},
+      {"npc": "Professora Chronos", "text": "Se ele for bem-sucedido, a realidade como a conhecemos pode começar a se desintegrar. Não imediatamente, mas o processo será iniciado."},
+      {"npc": "Professora Chronos", "text": "Precisamos de sua ajuda. Você tem acesso a áreas da academia que eu não tenho, e o Diretor não suspeita de você... ainda."}
+    ],
+    "choices_2": [
+      {"text": "O que exatamente você quer que eu faça?", "next_dialogue": 6},
+      {"text": "Isso parece perigoso demais. Não sou um herói.", "next_dialogue": 7},
+      {"text": "E se tentássemos conversar com o Diretor? Explicar os riscos?", "next_dialogue": 8}
+    ],
+    "additional_dialogues_2": {
+      "6": [
+        {"npc": "Professora Chronos", "text": "Precisamos do fragmento de cristal. Sem ele, o Diretor não pode prosseguir com o experimento."},
+        {"npc": "Professora Chronos", "text": "Não estou pedindo que você o roube - isso seria muito perigoso. Mas precisamos saber exatamente onde está guardado e quais são as medidas de segurança."},
+        {"npc": "Professora Chronos", "text": "Há um evento na próxima semana - a Celebração da Fundação da Academia. O Diretor e a maioria dos professores estarão presentes. Será nossa melhor oportunidade para investigar."},
+        {"npc": "Professora Chronos", "text": "Você precisará encontrar uma maneira de acessar o escritório do Diretor durante o evento e procurar por qualquer informação sobre o fragmento."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Ninguém está pedindo que você seja um herói. Estou pedindo que você seja inteligente e cauteloso."},
+        {"npc": "Professora Chronos", "text": "Entendo seu medo. Realmente entendo. Já vi muitos estudantes como você enfrentarem escolhas semelhantes... em outras linhas temporais."},
+        {"npc": "Professora Chronos", "text": "Mas também vi o que acontece quando ninguém age. O colapso da realidade não é rápido ou dramático. É lento, gradual e irreversível."},
+        {"npc": "Professora Chronos", "text": "Tudo o que peço é informação. Na próxima semana, durante a Celebração da Fundação, o escritório do Diretor estará menos vigiado. Precisamos descobrir onde está o fragmento."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "Você acha que não tentei? Muitas vezes, em muitas linhas temporais diferentes."},
+        {"npc": "Professora Chronos", "text": "O Diretor está convencido de que está certo. Ele acredita genuinamente que está fazendo o bem maior - dando poderes a toda a humanidade, eliminando desigualdades."},
+        {"npc": "Professora Chronos", "text": "Mas sua visão está distorcida pelo desespero. Seus próprios poderes estão falhando, e ele teme se tornar irrelevante. Está disposto a arriscar tudo."},
+        {"npc": "Professora Chronos", "text": "Não, conversar não é uma opção. Precisamos agir. Na próxima semana, durante a Celebração da Fundação, teremos uma chance de acessar o escritório dele e descobrir onde está o fragmento."}
+      ]
+    },
+    "branches": {
+      "investigate_branch": {
+        "conditions": {
+          "choice": 0,
+          "check_result": "success"
+        },
+        "next_chapter": "1_10_investigacao"
+      },
+      "caught_branch": {
+        "conditions": {
+          "choice": 0,
+          "check_result": "failure"
+        },
+        "next_chapter": "1_10_suspeito"
+      },
+      "report_branch": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "1_10_alianca"
+      },
+      "ignore_branch": {
+        "conditions": {
+          "choice": 2
+        },
+        "next_chapter": "1_10_observador"
+      }
+    },
+    "completion_exp": 300,
+    "completion_tusd": 400
+  },
   "challenge_biblioteca_proibida": {
     "type": "challenge",
     "title": "O Segredo da Biblioteca",

@@ -120,7 +120,8 @@ initial_extensions = [
     'cogs.clubs',
     'cogs.scheduled_events',
     'cogs.junie_interaction',
-    'cogs.story_mode'
+    'cogs.story_mode',
+    'cogs.betting'  # New betting cog for risk mechanics
 ]
 
 # This function is no longer needed as extensions are loaded in setup_hook

@@ -3,13 +3,21 @@ Implementation of the duel calculator.
 This class is responsible for calculating the outcome of duels between players.
 """
 import random
+import logging
 from typing import Dict, Any
 from utils.game_mechanics.duel.duel_calculator_interface import IDuelCalculator
 from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from utils.club_perks import (
+    CLUBE_DAS_CHAMAS, ILUSIONISTAS_MENTAIS, ELEMENTALISTAS, CLUBE_DE_COMBATE,
+    apply_physical_damage_boost, apply_mental_energy_reduction, 
+    should_generate_weather_effect, apply_tusd_reward_boost
+)
+
+logger = logging.getLogger('tokugawa_bot')
 
 class DuelCalculator(IDuelCalculator):
     """Calculator for duel-related calculations."""
-    
+
     # Different duel types emphasize different attributes
     ATTRIBUTE_WEIGHTS = {
         "physical": {"dexterity": 0.6, "power_stat": 0.3, "intellect": 0.05, "charisma": 0.05},
@@ -17,48 +25,73 @@ class DuelCalculator(IDuelCalculator):
         "strategic": {"intellect": 0.4, "dexterity": 0.3, "power_stat": 0.2, "charisma": 0.1},
         "social": {"charisma": 0.7, "intellect": 0.2, "dexterity": 0.05, "power_stat": 0.05}
     }
-    
+
     @staticmethod
     def calculate_outcome(challenger: Dict[str, Any], opponent: Dict[str, Any], duel_type: str) -> Dict[str, Any]:
         """Calculate the outcome of a duel between two players.
-        
+
         Args:
             challenger (Dict[str, Any]): The challenger's data
             opponent (Dict[str, Any]): The opponent's data
             duel_type (str): The type of duel (physical, mental, strategic, social)
-            
+
         Returns:
             Dict[str, Any]: The result of the duel
         """
         # Default to physical if invalid type
         weights = DuelCalculator.ATTRIBUTE_WEIGHTS.get(duel_type, DuelCalculator.ATTRIBUTE_WEIGHTS["physical"])
-        
+
         # Apply HP factor to attributes if available
         challenger_attributes = challenger.copy()
         opponent_attributes = opponent.copy()
-        
+
         # Apply HP factor to challenger if HP data is available
         if 'hp' in challenger and 'max_hp' in challenger:
             hp_factor = HPFactorCalculator.calculate_factor(challenger['hp'], challenger['max_hp'])
             for attr in ['dexterity', 'power_stat', 'intellect', 'charisma']:
                 if attr in challenger_attributes:
                     challenger_attributes[attr] = challenger_attributes[attr] * hp_factor
-        
+
         # Apply HP factor to opponent if HP data is available
         if 'hp' in opponent and 'max_hp' in opponent:
             hp_factor = HPFactorCalculator.calculate_factor(opponent['hp'], opponent['max_hp'])
             for attr in ['dexterity', 'power_stat', 'intellect', 'charisma']:
                 if attr in opponent_attributes:
                     opponent_attributes[attr] = opponent_attributes[attr] * hp_factor
-        
+
         # Calculate weighted scores
         challenger_score = sum(challenger_attributes[attr] * weight for attr, weight in weights.items())
         opponent_score = sum(opponent_attributes[attr] * weight for attr, weight in weights.items())
-        
+
+        # Apply Clube das Chamas perk: Boost damage in physical duels
+        if duel_type == "physical":
+            if challenger.get('club_id') == CLUBE_DAS_CHAMAS:
+                original_score = challenger_score
+                challenger_score = apply_physical_damage_boost(challenger_score, CLUBE_DAS_CHAMAS, duel_type)
+                logger.info(f"Applied Clube das Chamas boost to challenger: {original_score} -> {challenger_score}")
+
+            if opponent.get('club_id') == CLUBE_DAS_CHAMAS:
+                original_score = opponent_score
+                opponent_score = apply_physical_damage_boost(opponent_score, CLUBE_DAS_CHAMAS, duel_type)
+                logger.info(f"Applied Clube das Chamas boost to opponent: {original_score} -> {opponent_score}")
+
+        # Apply Elementalistas perk: Chance to generate weather effects
+        if challenger.get('club_id') == ELEMENTALISTAS and should_generate_weather_effect(ELEMENTALISTAS):
+            # Weather effect boosts the Elementalistas player's score
+            weather_boost = random.uniform(1.1, 1.3)  # 10-30% boost
+            challenger_score *= weather_boost
+            logger.info(f"Applied Elementalistas weather effect to challenger: {weather_boost:.2f}x boost")
+
+        if opponent.get('club_id') == ELEMENTALISTAS and should_generate_weather_effect(ELEMENTALISTAS):
+            # Weather effect boosts the Elementalistas player's score
+            weather_boost = random.uniform(1.1, 1.3)  # 10-30% boost
+            opponent_score *= weather_boost
+            logger.info(f"Applied Elementalistas weather effect to opponent: {weather_boost:.2f}x boost")
+
         # Add randomness factor (±20%)
         challenger_score *= random.uniform(0.8, 1.2)
         opponent_score *= random.uniform(0.8, 1.2)
-        
+
         # Determine winner
         if challenger_score > opponent_score:
             winner = challenger
@@ -68,22 +101,52 @@ class DuelCalculator(IDuelCalculator):
             winner = opponent
             loser = challenger
             win_margin = opponent_score - challenger_score
-        
+
         # Calculate rewards based on margin and level difference
         level_diff = abs(winner["level"] - loser["level"])
         exp_reward = int(30 + (win_margin / 5) + (level_diff * 5))
         tusd_reward = int(10 + (win_margin / 10) + (level_diff * 2))
-        
+
         # Calculate HP loss for the loser based on win margin
         # Higher win margins cause more HP loss
         hp_loss = min(30, max(5, int(win_margin / 3)))
-        
-        return {
+
+        # Apply Ilusionistas Mentais perk: Reduced energy cost (HP loss) for mental duels
+        if duel_type == "mental" and loser.get('club_id') == ILUSIONISTAS_MENTAIS:
+            original_hp_loss = hp_loss
+            hp_loss = apply_mental_energy_reduction(hp_loss, ILUSIONISTAS_MENTAIS, duel_type)
+            logger.info(f"Applied Ilusionistas Mentais energy reduction: {original_hp_loss} -> {hp_loss}")
+
+        # Apply Clube de Combate perk: Increased TUSD rewards when winning duels
+        if winner.get('club_id') == CLUBE_DE_COMBATE:
+            original_tusd_reward = tusd_reward
+            tusd_reward = apply_tusd_reward_boost(tusd_reward, CLUBE_DE_COMBATE, True)
+            logger.info(f"Applied Clube de Combate TUSD boost: {original_tusd_reward} -> {tusd_reward}")
+
+        # Create result dictionary with additional info for club perks
+        result = {
             "winner": winner,
             "loser": loser,
             "exp_reward": exp_reward,
             "tusd_reward": tusd_reward,
             "duel_type": duel_type,
             "win_margin": win_margin,
-            "hp_loss": hp_loss
+            "hp_loss": hp_loss,
+            "club_perks_applied": {}
         }
+
+        # Record which club perks were applied
+        if duel_type == "physical" and (winner.get('club_id') == CLUBE_DAS_CHAMAS or loser.get('club_id') == CLUBE_DAS_CHAMAS):
+            result["club_perks_applied"]["clube_das_chamas"] = "Bônus de dano em duelos físicos"
+
+        if duel_type == "mental" and loser.get('club_id') == ILUSIONISTAS_MENTAIS:
+            result["club_perks_applied"]["ilusionistas_mentais"] = "Redução no custo de energia para duelos mentais"
+
+        if (winner.get('club_id') == ELEMENTALISTAS and should_generate_weather_effect(ELEMENTALISTAS)) or \
+           (loser.get('club_id') == ELEMENTALISTAS and should_generate_weather_effect(ELEMENTALISTAS)):
+            result["club_perks_applied"]["elementalistas"] = "Efeito climático gerado em combate"
+
+        if winner.get('club_id') == CLUBE_DE_COMBATE:
+            result["club_perks_applied"]["clube_de_combate"] = "Bônus em recompensas de TUSD ao ganhar duelos"
+
+        return result
