@@ -14,6 +14,14 @@ from tests.utils.game_mechanics.events.test_random_event import TestRandomEvent
 from tests.utils.game_mechanics.events.test_training_event import TestTrainingEvent
 from tests.story_mode.test_story_mode import TestStoryMode, TestStoryModeIntegration, TestStoryModeCog
 
+# Import the new test modules
+try:
+    from tests.test_dynamodb import TestDynamoDB
+    from tests.test_git_operations import TestGitOperations
+    from tests.test_commit_functionality import TestCommitFunctionality
+except ImportError as e:
+    print(f"Warning: Could not import one or more test modules: {e}")
+
 # Create a test suite
 def create_test_suite():
     test_suite = unittest.TestSuite()
@@ -28,6 +36,14 @@ def create_test_suite():
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryMode))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeIntegration))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCog))
+
+    # Add the new test cases
+    try:
+        test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestDynamoDB))
+        test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestGitOperations))
+        test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestCommitFunctionality))
+    except NameError:
+        print("Warning: One or more test classes could not be added to the test suite")
 
     return test_suite
 

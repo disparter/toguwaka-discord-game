@@ -140,6 +140,38 @@ async def on_ready():
     # Set bot status
     await bot.change_presence(activity=discord.Game(name="Academia Tokugawa"))
 
+    # Check if DynamoDB is enabled and run migration if needed
+    try:
+        import os
+        from utils.database import get_system_flag, set_system_flag
+
+        # Check if DynamoDB is enabled
+        use_dynamodb = os.environ.get('USE_DYNAMODB', 'false').lower() == 'true'
+
+        if use_dynamodb:
+            # Check if migration has been executed before
+            migration_flag = get_system_flag('migration_executed')
+
+            if not migration_flag:
+                logger.info("First time running with DynamoDB enabled. Starting migration...")
+
+                # Import and run migration script
+                from utils.migrate_to_dynamodb import migrate_all
+
+                # Run migration
+                success = migrate_all()
+
+                if success:
+                    # Set flag to indicate migration has been executed
+                    set_system_flag('migration_executed', 'true')
+                    logger.info("Migration completed successfully")
+                else:
+                    logger.error("Migration failed")
+            else:
+                logger.info("Migration already executed, skipping")
+    except Exception as e:
+        logger.error(f"Error checking/running migration: {e}")
+
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:
         await sync_commands()

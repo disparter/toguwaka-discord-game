@@ -1,0 +1,338 @@
+import sqlite3
+import json
+import os
+import logging
+import boto3
+from datetime import datetime
+from pathlib import Path
+
+# Import both database modules
+import database as sqlite_db
+import dynamodb as dynamo_db
+
+logger = logging.getLogger('tokugawa_bot')
+
+# SQLite database file path
+SQLITE_DB_PATH = Path('data/tokugawa.db')
+
+def migrate_players():
+    """Migrate players from SQLite to DynamoDB."""
+    logger.info("Migrating players...")
+    
+    # Get all players from SQLite
+    players = sqlite_db.get_all_players()
+    count = 0
+    
+    for player in players:
+        user_id = player['user_id']
+        
+        # Create player profile in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'PROFILE',
+                'GSI1PK': 'PLAYERS',
+                'GSI1SK': player['name'],
+                'nome': player['name'],
+                'superpoder': player['power'],
+                'nivel': player['level'],
+                'exp': player['exp'],
+                'tusd': player['tusd'],
+                'clube_id': player['club_id'],
+                'atributos': {
+                    'destreza': player['dexterity'],
+                    'intelecto': player['intellect'],
+                    'carisma': player['charisma'],
+                    'poder': player['power_stat']
+                },
+                'reputacao': player['reputation'],
+                'hp': player['hp'],
+                'max_hp': player['max_hp'],
+                'created_at': player['created_at'],
+                'last_active': player['last_active']
+            }
+        )
+        
+        # Create inventory in DynamoDB
+        inventory = json.loads(player['inventory']) if isinstance(player['inventory'], str) else player['inventory']
+        inventory_items = []
+        
+        for item_id, quantity in inventory.items():
+            inventory_items.append({
+                'id': item_id,
+                'quantidade': quantity
+            })
+        
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'INVENTORY',
+                'itens': inventory_items
+            }
+        )
+        
+        # Create techniques in DynamoDB
+        techniques = json.loads(player['techniques']) if isinstance(player['techniques'], str) else player['techniques']
+        techniques_list = []
+        
+        for tech_id, tech_data in techniques.items():
+            techniques_list.append({
+                'id': tech_id,
+                'nome': tech_data.get('name', 'Unknown'),
+                'nivel': tech_data.get('level', 1),
+                'dano': tech_data.get('damage', 0)
+            })
+        
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'TECHNIQUES',
+                'tecnicas': techniques_list
+            }
+        )
+        
+        count += 1
+        if count % 10 == 0:
+            logger.info(f"Migrated {count} players...")
+    
+    logger.info(f"Migrated {count} players successfully.")
+    return count
+
+def migrate_clubs():
+    """Migrate clubs from SQLite to DynamoDB."""
+    logger.info("Migrating clubs...")
+    
+    # Get all clubs from SQLite
+    clubs = sqlite_db.get_all_clubs()
+    count = 0
+    
+    for club in clubs:
+        club_id = club['club_id']
+        
+        # Create club profile in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'CLUBE#{club_id}',
+                'SK': 'PROFILE',
+                'GSI1PK': 'CLUBES',
+                'GSI1SK': club['name'],
+                'nome': club['name'],
+                'descricao': club['description'],
+                'lider_id': club['leader_id'],
+                'membros_count': club['members_count'],
+                'reputacao': club['reputation'],
+                'created_at': club['created_at']
+            }
+        )
+        
+        # Get club members
+        members = sqlite_db.get_club_members(club_id)
+        member_ids = [f'PLAYER#{member["user_id"]}' for member in members]
+        
+        # Create club members in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'CLUBE#{club_id}',
+                'SK': 'MEMBROS',
+                'membros': member_ids
+            }
+        )
+        
+        count += 1
+    
+    logger.info(f"Migrated {count} clubs successfully.")
+    return count
+
+def migrate_events():
+    """Migrate events from SQLite to DynamoDB."""
+    logger.info("Migrating events...")
+    
+    # Connect to SQLite database
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get all events
+    cursor.execute("SELECT * FROM events")
+    events = cursor.fetchall()
+    count = 0
+    
+    for event in events:
+        event_id = event['event_id']
+        
+        # Parse JSON fields
+        participants = json.loads(event['participants'])
+        data = json.loads(event['data'])
+        
+        # Create event in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'EVENTO#{event_id}',
+                'SK': 'PROFILE',
+                'GSI1PK': 'EVENTOS',
+                'GSI1SK': event['type'],
+                'nome': event['name'],
+                'descricao': event['description'],
+                'tipo': event['type'],
+                'channel_id': event['channel_id'],
+                'message_id': event['message_id'],
+                'start_time': event['start_time'],
+                'end_time': event['end_time'],
+                'completed': bool(event['completed']),
+                'participantes': participants,
+                'data': data,
+                'created_at': event['created_at']
+            }
+        )
+        
+        count += 1
+    
+    conn.close()
+    logger.info(f"Migrated {count} events successfully.")
+    return count
+
+def migrate_cooldowns():
+    """Migrate cooldowns from SQLite to DynamoDB."""
+    logger.info("Migrating cooldowns...")
+    
+    # Connect to SQLite database
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get all cooldowns
+    cursor.execute("SELECT * FROM cooldowns")
+    cooldowns = cursor.fetchall()
+    count = 0
+    
+    for cooldown in cooldowns:
+        user_id = cooldown['user_id']
+        command = cooldown['command']
+        
+        # Create cooldown in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': f'COOLDOWN#{command}',
+                'expiry_time': cooldown['expiry_time']
+            }
+        )
+        
+        count += 1
+    
+    conn.close()
+    logger.info(f"Migrated {count} cooldowns successfully.")
+    return count
+
+def migrate_system_flags():
+    """Migrate system flags from SQLite to DynamoDB."""
+    logger.info("Migrating system flags...")
+    
+    # Connect to SQLite database
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get all system flags
+    cursor.execute("SELECT * FROM system_flags")
+    flags = cursor.fetchall()
+    count = 0
+    
+    for flag in flags:
+        flag_name = flag['flag_name']
+        
+        # Create system flag in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': 'SYSTEM',
+                'SK': f'FLAG#{flag_name}',
+                'flag_value': flag['flag_value'],
+                'updated_at': flag['updated_at']
+            }
+        )
+        
+        count += 1
+    
+    conn.close()
+    logger.info(f"Migrated {count} system flags successfully.")
+    return count
+
+def migrate_items():
+    """Migrate items from SQLite to DynamoDB."""
+    logger.info("Migrating items...")
+    
+    # Connect to SQLite database
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get all items
+    cursor.execute("SELECT * FROM items")
+    items = cursor.fetchall()
+    count = 0
+    
+    for item in items:
+        item_id = item['item_id']
+        
+        # Parse effects JSON
+        effects = json.loads(item['effects'])
+        
+        # Create item in DynamoDB
+        dynamo_db.table.put_item(
+            Item={
+                'PK': f'ITEM#{item_id}',
+                'SK': 'PROFILE',
+                'GSI1PK': 'ITEMS',
+                'GSI1SK': item['type'],
+                'nome': item['name'],
+                'descricao': item['description'],
+                'tipo': item['type'],
+                'raridade': item['rarity'],
+                'preco': item['price'],
+                'efeitos': effects
+            }
+        )
+        
+        count += 1
+    
+    conn.close()
+    logger.info(f"Migrated {count} items successfully.")
+    return count
+
+def migrate_all():
+    """Migrate all data from SQLite to DynamoDB."""
+    logger.info("Starting migration from SQLite to DynamoDB...")
+    
+    try:
+        # Migrate in order of dependencies
+        clubs_count = migrate_clubs()
+        players_count = migrate_players()
+        events_count = migrate_events()
+        cooldowns_count = migrate_cooldowns()
+        system_flags_count = migrate_system_flags()
+        items_count = migrate_items()
+        
+        logger.info(f"""
+        Migration completed successfully:
+        - {clubs_count} clubs
+        - {players_count} players
+        - {events_count} events
+        - {cooldowns_count} cooldowns
+        - {system_flags_count} system flags
+        - {items_count} items
+        """)
+        
+        return True
+    except Exception as e:
+        logger.error(f"Error during migration: {e}")
+        return False
+
+if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    # Run migration
+    migrate_all()
