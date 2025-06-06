@@ -1,0 +1,82 @@
+[
+    {
+        "title": "Festival dos Poderes",
+        "description": "Você foi convidado para o Festival dos Poderes! Ganhe experiência extra por participar.",
+        "type": "positive",
+        "effect": {"exp": 50, "tusd": 20},
+        "category": "social",
+        "rarity": "common"
+    },
+    {
+        "title": "Sabotagem no Clube",
+        "description": "Seu clube foi sabotado por rivais! Você precisa ajudar na recuperação.",
+        "type": "negative",
+        "effect": {"exp": 30, "tusd": -10},
+        "category": "club",
+        "rarity": "uncommon"
+    },
+    {
+        "title": "Mentor Surpresa",
+        "description": "Um mentor misterioso ofereceu treinamento especial para você!",
+        "type": "positive",
+        "effect": {"exp": 100, "attribute": "random"},
+        "category": "training",
+        "rarity": "rare"
+    },
+    {
+        "title": "Desafio Surpresa",
+        "description": "Um estudante desconhecido desafiou você para um duelo amistoso!",
+        "type": "neutral",
+        "effect": {"exp": 40, "duel": true},
+        "category": "combat",
+        "rarity": "common"
+    },
+    {
+        "title": "Artefato Misterioso",
+        "description": "Você encontrou um artefato misterioso que aumenta temporariamente seu poder!",
+        "type": "positive",
+        "effect": {"item": "random"},
+        "category": "discovery",
+        "rarity": "rare"
+    },
+    {
+        "title": "Aula Especial",
+        "description": "Um professor renomado está oferecendo uma aula especial que aumenta seu intelecto!",
+        "type": "positive",
+        "effect": {"exp": 75, "intellect": 1},
+        "category": "academic",
+        "rarity": "uncommon"
+    },
+    {
+        "title": "Torneio de Artes Marciais",
+        "description": "Um torneio de artes marciais está acontecendo na academia! Participe para ganhar prêmios.",
+        "type": "positive",
+        "effect": {"exp": 80, "tusd": 50, "power_stat": 1},
+        "category": "combat",
+        "rarity": "uncommon"
+    },
+    {
+        "title": "Tempestade Mística",
+        "description": "Uma tempestade mística está afetando a academia, aumentando temporariamente todos os seus atributos!",
+        "type": "positive",
+        "effect": {"exp": 60, "all_attributes": 1},
+        "category": "mystical",
+        "rarity": "epic"
+    },
+    {
+        "title": "Roubo na Academia",
+        "description": "Houve um roubo na academia e você perdeu alguns TUSDs!",
+        "type": "negative",
+        "effect": {"tusd": -30},
+        "category": "misfortune",
+        "rarity": "common"
+    },
+    {
+        "title": "Descoberta Ancestral",
+        "description": "Você descobriu um pergaminho ancestral que revela segredos sobre os fundadores da academia!",
+        "type": "positive",
+        "effect": {"exp": 120, "intellect": 2},
+        "category": "discovery",
+        "rarity": "legendary"
+    }
+]

@@ -656,7 +656,7 @@ class MoralChoices(commands.Cog):
 
         self.cooldowns[user_id][command] = datetime.now()
 
-def setup(bot):
+async def setup(bot):
     """Adiciona o cog ao bot."""
-    bot.add_cog(MoralChoices(bot))
+    await bot.add_cog(MoralChoices(bot))
     logging.getLogger('tokugawa').info('MoralChoices cog loaded')
