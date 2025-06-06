@@ -49,13 +49,30 @@ Escolha um clube para se juntar e conheça seu líder.
 - Interação com o líder do seu clube
 - Informações sobre a rivalidade entre clubes
 
-#### Ano 1, Capítulo 3: Primeiro Desafio
+#### Ano 1, Capítulo 3: Rivalidades e Alianças
 
-Enfrente seu primeiro desafio na academia: um estudante valentão que está intimidando os calouros.
+Descubra as complexas relações entre os clubes e como elas afetam a hierarquia da academia.
+
+- Diálogos com membros de diferentes clubes sobre alianças e rivalidades
+- Escolhas que afetam sua compreensão da política da academia
+- Informações específicas baseadas no seu clube
+
+#### Ano 1, Capítulo 4: O Segredo da Biblioteca
+
+Descubra um segredo oculto na biblioteca da academia que pode mudar sua compreensão sobre os poderes.
+
+- Exploração da biblioteca da academia
+- Descoberta da seção restrita com conhecimentos proibidos
+- Diferentes abordagens para acessar informações secretas
+
+#### Ano 1, Capítulo 5: O Primeiro Desafio
+
+Enfrente seu primeiro grande desafio na academia: um estudante valentão que está intimidando os calouros.
 
 - Diferentes abordagens baseadas em seus atributos
 - Verificações de atributos para determinar o sucesso
 - Confronto com Drake, o Valentão
+- Recompensas baseadas no resultado da batalha
 
 ### Capítulos de Desafio
 

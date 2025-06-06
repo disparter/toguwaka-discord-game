@@ -229,6 +229,96 @@ ENHANCED_STORY_CHAPTERS = {
             "completion_exp": 100,
             "completion_tusd": 200,
             "next_chapter": 4
+        },
+        3: {
+            "title": "Rivalidades e Alianças",
+            "description": "Descubra as complexas relações entre os clubes e como elas afetam a hierarquia da academia.",
+            "dialogues": [
+                {"npc": "Junie", "text": "Agora que você está estabelecido em seu clube, é hora de entender melhor as dinâmicas entre os diferentes grupos da academia."},
+                {"npc": "Junie", "text": "As rivalidades e alianças entre clubes moldam a política da academia e podem afetar sua posição na hierarquia."},
+                {"npc": "Junie", "text": "Cada clube tem seus aliados e rivais naturais. Conhecer essas relações pode ser crucial para sua sobrevivência social."},
+                {"npc": "Estudante Veterano", "text": "Ei, novato! Já percebeu como funciona a coisa por aqui? Não é só sobre poder individual - é sobre quem você conhece e quem te apoia."}
+            ],
+            "choices": [
+                {"text": "Perguntar sobre alianças secretas", "next_dialogue": 4, "attribute_check": "charisma", "threshold": 8},
+                {"text": "Investigar rivalidades históricas", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 8},
+                {"text": "Oferecer-se para mediar conflitos", "next_dialogue": 6, "attribute_check": "charisma", "threshold": 10}
+            ],
+            "club_specific_dialogues": {
+                1: [  # Clube das Chamas
+                    {"npc": "Ember", "text": "Como membro do Clube das Chamas, você deve saber que os Elementalistas são nossos rivais históricos. Eles acham que seu 'equilíbrio' é superior à nossa intensidade."},
+                    {"npc": "Ember", "text": "Por outro lado, temos uma boa relação com o Clube de Combate. Eles respeitam nossa força e paixão."},
+                    {"npc": "Ember", "text": "Cuidado com os Ilusionistas Mentais e o Conselho Político - eles são mestres em manipulação e podem usar suas palavras contra você."}
+                ],
+                2: [  # Ilusionistas Mentais
+                    {"npc": "Mirage", "text": "No mundo dos Ilusionistas, informação é poder. Temos olhos e ouvidos em todos os lugares."},
+                    {"npc": "Mirage", "text": "Nossa maior rivalidade é com o Conselho Político - ambos lutamos pelo controle da informação, mas com métodos diferentes."},
+                    {"npc": "Mirage", "text": "Mantemos uma aliança tácita com os Elementalistas. Eles valorizam o conhecimento tanto quanto nós."}
+                ],
+                3: [  # Conselho Político
+                    {"npc": "Victoria", "text": "O Conselho Político tem conexões em todos os níveis da academia. Conhecemos os segredos que mantêm esta instituição funcionando."},
+                    {"npc": "Victoria", "text": "Os Ilusionistas pensam que podem nos superar em nosso próprio jogo. Que ingenuidade."},
+                    {"npc": "Victoria", "text": "Mantemos relações cordiais com o Clube das Chamas - sua força bruta é útil quando a diplomacia falha."}
+                ],
+                4: [  # Elementalistas
+                    {"npc": "Aero", "text": "Os Elementalistas buscam harmonia, mas isso não significa que não temos rivais. O Clube das Chamas representa tudo o que rejeitamos - poder sem controle."},
+                    {"npc": "Aero", "text": "Temos afinidade com os Ilusionistas Mentais. Ambos valorizamos o conhecimento e a compreensão profunda."},
+                    {"npc": "Aero", "text": "O Clube de Combate? Respeitamos sua disciplina, mas seus métodos são muito diretos para nosso gosto."}
+                ],
+                5: [  # Clube de Combate
+                    {"npc": "Fist", "text": "No Clube de Combate, respeitamos a força acima de tudo. O Clube das Chamas compartilha dessa filosofia."},
+                    {"npc": "Fist", "text": "Não confiamos nos manipuladores do Conselho Político e dos Ilusionistas. Preferimos resolver as coisas diretamente."},
+                    {"npc": "Fist", "text": "Os Elementalistas têm poder, mas falta-lhes a determinação para usá-lo quando necessário."}
+                ]
+            },
+            "completion_exp": 125,
+            "completion_tusd": 250,
+            "next_chapter": 4
+        },
+        4: {
+            "title": "O Segredo da Biblioteca",
+            "description": "Descubra um segredo oculto na biblioteca da academia que pode mudar sua compreensão sobre os poderes.",
+            "dialogues": [
+                {"npc": "Junie", "text": "A biblioteca da Academia Tokugawa contém conhecimentos acumulados por séculos sobre usuários de poderes."},
+                {"npc": "Junie", "text": "Recentemente, ouvi rumores sobre uma seção restrita que contém informações sobre a origem dos poderes."},
+                {"npc": "Bibliotecária", "text": "Bem-vindo à biblioteca. Sinta-se à vontade para explorar as estantes, mas lembre-se: alguns conhecimentos são restritos aos estudantes de níveis mais altos."},
+                {"npc": "Estudante Misterioso", "text": "Psst! Você parece curioso. Já ouviu falar da Biblioteca Proibida? Dizem que contém segredos sobre a verdadeira natureza dos nossos poderes..."}
+            ],
+            "choices": [
+                {"text": "Pedir permissão para acessar a seção restrita", "next_dialogue": 4, "attribute_check": "charisma", "threshold": 12},
+                {"text": "Procurar uma entrada secreta", "next_dialogue": 5, "attribute_check": "dexterity", "threshold": 10},
+                {"text": "Pesquisar nos arquivos normais por pistas", "next_dialogue": 6, "attribute_check": "intellect", "threshold": 10}
+            ],
+            "hidden_secret_discovery": "Biblioteca Proibida",
+            "completion_exp": 150,
+            "completion_tusd": 300,
+            "next_chapter": 5
+        },
+        5: {
+            "title": "O Primeiro Desafio",
+            "description": "Enfrente seu primeiro grande desafio na academia: um estudante valentão que está intimidando os calouros.",
+            "dialogues": [
+                {"npc": "Estudante Assustado", "text": "P-por favor, você precisa ajudar! Drake está aterrorizando os calouros de novo!"},
+                {"npc": "Junie", "text": "Drake é um estudante do terceiro ano conhecido por intimidar os mais fracos para subir na hierarquia."},
+                {"npc": "Junie", "text": "Este pode ser um bom momento para você provar seu valor na academia."},
+                {"npc": "Drake", "text": "Olha só, mais um novato querendo bancar o herói? Vamos ver do que você é feito!"}
+            ],
+            "choices": [
+                {"text": "Enfrentar Drake diretamente", "next_dialogue": 4, "attribute_check": "power_stat", "threshold": 12},
+                {"text": "Usar estratégia e inteligência", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 12},
+                {"text": "Tentar resolver diplomaticamente", "next_dialogue": 6, "attribute_check": "charisma", "threshold": 15}
+            ],
+            "battle": {
+                "opponent": "Drake, o Valentão",
+                "power_level": 15,
+                "rewards": {
+                    "victory": {"exp": 200, "tusd": 400, "hierarchy_points": 2},
+                    "defeat": {"exp": 50, "tusd": 100}
+                }
+            },
+            "completion_exp": 175,
+            "completion_tusd": 350,
+            "next_chapter": 6
         }
     }
 }
