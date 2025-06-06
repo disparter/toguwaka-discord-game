@@ -401,7 +401,8 @@ class StoryModeCog(commands.Cog):
                     button.callback = self._create_choice_callback(user_id, i)
                     view.add_item(button)
 
-                message = await channel.send(embed=embed, view=view, ephemeral=True)
+                # Don't use ephemeral for messages with choices so they're visible to everyone
+                message = await channel.send(embed=embed, view=view)
                 return
 
             # If no choices, add a "Continue" button
@@ -414,7 +415,8 @@ class StoryModeCog(commands.Cog):
             button.callback = self._create_continue_callback(user_id)
             view.add_item(button)
 
-            message = await channel.send(embed=embed, view=view, ephemeral=True)
+            # Don't use ephemeral for messages with continue button so they're visible to everyone
+            message = await channel.send(embed=embed, view=view)
             return
 
         # If there are choices but no current dialogue, send the choices
@@ -436,7 +438,8 @@ class StoryModeCog(commands.Cog):
                 button.callback = self._create_choice_callback(user_id, i)
                 view.add_item(button)
 
-            message = await channel.send(embed=embed, view=view, ephemeral=True)
+            # Don't use ephemeral for messages with choices so they're visible to everyone
+            message = await channel.send(embed=embed, view=view)
             return
 
         # If no dialogue or choices, the chapter is complete
@@ -446,7 +449,8 @@ class StoryModeCog(commands.Cog):
             color=discord.Color.green()
         )
 
-        await channel.send(embed=embed, ephemeral=True)
+        # Don't use ephemeral for chapter complete message so it's visible to everyone
+        await channel.send(embed=embed)
 
     def _create_choice_callback(self, user_id: int, choice_index: int):
         """

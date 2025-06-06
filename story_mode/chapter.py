@@ -62,8 +62,14 @@ class BaseChapter(Chapter):
             }
 
         # Set current chapter
-        story_progress["current_chapter"] = int(self.chapter_id.split("_")[1]) if "_" in self.chapter_id else 1
-        story_progress["current_year"] = int(self.chapter_id.split("_")[0]) if "_" in self.chapter_id else 1
+        # Handle chapter IDs with multiple underscores (e.g., 1_1_2)
+        parts = self.chapter_id.split("_")
+        if len(parts) >= 2:
+            story_progress["current_year"] = int(parts[0])
+            story_progress["current_chapter"] = int(parts[1])
+        else:
+            story_progress["current_year"] = 1
+            story_progress["current_chapter"] = 1
 
         # Set current dialogue index to 0
         story_progress["current_dialogue_index"] = 0
@@ -174,8 +180,15 @@ class BaseChapter(Chapter):
         """
         # By default, return the next chapter specified in the data
         if self.next_chapter:
-            year = self.chapter_id.split("_")[0] if "_" in self.chapter_id else "1"
-            return f"{year}_{self.next_chapter}"
+            # Handle chapter IDs with multiple underscores (e.g., 1_1_2)
+            parts = self.chapter_id.split("_")
+            year = parts[0] if len(parts) >= 1 else "1"
+
+            # Check if next_chapter already contains year information
+            if "_" in self.next_chapter:
+                return self.next_chapter
+            else:
+                return f"{year}_{self.next_chapter}"
         return None
 
 
