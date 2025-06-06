@@ -374,15 +374,41 @@ def create_player(user_id, name, power, strength_level, club_id):
         conn.close()
 
 def sync_db_to_s3():
-    """Sync the local database to S3 if running in AWS."""
+    """Sync the local database to S3 if running in AWS.
+
+    The synchronization frequency is controlled by the DB_SYNC_INTERVAL_MINUTES
+    environment variable. If not set, the default is 5 minutes.
+    """
     if not IS_AWS:
         return True
 
     try:
+        # Check if enough time has passed since the last sync
+        from datetime import datetime, timedelta
+
+        # Get the sync interval from environment variable, default to 5 minutes
+        sync_interval_minutes = int(os.environ.get('DB_SYNC_INTERVAL_MINUTES', '5'))
+
+        # Get the last sync time from system flags
+        last_sync_flag = "last_db_sync_time"
+        last_sync_str = get_system_flag(last_sync_flag)
+
+        # If we have a last sync time, check if enough time has passed
+        if last_sync_str:
+            last_sync_time = datetime.fromisoformat(last_sync_str)
+            now = datetime.now()
+
+            # If not enough time has passed, skip the sync
+            if now - last_sync_time < timedelta(minutes=sync_interval_minutes):
+                logger.info(f"Skipping database sync, last sync was {(now - last_sync_time).total_seconds() / 60:.1f} minutes ago")
+                return True
+
         from utils.s3_storage import upload_db_to_s3
 
         # Upload the database to S3
         if upload_db_to_s3():
+            # Update the last sync time
+            set_system_flag(last_sync_flag, datetime.now().isoformat())
             logger.info("Uploaded database to S3")
             return True
         else:
