@@ -1,0 +1,904 @@
+{
+  "chapter_id": "awakening_chapter",
+  "title": "O Despertar do Potencial",
+  "description": "Após alguns meses na Academia Tokugawa, você começa a sentir mudanças em seus poderes. Algo está despertando dentro de você, algo que pode mudar sua posição na hierarquia da escola. Mas com grandes poderes vêm grandes desafios e atenção indesejada.",
+  "type": "branching",
+  "prerequisites": {
+    "level": 7,
+    "completed_chapters": ["chapter_1", "mystery_chapter"]
+  },
+  "scenes": [
+    {
+      "scene_id": "power_surge",
+      "title": "Manifestação Inesperada",
+      "description": "Durante uma aula prática, você sente uma súbita onda de energia percorrendo seu corpo. Seus poderes parecem estar evoluindo de forma inesperada.",
+      "dialogue": [
+        {
+          "speaker": "Professor Takeda",
+          "text": "Hoje vamos praticar o controle básico de habilidades. Lembrem-se, o controle é tão importante quanto o poder em si."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Enquanto você se concentra no exercício, sente uma estranha sensação - como se algo estivesse se agitando dentro de você. De repente, seu poder manifesta-se com uma intensidade nunca antes vista."
+        },
+        {
+          "speaker": "Estudante Próximo",
+          "text": "Uau! O que foi isso? Você nunca mostrou esse nível de poder antes!"
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Interessante... Parece que estamos testemunhando um despertar de habilidade. Isso é raro, mas não inédito. Você está bem?"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Tentar controlar o poder imediatamente",
+          "next_scene": "control_attempt",
+          "attribute_check": {
+            "attribute": "power_stat",
+            "difficulty": 8
+          }
+        },
+        {
+          "text": "Pedir ajuda ao professor",
+          "next_scene": "seek_guidance",
+          "rewards": {
+            "exp": 10,
+            "reputation": 5
+          }
+        },
+        {
+          "text": "Fingir que nada de extraordinário aconteceu",
+          "next_scene": "hide_ability",
+          "rewards": {
+            "exp": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "control_attempt",
+      "title": "Domando a Tempestade",
+      "description": "Você tenta controlar o súbito aumento de poder por conta própria.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Concentrando-se intensamente, você tenta canalizar a energia que flui através de seu corpo. É como tentar domar um rio selvagem."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Gotas de suor escorrem por sua testa enquanto você luta para manter o controle. A sala inteira observa em silêncio tenso."
+        }
+      ],
+      "success_dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Gradualmente, você sente o poder se estabilizando. A energia selvagem agora flui de maneira controlada através de você, respondendo à sua vontade."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Impressionante! Poucos estudantes conseguem controlar um despertar de poder na primeira tentativa. Você tem um talento natural."
+        },
+        {
+          "speaker": "Estudante Elite",
+          "text": "Hmm, parece que temos um novo jogador interessante na academia..."
+        }
+      ],
+      "failure_dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "A energia é muito intensa. Você perde o controle, e uma onda de poder se espalha pela sala, derrubando equipamentos e assustando os outros estudantes."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Todos se acalmem! Isso é normal durante um despertar. Você precisará de treinamento especial para controlar esse novo nível de poder."
+        },
+        {
+          "speaker": "Estudante Elite",
+          "text": "Patético. Poder sem controle é apenas um perigo para todos."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Continuar a aula normalmente",
+          "next_scene": "after_class",
+          "rewards": {
+            "exp": 15,
+            "power_stat": 1
+          }
+        },
+        {
+          "text": "Pedir desculpas aos colegas afetados",
+          "next_scene": "apologize",
+          "rewards": {
+            "exp": 10,
+            "charisma": 1,
+            "reputation": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "seek_guidance",
+      "title": "Orientação do Mestre",
+      "description": "Você pede ajuda ao Professor Takeda para entender o que está acontecendo com seus poderes.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Professor, não entendo o que está acontecendo. Meus poderes nunca foram assim antes."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Venha comigo. Classe, continuem com os exercícios, voltarei em breve."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "O professor leva você para uma sala privada, equipada com dispositivos de contenção e monitoramento de energia."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "O que você está experimentando é um fenômeno conhecido como 'Despertar Secundário'. Alguns estudantes descobrem que seus poderes têm aspectos ou potenciais ocultos que só se manifestam sob certas condições."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Isso pode significar que você tem potencial para subir na hierarquia da academia, mas também traz responsabilidades e... atenção. Nem sempre desejada."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Quero aprender a controlar esse novo poder",
+          "next_scene": "special_training",
+          "rewards": {
+            "exp": 20,
+            "intellect": 1
+          }
+        },
+        {
+          "text": "Isso vai mudar minha posição na hierarquia?",
+          "next_scene": "hierarchy_discussion",
+          "rewards": {
+            "exp": 15
+          }
+        },
+        {
+          "text": "Que tipo de atenção indesejada?",
+          "next_scene": "warning_discussion",
+          "rewards": {
+            "exp": 15
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "hide_ability",
+      "title": "Segredo Guardado",
+      "description": "Você tenta disfarçar o súbito aumento de poder, fingindo que nada extraordinário aconteceu.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Com esforço, você suprime a energia que flui através de você, tentando parecer normal. A sensação é desconfortável, como tentar conter a respiração."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Está tudo bem? Por um momento, senti uma flutuação de energia vinda de você."
+        },
+        {
+          "speaker": "Você",
+          "text": "Estou bem, professor. Só estava me concentrando muito no exercício."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "O professor olha para você com suspeita, mas não insiste no assunto. Porém, você nota um estudante no fundo da sala observando você com interesse intenso."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Continuar disfarçando e sair assim que a aula terminar",
+          "next_scene": "secret_development",
+          "rewards": {
+            "exp": 10
+          }
+        },
+        {
+          "text": "Confrontar o estudante que está observando você",
+          "next_scene": "confront_observer",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 7
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "after_class",
+      "title": "Rumores se Espalham",
+      "description": "Após a demonstração de poder, os rumores sobre suas habilidades começam a se espalhar pela academia.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Nos dias seguintes, você nota olhares e sussurros quando passa pelos corredores. Seu nome está nos lábios de muitos estudantes."
+        },
+        {
+          "speaker": "Estudante Aleatório",
+          "text": "É aquele que teve o despertar na aula do Takeda. Dizem que seu nível de poder pode ser maior do que aparenta."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Durante o almoço, um grupo de estudantes de elite se aproxima da sua mesa. Entre eles está Drake, conhecido por sua posição como um dos mais fortes da academia."
+        },
+        {
+          "speaker": "Drake",
+          "text": "Então você é o novato com poderes emergentes. Impressionante... ou seria, se estivéssemos no jardim de infância. Vamos ver do que você é realmente capaz."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar o desafio educadamente",
+          "next_scene": "accept_challenge",
+          "rewards": {
+            "exp": 15,
+            "reputation": 10
+          }
+        },
+        {
+          "text": "Recusar e tentar acalmar a situação",
+          "next_scene": "defuse_situation",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 9
+          }
+        },
+        {
+          "text": "Mostrar uma demonstração de poder como aviso",
+          "next_scene": "power_warning",
+          "attribute_check": {
+            "attribute": "power_stat",
+            "difficulty": 10
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "special_training",
+      "title": "Treinamento Especial",
+      "description": "O Professor Takeda oferece treinamento especial para ajudá-lo a controlar seus novos poderes.",
+      "dialogue": [
+        {
+          "speaker": "Professor Takeda",
+          "text": "Vamos começar com exercícios básicos de controle, mas adaptados para níveis mais altos de poder. A chave é a visualização e a respiração."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Durante as semanas seguintes, você treina intensamente com o professor após as aulas regulares. O treinamento é exaustivo, mas você sente progresso."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Você está avançando rapidamente. Seu controle melhorou significativamente, mas ainda há muito a aprender sobre o verdadeiro potencial do seu poder."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Há algo que devo mencionar. O diretor e alguns professores notaram seu progresso. Eles estão... interessados em seu desenvolvimento."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Isso é bom, certo? Quero impressioná-los",
+          "next_scene": "director_interest",
+          "rewards": {
+            "exp": 25,
+            "power_stat": 2,
+            "reputation": 15
+          }
+        },
+        {
+          "text": "Por que sinto que há algo que você não está me contando?",
+          "next_scene": "hidden_truth",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "hierarchy_discussion",
+      "title": "O Jogo do Poder",
+      "description": "Você discute com o Professor Takeda como seu despertar pode afetar sua posição na hierarquia da academia.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Isso significa que posso subir na hierarquia da academia? Talvez me tornar parte da elite?"
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Potencialmente, sim. Mas a hierarquia não é apenas sobre poder bruto. É sobre controle, influência e como você usa suas habilidades."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Além disso, subir na hierarquia atrai atenção. Os atuais membros da elite podem ver você como uma ameaça à sua posição."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Já vi estudantes promissores serem sabotados ou desafiados constantemente até quebrarem sob a pressão."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Estou pronto para enfrentar qualquer desafio",
+          "next_scene": "embrace_challenge",
+          "rewards": {
+            "exp": 20,
+            "power_stat": 1,
+            "reputation": 10
+          }
+        },
+        {
+          "text": "Talvez seja melhor esconder meu verdadeiro potencial por enquanto",
+          "next_scene": "strategic_hiding",
+          "rewards": {
+            "exp": 15,
+            "intellect": 2
+          }
+        },
+        {
+          "text": "Há alguma maneira de subir sem fazer inimigos?",
+          "next_scene": "diplomatic_approach",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "warning_discussion",
+      "title": "Sombras no Horizonte",
+      "description": "O Professor Takeda explica os riscos associados ao seu despertar de poder.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Que tipo de atenção indesejada devo esperar?"
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Existem... facções dentro e fora da academia que se interessam por estudantes com habilidades excepcionais."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "Alguns querem recrutar talentos para suas próprias agendas. Outros veem poderes emergentes como ameaças que precisam ser controladas ou eliminadas."
+        },
+        {
+          "speaker": "Professor Takeda",
+          "text": "E há rumores sobre uma organização chamada 'Divisão' que monitora e às vezes... remove indivíduos cujos poderes ultrapassam certos limites."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Como posso me proteger dessas ameaças?",
+          "next_scene": "protection_strategies",
+          "rewards": {
+            "exp": 20,
+            "intellect": 1
+          }
+        },
+        {
+          "text": "Isso soa como conspiração. Tem provas?",
+          "next_scene": "evidence_discussion",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 9
+          }
+        },
+        {
+          "text": "Talvez eu deva me juntar a uma dessas facções para proteção",
+          "next_scene": "faction_consideration",
+          "rewards": {
+            "exp": 15
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "secret_development",
+      "title": "Desenvolvimento Secreto",
+      "description": "Você decide desenvolver seus poderes em segredo, longe dos olhares curiosos.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Nas semanas seguintes, você encontra lugares isolados para praticar - o telhado da academia tarde da noite, a floresta nos fundos do campus, salas de treinamento vazias nas primeiras horas da manhã."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Lentamente, você começa a entender a natureza do seu despertar. Seu poder não apenas aumentou em força, mas também desenvolveu novos aspectos que você nunca imaginou possíveis."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Um dia, enquanto pratica em uma clareira isolada na floresta, você percebe que não está sozinho."
+        },
+        {
+          "speaker": "Voz Desconhecida",
+          "text": "Impressionante controle para alguém sem orientação formal. Você tem praticado sozinho por quanto tempo?"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Quem está aí? Mostre-se!",
+          "next_scene": "mysterious_mentor",
+          "attribute_check": {
+            "attribute": "power_stat",
+            "difficulty": 7
+          }
+        },
+        {
+          "text": "Fingir normalidade e tentar sair discretamente",
+          "next_scene": "escape_attempt",
+          "attribute_check": {
+            "attribute": "dexterity",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "confront_observer",
+      "title": "O Observador",
+      "description": "Você decide confrontar o estudante que estava observando você intensamente durante a aula.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Após a aula, você aborda o estudante misterioso que não tirou os olhos de você durante o incidente."
+        },
+        {
+          "speaker": "Você",
+          "text": "Por que estava me observando daquele jeito? O que você quer?"
+        },
+        {
+          "speaker": "Estudante Misterioso",
+          "text": "Calma. Meu nome é Rei. Eu também passei por um despertar semelhante no ano passado. Reconheço os sinais."
+        },
+        {
+          "speaker": "Rei",
+          "text": "Você está tentando esconder, mas isso só vai piorar. O poder quer se manifestar, e quanto mais você reprime, mais violenta será a explosão quando finalmente acontecer."
+        }
+      ],
+      "success_dialogue": [
+        {
+          "speaker": "Rei",
+          "text": "Posso ajudar você a entender o que está acontecendo. Há outros como nós na academia - um pequeno grupo que se reúne secretamente para treinar e compartilhar conhecimento."
+        },
+        {
+          "speaker": "Rei",
+          "text": "Não somos oficialmente sancionados pela administração. Na verdade, preferimos manter distância das políticas oficiais da academia."
+        }
+      ],
+      "failure_dialogue": [
+        {
+          "speaker": "Rei",
+          "text": "Olha, eu só estava tentando ajudar. Mas se você prefere lidar com isso sozinho, boa sorte. Vai precisar."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Rei se vira para sair, mas para e olha para trás."
+        },
+        {
+          "speaker": "Rei",
+          "text": "Um conselho: quando a explosão vier, procure um lugar isolado. Pelo bem de todos ao seu redor."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Me conte mais sobre esse grupo secreto",
+          "next_scene": "secret_group",
+          "rewards": {
+            "exp": 20,
+            "reputation": -5
+          }
+        },
+        {
+          "text": "Por que vocês se mantêm secretos? O que estão escondendo?",
+          "next_scene": "group_secrets",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 8
+          }
+        },
+        {
+          "text": "Não estou interessado em grupos clandestinos",
+          "next_scene": "reject_group",
+          "rewards": {
+            "exp": 10,
+            "reputation": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "accept_challenge",
+      "title": "O Desafio",
+      "description": "Você aceita o desafio de Drake, preparando-se para provar seu valor.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Aceito seu desafio, Drake. Quando e onde?"
+        },
+        {
+          "speaker": "Drake",
+          "text": "Arena de treinamento, hoje após as aulas. Não se atrase."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "A notícia do desafio se espalha rapidamente. Quando você chega à arena, parece que metade da academia está lá para assistir."
+        },
+        {
+          "speaker": "Drake",
+          "text": "As regras são simples: o primeiro a incapacitar o oponente ou forçá-lo a sair da arena vence. Sem golpes letais, obviamente."
+        },
+        {
+          "speaker": "Drake",
+          "text": "Vamos ver se seu despertar foi apenas um lampejo de sorte ou se você realmente tem o que é preciso para estar entre a elite."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Lutar com tudo o que tem desde o início",
+          "next_scene": "all_out_battle",
+          "attribute_check": {
+            "attribute": "power_stat",
+            "difficulty": 10
+          }
+        },
+        {
+          "text": "Lutar defensivamente e estudar o estilo de Drake",
+          "next_scene": "strategic_battle",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 9
+          }
+        },
+        {
+          "text": "Tentar impressionar a plateia com estilo e técnica",
+          "next_scene": "showmanship_battle",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "all_out_battle",
+      "title": "Poder Contra Poder",
+      "description": "Você decide enfrentar Drake com toda a força do seu poder recém-despertado.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Assim que o sinal é dado, você libera seu poder em toda sua intensidade. A energia flui através de você como nunca antes."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Drake parece momentaneamente surpreso pela sua intensidade, mas rapidamente se recupera e contra-ataca com seu próprio poder impressionante."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "A arena treme com o impacto dos seus poderes colidindo. Os espectadores recuam, alguns criando barreiras protetoras."
+        }
+      ],
+      "success_dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Em um momento decisivo, seu poder supera o de Drake. Ele é empurrado para trás, quase saindo da arena, mas consegue se estabilizar no último segundo."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "No entanto, está claro que ele está esgotado, enquanto você ainda tem reservas de energia."
+        },
+        {
+          "speaker": "Drake",
+          "text": "Eu... cedo. Você venceu esta rodada."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Um silêncio atônito cai sobre a arena, seguido por murmúrios excitados. Drake, um dos mais fortes da academia, admitindo derrota?"
+        }
+      ],
+      "failure_dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Drake é mais experiente no uso de seus poderes. Ele absorve seu ataque inicial e então contra-ataca com precisão devastadora."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Você sente seu poder vacilando, incapaz de manter o ritmo contra a técnica refinada de Drake."
+        },
+        {
+          "speaker": "Drake",
+          "text": "Poder bruto sem técnica é inútil. Você tem potencial, mas ainda tem muito a aprender."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Com um movimento final, Drake força você para fora da arena, encerrando a luta."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar o resultado com dignidade",
+          "next_scene": "aftermath",
+          "rewards": {
+            "exp": 30,
+            "reputation": 15
+          }
+        },
+        {
+          "text": "Pedir uma revanche no futuro",
+          "next_scene": "rematch_request",
+          "rewards": {
+            "exp": 25,
+            "power_stat": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "aftermath",
+      "title": "Consequências",
+      "description": "Após o confronto com Drake, você lida com as consequências de sua performance.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Nos dias seguintes, sua posição na academia muda visivelmente. Estudantes que antes te ignoravam agora te cumprimentam nos corredores."
+        },
+        {
+          "speaker": "Estudante Admirador",
+          "text": "Aquela luta foi incrível! Nunca vi ninguém enfrentar Drake daquele jeito antes."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Durante o almoço, você nota um grupo de estudantes de elite discutindo enquanto olham em sua direção. Entre eles está Aria, conhecida como a 'Rainha' da academia."
+        },
+        {
+          "speaker": "Aria",
+          "text": "Então você é o novo talento que todos estão comentando. Impressionante demonstração contra Drake."
+        },
+        {
+          "speaker": "Aria",
+          "text": "Estamos sempre procurando estudantes excepcionais para nosso círculo interno. Alguém com seu... potencial seria uma adição valiosa."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Mostrar interesse no convite de Aria",
+          "next_scene": "elite_invitation",
+          "rewards": {
+            "exp": 25,
+            "reputation": 20
+          }
+        },
+        {
+          "text": "Agradecer, mas manter independência",
+          "next_scene": "maintain_independence",
+          "rewards": {
+            "exp": 20,
+            "power_stat": 1,
+            "intellect": 1
+          }
+        },
+        {
+          "text": "Perguntar sobre as responsabilidades envolvidas",
+          "next_scene": "responsibilities_inquiry",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 7
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "elite_invitation",
+      "title": "Ascensão à Elite",
+      "description": "Você aceita o convite de Aria para se juntar ao círculo interno da elite da academia.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Estou interessado. O que isso envolve exatamente?"
+        },
+        {
+          "speaker": "Aria",
+          "text": "Acesso a instalações de treinamento exclusivas, conhecimentos restritos da biblioteca, e claro, influência sobre os rumos da academia."
+        },
+        {
+          "speaker": "Aria",
+          "text": "Em troca, esperamos lealdade e que você ajude a manter a ordem na hierarquia. Os mais fortes lideram - é a lei natural."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Aria leva você para uma reunião em uma sala que você nem sabia que existia na academia. Lá dentro, encontram-se os estudantes mais poderosos, discutindo assuntos que afetam toda a escola."
+        },
+        {
+          "speaker": "Aria",
+          "text": "Há algo mais que você deve saber. Recentemente, temos notado atividades suspeitas de um grupo que se autodenomina 'Igualitários'. Eles acreditam que a hierarquia baseada em poder deve ser abolida."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Oferecer ajuda para lidar com os Igualitários",
+          "next_scene": "hunt_rebels",
+          "rewards": {
+            "exp": 30,
+            "reputation": 25,
+            "power_stat": 2
+          }
+        },
+        {
+          "text": "Sugerir diálogo em vez de confronto",
+          "next_scene": "diplomatic_solution",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 10
+          }
+        },
+        {
+          "text": "Manter-se neutro sobre o assunto por enquanto",
+          "next_scene": "neutral_stance",
+          "rewards": {
+            "exp": 20,
+            "intellect": 1
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "maintain_independence",
+      "title": "O Caminho Solitário",
+      "description": "Você decide manter sua independência em vez de se juntar à elite da academia.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Agradeço o convite, Aria, mas prefiro seguir meu próprio caminho por enquanto."
+        },
+        {
+          "speaker": "Aria",
+          "text": "Interessante. Poucos recusam tal oferta. Respeito sua decisão, embora possa se arrepender dela."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Você nota um brilho de respeito nos olhos de Aria, mas também algo mais... cautela, talvez."
+        },
+        {
+          "speaker": "Aria",
+          "text": "Apenas lembre-se: na Academia Tokugawa, ninguém realmente caminha sozinho por muito tempo. Você acabará escolhendo um lado, querendo ou não."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Dias depois, você é abordado por um estudante que nunca viu antes. Ele fala em voz baixa, olhando constantemente ao redor."
+        },
+        {
+          "speaker": "Estudante Misterioso",
+          "text": "Ouvi que você recusou o convite de Aria. Corajoso. Talvez esteja interessado em conhecer pessoas que questionam o sistema atual da academia?"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Mostrar interesse no grupo alternativo",
+          "next_scene": "rebel_contact",
+          "rewards": {
+            "exp": 25,
+            "reputation": -10,
+            "intellect": 2
+          }
+        },
+        {
+          "text": "Recusar educadamente",
+          "next_scene": "true_independence",
+          "rewards": {
+            "exp": 20,
+            "power_stat": 1,
+            "charisma": 1
+          }
+        },
+        {
+          "text": "Perguntar mais detalhes antes de decidir",
+          "next_scene": "cautious_inquiry",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "rebel_contact",
+      "title": "Os Igualitários",
+      "description": "Você aceita conhecer o grupo que questiona a hierarquia da academia.",
+      "dialogue": [
+        {
+          "speaker": "Estudante Misterioso",
+          "text": "Me encontre à meia-noite na antiga estufa abandonada atrás do campo de treinamento. Venha sozinho."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "À meia-noite, você se dirige ao local combinado. A estufa parece abandonada, mas ao entrar, percebe que há uma passagem secreta no chão."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Descendo as escadas, você encontra uma sala subterrânea onde cerca de doze estudantes estão reunidos. Alguns rostos você reconhece, outros são completamente desconhecidos."
+        },
+        {
+          "speaker": "Líder dos Igualitários",
+          "text": "Bem-vindo. Somos os Igualitários. Acreditamos que a hierarquia baseada em poder da Academia Tokugawa é fundamentalmente injusta e prejudicial."
+        },
+        {
+          "speaker": "Líder dos Igualitários",
+          "text": "Alguns de nós têm poderes consideráveis, outros quase nenhum. Mas todos acreditamos que o valor de uma pessoa não deve ser determinado pela força de sua habilidade."
+        },
+        {
+          "speaker": "Líder dos Igualitários",
+          "text": "Estamos trabalhando para criar um sistema mais justo, onde todos os estudantes tenham voz e oportunidades iguais, independentemente do nível de poder."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Juntar-se aos Igualitários",
+          "next_scene": "join_rebels",
+          "rewards": {
+            "exp": 30,
+            "reputation": -15,
+            "charisma": 2,
+            "intellect": 2
+          }
+        },
+        {
+          "text": "Oferecer apoio secreto sem compromisso formal",
+          "next_scene": "secret_ally",
+          "rewards": {
+            "exp": 25,
+            "intellect": 1
+          }
+        },
+        {
+          "text": "Agradecer pela reunião, mas pedir tempo para pensar",
+          "next_scene": "consider_options",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "chapter_conclusion",
+      "title": "Novos Horizontes",
+      "description": "Seu despertar de poder mudou sua posição na academia e abriu novos caminhos.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Semanas se passaram desde seu despertar de poder. O controle sobre suas habilidades melhorou significativamente, e sua compreensão do funcionamento interno da Academia Tokugawa se aprofundou."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "As escolhas que você fez moldaram não apenas seu desenvolvimento pessoal, mas também como os outros o veem e interagem com você."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Enquanto reflete sobre sua jornada até agora, você percebe que este é apenas o começo. Há muito mais a aprender, tanto sobre seus poderes quanto sobre os segredos da academia."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "E com grandes poderes vêm não apenas grandes responsabilidades, mas também decisões difíceis sobre que tipo de pessoa você quer se tornar neste mundo de habilidades extraordinárias e hierarquias de poder."
+        }
+      ],
+      "choices": []
+    }
+  ],
+  "rewards": {
+    "exp": 200,
+    "tusd": 300,
+    "items": [
+      {
+        "id": "awakening_crystal",
+        "name": "Cristal do Despertar",
+        "description": "Um raro cristal que ressoa com seu poder despertado, permitindo maior controle sobre suas habilidades.",
+        "value": 1000
+      }
+    ]
+  }
+}
