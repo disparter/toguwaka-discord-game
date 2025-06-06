@@ -889,6 +889,9 @@
       "choices": []
     }
   ],
+  "choices": [
+    {"text": "Iniciar o capítulo", "next_scene": "power_surge"}
+  ],
   "rewards": {
     "exp": 200,
     "tusd": 300,

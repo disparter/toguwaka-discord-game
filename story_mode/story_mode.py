@@ -213,7 +213,8 @@ class StoryMode:
                     for index, event_data in enumerate(events_data):
                         event_id = f"event_{index}"
                         # Create a game event using the new SOLID architecture
-                        if event_data.get("type") == "random":
+                        event_type = event_data.get("type") if isinstance(event_data, dict) else None
+                        if event_type == "random":
                             # Create a random event
                             game_event = GameRandomEvent(
                                 event_data.get("title", "Untitled Event"),
@@ -228,7 +229,28 @@ class StoryMode:
                             logger.info(f"Created game event: {game_event.get_title()} (ID: {event_id})")
                 else:
                     # If events_data is a dictionary, process it as before
-                    for event_id, event_data in events_data.items():
+                    if isinstance(events_data, dict):
+                        for event_id, event_data in events_data.items():
+                            # Create a game event using the new SOLID architecture
+                            if event_data.get("type") == "random":
+                                # Create a random event
+                                game_event = GameRandomEvent(
+                                    event_data.get("title", "Untitled Event"),
+                                    event_data.get("description", "No description available."),
+                                    event_data.get("type", "neutral"),
+                                    event_data.get("effect", {})
+                                )
+
+                                # Register the event with the event manager
+                                # This would be implemented in a future update to fully integrate
+                                # the new event system with the story mode
+                                logger.info(f"Created game event: {game_event.get_title()} (ID: {event_id})")
+                    else:
+                        logger.warning(f"Unexpected data type for events_data: {type(events_data).__name__}. Expected dict or list.")
+            else:
+                # If the data doesn't have the expected structure, process it as before
+                if isinstance(data, dict):
+                    for event_id, event_data in data.items():
                         # Create a game event using the new SOLID architecture
                         if event_data.get("type") == "random":
                             # Create a random event
@@ -243,23 +265,23 @@ class StoryMode:
                             # This would be implemented in a future update to fully integrate
                             # the new event system with the story mode
                             logger.info(f"Created game event: {game_event.get_title()} (ID: {event_id})")
-            else:
-                # If the data doesn't have the expected structure, process it as before
-                for event_id, event_data in data.items():
-                    # Create a game event using the new SOLID architecture
-                    if event_data.get("type") == "random":
-                        # Create a random event
-                        game_event = GameRandomEvent(
-                            event_data.get("title", "Untitled Event"),
-                            event_data.get("description", "No description available."),
-                            event_data.get("type", "neutral"),
-                            event_data.get("effect", {})
-                        )
-
-                        # Register the event with the event manager
-                        # This would be implemented in a future update to fully integrate
-                        # the new event system with the story mode
-                        logger.info(f"Created game event: {game_event.get_title()} (ID: {event_id})")
+                elif isinstance(data, list):
+                    for index, event_data in enumerate(data):
+                        event_id = f"event_{index}"
+                        # Create a game event using the new SOLID architecture
+                        if isinstance(event_data, dict):
+                            event_type = event_data.get("type")
+                            if event_type == "random":
+                                # Create a random event
+                                game_event = GameRandomEvent(
+                                    event_data.get("title", "Untitled Event"),
+                                    event_data.get("description", "No description available."),
+                                    event_data.get("type", "neutral"),
+                                    event_data.get("effect", {})
+                                )
+                                logger.info(f"Created game event: {game_event.get_title()} (ID: {event_id})")
+                else:
+                    logger.warning(f"Unexpected data type: {type(data).__name__}. Expected dict or list.")
 
             logger.info(f"Created game events from {file_path}")
         except Exception as e:

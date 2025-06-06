@@ -117,6 +117,9 @@
       {"npc": "Junie", "text": "Agora é hora de escolher um clube! Cada clube tem seu próprio foco e atividades."},
       {"npc": "Junie", "text": "Você já está registrado no clube {club_name}. Vamos conhecer o líder do clube!"}
     ],
+    "choices": [
+      {"text": "Continuar", "next_dialogue": 1}
+    ],
     "club_leaders": {
       "1": {"name": "Kai Flameheart", "description": "Um jovem de cabelos vermelhos e temperamento explosivo, mas com um coração leal."},
       "2": {"name": "Luna Mindweaver", "description": "Uma garota misteriosa de olhos violeta que parece sempre saber o que você está pensando."},
@@ -188,6 +191,9 @@
       {"npc": "Junie", "text": "Agora que você está estabelecido em seu clube, é hora de enfrentar seu primeiro desafio."},
       {"npc": "Junie", "text": "Cada estudante precisa provar seu valor para estabelecer sua posição na hierarquia da academia."},
       {"npc": "Junie", "text": "Seu desafio será determinado pelo clube que você escolheu."}
+    ],
+    "choices": [
+      {"text": "Estou pronto para o desafio", "next_dialogue": 1}
     ],
     "club_specific_dialogues": {
       "1": [
