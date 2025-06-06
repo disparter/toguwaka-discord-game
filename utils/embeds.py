@@ -71,6 +71,9 @@ def create_player_embed(player, club=None):
 
 def create_club_embed(club):
     """Create an embed displaying club information."""
+    # Import club perks module
+    from utils.club_perks import get_club_perk_description
+
     # Determine color based on club
     club_colors = {
         1: 0xFF0000,  # Clube das Chamas - Red
@@ -98,6 +101,16 @@ def create_club_embed(club):
         inline=True
     )
 
+    # Add club perks
+    club_id = club.get('club_id')
+    if club_id:
+        perk_description = get_club_perk_description(club_id)
+        embed.add_field(
+            name="Bônus de Clube",
+            value=perk_description,
+            inline=True
+        )
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
 
@@ -112,6 +125,7 @@ def create_duel_embed(duel_result):
     duel_colors = {
         "physical": 0xFF0000,  # Red
         "mental": 0x800080,    # Purple
+        "strategic": 0x008000, # Green
         "social": 0xFFD700     # Gold
     }
     color = duel_colors.get(duel_result["duel_type"], 0x1E90FF)
@@ -136,6 +150,25 @@ def create_duel_embed(duel_result):
         value=f"**{loser['name']}**\nNível {loser['level']}\nGanhou {duel_result['exp_reward']//2} EXP",
         inline=True
     )
+
+    # Add club perks info if any were applied
+    if "club_perks_applied" in duel_result and duel_result["club_perks_applied"]:
+        perks_text = []
+        for club, perk_description in duel_result["club_perks_applied"].items():
+            club_names = {
+                "clube_das_chamas": "🔥 Clube das Chamas",
+                "ilusionistas_mentais": "🧠 Ilusionistas Mentais",
+                "elementalistas": "🌪️ Elementalistas",
+                "clube_de_combate": "⚔️ Clube de Combate"
+            }
+            club_name = club_names.get(club, club)
+            perks_text.append(f"**{club_name}**: {perk_description}")
+
+        embed.add_field(
+            name="Bônus de Clube Aplicados",
+            value="\n".join(perks_text),
+            inline=False
+        )
 
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")

@@ -1,0 +1,1437 @@
+{
+  "1_4_success": {
+    "type": "story",
+    "title": "Sucesso no Primeiro Desafio",
+    "description": "Após completar com sucesso seu primeiro desafio, você começa a ganhar reconhecimento na academia.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Seu sucesso no desafio não passou despercebido. Nos dias seguintes, você nota olhares de respeito dos outros estudantes."},
+      {"npc": "Narrador", "text": "Seu líder de clube parece particularmente satisfeito com seu desempenho e começa a lhe oferecer treinamento mais avançado."},
+      {"npc": "Junie", "text": "Parabéns pelo seu sucesso no desafio! Isso é apenas o começo da sua jornada na Academia Tokugawa."},
+      {"npc": "Junie", "text": "Agora que você provou seu valor inicial, novas oportunidades se abrirão para você."}
+    ],
+    "choices": [
+      {"text": "O que acontece agora?", "next_dialogue": 4},
+      {"text": "Como isso afeta minha posição na hierarquia?", "next_dialogue": 5},
+      {"text": "Quero me concentrar em melhorar ainda mais.", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Junie", "text": "Agora você terá acesso a treinamentos mais avançados e missões específicas do seu clube."},
+        {"npc": "Junie", "text": "Além disso, outros estudantes podem procurar sua ajuda ou desafiá-lo para testar suas habilidades."},
+        {"npc": "Junie", "text": "E não se esqueça das aulas regulares! A Academia Tokugawa é uma escola, afinal de contas."}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "Sua posição na hierarquia melhorou um pouco. Você agora é reconhecido como um estudante de nível Médio com potencial."},
+        {"npc": "Junie", "text": "Para subir mais, você precisará completar desafios mais difíceis e demonstrar suas habilidades em situações mais complexas."},
+        {"npc": "Junie", "text": "A hierarquia não é apenas sobre poder bruto, mas também sobre como você usa suas habilidades e como se relaciona com os outros."}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "Uma atitude admirável! O aprimoramento constante é valorizado na academia."},
+        {"npc": "Junie", "text": "Seu líder de clube pode oferecer treinamento especializado, e há também a biblioteca com conhecimentos avançados."},
+        {"npc": "Junie", "text": "Além disso, praticar com outros estudantes é uma excelente maneira de melhorar suas habilidades."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Junie", "text": "Ah, quase me esqueci! Há um evento especial acontecendo em breve - uma palestra do Professor Quantum sobre a natureza dos poderes."},
+      {"npc": "Junie", "text": "Muitos estudantes consideram suas palestras fascinantes, embora às vezes um pouco... excêntricas."},
+      {"npc": "Junie", "text": "Seria uma boa oportunidade para expandir seu conhecimento teórico e conhecer outros estudantes interessados."}
+    ],
+    "choices_2": [
+      {"text": "Definitivamente irei à palestra.", "next_dialogue": 7},
+      {"text": "Prefiro treinamento prático a teoria.", "next_dialogue": 8},
+      {"text": "Talvez, se não interferir com meus outros compromissos.", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Junie", "text": "Excelente! A palestra será no Grande Auditório, amanhã às 15h."},
+        {"npc": "Junie", "text": "O Professor Quantum tem uma perspectiva única sobre os poderes. Dizem que ele pode manipular a própria estrutura da realidade."},
+        {"npc": "Junie", "text": "Ah, e não se atrase. Ele tem... opiniões fortes sobre pontualidade e como ela se relaciona com o tecido do espaço-tempo."}
+      ],
+      "8": [
+        {"npc": "Junie", "text": "Compreensível. Muitos estudantes preferem a abordagem prática."},
+        {"npc": "Junie", "text": "Nesse caso, posso sugerir as sessões de treinamento avançado que acontecem no Campo de Prática todas as tardes?"},
+        {"npc": "Junie", "text": "Lá você pode testar suas habilidades contra outros estudantes em um ambiente controlado."}
+      ],
+      "9": [
+        {"npc": "Junie", "text": "Claro, entendo que você tem muitas responsabilidades agora."},
+        {"npc": "Junie", "text": "A palestra será gravada e disponibilizada na biblioteca digital, caso você não possa comparecer."},
+        {"npc": "Junie", "text": "Apenas lembre-se de equilibrar seus compromissos. Diversificar suas experiências é importante para um desenvolvimento completo."}
+      ]
+    },
+    "completion_exp": 150,
+    "completion_tusd": 250,
+    "next_chapter": "1_5"
+  },
+  "1_4_failure": {
+    "type": "story",
+    "title": "Aprendendo com o Fracasso",
+    "description": "Após não conseguir completar seu primeiro desafio, você precisa lidar com as consequências e encontrar força para continuar.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O fracasso no desafio foi desapontador, mas faz parte da jornada de aprendizado na Academia Tokugawa."},
+      {"npc": "Narrador", "text": "Alguns estudantes parecem olhar para você com desdém, enquanto outros oferecem palavras de encorajamento."},
+      {"npc": "Junie", "text": "Não fique desanimado. Muitos estudantes falham em seus primeiros desafios."},
+      {"npc": "Junie", "text": "O importante agora é como você responde a esse revés. É sua reação que definirá seu caminho daqui para frente."}
+    ],
+    "choices": [
+      {"text": "Quero tentar novamente o mais rápido possível.", "next_dialogue": 4},
+      {"text": "Como isso afeta minha posição na academia?", "next_dialogue": 5},
+      {"text": "Talvez eu não seja bom o suficiente para estar aqui.", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Junie", "text": "Essa é a atitude! A perseverança é uma qualidade admirada na academia."},
+        {"npc": "Junie", "text": "Você poderá tentar novamente em uma semana. Até lá, sugiro que treine e se prepare melhor."},
+        {"npc": "Junie", "text": "Seu líder de clube pode oferecer orientação específica sobre como melhorar nas áreas em que você teve dificuldade."}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "Honestamente, você permanecerá no nível Baixo por enquanto. Mas isso não é permanente."},
+        {"npc": "Junie", "text": "Muitos estudantes que hoje estão no topo começaram com falhas. O que importa é como você cresce a partir delas."},
+        {"npc": "Junie", "text": "Além disso, a hierarquia não é tudo. Há muitas maneiras de se destacar na academia além do poder bruto."}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "Não diga isso! O fato de você estar aqui já prova que tem potencial."},
+        {"npc": "Junie", "text": "Cada estudante tem seu próprio ritmo de desenvolvimento. Alguns demoram mais para descobrir suas forças."},
+        {"npc": "Junie", "text": "Além disso, há muitos caminhos diferentes na academia. Talvez você apenas não tenha encontrado o seu ainda."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Junie", "text": "Sabe, há um evento que pode ser particularmente útil para você agora - uma palestra do Professor Quantum sobre a natureza dos poderes."},
+      {"npc": "Junie", "text": "Ele aborda como nossos estados mentais e emocionais afetam nossas habilidades, o que pode ajudar você a superar os bloqueios que enfrentou."},
+      {"npc": "Junie", "text": "Muitos estudantes que enfrentaram dificuldades encontraram inspiração em suas palavras."}
+    ],
+    "choices_2": [
+      {"text": "Sim, acho que isso poderia me ajudar.", "next_dialogue": 7},
+      {"text": "Prefiro treinar mais e melhorar na prática.", "next_dialogue": 8},
+      {"text": "Vou pensar sobre isso.", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Junie", "text": "Ótima escolha! A palestra será no Grande Auditório, amanhã às 15h."},
+        {"npc": "Junie", "text": "O Professor Quantum tem uma maneira única de explicar como nossos poderes funcionam em um nível fundamental."},
+        {"npc": "Junie", "text": "Muitos estudantes saem de suas palestras com uma compreensão completamente nova de suas habilidades."}
+      ],
+      "8": [
+        {"npc": "Junie", "text": "Entendo. A prática é essencial, sem dúvida."},
+        {"npc": "Junie", "text": "Nesse caso, recomendo as sessões de recuperação que acontecem no Campo de Prática todas as manhãs."},
+        {"npc": "Junie", "text": "São sessões especiais para estudantes que querem melhorar aspectos específicos de suas habilidades, com instrutores dedicados."}
+      ],
+      "9": [
+        {"npc": "Junie", "text": "Claro, tome seu tempo para decidir o que é melhor para você."},
+        {"npc": "Junie", "text": "Independentemente do que escolher, lembre-se de que este é apenas o começo da sua jornada."},
+        {"npc": "Junie", "text": "Muitos dos maiores sucessos vêm após os fracassos mais dolorosos. É como respondemos a eles que define quem somos."}
+      ]
+    },
+    "completion_exp": 100,
+    "completion_tusd": 150,
+    "next_chapter": "1_5"
+  },
+  "1_5": {
+    "type": "story",
+    "title": "A Palestra do Professor Quantum",
+    "description": "Uma palestra fascinante sobre a natureza dos poderes revela informações intrigantes e levanta questões sobre a Academia Tokugawa.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O Grande Auditório está quase cheio quando você chega para a palestra do Professor Quantum."},
+      {"npc": "Narrador", "text": "Estudantes de todos os anos e clubes estão presentes, alguns conversando animadamente, outros revisando anotações."},
+      {"npc": "Narrador", "text": "Após alguns minutos, as luzes diminuem e o Professor Quantum sobe ao palco - um homem de meia-idade com cabelos grisalhos desgrenhados e óculos peculiares."},
+      {"npc": "Professor Quantum", "text": "Bem-vindos, jovens mentes curiosas! Hoje vamos explorar o que realmente são nossos 'poderes' e de onde eles vêm."}
+    ],
+    "choices": [
+      {"text": "Prestar atenção total à palestra", "next_dialogue": 4},
+      {"text": "Observar as reações dos outros estudantes", "next_dialogue": 5},
+      {"text": "Tomar notas detalhadas", "next_dialogue": 6, "attribute_check": "intellect", "threshold": 8}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professor Quantum", "text": "Contrariamente à crença popular, nossos poderes não são simplesmente habilidades genéticas aleatórias. Eles são manifestações de nossa conexão com o tecido fundamental da realidade."},
+        {"npc": "Professor Quantum", "text": "Cada um de vocês, conscientemente ou não, está manipulando as leis da física em um nível quântico. Vocês estão dobrando a realidade à sua vontade."},
+        {"npc": "Professor Quantum", "text": "A questão que poucos fazem é: por que alguns podem fazer isso e outros não? E quando exatamente essa habilidade surgiu na história humana?"}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Enquanto o Professor Quantum fala, você observa as reações ao seu redor."},
+        {"npc": "Narrador", "text": "A maioria dos estudantes parece fascinada, mas você nota que alguns dos mais velhos trocam olhares céticos ou preocupados."},
+        {"npc": "Narrador", "text": "Particularmente interessante é a reação da Professora Chronos, sentada discretamente no fundo do auditório. Ela observa o Professor Quantum com uma intensidade incomum."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_6": [
+        {"npc": "Narrador", "text": "Você toma notas meticulosas, capturando não apenas as palavras do Professor Quantum, mas também as conexões entre diferentes conceitos."},
+        {"npc": "Narrador", "text": "Suas anotações revelam um padrão intrigante nas teorias do professor - ele parece sugerir que os poderes não evoluíram naturalmente, mas surgiram após um evento específico."},
+        {"npc": "Narrador", "text": "Você também nota que ele cuidadosamente evita mencionar datas específicas ou detalhes históricos que poderiam confirmar esta teoria."}
+      ],
+      "failure_6": [
+        {"npc": "Narrador", "text": "Você tenta tomar notas, mas a complexidade dos conceitos apresentados torna difícil acompanhar."},
+        {"npc": "Narrador", "text": "Suas anotações acabam fragmentadas e confusas, capturando apenas partes da palestra sem as conexões importantes."},
+        {"npc": "Narrador", "text": "Ainda assim, você consegue registrar algumas ideias interessantes sobre a natureza quântica dos poderes."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professor Quantum", "text": "A história oficial nos diz que os poderes começaram a se manifestar gradualmente há cerca de 300 anos, como uma evolução natural da espécie humana."},
+      {"npc": "Professor Quantum", "text": "Mas os dados não suportam completamente essa teoria. A emergência foi muito súbita, muito concentrada para ser uma mutação evolutiva típica."},
+      {"npc": "Professor Quantum", "text": "Minha pesquisa sugere que algo aconteceu - um evento catalisador que alterou fundamentalmente a relação entre consciência humana e realidade física."}
+    ],
+    "choices_2": [
+      {"text": "Levantar a mão e fazer uma pergunta", "next_dialogue": 7, "attribute_check": "charisma", "threshold": 8},
+      {"text": "Continuar ouvindo em silêncio", "next_dialogue": 8},
+      {"text": "Olhar para a Professora Chronos para ver sua reação", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_7": [
+        {"npc": "Narrador", "text": "Você levanta a mão e o Professor Quantum aponta para você com um sorriso entusiasmado."},
+        {"npc": "Você", "text": "Se houve um evento catalisador, por que não há registros históricos claros sobre ele? Algo tão significativo deveria ter sido amplamente documentado."},
+        {"npc": "Professor Quantum", "text": "Excelente pergunta! E a resposta é fascinante - há, de fato, anomalias nos registros históricos desse período. Lacunas inexplicáveis, contradições, documentos que parecem ter sido alterados."},
+        {"npc": "Professor Quantum", "text": "É quase como se... alguém quisesse ocultar o que realmente aconteceu. Mas isso, é claro, é apenas uma teoria."},
+        {"npc": "Narrador", "text": "Você nota que sua pergunta causou um leve desconforto em alguns professores presentes."}
+      ],
+      "failure_7": [
+        {"npc": "Narrador", "text": "Você levanta a mão, mas sua tentativa de chamar atenção é tímida demais e o Professor Quantum não o nota."},
+        {"npc": "Narrador", "text": "Depois de alguns momentos constrangedores com o braço levantado, você desiste e o abaixa."},
+        {"npc": "Narrador", "text": "O estudante ao seu lado lhe dá um olhar simpático antes de voltar sua atenção à palestra."}
+      ],
+      "8": [
+        {"npc": "Professor Quantum", "text": "Alguns de vocês podem se perguntar por que isso importa. É simples: entender a verdadeira origem de nossos poderes é crucial para desbloquear todo o seu potencial."},
+        {"npc": "Professor Quantum", "text": "Se estamos simplesmente aceitando a narrativa oficial sem questionar, estamos limitando nossa compreensão e, consequentemente, nossas habilidades."},
+        {"npc": "Professor Quantum", "text": "A Academia Tokugawa foi fundada para explorar os limites do possível, não para aceitar passivamente as limitações impostas a nós."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Você olha discretamente para a Professora Chronos no fundo do auditório."},
+        {"npc": "Narrador", "text": "Seu rosto é uma máscara de calma, mas seus olhos revelam uma intensidade perturbadora. Ela parece estar avaliando cada palavra do Professor Quantum."},
+        {"npc": "Narrador", "text": "Em um momento, seus olhares se cruzam, e você tem a estranha sensação de que ela sabe exatamente o que você está pensando."}
+      ]
+    },
+    "completion_exp": 200,
+    "completion_tusd": 300,
+    "next_chapter": "1_6"
+  },
+  "1_6": {
+    "type": "story",
+    "title": "Curiosidade Despertada",
+    "description": "Após a intrigante palestra do Professor Quantum, você decide investigar mais sobre a verdadeira origem dos poderes.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "A palestra do Professor Quantum deixou você com mais perguntas do que respostas. Nos dias seguintes, você não consegue parar de pensar nas implicações de suas teorias."},
+      {"npc": "Narrador", "text": "Se realmente houve um 'evento catalisador' que deu origem aos poderes, por que a história oficial seria diferente? Quem teria interesse em ocultar a verdade?"},
+      {"npc": "Narrador", "text": "Movido pela curiosidade, você decide investigar mais a fundo, começando pela biblioteca da academia."},
+      {"npc": "Bibliotecária", "text": "Bem-vindo à Biblioteca Central da Academia Tokugawa. Como posso ajudá-lo hoje?"}
+    ],
+    "choices": [
+      {"text": "Procurar livros sobre a história dos poderes", "next_dialogue": 4},
+      {"text": "Perguntar sobre registros históricos do período em questão", "next_dialogue": 5},
+      {"text": "Procurar informações sobre o 'evento catalisador' mencionado pelo Professor Quantum", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Bibliotecária", "text": "História dos poderes? Temos uma seção inteira dedicada a isso. Siga-me, por favor."},
+        {"npc": "Narrador", "text": "A bibliotecária o leva a uma estante com dezenas de livros sobre o tema."},
+        {"npc": "Bibliotecária", "text": "Aqui está. 'A Evolução dos Dons Extraordinários', 'Poderes Através dos Séculos', 'Genética e Habilidades Sobre-humanas'... Todos esses são excelentes para começar."},
+        {"npc": "Narrador", "text": "Você nota que todos os livros parecem apoiar a narrativa oficial de evolução gradual dos poderes."}
+      ],
+      "5": [
+        {"npc": "Bibliotecária", "text": "Registros históricos de qual período específico?"},
+        {"npc": "Você", "text": "De aproximadamente 300 anos atrás, quando os primeiros poderes começaram a se manifestar."},
+        {"npc": "Bibliotecária", "text": "Ah, sim. Temos alguns documentos desse período, embora não tantos quanto gostaríamos. Muitos foram perdidos durante as Guerras de Unificação."},
+        {"npc": "Bibliotecária", "text": "Os que temos estão na seção de Manuscritos Históricos, mas preciso avisá-lo que o acesso é restrito a estudantes de nível 3 ou superior."}
+      ],
+      "6": [
+        {"npc": "Bibliotecária", "text": "'Evento catalisador'? Não estou familiarizada com esse termo no contexto da história dos poderes."},
+        {"npc": "Narrador", "text": "A expressão da bibliotecária muda sutilmente, uma mistura de confusão e... preocupação?"},
+        {"npc": "Bibliotecária", "text": "Posso perguntar onde você ouviu sobre isso?"},
+        {"npc": "Você", "text": "Na palestra do Professor Quantum ontem."},
+        {"npc": "Bibliotecária", "text": "Ah, o Professor Quantum e suas teorias não convencionais. Entendo. Bem, não temos nada catalogado sob esse termo específico, mas você pode verificar a seção de Teorias Alternativas."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Você passa horas na biblioteca, folheando livros e documentos, mas encontra pouco além da narrativa oficial."},
+      {"npc": "Narrador", "text": "Quando está prestes a desistir, nota um estudante mais velho observando-o discretamente de uma mesa próxima."},
+      {"npc": "Narrador", "text": "Ao perceber que foi notado, ele se aproxima."},
+      {"npc": "Estudante Misterioso", "text": "Interessado na verdadeira história dos poderes, hein? Os livros aqui não vão te contar muito. Eles nunca contam."}
+    ],
+    "choices_2": [
+      {"text": "Quem é você? O que sabe sobre isso?", "next_dialogue": 7},
+      {"text": "Do que você está falando?", "next_dialogue": 8},
+      {"text": "Você conhece o Professor Quantum?", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Estudante Misterioso", "text": "Meu nome é Akira. Estou no último ano. E digamos que... tenho um interesse especial em histórias não contadas."},
+        {"npc": "Akira", "text": "Quanto ao que sei, é mais o que suspeito. Há inconsistências nos registros históricos que poucos se dão ao trabalho de investigar."},
+        {"npc": "Akira", "text": "Se você realmente quer saber mais, procure pela Biblioteca Proibida. Não é fácil de encontrar, e é ainda mais difícil entrar, mas lá estão os livros que a academia não quer que leiamos."}
+      ],
+      "8": [
+        {"npc": "Estudante Misterioso", "text": "Não se faça de desentendido. Vi os livros que está consultando. As perguntas que fez à bibliotecária."},
+        {"npc": "Estudante Misterioso", "text": "Você está procurando respostas que não estão nos livros oficiais. Respostas sobre o que realmente aconteceu há 300 anos."},
+        {"npc": "Estudante Misterioso", "text": "Meu nome é Akira, a propósito. E se quiser saber mais, deveria procurar pela Biblioteca Proibida. É onde guardam os livros que contêm as verdades inconvenientes."}
+      ],
+      "9": [
+        {"npc": "Estudante Misterioso", "text": "O Professor Quantum? Claro. Ele é um dos poucos que ousa questionar a narrativa oficial."},
+        {"npc": "Estudante Misterioso", "text": "Mas mesmo ele precisa ser cuidadoso. Há limites para o que pode dizer abertamente, especialmente desde o... incidente do ano passado."},
+        {"npc": "Estudante Misterioso", "text": "Meu nome é Akira. Se você realmente quer saber mais, deveria procurar pela Biblioteca Proibida. É onde estão os livros que contêm as respostas que você busca."}
+      ]
+    },
+    "completion_exp": 250,
+    "completion_tusd": 350,
+    "next_chapter": "challenge_biblioteca_proibida"
+  },
+  "1_10_investigacao": {
+    "type": "story",
+    "title": "Investigação Bem-Sucedida",
+    "description": "Após descobrir informações cruciais sobre os experimentos do Diretor, você deve decidir como proceder.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Graças à sua habilidade em se mover discretamente, você conseguiu observar o Diretor e os professores sem ser notado."},
+      {"npc": "Narrador", "text": "As informações que obteve são perturbadoras: o Diretor está tentando recriar o Evento Zero usando um fragmento do cristal original."},
+      {"npc": "Narrador", "text": "Você se encontra com a Professora Chronos para compartilhar o que descobriu."},
+      {"npc": "Professora Chronos", "text": "Então é como eu temia. Ele está acelerando os experimentos."},
+      {"npc": "Professora Chronos", "text": "O fragmento do cristal é a chave. Sem ele, o Diretor não pode prosseguir. Precisamos encontrá-lo e removê-lo da equação."}
+    ],
+    "choices": [
+      {"text": "Devemos confrontar o Diretor diretamente com essas informações.", "next_dialogue": 5},
+      {"text": "Precisamos encontrar e proteger o fragmento do cristal.", "next_dialogue": 6},
+      {"text": "E se tentássemos sabotá-lo de alguma forma?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Confrontá-lo diretamente seria suicídio. Ele tem o apoio da maioria dos professores e seu poder, mesmo enfraquecido, é formidável."},
+        {"npc": "Professora Chronos", "text": "Além disso, ele acredita genuinamente que está fazendo o bem maior. Pessoas assim são as mais perigosas - dispostas a fazer qualquer coisa pela causa."},
+        {"npc": "Professora Chronos", "text": "Não, precisamos ser mais sutis. A Celebração da Fundação é nossa melhor oportunidade para agir sem sermos detectados."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Exatamente. O fragmento é a peça central de todo o plano dele."},
+        {"npc": "Professora Chronos", "text": "Baseado no que você viu, o fragmento provavelmente está guardado no laboratório subterrâneo, protegido por medidas de segurança avançadas."},
+        {"npc": "Professora Chronos", "text": "Durante a Celebração da Fundação, a segurança estará reduzida. Será nossa chance de acessar o laboratório."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Sabotagem... é uma possibilidade interessante."},
+        {"npc": "Professora Chronos", "text": "Se pudéssemos alterar os parâmetros do experimento sem que ele percebesse, poderíamos fazer com que falhe de forma segura."},
+        {"npc": "Professora Chronos", "text": "Mas isso exigiria conhecimento detalhado do equipamento e acesso aos controles. Ainda precisaríamos entrar no laboratório durante a Celebração."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "A Celebração da Fundação acontecerá em três dias. Temos esse tempo para nos preparar."},
+      {"npc": "Professora Chronos", "text": "Você precisará de uma distração para os guardas. Talvez algum de seus colegas de confiança possa ajudar."},
+      {"npc": "Professora Chronos", "text": "Enquanto isso, vou tentar descobrir mais sobre as medidas de segurança do laboratório."}
+    ],
+    "choices_2": [
+      {"text": "Vou pedir ajuda a um colega do meu clube.", "next_dialogue": 8},
+      {"text": "Prefiro trabalhar sozinho, é mais seguro.", "next_dialogue": 9},
+      {"text": "E se criarmos uma emergência falsa durante a celebração?", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "Uma escolha sábia. Algumas missões são impossíveis de realizar sozinho."},
+        {"npc": "Professora Chronos", "text": "Mas escolha com cuidado. A pessoa precisa ser confiável e discreta. Se o Diretor descobrir nossos planos..."},
+        {"npc": "Narrador", "text": "Você pensa em quem poderia ajudar. Talvez alguém do seu clube que tenha demonstrado lealdade a você."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Entendo sua cautela. Quanto menos pessoas souberem, menor o risco de vazamento."},
+        {"npc": "Professora Chronos", "text": "Mas isso tornará sua missão significativamente mais difícil. Terá que criar sua própria distração enquanto também tenta acessar o laboratório."},
+        {"npc": "Professora Chronos", "text": "Se decidir seguir esse caminho, precisará ser excepcionalmente habilidoso e ter sorte."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Uma emergência falsa? Interessante..."},
+        {"npc": "Professora Chronos", "text": "Isso poderia funcionar, desde que seja convincente o suficiente para atrair a atenção dos guardas, mas não tão grave a ponto de cancelar a celebração."},
+        {"npc": "Professora Chronos", "text": "Talvez algo como um pequeno incêndio em uma área não crítica, ou uma 'falha' nos sistemas de segurança em outro setor."}
+      ]
+    },
+    "completion_exp": 350,
+    "completion_tusd": 450,
+    "next_chapter": "1_11"
+  },
+  "1_10_suspeito": {
+    "type": "story",
+    "title": "Sob Suspeita",
+    "description": "Após ser descoberto espionando o Diretor, você precisa lidar com a crescente suspeita sobre suas atividades.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Desde que foi flagrado observando o Diretor e os professores, você sente olhares de suspeita por onde passa na academia."},
+      {"npc": "Narrador", "text": "Em sua aula de História dos Poderes, a Professora Chronos pede para falar com você após o término."},
+      {"npc": "Professora Chronos", "text": "Ouvi dizer que teve um... encontro com o Diretor recentemente."},
+      {"npc": "Professora Chronos", "text": "Ele agora suspeita de você, o que complica nossos planos. Mas também pode ser uma oportunidade."}
+    ],
+    "choices": [
+      {"text": "Que tipo de oportunidade?", "next_dialogue": 4},
+      {"text": "Acho que devemos adiar nossos planos.", "next_dialogue": 5},
+      {"text": "Talvez eu possa usar essa suspeita a nosso favor.", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "O Diretor agora está ciente de seu interesse. Ele pode tentar se aproximar de você."},
+        {"npc": "Professora Chronos", "text": "Se ele acreditar que pode convertê-lo para sua causa, pode revelar informações valiosas. Informações que precisamos."},
+        {"npc": "Professora Chronos", "text": "É arriscado, mas você poderia fingir interesse nos experimentos dele, ganhar sua confiança."}
+      ],
+      "5": [
+        {"npc": "Professora Chronos", "text": "Adiar? Não temos esse luxo. O tempo está se esgotando."},
+        {"npc": "Professora Chronos", "text": "Os experimentos do Diretor estão avançando rapidamente. Se esperarmos muito, será tarde demais."},
+        {"npc": "Professora Chronos", "text": "Precisamos adaptar nossos planos, não abandoná-los."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Exatamente o que eu estava pensando. Uma mente estratégica."},
+        {"npc": "Professora Chronos", "text": "Se o Diretor acreditar que pode recrutá-lo, ele pode baixar a guarda. Revelar mais do que deveria."},
+        {"npc": "Professora Chronos", "text": "É um jogo perigoso, mas pode nos dar acesso a informações que de outra forma seriam impossíveis de obter."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "A Celebração da Fundação acontecerá em três dias. Será nossa melhor oportunidade para agir."},
+      {"npc": "Professora Chronos", "text": "O Diretor provavelmente o observará durante o evento. Use isso a seu favor."},
+      {"npc": "Professora Chronos", "text": "Se puder ganhar sua confiança, ou pelo menos distraí-lo, eu poderei acessar seu escritório para procurar informações sobre o fragmento do cristal."}
+    ],
+    "choices_2": [
+      {"text": "Vou tentar me aproximar do Diretor e ganhar sua confiança.", "next_dialogue": 7},
+      {"text": "Prefiro criar uma distração durante a celebração.", "next_dialogue": 8},
+      {"text": "E se tentássemos uma abordagem completamente diferente?", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Professora Chronos", "text": "Uma escolha corajosa. O Diretor é perspicaz, mas sua vaidade pode ser explorada."},
+        {"npc": "Professora Chronos", "text": "Demonstre interesse em seus experimentos. Faça perguntas sobre o 'futuro da academia'. Ele adora falar sobre sua visão."},
+        {"npc": "Professora Chronos", "text": "Mas tenha cuidado para não parecer muito ansioso. A sutileza é crucial."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "Uma distração? Sim, isso poderia funcionar."},
+        {"npc": "Professora Chronos", "text": "Algo que atraia a atenção de todos, incluindo o Diretor, mas não seja grave o suficiente para cancelar a celebração."},
+        {"npc": "Professora Chronos", "text": "Talvez um pequeno 'acidente' com seus poderes? Ou algo envolvendo outro estudante?"}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Que tipo de abordagem você tem em mente?"},
+        {"npc": "Você", "text": "E se, em vez de nos escondermos, agíssemos abertamente? Confrontar o Diretor com evidências, mas em público, durante a celebração?"},
+        {"npc": "Professora Chronos", "text": "Arriscado... muito arriscado. Mas também inesperado. Ele não estaria preparado para um confronto público."},
+        {"npc": "Professora Chronos", "text": "Precisaríamos de evidências concretas, no entanto. E aliados. Não podemos fazer isso sozinhos."}
+      ]
+    },
+    "completion_exp": 350,
+    "completion_tusd": 450,
+    "next_chapter": "1_11"
+  },
+  "1_10_alianca": {
+    "type": "story",
+    "title": "Aliança Fortalecida",
+    "description": "Sua decisão de informar a Professora Chronos fortaleceu sua aliança, e agora vocês planejam como impedir os experimentos do Diretor.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Sua decisão de informar imediatamente a Professora Chronos sobre as atividades suspeitas do Diretor provou ser sábia."},
+      {"npc": "Narrador", "text": "Ela agora confia plenamente em você, e juntos vocês começam a planejar como impedir os experimentos perigosos."},
+      {"npc": "Professora Chronos", "text": "Sua lealdade é admirável. Em muitas linhas temporais, pessoas na sua posição escolhem o caminho mais fácil."},
+      {"npc": "Professora Chronos", "text": "Agora temos que agir. O fragmento do cristal é a chave para os experimentos do Diretor. Precisamos encontrá-lo e removê-lo."}
+    ],
+    "choices": [
+      {"text": "Onde você acha que o fragmento está guardado?", "next_dialogue": 4},
+      {"text": "Precisamos de mais aliados para nos ajudar.", "next_dialogue": 5},
+      {"text": "Qual é o plano exatamente?", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "Baseado no que você viu e no que sei de outras linhas temporais, o fragmento provavelmente está no laboratório subterrâneo."},
+        {"npc": "Professora Chronos", "text": "É uma instalação altamente segura, acessível apenas pelo Diretor e seus associados mais próximos."},
+        {"npc": "Professora Chronos", "text": "Durante a Celebração da Fundação, a segurança estará reduzida. Será nossa melhor oportunidade para acessar o laboratório."}
+      ],
+      "5": [
+        {"npc": "Professora Chronos", "text": "Aliados... é uma ideia arriscada, mas pode ser necessária."},
+        {"npc": "Professora Chronos", "text": "Precisamos ser extremamente cuidadosos sobre quem recrutamos. O Diretor tem olhos e ouvidos em toda a academia."},
+        {"npc": "Professora Chronos", "text": "Talvez um ou dois estudantes de confiança. Alguém do seu clube, talvez?"}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "O plano tem várias fases. Primeiro, precisamos confirmar a localização exata do fragmento."},
+        {"npc": "Professora Chronos", "text": "Depois, durante a Celebração da Fundação, quando a segurança estiver reduzida, acessaremos o laboratório."},
+        {"npc": "Professora Chronos", "text": "Você criará uma distração enquanto eu recupero o fragmento. Minha habilidade com o tempo será útil para isso."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "A Celebração da Fundação acontecerá em três dias. Temos esse tempo para nos preparar."},
+      {"npc": "Professora Chronos", "text": "Precisamos ser meticulosos. Um erro pode não apenas comprometer nossa missão, mas colocar toda a realidade em risco."},
+      {"npc": "Professora Chronos", "text": "Há algo específico que você gostaria de contribuir para o plano?"}
+    ],
+    "choices_2": [
+      {"text": "Posso criar uma distração usando meus poderes.", "next_dialogue": 7},
+      {"text": "Conheço os sistemas de segurança da academia, posso ajudar com isso.", "next_dialogue": 8},
+      {"text": "Tenho um amigo confiável que pode nos ajudar.", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Professora Chronos", "text": "Seus poderes como distração? Interessante."},
+        {"npc": "Professora Chronos", "text": "Um pequeno 'acidente' durante a celebração poderia atrair a atenção de todos, incluindo os guardas."},
+        {"npc": "Professora Chronos", "text": "Mas tenha cuidado para não causar danos reais ou pânico excessivo. Precisamos apenas de tempo suficiente para acessar o laboratório."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "Conhecimento dos sistemas de segurança? Isso é extremamente valioso."},
+        {"npc": "Professora Chronos", "text": "Se puder desativar ou contornar alguns dos sistemas, nossa missão se tornará significativamente mais fácil."},
+        {"npc": "Professora Chronos", "text": "Trabalhe nisso nos próximos dias. Qualquer vulnerabilidade que puder identificar será crucial."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Um amigo confiável... quem seria essa pessoa?"},
+        {"npc": "Você", "text": "Alguém do meu clube. Já demonstrou lealdade e discrição em outras situações."},
+        {"npc": "Professora Chronos", "text": "Muito bem. Mas não revele tudo a essa pessoa. Apenas o necessário para que nos ajude."},
+        {"npc": "Professora Chronos", "text": "E esteja ciente de que isso os coloca em risco também. Certifique-se de que entendam a seriedade da situação."}
+      ]
+    },
+    "completion_exp": 350,
+    "completion_tusd": 450,
+    "next_chapter": "1_11"
+  },
+  "1_10_observador": {
+    "type": "story",
+    "title": "O Observador Cauteloso",
+    "description": "Sua decisão de não se envolver diretamente lhe deu uma perspectiva única sobre os eventos que se desenrolam na academia.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Sua decisão de observar à distância provou ser interessante. Sem chamar atenção para si mesmo, você nota mudanças sutis na academia."},
+      {"npc": "Narrador", "text": "Mais guardas nos corredores. Reuniões frequentes entre o Diretor e professores seniores. Equipamentos misteriosos sendo transportados para o prédio abandonado."},
+      {"npc": "Narrador", "text": "Durante sua aula de História dos Poderes, a Professora Chronos parece preocupada. Após a aula, ela pede para falar com você em particular."},
+      {"npc": "Professora Chronos", "text": "Você escolheu o caminho do observador. Interessante. Em algumas linhas temporais, essa é a escolha mais sábia."},
+      {"npc": "Professora Chronos", "text": "O que você observou nos últimos dias?"}
+    ],
+    "choices": [
+      {"text": "Notei mais segurança e atividades suspeitas no prédio abandonado.", "next_dialogue": 5},
+      {"text": "O Diretor parece mais tenso e reservado que o normal.", "next_dialogue": 6},
+      {"text": "Alguns estudantes estão agindo de forma estranha, como se estivessem sendo controlados.", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Sim, os preparativos estão acelerando. O Diretor sente que seu tempo está se esgotando."},
+        {"npc": "Professora Chronos", "text": "Aquele prédio abandonado abriga um laboratório subterrâneo onde o fragmento do cristal está sendo estudado."},
+        {"npc": "Professora Chronos", "text": "A segurança aumentada sugere que eles estão próximos de um avanço significativo. Isso é preocupante."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sua observação é perspicaz. O Diretor está perdendo o controle de seus poderes mais rapidamente do que previsto."},
+        {"npc": "Professora Chronos", "text": "Isso o torna mais desesperado e, portanto, mais perigoso. Ele vê o experimento com o fragmento como sua última esperança."},
+        {"npc": "Professora Chronos", "text": "Um homem desesperado raramente toma decisões sábias."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Controlados? Isso é... inesperado. E profundamente perturbador."},
+        {"npc": "Professora Chronos", "text": "Em algumas linhas temporais, o Diretor experimentou com controle mental, mas nunca tão cedo."},
+        {"npc": "Professora Chronos", "text": "Isso sugere que ele está explorando múltiplas abordagens simultaneamente. A situação é ainda mais grave do que eu temia."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "A Celebração da Fundação acontecerá em três dias. Será um momento crítico."},
+      {"npc": "Professora Chronos", "text": "O Diretor planeja fazer um anúncio importante. Acredito que ele revelará parte de seus planos, embora de forma velada."},
+      {"npc": "Professora Chronos", "text": "Sua posição como observador neutro é valiosa. Você pode notar coisas que eu, como oponente declarada do Diretor, não posso."}
+    ],
+    "choices_2": [
+      {"text": "O que você quer que eu faça durante a celebração?", "next_dialogue": 8},
+      {"text": "Acho que é hora de agir, não apenas observar.", "next_dialogue": 9},
+      {"text": "Posso tentar me aproximar de alguns dos estudantes que estão agindo estranhamente.", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "Continue observando. Preste atenção especial ao discurso do Diretor e às reações dos professores seniores."},
+        {"npc": "Professora Chronos", "text": "Enquanto todos estiverem distraídos com a celebração, eu tentarei acessar o laboratório para descobrir mais sobre o fragmento."},
+        {"npc": "Professora Chronos", "text": "Sua tarefa é simplesmente registrar tudo o que vê. Informação é poder neste jogo."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Sua impaciência é compreensível, mas a observação também é uma forma de ação."},
+        {"npc": "Professora Chronos", "text": "Dito isso, se você está determinado a fazer algo mais direto, poderia criar uma distração durante a celebração."},
+        {"npc": "Professora Chronos", "text": "Isso me daria a oportunidade de acessar o laboratório sem ser notada."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Uma ideia arriscada, mas potencialmente valiosa."},
+        {"npc": "Professora Chronos", "text": "Se puder descobrir o que está acontecendo com esses estudantes, poderíamos entender melhor os planos do Diretor."},
+        {"npc": "Professora Chronos", "text": "Mas seja extremamente cauteloso. Se eles estão sendo controlados de alguma forma, aproximar-se deles pode colocá-lo no radar do Diretor."}
+      ]
+    },
+    "completion_exp": 350,
+    "completion_tusd": 450,
+    "next_chapter": "1_11"
+  },
+  "1_11": {
+    "type": "story",
+    "title": "A Celebração da Fundação",
+    "description": "O grande evento anual da academia se torna o cenário para uma missão crucial que pode determinar o futuro de todos.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O dia da Celebração da Fundação finalmente chegou. O campus está decorado com as cores da academia, e estudantes e professores estão vestidos formalmente."},
+      {"npc": "Narrador", "text": "No grande salão, mesas com comidas e bebidas foram dispostas, e um palco foi montado para os discursos e apresentações."},
+      {"npc": "Narrador", "text": "Você avista o Diretor conversando com alguns professores seniores. Ele parece tenso, apesar de seu sorriso cordial."},
+      {"npc": "Narrador", "text": "A Professora Chronos se aproxima discretamente de você."},
+      {"npc": "Professora Chronos", "text": "Está tudo pronto. Lembre-se do plano. Quando o Diretor começar seu discurso, será nossa melhor oportunidade."}
+    ],
+    "choices": [
+      {"text": "Estou pronto. Vamos fazer isso.", "next_dialogue": 5},
+      {"text": "Tenho um mau pressentimento sobre isso.", "next_dialogue": 6},
+      {"text": "E se formos pegos?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Boa. Mantenha a calma e aja naturalmente. Nos encontraremos no ponto combinado em 30 minutos."},
+        {"npc": "Narrador", "text": "A Professora Chronos se afasta, misturando-se à multidão. Pouco depois, o Diretor sobe ao palco e pede a atenção de todos."},
+        {"npc": "Diretor Sombrio", "text": "Bem-vindos à 75ª Celebração da Fundação da Academia Tokugawa! É com grande orgulho que comemoramos mais um ano de excelência no desenvolvimento de jovens talentos..."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Pressentimentos são às vezes ecos de outras linhas temporais. Não os ignore completamente, mas também não deixe que o paralisem."},
+        {"npc": "Professora Chronos", "text": "Ajustei o plano para minimizar os riscos. Confie em mim, esta é nossa melhor chance."},
+        {"npc": "Narrador", "text": "Enquanto vocês conversam, o Diretor sobe ao palco e pede a atenção de todos."},
+        {"npc": "Diretor Sombrio", "text": "Bem-vindos à 75ª Celebração da Fundação da Academia Tokugawa! É com grande orgulho que comemoramos mais um ano de excelência..."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Se formos pegos... as consequências seriam graves. Para nós e para a realidade como um todo."},
+        {"npc": "Professora Chronos", "text": "Mas já vi muitas versões deste dia. Em algumas, temos sucesso. Em outras... bem, é por isso que estou aqui agora, tentando novamente."},
+        {"npc": "Professora Chronos", "text": "Foque no plano. Nos encontraremos no ponto combinado em 30 minutos."},
+        {"npc": "Narrador", "text": "A Professora se afasta, e logo o Diretor sobe ao palco para seu discurso."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Diretor Sombrio", "text": "...e este ano é especialmente significativo. Estamos à beira de avanços revolucionários que mudarão para sempre o futuro dos usuários de poderes."},
+      {"npc": "Diretor Sombrio", "text": "Em breve, anunciarei uma iniciativa que elevará nossa academia a novos patamares. Uma iniciativa que realizará o verdadeiro potencial de cada um de vocês."},
+      {"npc": "Narrador", "text": "Enquanto o Diretor continua seu discurso, você nota que é hora de executar sua parte do plano."}
+    ],
+    "choices_2": [
+      {"text": "Criar uma distração conforme planejado", "next_dialogue": 8, "attribute_check": "dexterity", "threshold": 10},
+      {"text": "Observar mais um pouco antes de agir", "next_dialogue": 9},
+      {"text": "Tentar uma abordagem diferente", "next_dialogue": 10, "attribute_check": "intellect", "threshold": 12}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_8": [
+        {"npc": "Narrador", "text": "Com habilidade e discrição, você executa a distração conforme planejado."},
+        {"npc": "Narrador", "text": "Um pequeno incidente com as bebidas causa comoção suficiente para distrair os guardas e a maioria dos convidados."},
+        {"npc": "Narrador", "text": "Você nota a Professora Chronos aproveitando a confusão para deslizar para fora do salão, em direção ao laboratório."},
+        {"npc": "Narrador", "text": "Agora você precisa manter a distração pelo tempo combinado, garantindo que ela tenha tempo suficiente para completar sua missão."}
+      ],
+      "failure_8": [
+        {"npc": "Narrador", "text": "Você tenta criar a distração, mas algo dá errado. O incidente é menor do que o planejado e não atrai atenção suficiente."},
+        {"npc": "Narrador", "text": "Pior ainda, um dos guardas nota seu comportamento suspeito e começa a observá-lo atentamente."},
+        {"npc": "Narrador", "text": "Você tenta sinalizar discretamente para a Professora Chronos que o plano falhou, mas ela já está se movendo em direção ao laboratório."},
+        {"npc": "Narrador", "text": "Agora você precisa improvisar rapidamente para evitar que ela seja pega."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Você decide observar mais um pouco, procurando o momento perfeito para agir."},
+        {"npc": "Narrador", "text": "Enquanto observa, nota algo perturbador: alguns dos guardas parecem estar especialmente atentos, como se esperassem algum tipo de problema."},
+        {"npc": "Narrador", "text": "O Diretor ocasionalmente lança olhares em sua direção, como se estivesse ciente de sua presença."},
+        {"npc": "Narrador", "text": "Quando finalmente decide agir, percebe que a Professora Chronos já tomou a iniciativa, aproveitando um momento de distração natural quando o Diretor apresenta um vídeo sobre a história da academia."}
+      ],
+      "10": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_10": [
+        {"npc": "Narrador", "text": "Em vez da distração planejada, você tem uma ideia brilhante."},
+        {"npc": "Narrador", "text": "Aproxima-se de um dos professores seniores e menciona casualmente ter visto algo preocupante perto do dormitório feminino."},
+        {"npc": "Narrador", "text": "O professor, responsável pela segurança dos dormitórios, imediatamente chama alguns guardas e se dirige ao local mencionado."},
+        {"npc": "Narrador", "text": "Esta distração mais sutil funciona perfeitamente, reduzindo a segurança sem causar alarde. Você nota a Professora Chronos aproveitando a oportunidade para se dirigir ao laboratório."}
+      ],
+      "failure_10": [
+        {"npc": "Narrador", "text": "Você tenta uma abordagem mais sutil, mas sua estratégia improvisada não funciona como esperado."},
+        {"npc": "Narrador", "text": "O professor com quem você fala parece desconfiado de suas insinuações e, em vez de investigar, aumenta a vigilância no salão."},
+        {"npc": "Narrador", "text": "Você percebe que a situação está piorando e tenta fazer contato visual com a Professora Chronos para abortar a missão."},
+        {"npc": "Narrador", "text": "Infelizmente, ela já está se movendo em direção ao laboratório, inconsciente do fracasso de sua parte do plano."}
+      ]
+    },
+    "completion_exp": 400,
+    "completion_tusd": 500,
+    "next_chapter": "1_12"
+  },
+  "1_12": {
+    "type": "branching",
+    "title": "Consequências",
+    "description": "As consequências da missão durante a Celebração da Fundação se desenrolam, afetando seu futuro na academia.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Horas após a Celebração da Fundação, você se encontra com a Professora Chronos em um local discreto para discutir os resultados da missão."},
+      {"npc": "Narrador", "text": "Ela parece exausta, mas há um brilho de determinação em seus olhos."}
+    ],
+    "choices": [
+      {"text": "Conseguimos? Você encontrou o fragmento?", "next_dialogue": 2},
+      {"text": "Alguém suspeita de nós?", "next_dialogue": 3},
+      {"text": "O que acontece agora?", "next_dialogue": 4}
+    ],
+    "additional_dialogues": {
+      "2": [
+        {"npc": "Professora Chronos", "text": "Sim e não. Encontrei o laboratório e confirmei que o fragmento está lá, mas não consegui removê-lo."},
+        {"npc": "Professora Chronos", "text": "Está protegido por medidas de segurança que não esperava - campos de energia que reagem à manipulação temporal."},
+        {"npc": "Professora Chronos", "text": "Mas não foi em vão. Obtive informações cruciais sobre o experimento e seus parâmetros."}
+      ],
+      "3": [
+        {"npc": "Professora Chronos", "text": "O Diretor certamente sabe que alguém esteve no laboratório. Os sistemas de segurança registraram uma intrusão."},
+        {"npc": "Professora Chronos", "text": "Mas graças à sua distração e minhas habilidades temporais, não há evidências diretas que nos liguem ao incidente."},
+        {"npc": "Professora Chronos", "text": "No entanto, devemos ser cautelosos. O Diretor não é tolo e pode ter suspeitas."}
+      ],
+      "4": [
+        {"npc": "Professora Chronos", "text": "Agora passamos para a próxima fase. Com as informações que obtive, podemos desenvolver um plano mais eficaz."},
+        {"npc": "Professora Chronos", "text": "O experimento principal está programado para ocorrer em duas semanas. Temos esse tempo para nos preparar."},
+        {"npc": "Professora Chronos", "text": "Mas primeiro, precisamos garantir que o Diretor não suspeite de nós."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O mais importante é que descobri quando o experimento principal ocorrerá: durante o próximo eclipse lunar, em duas semanas."},
+      {"npc": "Professora Chronos", "text": "O Diretor acredita que a energia cósmica do eclipse amplificará o poder do fragmento, permitindo uma ruptura controlada."},
+      {"npc": "Professora Chronos", "text": "Temos esse tempo para desenvolver um novo plano. Mas primeiro, precisamos lidar com as consequências imediatas de nossas ações."}
+    ],
+    "choices_2": [
+      {"text": "Devemos agir normalmente, como se nada tivesse acontecido.", "next_dialogue": 5},
+      {"text": "E se tentássemos sabotar o experimento de outra forma?", "next_dialogue": 6},
+      {"text": "Talvez devêssemos tentar recrutar mais aliados.", "next_dialogue": 7}
+    ],
+    "additional_dialogues_2": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Sim, essa é a abordagem mais segura por enquanto. Continue suas atividades normais, frequente as aulas, interaja com outros estudantes."},
+        {"npc": "Professora Chronos", "text": "Se o Diretor estiver observando, não queremos dar motivos para suspeitas adicionais."},
+        {"npc": "Professora Chronos", "text": "Enquanto isso, trabalharei nas informações que obtive e desenvolverei um novo plano."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sabotagem... é uma possibilidade. Com as informações que obtive sobre os parâmetros do experimento, poderíamos alterar sutilmente as configurações."},
+        {"npc": "Professora Chronos", "text": "Não para causar uma catástrofe, mas para garantir que o experimento falhe de forma segura."},
+        {"npc": "Professora Chronos", "text": "Isso exigiria outro acesso ao laboratório, no entanto. E a segurança certamente será reforçada após nossa intrusão."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Aliados... é arriscado, mas pode ser necessário."},
+        {"npc": "Professora Chronos", "text": "Há alguns professores que secretamente compartilham minhas preocupações sobre os experimentos do Diretor."},
+        {"npc": "Professora Chronos", "text": "E talvez alguns estudantes selecionados. Mas devemos ser extremamente cuidadosos sobre quem recrutamos."}
+      ]
+    },
+    "branches": {
+      "success_branch": {
+        "conditions": {
+          "previous_check_result": "success"
+        },
+        "next_chapter": "1_13_success"
+      },
+      "failure_branch": {
+        "conditions": {
+          "previous_check_result": "failure"
+        },
+        "next_chapter": "1_13_failure"
+      },
+      "neutral_branch": {
+        "conditions": {
+          "default": true
+        },
+        "next_chapter": "1_13_neutral"
+      }
+    },
+    "completion_exp": 450,
+    "completion_tusd": 550
+  },
+  "1_13_success": {
+    "type": "story",
+    "title": "Preparativos Bem-Sucedidos",
+    "description": "Após o sucesso na Celebração da Fundação, você e a Professora Chronos preparam-se para o confronto final com o Diretor.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Os dias após a Celebração da Fundação passam rapidamente. Você mantém suas atividades normais, mas está sempre atento a qualquer sinal de suspeita."},
+      {"npc": "Narrador", "text": "O Diretor parece mais ocupado que o normal, raramente aparecendo fora de seu escritório ou do laboratório."},
+      {"npc": "Narrador", "text": "Uma semana antes do eclipse lunar, a Professora Chronos pede para encontrá-lo em seu escritório após as aulas."},
+      {"npc": "Professora Chronos", "text": "Obrigada por vir. Tenho novidades importantes."},
+      {"npc": "Professora Chronos", "text": "Graças às informações que obtivemos, desenvolvi um plano para impedir o experimento do Diretor."}
+    ],
+    "choices": [
+      {"text": "Qual é o plano?", "next_dialogue": 5},
+      {"text": "Conseguiu recrutar mais aliados?", "next_dialogue": 6},
+      {"text": "O Diretor suspeita de algo?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "O plano tem três fases. Primeiro, criaremos uma falha de energia em toda a academia durante o eclipse."},
+        {"npc": "Professora Chronos", "text": "Isso forçará os sistemas de segurança a usar energia de backup, que é mais vulnerável a interferências."},
+        {"npc": "Professora Chronos", "text": "Segundo, enquanto o Diretor e sua equipe estiverem ocupados com o experimento, entraremos no laboratório e alteraremos sutilmente os parâmetros."},
+        {"npc": "Professora Chronos", "text": "Por fim, se tudo falhar, tenho um último recurso: um dispositivo que pode neutralizar temporariamente todos os poderes em um raio de 50 metros."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sim, temos alguns aliados valiosos agora."},
+        {"npc": "Professora Chronos", "text": "O Professor Quantum, do departamento de Física Avançada, concordou em nos ajudar. Ele criará a falha de energia."},
+        {"npc": "Professora Chronos", "text": "E a Professora Sylvan, especialista em sistemas de segurança, forneceu informações cruciais sobre as vulnerabilidades do laboratório."},
+        {"npc": "Professora Chronos", "text": "Ambos têm suas próprias razões para desconfiar dos experimentos do Diretor."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "O Diretor está... distraído. Focado em seu experimento, que ele vê como sua última esperança."},
+        {"npc": "Professora Chronos", "text": "Ele aumentou a segurança no laboratório, mas não parece estar ativamente procurando por sabotadores."},
+        {"npc": "Professora Chronos", "text": "No entanto, notei que ele tem observado você ocasionalmente. Nada óbvio, mas devemos permanecer cautelosos."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O eclipse lunar ocorrerá em exatamente uma semana. Temos esse tempo para finalizar nossos preparativos."},
+      {"npc": "Professora Chronos", "text": "O experimento do Diretor, se bem-sucedido, causará uma pequena ruptura na realidade. Ele acredita que pode controlá-la, mas está enganado."},
+      {"npc": "Professora Chronos", "text": "Mesmo uma ruptura 'controlada' enfraquecerá o tecido da realidade, iniciando um processo que eventualmente levará ao colapso que vi em minha linha temporal original."}
+    ],
+    "choices_2": [
+      {"text": "Estou pronto para fazer minha parte.", "next_dialogue": 8},
+      {"text": "E se falharmos?", "next_dialogue": 9},
+      {"text": "Há algo específico que devo fazer esta semana?", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "Sua determinação é admirável. Você tem um papel crucial neste plano."},
+        {"npc": "Professora Chronos", "text": "Durante o eclipse, você será responsável por distrair os guardas enquanto eu e o Professor Quantum acessamos o laboratório."},
+        {"npc": "Professora Chronos", "text": "Sua habilidade em criar distrações eficazes já foi comprovada durante a Celebração da Fundação."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Se falharmos... as consequências serão graves, mas não imediatas."},
+        {"npc": "Professora Chronos", "text": "O colapso da realidade que vi em minha linha temporal original levou décadas para se manifestar completamente."},
+        {"npc": "Professora Chronos", "text": "Teríamos outras oportunidades para intervir, embora cada tentativa se tornaria progressivamente mais difícil."},
+        {"npc": "Professora Chronos", "text": "Mas não pense em fracasso agora. Nosso plano é sólido, e temos aliados valiosos."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Sim, há algumas tarefas importantes para você esta semana."},
+        {"npc": "Professora Chronos", "text": "Primeiro, continue suas atividades normais para não levantar suspeitas."},
+        {"npc": "Professora Chronos", "text": "Segundo, familiarize-se com esta planta do laboratório. Memorize as rotas de fuga e os pontos de acesso."},
+        {"npc": "Professora Chronos", "text": "Por fim, na noite anterior ao eclipse, deixe este dispositivo perto do gerador principal da academia. O Professor Quantum o ativará remotamente."}
+      ]
+    },
+    "completion_exp": 500,
+    "completion_tusd": 600,
+    "next_chapter": "1_14"
+  },
+  "1_13_failure": {
+    "type": "story",
+    "title": "Sob Vigilância",
+    "description": "Após o fracasso parcial na Celebração da Fundação, você e a Professora Chronos enfrentam desafios adicionais enquanto o Diretor aumenta a vigilância.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Os dias após a Celebração da Fundação são tensos. Você sente olhares seguindo seus movimentos pelo campus."},
+      {"npc": "Narrador", "text": "O Diretor convocou uma assembleia especial para anunciar 'medidas de segurança aprimoradas' após um 'incidente menor' durante a celebração."},
+      {"npc": "Narrador", "text": "Uma semana antes do eclipse lunar, você recebe uma mensagem discreta da Professora Chronos para encontrá-la em um local incomum - a estufa abandonada nos fundos do campus."},
+      {"npc": "Professora Chronos", "text": "Obrigada por vir. Tive que escolher um local menos óbvio. Meu escritório está sendo monitorado."},
+      {"npc": "Professora Chronos", "text": "Nossa situação é complicada, mas não impossível. Ainda temos uma chance de impedir o experimento do Diretor."}
+    ],
+    "choices": [
+      {"text": "O Diretor sabe sobre nós?", "next_dialogue": 5},
+      {"text": "Conseguiu obter informações úteis no laboratório?", "next_dialogue": 6},
+      {"text": "Qual é o plano agora?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Ele suspeita, mas não tem certeza. Os sistemas de segurança detectaram uma intrusão, mas não identificaram os responsáveis."},
+        {"npc": "Professora Chronos", "text": "No entanto, ele aumentou a vigilância sobre vários 'elementos suspeitos' na academia, incluindo nós dois."},
+        {"npc": "Professora Chronos", "text": "Precisamos ser extremamente cautelosos daqui para frente. Qualquer comportamento incomum será notado."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sim, apesar das complicações, a missão não foi um fracasso total."},
+        {"npc": "Professora Chronos", "text": "Consegui confirmar a localização do fragmento e obter dados parciais sobre o experimento."},
+        {"npc": "Professora Chronos", "text": "Sabemos agora que o experimento principal ocorrerá durante o eclipse lunar, em uma semana."},
+        {"npc": "Professora Chronos", "text": "O Diretor acredita que a energia cósmica do eclipse amplificará o poder do fragmento, permitindo uma ruptura controlada."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Nosso plano precisa ser mais sutil agora. A abordagem direta não é mais viável com o aumento da segurança."},
+        {"npc": "Professora Chronos", "text": "Em vez disso, vamos usar uma estratégia de sabotagem indireta."},
+        {"npc": "Professora Chronos", "text": "Consegui recrutar um aliado inesperado - o Professor Quantum, que discorda secretamente dos métodos do Diretor."},
+        {"npc": "Professora Chronos", "text": "Ele tem acesso aos sistemas de energia da academia e pode causar uma falha no momento crítico do experimento."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O eclipse lunar ocorrerá em exatamente uma semana. Temos esse tempo para finalizar nossos preparativos, apesar dos obstáculos adicionais."},
+      {"npc": "Professora Chronos", "text": "O experimento do Diretor, mesmo que ele acredite poder controlá-lo, causará danos irreparáveis ao tecido da realidade."},
+      {"npc": "Professora Chronos", "text": "Nossa prioridade agora é garantir que o experimento falhe, sem revelar nossa envolvimento."}
+    ],
+    "choices_2": [
+      {"text": "Como posso ajudar se estou sendo vigiado?", "next_dialogue": 8},
+      {"text": "E se o Diretor nos descobrir antes do eclipse?", "next_dialogue": 9},
+      {"text": "Talvez devêssemos tentar uma abordagem completamente diferente.", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "Sua vigilância é tanto um problema quanto uma oportunidade."},
+        {"npc": "Professora Chronos", "text": "Se você mantiver um comportamento exemplar esta semana, a vigilância sobre você pode relaxar ligeiramente."},
+        {"npc": "Professora Chronos", "text": "Além disso, no dia do eclipse, precisaremos que você esteja em um local específico para criar um álibi perfeito."},
+        {"npc": "Professora Chronos", "text": "Você participará de uma sessão de estudo pública na biblioteca, longe do laboratório, enquanto o Professor Quantum e eu implementamos o plano."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Se formos descobertos antes do eclipse... as consequências seriam graves."},
+        {"npc": "Professora Chronos", "text": "O Diretor não hesitaria em nos remover permanentemente se nos visse como ameaças reais ao seu experimento."},
+        {"npc": "Professora Chronos", "text": "É por isso que devemos ser extremamente cautelosos. Nada de comunicações óbvias, nada de comportamentos suspeitos."},
+        {"npc": "Professora Chronos", "text": "Se necessário, tenho um plano de contingência que envolve... métodos temporais mais drásticos. Mas espero não precisar recorrer a isso."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Uma abordagem diferente? O que você sugere?"},
+        {"npc": "Você", "text": "E se, em vez de tentar impedir o experimento, tentássemos expor os planos do Diretor publicamente? Revelar a verdade para todos na academia?"},
+        {"npc": "Professora Chronos", "text": "Interessante... mas arriscado. O Diretor tem uma influência enorme e poderia facilmente desacreditar nossas alegações."},
+        {"npc": "Professora Chronos", "text": "No entanto, criar dúvidas na mente de outros professores e estudantes poderia ser útil como plano secundário. Vou considerar como poderíamos implementar isso de forma segura."}
+      ]
+    },
+    "completion_exp": 500,
+    "completion_tusd": 600,
+    "next_chapter": "1_14"
+  },
+  "1_13_neutral": {
+    "type": "story",
+    "title": "Preparativos Cautelosos",
+    "description": "Após os eventos na Celebração da Fundação, você e a Professora Chronos adotam uma abordagem cautelosa para os próximos passos.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Os dias após a Celebração da Fundação passam sem incidentes notáveis. Você mantém suas atividades normais, observando discretamente."},
+      {"npc": "Narrador", "text": "O Diretor parece mais reservado que o normal, passando a maior parte do tempo em reuniões com professores seniores ou no laboratório."},
+      {"npc": "Narrador", "text": "Uma semana antes do eclipse lunar, a Professora Chronos pede para encontrá-lo na biblioteca, entre as estantes da seção de história antiga."},
+      {"npc": "Professora Chronos", "text": "Obrigada por vir. Este local é seguro para conversarmos - os livros antigos criam uma interferência natural para dispositivos de escuta."},
+      {"npc": "Professora Chronos", "text": "Tenho novidades importantes sobre o experimento do Diretor e nosso plano para impedi-lo."}
+    ],
+    "choices": [
+      {"text": "O que descobriu sobre o experimento?", "next_dialogue": 5},
+      {"text": "Estamos seguros? Alguém suspeita de nós?", "next_dialogue": 6},
+      {"text": "Qual é o plano agora?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "O experimento está programado para ocorrer durante o eclipse lunar, em uma semana."},
+        {"npc": "Professora Chronos", "text": "O Diretor acredita que a energia cósmica do eclipse amplificará o poder do fragmento, permitindo uma ruptura controlada no tecido da realidade."},
+        {"npc": "Professora Chronos", "text": "Ele espera que essa ruptura permita acessar a fonte original dos poderes e, potencialmente, distribuí-los para toda a humanidade."},
+        {"npc": "Professora Chronos", "text": "Uma visão nobre, mas perigosamente ingênua. Cada ruptura enfraquece a realidade, eventualmente levando ao colapso que vi em minha linha temporal."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Por enquanto, estamos relativamente seguros. Não há evidências diretas ligando-nos aos eventos da Celebração."},
+        {"npc": "Professora Chronos", "text": "O Diretor está ciente de que alguém pode estar tentando interferir em seus planos, mas sua atenção está dividida entre vários 'suspeitos'."},
+        {"npc": "Professora Chronos", "text": "No entanto, devemos permanecer cautelosos. Qualquer comportamento incomum pode atrair atenção indesejada."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Nosso plano tem duas abordagens paralelas, para maximizar nossas chances de sucesso."},
+        {"npc": "Professora Chronos", "text": "Primeiro, trabalharemos com o Professor Quantum, que secretamente discorda dos métodos do Diretor, para causar uma falha de energia durante o experimento."},
+        {"npc": "Professora Chronos", "text": "Segundo, prepararei um dispositivo que pode neutralizar temporariamente o fragmento, caso a primeira abordagem falhe."},
+        {"npc": "Professora Chronos", "text": "Sua participação será crucial em ambas as frentes."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O eclipse lunar ocorrerá em exatamente uma semana. Temos esse tempo para finalizar nossos preparativos."},
+      {"npc": "Professora Chronos", "text": "O experimento do Diretor representa um ponto de divergência crítico na linha temporal. Em algumas versões do futuro, ele tem sucesso parcial, acelerando o colapso da realidade."},
+      {"npc": "Professora Chronos", "text": "Em outras, o experimento falha catastroficamente, causando danos imediatos. Nosso objetivo é garantir uma terceira opção: uma falha controlada e segura."}
+    ],
+    "choices_2": [
+      {"text": "Qual será exatamente o meu papel?", "next_dialogue": 8},
+      {"text": "Quão perigoso será isso para nós?", "next_dialogue": 9},
+      {"text": "Há algo que devo fazer esta semana para me preparar?", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "Você terá um papel duplo, adaptável às circunstâncias."},
+        {"npc": "Professora Chronos", "text": "Primeiramente, ajudará o Professor Quantum a acessar o sistema elétrico principal, criando uma distração para os guardas se necessário."},
+        {"npc": "Professora Chronos", "text": "Se isso falhar, você será meu backup para entregar o dispositivo neutralizador o mais próximo possível do laboratório."},
+        {"npc": "Professora Chronos", "text": "Sua capacidade de adaptação e pensamento rápido será vital."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Não vou mentir - há riscos significativos."},
+        {"npc": "Professora Chronos", "text": "Se formos descobertos, o Diretor nos verá como ameaças diretas aos seus planos. As consequências seriam graves."},
+        {"npc": "Professora Chronos", "text": "Além disso, estar próximo ao experimento durante uma falha, mesmo controlada, expõe-nos a energias potencialmente perigosas."},
+        {"npc": "Professora Chronos", "text": "Mas o risco de não agir é ainda maior - o colapso eventual da realidade afetaria não apenas nós, mas todos."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Sim, há várias tarefas importantes para você esta semana."},
+        {"npc": "Professora Chronos", "text": "Primeiro, mantenha suas atividades normais para não levantar suspeitas."},
+        {"npc": "Professora Chronos", "text": "Segundo, familiarize-se com estas plantas da academia, especialmente as rotas entre o sistema elétrico principal e o laboratório."},
+        {"npc": "Professora Chronos", "text": "Por fim, observe discretamente os padrões dos guardas e do próprio Diretor. Qualquer informação sobre suas rotinas será valiosa."}
+      ]
+    },
+    "completion_exp": 500,
+    "completion_tusd": 600,
+    "next_chapter": "1_14"
+  },
+  "1_14": {
+    "type": "story",
+    "title": "Eclipse Lunar",
+    "description": "O dia do eclipse lunar chega, trazendo consigo o momento decisivo para impedir o experimento do Diretor.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O dia do eclipse lunar finalmente chega. Uma tensão palpável paira sobre a academia, embora poucos saibam o verdadeiro significado deste dia."},
+      {"npc": "Narrador", "text": "As aulas foram suspensas para um 'evento astronômico especial', e muitos estudantes se reúnem no campo principal para observar o eclipse."},
+      {"npc": "Narrador", "text": "Você nota atividade incomum perto do laboratório - equipamentos sendo transportados, professores seniores entrando e saindo, segurança reforçada."},
+      {"npc": "Narrador", "text": "Conforme o plano, você encontra a Professora Chronos e o Professor Quantum em um local discreto para os preparativos finais."},
+      {"npc": "Professora Chronos", "text": "O momento chegou. O eclipse começará em exatamente uma hora, e o experimento está programado para o ápice - quando a lua estiver completamente coberta."}
+    ],
+    "choices": [
+      {"text": "Estamos prontos? Todos sabem o que fazer?", "next_dialogue": 5},
+      {"text": "Notei segurança reforçada. Isso afeta nosso plano?", "next_dialogue": 6},
+      {"text": "E se algo der errado?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Sim, todos estão preparados. Revisamos o plano várias vezes."},
+        {"npc": "Professor Quantum", "text": "O dispositivo para a falha de energia está pronto. Quando ativado, causará uma interrupção de aproximadamente três minutos - tempo suficiente para nossa intervenção."},
+        {"npc": "Professora Chronos", "text": "E o dispositivo neutralizador está comigo, como último recurso. Se tudo mais falhar, ele pode interromper o experimento, embora de forma menos sutil."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sim, a segurança aumentada complica as coisas, mas não inviabiliza nosso plano."},
+        {"npc": "Professor Quantum", "text": "Felizmente, o sistema elétrico principal está fora do perímetro de segurança reforçada. Ainda posso acessá-lo sem problemas."},
+        {"npc": "Professora Chronos", "text": "E durante a falha de energia, os sistemas de segurança eletrônicos ficarão temporariamente vulneráveis, dando-nos a abertura que precisamos."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Se algo der errado... bem, temos contingências para a maioria dos cenários possíveis."},
+        {"npc": "Professora Chronos", "text": "Se a falha de energia não funcionar, temos o dispositivo neutralizador."},
+        {"npc": "Professora Chronos", "text": "Se formos descobertos, temos rotas de fuga planejadas."},
+        {"npc": "Professora Chronos", "text": "E em último caso... tenho métodos temporais que podem nos dar uma segunda chance, embora a um custo pessoal significativo para mim."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professor Quantum", "text": "O eclipse começará em breve. Preciso ir para minha posição perto do sistema elétrico principal."},
+      {"npc": "Professora Chronos", "text": "Sim, todos devemos assumir nossas posições. Lembrem-se: sincronização é crucial. A falha de energia deve ocorrer exatamente quando o experimento atingir sua fase crítica."},
+      {"npc": "Narrador", "text": "Vocês se separam, cada um dirigindo-se para sua posição designada. À medida que o céu começa a escurecer com o início do eclipse, você sente o peso da responsabilidade sobre seus ombros."}
+    ],
+    "choices_2": [
+      {"text": "Seguir para sua posição conforme planejado", "next_dialogue": 8, "attribute_check": "dexterity", "threshold": 12},
+      {"text": "Tentar observar o laboratório antes de assumir posição", "next_dialogue": 9, "attribute_check": "intellect", "threshold": 12},
+      {"text": "Improvisar um plano alternativo", "next_dialogue": 10, "attribute_check": "charisma", "threshold": 14}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_8": [
+        {"npc": "Narrador", "text": "Você se move com confiança e discrição, evitando guardas e câmeras de segurança enquanto se dirige para sua posição."},
+        {"npc": "Narrador", "text": "Chegando ao ponto designado - um corredor secundário com visão para a entrada do laboratório - você se posiciona estrategicamente."},
+        {"npc": "Narrador", "text": "De seu esconderijo, você observa o Diretor e vários professores seniores entrando no laboratório. Todos parecem tensos, mas determinados."},
+        {"npc": "Narrador", "text": "Quando o eclipse atinge seu ponto médio, você nota um brilho estranho emanando das janelas do laboratório. O experimento começou."},
+        {"npc": "Narrador", "text": "Exatamente no momento planejado, as luzes piscam e se apagam. A falha de energia foi um sucesso."}
+      ],
+      "failure_8": [
+        {"npc": "Narrador", "text": "Enquanto se dirige para sua posição, você comete um pequeno erro - um ruído, um movimento brusco - que atrai a atenção de um guarda."},
+        {"npc": "Guarda", "text": "Ei! Esta área está restrita durante o evento. O que você está fazendo aqui?"},
+        {"npc": "Narrador", "text": "Você tenta explicar sua presença com uma desculpa improvisada, mas o guarda parece desconfiado."},
+        {"npc": "Narrador", "text": "Após alguns momentos tensos, ele decide escoltá-lo de volta à área principal de observação do eclipse."},
+        {"npc": "Narrador", "text": "Você está sendo levado para longe de sua posição quando as luzes piscam e se apagam. A falha de energia ocorreu, mas você não está onde deveria estar."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_9": [
+        {"npc": "Narrador", "text": "Com cautela e inteligência, você encontra um ponto de observação discreto com visão para o laboratório."},
+        {"npc": "Narrador", "text": "O que você vê é perturbador: o fragmento do cristal, agora pulsando com uma luz intensa, está suspenso em um campo de energia no centro do laboratório."},
+        {"npc": "Narrador", "text": "O Diretor e os professores operam equipamentos complexos ao redor, monitorando leituras e ajustando parâmetros."},
+        {"npc": "Narrador", "text": "Esta observação lhe dá informações valiosas sobre o experimento que podem ser cruciais para o plano."},
+        {"npc": "Narrador", "text": "Você rapidamente se dirige para sua posição designada, chegando exatamente quando as luzes se apagam com a falha de energia."}
+      ],
+      "failure_9": [
+        {"npc": "Narrador", "text": "Sua tentativa de observar o laboratório o leva perigosamente perto da área de segurança reforçada."},
+        {"npc": "Narrador", "text": "Um sistema de detecção que você não havia notado dispara um alerta silencioso."},
+        {"npc": "Narrador", "text": "Dois guardas aparecem rapidamente, bloqueando seu caminho."},
+        {"npc": "Guarda", "text": "Esta é uma área restrita. Identifique-se e explique sua presença aqui."},
+        {"npc": "Narrador", "text": "Enquanto você tenta explicar-se, as luzes se apagam com a falha de energia, causando confusão momentânea que você poderia potencialmente aproveitar."}
+      ],
+      "10": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_10": [
+        {"npc": "Narrador", "text": "Em vez de seguir o plano original, você tem uma inspiração repentina."},
+        {"npc": "Narrador", "text": "Aproximando-se de um grupo de estudantes que observam o eclipse, você começa a falar com entusiasmo sobre fenômenos estranhos que às vezes ocorrem durante eclipses."},
+        {"npc": "Narrador", "text": "Sua história cativante atrai mais e mais estudantes, criando uma multidão que se move gradualmente em direção ao laboratório - uma área normalmente evitada."},
+        {"npc": "Narrador", "text": "Os guardas ficam divididos entre manter a segurança e controlar a crescente multidão de estudantes curiosos."},
+        {"npc": "Narrador", "text": "Esta distração inesperada cria uma oportunidade perfeita quando as luzes se apagam com a falha de energia."}
+      ],
+      "failure_10": [
+        {"npc": "Narrador", "text": "Sua tentativa de improvisar um plano alternativo não sai como esperado."},
+        {"npc": "Narrador", "text": "Ao tentar reunir alguns estudantes para criar uma distração, você acaba chamando atenção demais para si mesmo."},
+        {"npc": "Narrador", "text": "Um professor que passa nota seu comportamento incomum e intervém."},
+        {"npc": "Professor", "text": "O que está acontecendo aqui? Todos vocês deveriam estar na área principal de observação."},
+        {"npc": "Narrador", "text": "Enquanto você tenta explicar a situação, as luzes se apagam com a falha de energia, mas você está longe de onde deveria estar."}
+      ]
+    },
+    "completion_exp": 550,
+    "completion_tusd": 650,
+    "next_chapter": "1_15"
+  },
+  "1_15": {
+    "type": "branching",
+    "title": "O Momento Decisivo",
+    "description": "O clímax da história do primeiro ano, onde suas escolhas determinam o destino do experimento do Diretor e o futuro da academia.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Com a falha de energia, o laboratório é mergulhado na escuridão, iluminado apenas pelo brilho pulsante do fragmento do cristal."},
+      {"npc": "Narrador", "text": "Confusão momentânea se instala entre os presentes, enquanto os sistemas de backup lutam para se ativar."},
+      {"npc": "Narrador", "text": "Este é o momento crucial - a janela de oportunidade pela qual você e seus aliados trabalharam."}
+    ],
+    "choices": [
+      {"text": "Seguir o plano e ajudar a Professora Chronos a acessar o laboratório", "next_dialogue": 3, "attribute_check": "dexterity", "threshold": 14},
+      {"text": "Tentar sabotar diretamente o experimento", "next_dialogue": 4, "attribute_check": "intellect", "threshold": 16},
+      {"text": "Criar uma distração adicional para garantir mais tempo", "next_dialogue": 5, "attribute_check": "charisma", "threshold": 14}
+    ],
+    "additional_dialogues": {
+      "3": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_3": [
+        {"npc": "Narrador", "text": "Aproveitando a confusão causada pela falha de energia, você se move rapidamente para ajudar a Professora Chronos."},
+        {"npc": "Narrador", "text": "Juntos, vocês conseguem acessar o laboratório através de uma entrada secundária, evitando os guardas desorientados."},
+        {"npc": "Professora Chronos", "text": "Excelente. Mantenha vigia enquanto eu altero os parâmetros do experimento."},
+        {"npc": "Narrador", "text": "Enquanto você observa as entradas, a Professora trabalha rapidamente nos controles do experimento, seus dedos movendo-se com precisão apesar da pouca luz."},
+        {"npc": "Professora Chronos", "text": "Pronto. Isso garantirá que o experimento falhe de forma segura. Vamos sair daqui antes que as luzes voltem."}
+      ],
+      "failure_3": [
+        {"npc": "Narrador", "text": "Você tenta se mover discretamente para ajudar a Professora Chronos, mas tropeça em equipamento no escuro."},
+        {"npc": "Narrador", "text": "O barulho atrai a atenção de um dos guardas equipados com lanternas."},
+        {"npc": "Guarda", "text": "Quem está aí? Identifique-se!"},
+        {"npc": "Narrador", "text": "A Professora Chronos surge das sombras, intervindo rapidamente."},
+        {"npc": "Professora Chronos", "text": "Sou eu, Professora Chronos. Estava verificando os sistemas históricos quando a energia caiu. Este estudante estava me ajudando."},
+        {"npc": "Narrador", "text": "O guarda parece desconfiado, mas a autoridade da Professora o convence momentaneamente. No entanto, vocês perderam tempo precioso."}
+      ],
+      "4": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_4": [
+        {"npc": "Narrador", "text": "Em vez de seguir o plano original, você decide agir diretamente."},
+        {"npc": "Narrador", "text": "Aproveitando seus conhecimentos sobre o experimento, você se infiltra no laboratório e rapidamente identifica o componente crítico - um regulador de energia conectado ao fragmento."},
+        {"npc": "Narrador", "text": "Com precisão cirúrgica, você ajusta o regulador, garantindo que o experimento falhe sem causar danos catastróficos."},
+        {"npc": "Narrador", "text": "Quando as luzes começam a piscar, sinalizando o retorno da energia, você escapa rapidamente, sem deixar vestígios de sua presença."},
+        {"npc": "Narrador", "text": "De um local seguro, você observa a Professora Chronos, que nota sua ausência do plano original mas, vendo sua expressão confiante, parece entender que você tomou uma iniciativa bem-sucedida."}
+      ],
+      "failure_4": [
+        {"npc": "Narrador", "text": "Você tenta sabotar diretamente o experimento, mas a complexidade dos equipamentos é maior do que esperava."},
+        {"npc": "Narrador", "text": "Ao tentar ajustar o que parece ser um componente crítico, você inadvertidamente ativa um alarme de segurança."},
+        {"npc": "Narrador", "text": "Luzes vermelhas piscam no laboratório, e uma voz automatizada anuncia: 'Alerta de segurança. Intrusão detectada.'"},
+        {"npc": "Narrador", "text": "Você tenta escapar, mas o Diretor e dois guardas bloqueiam a saída."},
+        {"npc": "Diretor Sombrio", "text": "Então é você quem está tentando sabotar meu trabalho. Interessante... e decepcionante."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_5": [
+        {"npc": "Narrador", "text": "Percebendo que a Professora Chronos pode precisar de mais tempo, você decide criar uma distração adicional."},
+        {"npc": "Narrador", "text": "Com rápido pensamento, você ativa o sistema de sprinklers em um corredor próximo, causando caos adicional."},
+        {"npc": "Narrador", "text": "Os guardas e técnicos se dividem ainda mais, tentando lidar com múltiplas emergências simultaneamente."},
+        {"npc": "Narrador", "text": "Esta distração extra dá à Professora Chronos o tempo necessário para completar sua tarefa sem ser detectada."},
+        {"npc": "Narrador", "text": "Quando as luzes finalmente retornam, você observa de longe a Professora saindo discretamente do laboratório, lançando-lhe um olhar de aprovação."}
+      ],
+      "failure_5": [
+        {"npc": "Narrador", "text": "Sua tentativa de criar uma distração adicional sai pela culatra quando você acidentalmente causa um curto-circuito no sistema elétrico secundário."},
+        {"npc": "Narrador", "text": "Em vez de mais tempo no escuro, isso faz com que os sistemas de backup entrem em ação mais rapidamente, restaurando a energia antes do previsto."},
+        {"npc": "Narrador", "text": "As luzes se acendem subitamente, revelando a Professora Chronos ainda trabalhando nos controles do experimento."},
+        {"npc": "Diretor Sombrio", "text": "Professora Chronos? O que está fazendo nos controles do meu experimento?"},
+        {"npc": "Narrador", "text": "A situação rapidamente se deteriora em um confronto direto."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "O eclipse lunar atinge seu ápice, a lua completamente coberta, mergulhando o mundo em uma escuridão incomum."},
+      {"npc": "Narrador", "text": "No laboratório, o fragmento do cristal pulsa com intensidade crescente, reagindo às energias cósmicas do eclipse."},
+      {"npc": "Narrador", "text": "O momento da verdade chegou - o experimento do Diretor está prestes a atingir seu ponto crítico, e o resultado de suas ações será revelado."}
+    ],
+    "choices_2": [
+      {"text": "Observar o resultado de suas ações", "next_dialogue": 6},
+      {"text": "Tentar uma intervenção de último minuto", "next_dialogue": 7, "attribute_check": "power_stat", "threshold": 16},
+      {"text": "Procurar a Professora Chronos para confirmar o sucesso", "next_dialogue": 8}
+    ],
+    "additional_dialogues_2": {
+      "6": [
+        {"npc": "Narrador", "text": "De uma posição segura, você observa o laboratório enquanto o experimento atinge seu clímax."},
+        {"npc": "Narrador", "text": "O fragmento do cristal brilha intensamente, criando padrões hipnóticos de luz que se refletem nas paredes."},
+        {"npc": "Narrador", "text": "Então, em vez da ruptura controlada que o Diretor esperava, o brilho diminui gradualmente. O experimento falha, mas de forma segura, sem danos colaterais."},
+        {"npc": "Narrador", "text": "Você nota o Diretor, visivelmente frustrado, examinando os controles e questionando seus assistentes sobre o que deu errado."},
+        {"npc": "Narrador", "text": "A Professora Chronos encontra seu olhar de longe e acena discretamente, confirmando o sucesso de sua missão."}
+      ],
+      "7": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_7": [
+        {"npc": "Narrador", "text": "Sentindo que algo ainda não está certo, você decide arriscar uma intervenção de último minuto."},
+        {"npc": "Narrador", "text": "Concentrando-se intensamente, você canaliza seu poder para criar uma interferência sutil mas eficaz no campo de energia ao redor do fragmento."},
+        {"npc": "Narrador", "text": "Ninguém percebe sua influência, mas ela é suficiente para garantir que o experimento falhe completamente, sem qualquer efeito residual perigoso."},
+        {"npc": "Narrador", "text": "O fragmento pulsa uma última vez e então se estabiliza, seu brilho diminuindo para um suave fulgor."},
+        {"npc": "Narrador", "text": "A Professora Chronos, notando o que você fez, lança-lhe um olhar de surpresa e admiração."}
+      ],
+      "failure_7": [
+        {"npc": "Narrador", "text": "Você tenta intervir diretamente com seus poderes, mas subestima a energia do fragmento do cristal."},
+        {"npc": "Narrador", "text": "Ao tentar influenciar o campo de energia, você cria uma ressonância inesperada que amplifica momentaneamente o experimento."},
+        {"npc": "Narrador", "text": "Uma onda de energia se expande pelo laboratório, derrubando equipamentos e pessoas."},
+        {"npc": "Narrador", "text": "Quando a poeira baixa, o experimento falhou, mas não da forma controlada que vocês planejaram."},
+        {"npc": "Narrador", "text": "O Diretor, recuperando-se, olha diretamente para você com uma expressão que mistura raiva e curiosidade."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você se move discretamente pelo campus, procurando a Professora Chronos para confirmar o sucesso da missão."},
+        {"npc": "Narrador", "text": "Encontra-a finalmente perto da biblioteca, observando o eclipse que agora começa a diminuir."},
+        {"npc": "Professora Chronos", "text": "Conseguimos. O experimento falhou de forma segura, sem danos colaterais."},
+        {"npc": "Professora Chronos", "text": "O Diretor está frustrado, mas não suspeita de sabotagem - pelo menos não ainda. Ele acredita que foi um erro de cálculo."},
+        {"npc": "Professora Chronos", "text": "Você se saiu extraordinariamente bem hoje. Esta linha temporal tem... possibilidades que não vi antes."}
+      ]
+    },
+    "branches": {
+      "success_branch": {
+        "conditions": {
+          "previous_check_result": "success"
+        },
+        "next_chapter": "1_16_success"
+      },
+      "failure_branch": {
+        "conditions": {
+          "previous_check_result": "failure"
+        },
+        "next_chapter": "1_16_failure"
+      },
+      "neutral_branch": {
+        "conditions": {
+          "default": true
+        },
+        "next_chapter": "1_16_neutral"
+      }
+    },
+    "completion_exp": 600,
+    "completion_tusd": 700
+  },
+  "1_16_success": {
+    "type": "story",
+    "title": "Um Novo Começo",
+    "description": "Após o sucesso em impedir o experimento do Diretor, você reflete sobre suas conquistas e se prepara para o próximo ano na academia.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Semanas se passaram desde o eclipse lunar e a falha do experimento do Diretor. A vida na academia retornou gradualmente ao normal."},
+      {"npc": "Narrador", "text": "O Diretor tem estado notavelmente ausente, supostamente 'revisando cálculos' para uma nova tentativa no futuro."},
+      {"npc": "Narrador", "text": "Você se encontra com a Professora Chronos em seu escritório para uma conversa final antes do término do ano letivo."},
+      {"npc": "Professora Chronos", "text": "Você realizou algo extraordinário. Poucos estudantes em sua posição teriam a coragem ou a habilidade para fazer o que você fez."},
+      {"npc": "Professora Chronos", "text": "Graças a você, ganhamos tempo valioso. O Diretor não desistirá facilmente, mas seu fracasso o forçou a reconsiderar sua abordagem."}
+    ],
+    "choices": [
+      {"text": "O que acontece agora com o fragmento do cristal?", "next_dialogue": 5},
+      {"text": "O Diretor suspeita de nós?", "next_dialogue": 6},
+      {"text": "O que devo esperar no próximo ano?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "O fragmento permanece no laboratório, ainda sob estudo. Não conseguimos removê-lo completamente."},
+        {"npc": "Professora Chronos", "text": "No entanto, as alterações que fizemos nos equipamentos garantirão que qualquer tentativa futura de usá-lo para criar uma ruptura seja significativamente mais difícil."},
+        {"npc": "Professora Chronos", "text": "Além disso, agora tenho aliados entre os professores que estão monitorando discretamente as atividades do laboratório."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "O Diretor tem... suspeitas. Ele é inteligente demais para acreditar completamente que foi apenas um erro de cálculo."},
+        {"npc": "Professora Chronos", "text": "No entanto, não tem evidências concretas contra nós. Sua frustração está direcionada mais para seus assistentes do que para estudantes ou outros professores."},
+        {"npc": "Professora Chronos", "text": "Ainda assim, devemos permanecer cautelosos. Ele pode estar observando mais atentamente no futuro."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "O próximo ano trará novos desafios e oportunidades. Sua posição na academia mudou, mesmo que sutilmente."},
+        {"npc": "Professora Chronos", "text": "Alguns professores notaram seu potencial. Alguns estudantes perceberam sua influência crescente."},
+        {"npc": "Professora Chronos", "text": "E o Diretor... bem, ele pode estar mais atento a você, para o bem ou para o mal."},
+        {"npc": "Professora Chronos", "text": "Além disso, há outros mistérios na academia esperando para serem descobertos. Segredos além do fragmento e do Evento Zero."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "Independentemente do que o futuro reserva, você provou ser um aliado valioso. Alguém em quem posso confiar."},
+      {"npc": "Professora Chronos", "text": "Em muitas linhas temporais, este é um ponto de virada significativo. Suas ações criaram possibilidades que não existiam antes."},
+      {"npc": "Professora Chronos", "text": "Antes de nos despedirmos para o verão, há algo que gostaria de lhe dar."}
+    ],
+    "choices_2": [
+      {"text": "O que é?", "next_dialogue": 8},
+      {"text": "Não precisava me dar nada.", "next_dialogue": 9},
+      {"text": "Espero que não seja outro livro proibido.", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Narrador", "text": "A Professora Chronos abre uma gaveta em sua mesa e remove um pequeno objeto envolto em tecido."},
+        {"npc": "Professora Chronos", "text": "Isto é um fragmento de tempo cristalizado. Uma pequena parte do meu poder que pode, em um momento de extrema necessidade, criar uma bolha temporal de 30 segundos."},
+        {"npc": "Professora Chronos", "text": "Durante esses 30 segundos, o tempo ao seu redor praticamente para, permitindo que você aja livremente."},
+        {"npc": "Professora Chronos", "text": "Use-o com sabedoria. Só funciona uma vez, e criar outro exigiria... sacrifícios significativos da minha parte."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Sua modéstia é admirável, mas este presente não é apenas um agradecimento - é uma ferramenta que pode ser crucial no futuro."},
+        {"npc": "Narrador", "text": "Ela remove um pequeno objeto cristalino de uma gaveta em sua mesa."},
+        {"npc": "Professora Chronos", "text": "Este é um fragmento de tempo cristalizado. Em um momento de extrema necessidade, ele pode criar uma bolha temporal de 30 segundos, durante os quais você pode agir enquanto o mundo ao seu redor praticamente para."},
+        {"npc": "Professora Chronos", "text": "É um pedaço do meu próprio poder, e não posso criar outro facilmente. Use-o com sabedoria."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Não, nada tão perigoso quanto o Tomo desta vez."},
+        {"npc": "Narrador", "text": "Ela sorri levemente enquanto remove um pequeno cristal cintilante de sua gaveta."},
+        {"npc": "Professora Chronos", "text": "Este é um fragmento de tempo cristalizado. Uma manifestação física do meu poder sobre o tempo."},
+        {"npc": "Professora Chronos", "text": "Em um momento de verdadeira necessidade, ele pode criar uma bolha temporal de 30 segundos, dando-lhe tempo para agir quando todos os outros estão praticamente congelados."},
+        {"npc": "Professora Chronos", "text": "Considere-o um... seguro, para o caso de nossos caminhos se cruzarem com o do Diretor novamente."}
+      ]
+    },
+    "completion_exp": 650,
+    "completion_tusd": 750,
+    "next_chapter": "2_1"
+  },
+  "1_16_failure": {
+    "type": "story",
+    "title": "Consequências Inesperadas",
+    "description": "Após o fracasso parcial em impedir o experimento do Diretor, você lida com as consequências e se prepara para os desafios do próximo ano.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Semanas se passaram desde o eclipse lunar e o caótico resultado do experimento do Diretor."},
+      {"npc": "Narrador", "text": "Embora o experimento tenha falhado, não foi da forma controlada que vocês planejaram, e as consequências foram significativas."},
+      {"npc": "Narrador", "text": "O laboratório sofreu danos consideráveis, e vários professores e estudantes ficaram levemente feridos."},
+      {"npc": "Narrador", "text": "O Diretor iniciou uma investigação rigorosa sobre o 'acidente', e a segurança na academia foi intensificada."},
+      {"npc": "Narrador", "text": "Você finalmente consegue um momento privado com a Professora Chronos, que parece mais cansada do que o normal."}
+    ],
+    "choices": [
+      {"text": "O Diretor sabe sobre nosso envolvimento?", "next_dialogue": 5},
+      {"text": "O que aconteceu com o fragmento do cristal?", "next_dialogue": 6},
+      {"text": "Conseguimos pelo menos impedir o experimento, certo?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Ele tem fortes suspeitas, mas não provas concretas. Por enquanto."},
+        {"npc": "Professora Chronos", "text": "Tive que usar... métodos temporais para obscurecer algumas evidências. O custo para mim foi significativo."},
+        {"npc": "Professora Chronos", "text": "Você notou que meu cabelo está mais grisalho? Não é coincidência. Manipular o tempo tem seu preço."},
+        {"npc": "Professora Chronos", "text": "O Diretor está observando vários 'suspeitos', incluindo nós. Precisaremos ser extremamente cautelosos daqui para frente."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "O fragmento sobreviveu, infelizmente. Na verdade, o experimento parcialmente bem-sucedido parece ter... despertado algo nele."},
+        {"npc": "Professora Chronos", "text": "Ele agora exibe propriedades que não tinha antes - flutuações energéticas espontâneas, pequenas distorções espaciais ao seu redor."},
+        {"npc": "Professora Chronos", "text": "O Diretor está fascinado, é claro. Vê isso como um progresso, apesar do 'contratempo'."},
+        {"npc": "Professora Chronos", "text": "Isso torna nossa situação mais perigosa. Ele certamente tentará novamente, com protocolos de segurança ainda mais rigorosos."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Sim e não. O experimento falhou em seu objetivo principal - criar uma ruptura controlada."},
+        {"npc": "Professora Chronos", "text": "Mas a energia liberada durante a falha causou... efeitos colaterais inesperados."},
+        {"npc": "Professora Chronos", "text": "Pequenas anomalias temporais foram relatadas em todo o campus. Momentos de déjà vu intenso, objetos aparecendo em lugares onde não estavam antes."},
+        {"npc": "Professora Chronos", "text": "O tecido da realidade foi afetado, ainda que sutilmente. Não tão grave quanto se o experimento tivesse sido 'bem-sucedido', mas ainda preocupante."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "Apesar dos contratempos, sua coragem e determinação foram notáveis. Poucos teriam arriscado tanto."},
+      {"npc": "Professora Chronos", "text": "Ganhamos tempo, se não mais. O Diretor precisará de meses para reconstruir o laboratório e refinar seus cálculos."},
+      {"npc": "Professora Chronos", "text": "Isso nos dá a oportunidade de nos prepararmos melhor para o próximo confronto, porque certamente haverá um."}
+    ],
+    "choices_2": [
+      {"text": "O que devemos fazer agora?", "next_dialogue": 8},
+      {"text": "Estou preocupado com as consequências para nós.", "next_dialogue": 9},
+      {"text": "Talvez devêssemos tentar uma abordagem completamente diferente.", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "Por enquanto, devemos manter um perfil baixo. Continuar nossas atividades normais, não dar ao Diretor mais razões para suspeitar."},
+        {"npc": "Professora Chronos", "text": "Durante o verão, trabalharei para entender melhor as anomalias causadas pelo experimento e desenvolver contramedidas."},
+        {"npc": "Professora Chronos", "text": "Quando você retornar para o segundo ano, teremos um novo plano - mais cuidadoso, mais abrangente."},
+        {"npc": "Professora Chronos", "text": "E desta vez, recrutaremos aliados com mais antecedência. Não podemos fazer isso sozinhos."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Sua preocupação é justificada. O Diretor não é alguém que perdoa facilmente aqueles que interferem em seus planos."},
+        {"npc": "Professora Chronos", "text": "Tomei algumas precauções para nossa proteção. Primeiro, obscureci evidências que poderiam nos incriminar diretamente."},
+        {"npc": "Professora Chronos", "text": "Segundo, plantei 'pistas falsas' sugerindo que o acidente foi causado por falhas nos próprios equipamentos do Diretor."},
+        {"npc": "Professora Chronos", "text": "Por fim, tenho aliados observando o Diretor. Se ele planejar algo contra você, seremos avisados com antecedência."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Uma abordagem diferente? Que tipo você sugere?"},
+        {"npc": "Você", "text": "E se, em vez de tentar impedir o Diretor secretamente, trabalhássemos para expor seus planos publicamente? Ou talvez até colaborar com ele, mas guiá-lo para métodos mais seguros?"},
+        {"npc": "Professora Chronos", "text": "Interessante... Em algumas linhas temporais, tentei abordagens semelhantes, com resultados variados."},
+        {"npc": "Professora Chronos", "text": "Exposição pública é arriscada - o Diretor tem influência suficiente para desacreditar acusações. Mas colaboração... isso poderia funcionar, se abordado com extrema cautela."},
+        {"npc": "Professora Chronos", "text": "Vou considerar isso durante o verão. Talvez haja um caminho que não envolva confronto direto."}
+      ]
+    },
+    "completion_exp": 650,
+    "completion_tusd": 750,
+    "next_chapter": "2_1"
+  },
+  "1_16_neutral": {
+    "type": "story",
+    "title": "Equilíbrio Precário",
+    "description": "Após os eventos do eclipse lunar, você reflete sobre os resultados mistos de suas ações e se prepara para o que está por vir.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Semanas se passaram desde o eclipse lunar e o experimento do Diretor. Os resultados foram... ambíguos."},
+      {"npc": "Narrador", "text": "O experimento falhou em seu objetivo principal, mas não sem consequências. Pequenas anomalias foram relatadas pelo campus - nada catastrófico, mas inquietante."},
+      {"npc": "Narrador", "text": "O Diretor tem estado mais reservado que o normal, imerso em análises dos resultados e planejamento para futuras tentativas."},
+      {"npc": "Narrador", "text": "Você encontra a Professora Chronos em seu escritório para uma conversa final antes do término do ano letivo."},
+      {"npc": "Professora Chronos", "text": "Você se saiu bem, considerando as circunstâncias. Nem vitória completa, nem derrota - um resultado que vi em algumas linhas temporais, mas raramente."}
+    ],
+    "choices": [
+      {"text": "Conseguimos realmente impedir algo ruim de acontecer?", "next_dialogue": 5},
+      {"text": "O que são essas anomalias que as pessoas estão relatando?", "next_dialogue": 6},
+      {"text": "O Diretor suspeita de nossa interferência?", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Professora Chronos", "text": "Sim, sem dúvida. Se o experimento tivesse sido 'bem-sucedido' como o Diretor planejava, a ruptura teria sido muito mais significativa."},
+        {"npc": "Professora Chronos", "text": "As pequenas anomalias que estamos vendo são apenas ecos do que poderia ter sido um dano muito maior ao tecido da realidade."},
+        {"npc": "Professora Chronos", "text": "No entanto, mesmo essas pequenas anomalias são preocupantes. Elas sugerem que o fragmento do cristal foi... parcialmente ativado pelo experimento."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Manifestações menores de instabilidade temporal e espacial. Momentos de déjà vu intenso, objetos que parecem mudar de lugar quando ninguém está olhando."},
+        {"npc": "Professora Chronos", "text": "Alguns estudantes relataram sonhos vívidos com versões alternativas de si mesmos. Outros juram ter visto brevemente pessoas que não estavam realmente lá."},
+        {"npc": "Professora Chronos", "text": "São efeitos colaterais da energia liberada durante o experimento. A maioria deve se dissipar com o tempo, mas algumas podem... persistir."}
+      ],
+      "7": [
+        {"npc": "Professora Chronos", "text": "Ele tem algumas suspeitas, mas nada concreto. O Diretor é inteligente demais para acreditar completamente que foi apenas um erro de cálculo."},
+        {"npc": "Professora Chronos", "text": "No entanto, sua atenção está dividida entre vários 'suspeitos' potenciais, incluindo alguns de seus próprios assistentes que questionaram a segurança do experimento."},
+        {"npc": "Professora Chronos", "text": "Por enquanto, estamos relativamente seguros, mas devemos permanecer cautelosos. Ele estará mais vigilante no futuro."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O mais importante é que ganhamos tempo. O Diretor precisará de meses, talvez um ano inteiro, para refinar seus cálculos e preparar uma nova tentativa."},
+      {"npc": "Professora Chronos", "text": "Isso nos dá a oportunidade de nos prepararmos melhor, de entender mais profundamente o fragmento e suas propriedades."},
+      {"npc": "Professora Chronos", "text": "E talvez, de encontrar uma solução mais permanente para o problema."}
+    ],
+    "choices_2": [
+      {"text": "O que devo esperar no próximo ano?", "next_dialogue": 8},
+      {"text": "Há algo que posso fazer durante o verão?", "next_dialogue": 9},
+      {"text": "Você acha que algum dia conseguiremos convencer o Diretor a desistir?", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Professora Chronos", "text": "O segundo ano trará novos desafios e oportunidades. Sua posição na academia evoluiu sutilmente."},
+        {"npc": "Professora Chronos", "text": "Alguns professores notaram seu potencial. Alguns estudantes perceberam sua crescente influência."},
+        {"npc": "Professora Chronos", "text": "O Diretor pode estar mais atento a você, mas também estará ocupado com seus próprios projetos."},
+        {"npc": "Professora Chronos", "text": "Além disso, as anomalias causadas pelo experimento podem ter... efeitos inesperados no campus e em seus habitantes. Esteja atento a mudanças sutis."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "Sim, há algumas coisas que podem ser úteis."},
+        {"npc": "Professora Chronos", "text": "Primeiro, este livro sobre teoria temporal básica. Não é proibido como o Tomo, mas contém informações valiosas que ajudarão você a entender melhor o que estamos enfrentando."},
+        {"npc": "Professora Chronos", "text": "Segundo, pratique técnicas de meditação para aguçar sua percepção. Isso o ajudará a notar anomalias temporais sutis."},
+        {"npc": "Professora Chronos", "text": "Por fim, mantenha um diário de qualquer experiência incomum que tiver. Sonhos vívidos, déjà vu, intuições súbitas - podem ser mais significativos do que parecem."}
+      ],
+      "10": [
+        {"npc": "Professora Chronos", "text": "Convencer o Diretor... é uma pergunta interessante."},
+        {"npc": "Professora Chronos", "text": "Em algumas linhas temporais, sim, ele eventualmente reconhece os riscos e abandona seus experimentos. Geralmente após algum evento traumático que demonstra claramente o perigo."},
+        {"npc": "Professora Chronos", "text": "Em outras, ele se torna cada vez mais obcecado, especialmente à medida que seus poderes continuam a falhar."},
+        {"npc": "Professora Chronos", "text": "O que faz a diferença, geralmente, é se ele encontra um propósito alternativo - algo que lhe dê esperança além de seus experimentos com o fragmento."},
+        {"npc": "Professora Chronos", "text": "Talvez, com o tempo, possamos ajudá-lo a encontrar esse propósito."}
+      ]
+    },
+    "completion_exp": 650,
+    "completion_tusd": 750,
+    "next_chapter": "2_1"
+  },
+  "2_1": {
+    "type": "story",
+    "title": "Retorno à Academia",
+    "description": "Seu segundo ano na Academia Tokugawa começa com novas oportunidades, desafios e mistérios.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O verão passou rapidamente, e agora você retorna à Academia Tokugawa para seu segundo ano."},
+      {"npc": "Narrador", "text": "O campus parece ao mesmo tempo familiar e estranhamente diferente. Há novos rostos - calouros ansiosos explorando os terrenos pela primeira vez."},
+      {"npc": "Narrador", "text": "Mas há também mudanças sutis que você nota imediatamente. Segurança mais visível. Equipamentos de monitoramento discretamente instalados em vários locais."},
+      {"npc": "Narrador", "text": "E, ocasionalmente, pequenas anomalias - um relógio que parece correr para trás por alguns segundos, uma flor que floresce e murcha em minutos, sombras que se movem na direção errada."},
+      {"npc": "Narrador", "text": "Enquanto caminha para a cerimônia de abertura, você encontra alguns colegas de seu clube."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre o verão deles", "next_dialogue": 5},
+      {"text": "Mencionar as mudanças que notou no campus", "next_dialogue": 6},
+      {"text": "Perguntar se notaram algo estranho acontecendo", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Colega de Clube", "text": "Meu verão foi... interessante. Fiz um estágio em uma empresa que trabalha com aplicações práticas de poderes."},
+        {"npc": "Colega de Clube", "text": "E você não vai acreditar, mas encontrei o Professor Quantum em uma conferência! Ele parecia... diferente. Mais reservado que o normal."},
+        {"npc": "Colega de Clube", "text": "E você? Como foi seu verão?"}
+      ],
+      "6": [
+        {"npc": "Colega de Clube", "text": "Então você também notou? Pensei que era só impressão minha."},
+        {"npc": "Colega de Clube", "text": "Ouvi dizer que houve algum tipo de 'incidente' no final do ano passado que danificou parte do laboratório principal."},
+        {"npc": "Colega de Clube", "text": "Ninguém sabe exatamente o que aconteceu, mas desde então, o Diretor tem sido quase paranoico com segurança."}
+      ],
+      "7": [
+        {"npc": "Colega de Clube", "text": "Estranho como? Você quer dizer além das câmeras de segurança por toda parte?"},
+        {"npc": "Colega de Clube", "text": "Bem... agora que você mencionou, tenho tido sonhos muito vívidos ultimamente. Sonhos onde estou na academia, mas tudo está... diferente."},
+        {"npc": "Colega de Clube", "text": "E ontem, juro que vi alguém que parecia exatamente como eu atravessando o pátio. Quando pisquei, tinha desaparecido."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Sua conversa é interrompida pelo som de sinos, anunciando o início da cerimônia de abertura."},
+      {"npc": "Narrador", "text": "No grande auditório, estudantes e professores se reúnem. O palco está preparado para os discursos tradicionais."},
+      {"npc": "Narrador", "text": "Você nota a Professora Chronos entre os professores. Ela parece mais pálida que antes, com mais fios grisalhos em seu cabelo. Quando seus olhares se cruzam, ela acena discretamente."}
+    ],
+    "choices_2": [
+      {"text": "Prestar atenção ao discurso do Diretor", "next_dialogue": 8},
+      {"text": "Observar os outros professores e suas reações", "next_dialogue": 9},
+      {"text": "Tentar perceber se há mais anomalias no auditório", "next_dialogue": 10, "attribute_check": "intellect", "threshold": 12}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Diretor Sombrio", "text": "Bem-vindos a mais um ano na Academia Tokugawa. Para os calouros, o início de uma jornada extraordinária. Para os veteranos, a continuação de seu crescimento e desenvolvimento."},
+        {"npc": "Diretor Sombrio", "text": "Este ano promete ser especialmente significativo. Estamos à beira de avanços revolucionários em nossa compreensão dos poderes e seu potencial."},
+        {"npc": "Diretor Sombrio", "text": "Também implementamos melhorias em nossos sistemas de segurança, para garantir que todos possam estudar e crescer em um ambiente protegido."},
+        {"npc": "Narrador", "text": "Enquanto o Diretor continua seu discurso, você nota algo em sua aparência - ele parece mais magro, com olheiras profundas, como se não dormisse bem há semanas."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Enquanto o Diretor fala, você observa discretamente os outros professores."},
+        {"npc": "Narrador", "text": "O Professor Quantum parece tenso, evitando olhar diretamente para o Diretor. Ocasionalmente, troca olhares significativos com a Professora Chronos."},
+        {"npc": "Narrador", "text": "A Professora Sylvan, especialista em sistemas de segurança, observa a multidão com atenção incomum, como se procurasse algo - ou alguém."},
+        {"npc": "Narrador", "text": "E há um novo professor que você não reconhece - um homem de meia-idade com um tapa-olho, que observa tudo com intensidade inquietante."}
+      ],
+      "10": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_10": [
+        {"npc": "Narrador", "text": "Concentrando-se intensamente, você começa a notar sutis anomalias pelo auditório."},
+        {"npc": "Narrador", "text": "Em um canto, as sombras parecem mais densas que o normal, quase como se tivessem substância própria."},
+        {"npc": "Narrador", "text": "Perto do palco, o ar ocasionalmente ondula, como o calor sobre asfalto quente, embora a temperatura esteja agradável."},
+        {"npc": "Narrador", "text": "Mais perturbador, por um breve momento, você vê uma versão translúcida do Diretor alguns passos atrás dele mesmo, repetindo seus gestos com um ligeiro atraso - um eco temporal."},
+        {"npc": "Narrador", "text": "Quando olha para a Professora Chronos, percebe que ela também notou, e parece profundamente preocupada."}
+      ],
+      "failure_10": [
+        {"npc": "Narrador", "text": "Você tenta se concentrar para perceber anomalias, mas o barulho da multidão e a voz amplificada do Diretor tornam difícil focar."},
+        {"npc": "Narrador", "text": "Por um momento, pensa ter visto algo estranho com as luzes do teto, mas ao olhar novamente, tudo parece normal."},
+        {"npc": "Narrador", "text": "A sensação de que algo está fora do lugar persiste, mas você não consegue identificar nada concreto."}
+      ]
+    },
+    "completion_exp": 700,
+    "completion_tusd": 800,
+    "next_chapter": "2_2"
+  }
+}

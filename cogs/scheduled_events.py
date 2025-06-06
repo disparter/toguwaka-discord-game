@@ -12,6 +12,7 @@ import pytz
 from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag, store_cooldown, update_player_grade, get_monthly_average_grades, update_player_reputation, get_player_grades
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
+from utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -1967,10 +1968,10 @@ class ScheduledEvents(commands.Cog):
             if random.random() < final_chance:
                 # Choose a random event type with dynamic weights based on recent events
                 # More rare events become more likely if they haven't happened in a while
-                event_types = ['minion', 'villain', 'collectible']
+                event_types = ['minion', 'villain', 'collectible', 'narrative']
 
                 # Default weights
-                base_weights = [0.6, 0.3, 0.1]  # 60% minion, 30% villain, 10% collectible
+                base_weights = [0.4, 0.2, 0.1, 0.3]  # 40% minion, 20% villain, 10% collectible, 30% narrative
 
                 # Adjust weights based on recent events (last 10 events)
                 recent_events = [event['data']['type'] for event_id, event in ACTIVE_EVENTS.items() 
@@ -2015,6 +2016,8 @@ class ScheduledEvents(commands.Cog):
                             await self.trigger_villain_event(tokugawa_channel)
                         elif event_type == 'collectible':
                             await self.trigger_collectible_event(tokugawa_channel)
+                        elif event_type == 'narrative':
+                            await self.trigger_narrative_event(tokugawa_channel)
                         return
 
                 # If TOKUGAWA_CHANNEL not found or not set, use random channel selection
@@ -2037,6 +2040,8 @@ class ScheduledEvents(commands.Cog):
                     await self.trigger_villain_event(channel)
                 elif event_type == 'collectible':
                     await self.trigger_collectible_event(channel)
+                elif event_type == 'narrative':
+                    await self.trigger_narrative_event(channel)
 
         except Exception as e:
             logger.error(f"Error checking random events: {e}")
@@ -2395,6 +2400,180 @@ class ScheduledEvents(commands.Cog):
                 logger.error(f"Error storing villain event in database: {e}")
         except Exception as e:
             logger.error(f"Error triggering villain event: {e}")
+
+    async def trigger_narrative_event(self, channel):
+        """Trigger a dynamic narrative event for a random player."""
+        try:
+            # Get all players
+            players = get_all_players()
+            if not players:
+                logger.warning("No players found for narrative event")
+                return
+
+            # Select a random player
+            player = random.choice(players)
+
+            # Generate a dynamic event for the player
+            event = generate_dynamic_event(player)
+
+            # Get event choices
+            choices = generate_event_choices(event["type"])
+
+            # Create embed for the event
+            embed = create_basic_embed(
+                title=f"📜 Evento Narrativo: {event['title']} 📜",
+                description=f"{player['name']} está em uma situação interessante!\n\n{event['description']}\n\n"
+                            f"**Atributo testado:** {event['attribute_checked'].capitalize()}\n"
+                            f"**Dificuldade:** {event['difficulty']}\n\n"
+                            f"Escolha como {player['name']} deve reagir:",
+                color=0x9370DB  # Medium Purple
+            )
+
+            # Create view with buttons for choices
+            view = discord.ui.View(timeout=3600)  # 1 hour timeout
+
+            for choice_id, choice_desc, _ in choices:
+                button = discord.ui.Button(
+                    label=choice_desc,
+                    custom_id=f"narrative_choice_{choice_id}_{player['user_id']}",
+                    style=discord.ButtonStyle.primary
+                )
+
+                async def button_callback(interaction, choice_id=choice_id, player_id=player['user_id']):
+                    # Only allow interactions from guild members
+                    if not interaction.guild:
+                        await interaction.response.send_message("Este comando só pode ser usado em um servidor.", ephemeral=True)
+                        return
+
+                    # Get the player data again (it might have changed)
+                    player = get_player(player_id)
+                    if not player:
+                        await interaction.response.send_message("Jogador não encontrado.", ephemeral=True)
+                        return
+
+                    # Apply the choice consequences
+                    updated_event = apply_choice_consequences(event, choice_id, player)
+
+                    # Apply the event rewards
+                    updates = apply_event_rewards(player, updated_event)
+
+                    # Update the player in the database
+                    success = update_player(player_id, **updates)
+
+                    if success:
+                        # Create result embed
+                        result_embed = create_basic_embed(
+                            title=f"📜 Resultado do Evento: {updated_event['title']} 📜",
+                            description=f"{player['name']} escolheu: **{choice_desc}**\n\n{updated_event['description']}\n\n"
+                                        f"**Resultado:** {'Sucesso! ✅' if updated_event['success'] else 'Falha! ❌'}\n\n"
+                                        f"**Recompensas:**",
+                            color=0x00FF00 if updated_event['success'] else 0xFF0000
+                        )
+
+                        # Add reward fields
+                        rewards = updated_event["rewards"]
+                        if "exp" in rewards:
+                            result_embed.add_field(
+                                name="Experiência",
+                                value=f"{'+' if rewards['exp'] >= 0 else ''}{rewards['exp']} EXP",
+                                inline=True
+                            )
+
+                        if "tusd" in rewards:
+                            result_embed.add_field(
+                                name="TUSD",
+                                value=f"{'+' if rewards['tusd'] >= 0 else ''}{rewards['tusd']} TUSD",
+                                inline=True
+                            )
+
+                        for attr in ["intellect", "charisma", "dexterity", "power_stat"]:
+                            if attr in rewards:
+                                attr_names = {
+                                    "intellect": "Intelecto",
+                                    "charisma": "Carisma",
+                                    "dexterity": "Destreza",
+                                    "power_stat": "Poder"
+                                }
+                                result_embed.add_field(
+                                    name=attr_names[attr],
+                                    value=f"{'+' if rewards[attr] >= 0 else ''}{rewards[attr]}",
+                                    inline=True
+                                )
+
+                        if "reputation" in rewards:
+                            result_embed.add_field(
+                                name="Reputação",
+                                value=f"{'+' if rewards['reputation'] >= 0 else ''}{rewards['reputation']}",
+                                inline=True
+                            )
+
+                        if "hp_loss" in rewards:
+                            result_embed.add_field(
+                                name="Dano",
+                                value=f"-{rewards['hp_loss']} HP",
+                                inline=True
+                            )
+
+                        if "hp_recovery" in rewards:
+                            result_embed.add_field(
+                                name="Recuperação",
+                                value=f"+{rewards['hp_recovery']} HP",
+                                inline=True
+                            )
+
+                        # Disable all buttons
+                        for child in view.children:
+                            child.disabled = True
+
+                        # Update the original message
+                        await interaction.message.edit(view=view)
+
+                        # Send the result
+                        await interaction.response.send_message(embed=result_embed)
+                    else:
+                        await interaction.response.send_message("Ocorreu um erro ao processar sua escolha. Por favor, tente novamente mais tarde.", ephemeral=True)
+
+                button.callback = button_callback
+                view.add_item(button)
+
+            # Send the event message
+            message = await channel.send(embed=embed, view=view)
+
+            # Generate a unique event ID
+            event_id = f"narrative_{datetime.now().strftime('%Y%m%d%H%M%S')}_{random.randint(1000, 9999)}"
+
+            # Store event in database
+            now = datetime.now()
+            end_time = now + timedelta(hours=1)  # Event expires in 1 hour
+
+            # Prepare event data
+            event_data = {
+                "type": "narrative",
+                "player_id": player["user_id"],
+                "event": event,
+                "choices": choices
+            }
+
+            # Store in database
+            from utils.database import store_event
+            store_event(
+                event_id=event_id,
+                name=event["title"],
+                description=event["description"],
+                event_type="narrative",
+                channel_id=channel.id,
+                message_id=message.id,
+                start_time=now,
+                end_time=end_time,
+                participants=[player["user_id"]],
+                data=event_data,
+                completed=False
+            )
+
+            logger.info(f"Triggered narrative event {event_id} for player {player['name']}")
+
+        except Exception as e:
+            logger.error(f"Error triggering narrative event: {e}")
 
     async def trigger_collectible_event(self, channel):
         """Trigger a random collectible item appearance event."""

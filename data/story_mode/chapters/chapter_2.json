@@ -1,0 +1,541 @@
+{
+  "2_1": {
+    "type": "story",
+    "title": "Segundo Ano: Novos Desafios",
+    "description": "Seu segundo ano na Academia Tokugawa começa com novas responsabilidades e desafios.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "As férias de verão chegaram ao fim, e você retorna à Academia Tokugawa para seu segundo ano. O campus parece diferente agora - mais familiar, mas também com novas adições."},
+      {"npc": "Junie", "text": "Bem-vindo de volta! Como foi passar um tempo longe da academia?"},
+      {"npc": "Junie", "text": "Seu segundo ano será bem diferente do primeiro. Agora que você já conhece os fundamentos, espera-se mais de você."},
+      {"npc": "Junie", "text": "Os estudantes do segundo ano começam a se especializar em suas habilidades e assumem responsabilidades dentro de seus clubes."}
+    ],
+    "choices": [
+      {"text": "Estou ansioso para aprofundar minhas habilidades", "next_dialogue": 4, "affinity_change": {"Junie": 3}},
+      {"text": "Quais são as novas responsabilidades?", "next_dialogue": 5},
+      {"text": "Houve mudanças na academia durante as férias?", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Junie", "text": "Essa é a atitude certa! No segundo ano, você terá acesso a treinamentos mais avançados específicos para seu tipo de poder."},
+        {"npc": "Junie", "text": "Seu líder de clube já preparou um programa personalizado baseado no seu desempenho do ano passado."},
+        {"npc": "Junie", "text": "Além disso, você poderá escolher uma especialização que definirá seu caminho para os próximos anos."}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "Os estudantes do segundo ano servem como mentores para os calouros, ajudando-os a se adaptarem à vida na academia."},
+        {"npc": "Junie", "text": "Você também terá que participar da organização de pelo menos um evento do clube durante o ano."},
+        {"npc": "Junie", "text": "E, claro, há o Grande Torneio Interclube, onde você representará seu clube em competições contra outros estudantes."}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "Sim, várias! Temos um novo prédio para treinamento especializado, e a biblioteca foi expandida com uma nova ala."},
+        {"npc": "Junie", "text": "Também temos alguns novos professores, incluindo a Professora Aria, especialista em poderes de manipulação atmosférica."},
+        {"npc": "Junie", "text": "E... bem, há rumores sobre atividades estranhas na floresta ao norte do campus. A administração diz que está tudo sob controle, mas..."}
+      ]
+    },
+    "completion_exp": 200,
+    "completion_tusd": 300,
+    "next_chapter": "2_2"
+  },
+  "2_2": {
+    "type": "story",
+    "title": "Escolha de Especialização",
+    "description": "É hora de escolher uma especialização que definirá seu caminho de desenvolvimento de poderes.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Após a primeira semana de aulas, todos os estudantes do segundo ano são convocados para o Grande Salão para a Cerimônia de Especialização."},
+      {"npc": "Diretor", "text": "Bem-vindos, estudantes do segundo ano. Hoje vocês darão um passo importante em sua jornada na Academia Tokugawa."},
+      {"npc": "Diretor", "text": "A escolha de especialização não é apenas sobre aprimorar seus poderes, mas sobre definir quem vocês são como indivíduos."},
+      {"npc": "Diretor", "text": "Escolham com sabedoria, pois esta decisão influenciará seu treinamento pelos próximos anos."}
+    ],
+    "club_specializations": {
+      "1": [
+        {"id": "ofensivo", "name": "Caminho Ofensivo", "description": "Foco em amplificar o poder destrutivo e alcance das chamas."},
+        {"id": "defensivo", "name": "Caminho Defensivo", "description": "Foco em criar barreiras e escudos de fogo para proteção."},
+        {"id": "controle", "name": "Caminho do Controle", "description": "Foco na manipulação precisa e detalhada das chamas para tarefas complexas."}
+      ],
+      "2": [
+        {"id": "telepatia", "name": "Caminho da Telepatia", "description": "Foco na comunicação mental e leitura de pensamentos."},
+        {"id": "ilusao", "name": "Caminho da Ilusão", "description": "Foco na criação de ilusões complexas que enganam múltiplos sentidos."},
+        {"id": "influencia", "name": "Caminho da Influência", "description": "Foco na sutil manipulação das emoções e decisões de outros."}
+      ],
+      "3": [
+        {"id": "diplomacia", "name": "Caminho da Diplomacia", "description": "Foco na negociação, mediação e resolução pacífica de conflitos."},
+        {"id": "manipulacao", "name": "Caminho da Manipulação", "description": "Foco em estratégias de influência e controle social."},
+        {"id": "lideranca", "name": "Caminho da Liderança", "description": "Foco em inspirar e comandar grupos, desenvolvendo habilidades de liderança."}
+      ],
+      "4": [
+        {"id": "harmonia", "name": "Caminho da Harmonia", "description": "Foco no equilíbrio perfeito entre múltiplos elementos."},
+        {"id": "especialista", "name": "Caminho do Especialista", "description": "Foco no domínio profundo de um único elemento escolhido."},
+        {"id": "ambiental", "name": "Caminho Ambiental", "description": "Foco na interação com ambientes naturais e manipulação de ecossistemas."}
+      ],
+      "5": [
+        {"id": "forca", "name": "Caminho da Força", "description": "Foco no poder físico, resistência e técnicas de combate direto."},
+        {"id": "tecnica", "name": "Caminho da Técnica", "description": "Foco na precisão, velocidade e eficiência em combate."},
+        {"id": "tatico", "name": "Caminho Tático", "description": "Foco em estratégias de combate, análise de oponentes e adaptabilidade."}
+      ]
+    },
+    "choices": [
+      {"text": "Escolher a primeira especialização", "specialization_choice": 0},
+      {"text": "Escolher a segunda especialização", "specialization_choice": 1},
+      {"text": "Escolher a terceira especialização", "specialization_choice": 2}
+    ],
+    "completion_exp": 250,
+    "completion_tusd": 350,
+    "next_chapter": "2_3"
+  },
+  "2_3": {
+    "type": "story",
+    "title": "Mentoria",
+    "description": "Como estudante do segundo ano, você é designado para ser mentor de um calouro.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Duas semanas após o início das aulas, você é chamado ao escritório do seu líder de clube."},
+      {"npc": "Líder de Clube", "text": "Obrigado por vir. Como sabe, parte das responsabilidades dos estudantes do segundo ano é orientar os calouros."},
+      {"npc": "Líder de Clube", "text": "Designei um estudante para você mentorar este ano. Seu nome é Hikari, e ele parece ter grande potencial, mas está tendo dificuldades para se adaptar."},
+      {"npc": "Líder de Clube", "text": "Esta é uma oportunidade não apenas para ajudá-lo, mas também para desenvolver suas próprias habilidades de liderança."}
+    ],
+    "choices": [
+      {"text": "Aceitar a responsabilidade com entusiasmo", "next_dialogue": 4, "affinity_change": {"Líder de Clube": 5}},
+      {"text": "Perguntar mais sobre o calouro", "next_dialogue": 5},
+      {"text": "Expressar preocupação sobre suas próprias habilidades como mentor", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Líder de Clube", "text": "Excelente! Sua atitude positiva será inspiradora para Hikari."},
+        {"npc": "Líder de Clube", "text": "Ele estará esperando por você no pátio principal em uma hora. Boa sorte com seu primeiro encontro."},
+        {"npc": "Narrador", "text": "Você se dirige ao pátio principal, onde encontra um jovem de aparência nervosa olhando ao redor."},
+        {"npc": "Hikari", "text": "O-olá! Você deve ser meu mentor. Eu sou Hikari. É um prazer conhecê-lo."}
+      ],
+      "5": [
+        {"npc": "Líder de Clube", "text": "Hikari vem de uma família sem histórico de poderes, então tudo isso é novo para ele."},
+        {"npc": "Líder de Clube", "text": "Ele tem um talento natural impressionante, mas falta confiança. Seus poderes parecem estar ligados à luz e energia."},
+        {"npc": "Líder de Clube", "text": "Ele está tendo dificuldades principalmente com controle - houve alguns... incidentes nas primeiras aulas."},
+        {"npc": "Narrador", "text": "Após a conversa, você se dirige ao pátio principal, onde encontra um jovem de aparência nervosa olhando ao redor."},
+        {"npc": "Hikari", "text": "O-olá! Você deve ser meu mentor. Eu sou Hikari. É um prazer conhecê-lo."}
+      ],
+      "6": [
+        {"npc": "Líder de Clube", "text": "Suas preocupações são compreensíveis, mas lembre-se: não esperamos perfeição."},
+        {"npc": "Líder de Clube", "text": "O processo de mentoria é uma jornada de aprendizado para ambos. Você crescerá junto com seu mentorado."},
+        {"npc": "Líder de Clube", "text": "Além disso, escolhi Hikari especificamente para você porque acredito que suas personalidades são compatíveis."},
+        {"npc": "Narrador", "text": "Sentindo-se um pouco mais confiante, você se dirige ao pátio principal, onde encontra um jovem de aparência nervosa olhando ao redor."},
+        {"npc": "Hikari", "text": "O-olá! Você deve ser meu mentor. Eu sou Hikari. É um prazer conhecê-lo."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Você", "text": "Olá, Hikari. Sim, sou seu mentor designado. Bem-vindo à Academia Tokugawa."},
+      {"npc": "Hikari", "text": "Obrigado! Estou um pouco nervoso, para ser honesto. Tudo aqui é tão... intenso."},
+      {"npc": "Hikari", "text": "Na minha primeira aula prática, eu... bem, acidentalmente criei uma explosão de luz que deixou todos temporariamente cegos. Foi horrível."}
+    ],
+    "choices_2": [
+      {"text": "Não se preocupe, todos cometemos erros no início", "next_dialogue": 7, "affinity_change": {"Hikari": 10}},
+      {"text": "Vamos trabalhar juntos no seu controle", "next_dialogue": 8, "affinity_change": {"Hikari": 8}},
+      {"text": "Isso é realmente impressionante para um iniciante", "next_dialogue": 9, "affinity_change": {"Hikari": 5}}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Hikari", "text": "Sério? Você também teve problemas no início?"},
+        {"npc": "Você", "text": "Claro! Todos passamos por isso. Faz parte do aprendizado."},
+        {"npc": "Hikari", "text": "Isso é... reconfortante de ouvir. Achei que talvez eu não pertencesse a este lugar."},
+        {"npc": "Você", "text": "Você definitivamente pertence aqui. E vou ajudá-lo a provar isso a si mesmo."}
+      ],
+      "8": [
+        {"npc": "Hikari", "text": "Você acha que posso melhorar? Às vezes parece que meus poderes têm vontade própria."},
+        {"npc": "Você", "text": "Absolutamente. O controle vem com prática e compreensão. Vamos começar com exercícios básicos e avançar gradualmente."},
+        {"npc": "Hikari", "text": "Isso soa bem. Estou disposto a trabalhar duro se você estiver disposto a me ensinar."},
+        {"npc": "Você", "text": "Esse é o espírito! Vamos começar amanhã com uma sessão de treinamento personalizada."}
+      ],
+      "9": [
+        {"npc": "Hikari", "text": "Impressionante? Foi um desastre!"},
+        {"npc": "Você", "text": "O poder em si é impressionante. Agora só precisamos trabalhar no controle."},
+        {"npc": "Hikari", "text": "Você realmente acha que tenho potencial?"},
+        {"npc": "Você", "text": "Definitivamente. Poderes fortes como os seus são raros, especialmente em alguém sem histórico familiar. Com o treinamento certo, você pode se tornar excepcional."}
+      ]
+    },
+    "completion_exp": 300,
+    "completion_tusd": 400,
+    "next_chapter": "2_4"
+  },
+  "2_4": {
+    "type": "branching",
+    "title": "Anomalias na Floresta",
+    "description": "Estranhos eventos na floresta ao norte do campus chamam sua atenção.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Um mês após o início do semestre, rumores sobre ocorrências estranhas na floresta ao norte do campus se intensificam."},
+      {"npc": "Estudante", "text": "Você ouviu? Dizem que luzes estranhas foram vistas na floresta à noite. E alguns estudantes relataram sentir seus poderes oscilando quando passam perto de lá."},
+      {"npc": "Hikari", "text": "Mentor, eu... senti algo estranho ontem quando estava perto da borda da floresta. Como se meus poderes estivessem... ressoando com algo."},
+      {"npc": "Narrador", "text": "Enquanto vocês conversam, notam um grupo de professores, incluindo o Diretor, dirigindo-se apressadamente para a floresta."}
+    ],
+    "choices": [
+      {"text": "Seguir os professores discretamente", "next_dialogue": 4, "attribute_check": "dexterity", "threshold": 12},
+      {"text": "Investigar a floresta mais tarde, à noite", "next_dialogue": 5, "attribute_check": "intellect", "threshold": 10},
+      {"text": "Reportar as preocupações de Hikari a um professor de confiança", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_4": [
+        {"npc": "Narrador", "text": "Você pede a Hikari que espere e segue os professores silenciosamente, mantendo distância segura."},
+        {"npc": "Narrador", "text": "Eles adentram a floresta por um caminho pouco usado e chegam a uma clareira onde um estranho dispositivo foi instalado."},
+        {"npc": "Diretor", "text": "As leituras estão aumentando. A anomalia está crescendo mais rápido do que previmos."},
+        {"npc": "Professor Desconhecido", "text": "Devemos considerar evacuar os dormitórios mais próximos da floresta? Se isso continuar..."},
+        {"npc": "Diretor", "text": "Ainda não. Não queremos causar pânico. Aumentem a potência dos estabilizadores e monitorem a situação 24 horas por dia."},
+        {"npc": "Narrador", "text": "Você observa enquanto eles ajustam o dispositivo, que parece emitir um campo de energia que contém algo no centro da clareira - algo que distorce o ar ao seu redor."}
+      ],
+      "failure_4": [
+        {"npc": "Narrador", "text": "Você tenta seguir os professores, mas pisa em um galho seco que estala ruidosamente."},
+        {"npc": "Narrador", "text": "Um dos professores se vira imediatamente."},
+        {"npc": "Professor", "text": "Quem está aí? Esta área está restrita aos estudantes."},
+        {"npc": "Narrador", "text": "Você é descoberto e escoltado de volta ao campus."},
+        {"npc": "Professor", "text": "Entendo sua curiosidade, mas há áreas da academia que são restritas por boas razões. Segurança dos estudantes é nossa prioridade."},
+        {"npc": "Narrador", "text": "Apesar da reprimenda, você nota preocupação genuína nos olhos do professor, reforçando que algo sério está acontecendo."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_5": [
+        {"npc": "Narrador", "text": "Naquela noite, você retorna à borda da floresta. A lua cheia ilumina seu caminho enquanto você avança cautelosamente."},
+        {"npc": "Narrador", "text": "Após caminhar por alguns minutos, você nota um brilho azulado entre as árvores. Seguindo-o, você chega a uma clareira."},
+        {"npc": "Narrador", "text": "No centro da clareira há um dispositivo tecnológico avançado cercando o que parece ser uma fenda no próprio ar - uma distorção que emite aquela luz azulada."},
+        {"npc": "Narrador", "text": "Você se aproxima para examinar melhor e sente seus poderes reagindo à proximidade da anomalia - fortalecendo-se e depois enfraquecendo em pulsos irregulares."},
+        {"npc": "Narrador", "text": "Em um caderno próximo ao dispositivo, você encontra anotações: 'Ruptura dimensional estável por enquanto. Níveis de energia flutuantes mas contidos. Possível conexão com o Evento Zero.'"}
+      ],
+      "failure_5": [
+        {"npc": "Narrador", "text": "Você retorna à noite, mas logo percebe que a área está sendo patrulhada por seguranças da academia."},
+        {"npc": "Narrador", "text": "Tentando contorná-los, você acaba se perdendo na floresta escura. Após horas vagando, você finalmente encontra o caminho de volta ao campus."},
+        {"npc": "Narrador", "text": "No dia seguinte, você nota um aumento na segurança ao redor da floresta, tornando impossível qualquer nova tentativa de investigação."},
+        {"npc": "Segurança", "text": "Esta área está temporariamente fechada para todos os estudantes por motivos de segurança. Por favor, retorne aos dormitórios."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você decide compartilhar as preocupações de Hikari com a Professora Chronos, que sempre pareceu mais aberta e confiável."},
+        {"npc": "Professora Chronos", "text": "Agradeço por trazer isso à minha atenção. Na verdade, estou ciente da... situação na floresta."},
+        {"npc": "Professora Chronos", "text": "O que está acontecendo lá é complexo e, francamente, preocupante. Uma anomalia espacial se formou, afetando os poderes de quem se aproxima."},
+        {"npc": "Professora Chronos", "text": "A administração está tentando contê-la, mas tenho minhas dúvidas sobre seus métodos."},
+        {"npc": "Professora Chronos", "text": "Diga a Hikari para ficar longe da floresta por enquanto. E quanto a você... talvez possamos conversar mais sobre isso em particular. Venha ao meu escritório amanhã após as aulas."}
+      ]
+    },
+    "branches": {
+      "discovery_branch": {
+        "conditions": {
+          "choice": 0,
+          "check_result": "success"
+        },
+        "next_chapter": "2_5_discovery"
+      },
+      "night_investigation_branch": {
+        "conditions": {
+          "choice": 1,
+          "check_result": "success"
+        },
+        "next_chapter": "2_5_investigation"
+      },
+      "caught_branch": {
+        "conditions": {
+          "choice": 0,
+          "check_result": "failure"
+        },
+        "next_chapter": "2_5_warning"
+      },
+      "failed_investigation_branch": {
+        "conditions": {
+          "choice": 1,
+          "check_result": "failure"
+        },
+        "next_chapter": "2_5_warning"
+      },
+      "report_branch": {
+        "conditions": {
+          "choice": 2
+        },
+        "next_chapter": "2_5_alliance"
+      }
+    },
+    "completion_exp": 350,
+    "completion_tusd": 450
+  },
+  "2_5_discovery": {
+    "type": "story",
+    "title": "A Anomalia Revelada",
+    "description": "Após testemunhar a anomalia na floresta, você busca entender seu significado.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Você retorna ao campus com a mente repleta de perguntas sobre o que testemunhou na floresta."},
+      {"npc": "Hikari", "text": "Você está bem? Parece preocupado desde que voltou da floresta ontem."},
+      {"npc": "Você", "text": "Vi algo estranho... uma espécie de anomalia que os professores estão tentando conter."},
+      {"npc": "Hikari", "text": "Então os rumores são verdadeiros! O que exatamente você viu?"}
+    ],
+    "choices": [
+      {"text": "Contar tudo a Hikari", "next_dialogue": 4, "affinity_change": {"Hikari": 5}},
+      {"text": "Compartilhar apenas parte da informação", "next_dialogue": 5},
+      {"text": "Pesquisar na biblioteca antes de tirar conclusões", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Você descreve em detalhes o dispositivo e a distorção que viu na clareira."},
+        {"npc": "Hikari", "text": "Isso é... assustador. E você disse que ouviu algo sobre um 'Evento Zero'?"},
+        {"npc": "Hikari", "text": "Espere, isso me lembra algo que li na biblioteca. Havia um livro antigo que mencionava um evento catastrófico que supostamente deu origem aos poderes."},
+        {"npc": "Hikari", "text": "A maioria considera isso uma lenda, mas e se for verdade? E se essa anomalia estiver relacionada à origem dos nossos poderes?"}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você menciona a anomalia e o dispositivo, mas omite as informações sobre o 'Evento Zero' e a reação dos professores."},
+        {"npc": "Hikari", "text": "Isso explica por que senti meus poderes reagindo perto da floresta. Mas por que a administração manteria isso em segredo?"},
+        {"npc": "Hikari", "text": "Acha que deveríamos investigar mais? Talvez na biblioteca haja informações sobre fenômenos semelhantes no passado."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você decide ser cauteloso e pesquisar mais antes de compartilhar suas descobertas."},
+        {"npc": "Você", "text": "Vi algo estranho, mas preciso entender melhor antes de tirar conclusões. Vou à biblioteca pesquisar."},
+        {"npc": "Hikari", "text": "Posso ajudar! Sou bom em pesquisas, e quatro olhos veem mais que dois."},
+        {"npc": "Narrador", "text": "Vocês passam a tarde na biblioteca, procurando por informações sobre anomalias espaciais e o misterioso 'Evento Zero'."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Durante sua pesquisa na biblioteca, vocês encontram referências obscuras a um evento histórico que teria alterado fundamentalmente a realidade."},
+      {"npc": "Hikari", "text": "Olhe isso! Um relato de 300 anos atrás menciona 'uma ruptura no véu da realidade que liberou energias desconhecidas no mundo'."},
+      {"npc": "Você", "text": "E aqui diz que após esse evento, os primeiros casos de pessoas com habilidades especiais começaram a ser documentados."},
+      {"npc": "Hikari", "text": "Então a história oficial que nos ensinam - que os poderes surgiram gradualmente por evolução - pode ser falsa?"},
+      {"npc": "Narrador", "text": "Enquanto vocês discutem essas descobertas, notam a Professora Chronos observando-os de longe com uma expressão preocupada."}
+    ],
+    "choices_2": [
+      {"text": "Abordar a Professora Chronos", "next_dialogue": 7},
+      {"text": "Continuar a pesquisa discretamente", "next_dialogue": 8},
+      {"text": "Guardar os livros e sair da biblioteca", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Você decide abordar a Professora Chronos diretamente."},
+        {"npc": "Você", "text": "Professora, encontramos informações interessantes sobre a origem dos poderes. Tem relação com a anomalia na floresta?"},
+        {"npc": "Professora Chronos", "text": "Vejo que você é mais observador e curioso do que a maioria. Sim, há uma conexão."},
+        {"npc": "Professora Chronos", "text": "Venha ao meu escritório esta noite. Sozinho. Há coisas que você precisa saber, mas que não podem ser discutidas aqui."},
+        {"npc": "Professora Chronos", "text": "E sugiro discrição. Nem todos na administração apreciam estudantes que fazem perguntas demais."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Vocês decidem continuar a pesquisa, fingindo não ter notado a professora."},
+        {"npc": "Narrador", "text": "Após mais uma hora, encontram um diagrama antigo mostrando uma ruptura dimensional semelhante à que você viu na floresta."},
+        {"npc": "Hikari", "text": "Isso é exatamente como você descreveu! E olhe as anotações: 'A ruptura pode ser estabilizada, mas nunca completamente fechada.'"},
+        {"npc": "Narrador", "text": "Quando vocês estão prestes a sair, encontram um bilhete discretamente colocado entre suas coisas: 'Meu escritório. 22h. Venha sozinho. - PC'"}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Vocês decidem ser cautelosos e guardam os livros, saindo da biblioteca."},
+        {"npc": "Hikari", "text": "Acho que a Professora Chronos estava nos observando. Ela sempre me pareceu diferente dos outros professores."},
+        {"npc": "Narrador", "text": "Ao retornar ao seu dormitório, você encontra um envelope sob sua porta com uma breve mensagem: 'Você está fazendo as perguntas certas. Meu escritório. 22h. - Professora Chronos'"}
+      ]
+    },
+    "completion_exp": 400,
+    "completion_tusd": 500,
+    "next_chapter": "2_6"
+  },
+  "2_5_investigation": {
+    "type": "story",
+    "title": "Segredos Noturnos",
+    "description": "Sua investigação noturna da anomalia na floresta revela segredos perturbadores.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Após sua descoberta na floresta, você retorna ao campus com mais perguntas do que respostas."},
+      {"npc": "Narrador", "text": "As anotações sobre o 'Evento Zero' e a ruptura dimensional continuam ecoando em sua mente."},
+      {"npc": "Hikari", "text": "Você sumiu ontem à noite. Aconteceu alguma coisa?"},
+      {"npc": "Narrador", "text": "Você percebe que precisa decidir quanto compartilhar com seu mentorado."}
+    ],
+    "choices": [
+      {"text": "Contar tudo a Hikari", "next_dialogue": 4, "affinity_change": {"Hikari": 5}},
+      {"text": "Compartilhar apenas parte da informação", "next_dialogue": 5},
+      {"text": "Sugerir uma pesquisa na biblioteca", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Você descreve em detalhes o dispositivo, a ruptura dimensional e as anotações que encontrou."},
+        {"npc": "Hikari", "text": "Isso é incrível e assustador ao mesmo tempo. Uma ruptura dimensional aqui, no campus?"},
+        {"npc": "Hikari", "text": "E esse 'Evento Zero'... nunca ouvi falar disso nas aulas de História dos Poderes."},
+        {"npc": "Hikari", "text": "Acho que deveríamos pesquisar mais sobre isso. A biblioteca deve ter alguma informação, mesmo que obscura."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você menciona ter visto algo estranho na floresta, mas omite os detalhes mais preocupantes."},
+        {"npc": "Hikari", "text": "Então os rumores são verdadeiros! Sabia que havia algo estranho acontecendo."},
+        {"npc": "Hikari", "text": "Isso explica por que senti meus poderes reagindo perto da floresta. Acha que deveríamos investigar mais?"},
+        {"npc": "Você", "text": "Talvez possamos começar com uma pesquisa na biblioteca. Deve haver registros de fenômenos semelhantes."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Sem revelar o que descobriu, você sugere uma pesquisa na biblioteca."},
+        {"npc": "Você", "text": "Estive pensando sobre os rumores da floresta. Vamos à biblioteca pesquisar sobre anomalias que afetam poderes?"},
+        {"npc": "Hikari", "text": "Ótima ideia! Sempre gostei de pesquisar. Podemos procurar registros históricos de fenômenos semelhantes."},
+        {"npc": "Narrador", "text": "Vocês passam a tarde na biblioteca, procurando por informações sobre anomalias espaciais e origens dos poderes."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Na biblioteca, vocês encontram referências obscuras a um evento histórico que teria alterado fundamentalmente a realidade."},
+      {"npc": "Hikari", "text": "Olhe isso! Um relato de 300 anos atrás menciona 'uma ruptura no véu da realidade que liberou energias desconhecidas no mundo'."},
+      {"npc": "Você", "text": "E aqui diz que após esse evento, os primeiros casos de pessoas com habilidades especiais começaram a ser documentados."},
+      {"npc": "Hikari", "text": "Isso contradiz completamente o que nos ensinam - que os poderes surgiram gradualmente por evolução natural."},
+      {"npc": "Narrador", "text": "De repente, vocês notam a Professora Chronos observando-os de uma estante próxima, com uma expressão que mistura preocupação e interesse."}
+    ],
+    "choices_2": [
+      {"text": "Abordar a Professora Chronos", "next_dialogue": 7},
+      {"text": "Continuar a pesquisa discretamente", "next_dialogue": 8},
+      {"text": "Guardar os livros e sair da biblioteca", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Você decide abordar a Professora Chronos diretamente."},
+        {"npc": "Você", "text": "Professora, encontramos informações interessantes sobre a origem dos poderes. Tem relação com o que está acontecendo na floresta?"},
+        {"npc": "Professora Chronos", "text": "Vejo que você descobriu mais do que deveria. Sim, há uma conexão."},
+        {"npc": "Professora Chronos", "text": "Venha ao meu escritório esta noite. Sozinho. Há coisas que você precisa saber, mas que não podem ser discutidas aqui."},
+        {"npc": "Professora Chronos", "text": "E sugiro discrição. O Diretor não aprecia estudantes que fazem perguntas demais sobre certos... tópicos."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Vocês decidem continuar a pesquisa, fingindo não ter notado a professora."},
+        {"npc": "Narrador", "text": "Após mais uma hora, encontram um diagrama antigo mostrando uma ruptura dimensional semelhante à que você viu na floresta."},
+        {"npc": "Hikari", "text": "Isso parece importante! As anotações dizem: 'A ruptura pode ser estabilizada, mas nunca completamente fechada sem consequências catastróficas.'"},
+        {"npc": "Narrador", "text": "Quando vocês estão prestes a sair, encontram um bilhete discretamente colocado entre suas coisas: 'Meu escritório. 22h. Venha sozinho. - PC'"}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Vocês decidem ser cautelosos e guardam os livros, saindo da biblioteca."},
+        {"npc": "Hikari", "text": "A Professora Chronos definitivamente estava nos observando. Ela sempre me pareceu... diferente dos outros professores."},
+        {"npc": "Narrador", "text": "Ao retornar ao seu dormitório, você encontra um envelope sob sua porta com uma breve mensagem: 'Você viu a ruptura. Precisamos conversar. Meu escritório. 22h. - Professora Chronos'"}
+      ]
+    },
+    "completion_exp": 400,
+    "completion_tusd": 500,
+    "next_chapter": "2_6"
+  },
+  "2_5_warning": {
+    "type": "story",
+    "title": "Advertência Oficial",
+    "description": "Após ser descoberto tentando investigar a floresta, você recebe uma advertência oficial da administração.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "No dia seguinte à sua tentativa frustrada de investigar a floresta, você é convocado ao escritório do Diretor."},
+      {"npc": "Diretor", "text": "Entre e sente-se, por favor."},
+      {"npc": "Diretor", "text": "Fui informado que você foi encontrado em uma área restrita ontem. Estou correto?"},
+      {"npc": "Narrador", "text": "O olhar do Diretor é penetrante, como se pudesse ver através de suas intenções."}
+    ],
+    "choices": [
+      {"text": "Admitir e pedir desculpas", "next_dialogue": 4, "affinity_change": {"Diretor": -3}},
+      {"text": "Explicar que estava preocupado com os rumores", "next_dialogue": 5, "affinity_change": {"Diretor": -5}},
+      {"text": "Perguntar diretamente sobre a anomalia", "next_dialogue": 6, "affinity_change": {"Diretor": -10}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Diretor", "text": "Aprecio sua honestidade. No entanto, as regras existem por uma razão - sua segurança."},
+        {"npc": "Diretor", "text": "A floresta está temporariamente fechada devido a um projeto de pesquisa sensível. Nada com que os estudantes devam se preocupar."},
+        {"npc": "Diretor", "text": "Esta é sua primeira advertência oficial. Uma segunda infração resultará em consequências mais severas."},
+        {"npc": "Diretor", "text": "Você é um estudante promissor. Não desperdice seu potencial com curiosidade mal direcionada."}
+      ],
+      "5": [
+        {"npc": "Diretor", "text": "Rumores são apenas isso - rumores. Parte de viver em uma comunidade fechada como a nossa."},
+        {"npc": "Diretor", "text": "Se tem preocupações, o protocolo adequado é levá-las a um professor ou conselheiro, não invadir áreas restritas."},
+        {"npc": "Diretor", "text": "O que está acontecendo na floresta é um projeto de pesquisa avançado que, francamente, está além da compreensão de estudantes do segundo ano."},
+        {"npc": "Diretor", "text": "Esta é uma advertência oficial. Espero não precisar ter esta conversa novamente."}
+      ],
+      "6": [
+        {"npc": "Diretor", "text": "..."},
+        {"npc": "Diretor", "text": "Vejo que os rumores se espalharam mais do que antecipamos."},
+        {"npc": "Diretor", "text": "Escute com atenção: o que está acontecendo na floresta é um fenômeno natural que estamos estudando. Nada mais."},
+        {"npc": "Diretor", "text": "Sua curiosidade é admirável, mas também perigosa quando mal direcionada. Alguns conhecimentos não são para todos."},
+        {"npc": "Diretor", "text": "Esta é uma advertência oficial. Uma segunda infração resultará em sua suspensão. Estamos entendidos?"}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Ao sair do escritório do Diretor, você encontra a Professora Chronos no corredor, aparentemente esperando por você."},
+      {"npc": "Professora Chronos", "text": "Um momento, por favor. Gostaria de discutir seu projeto de pesquisa independente."},
+      {"npc": "Narrador", "text": "Ela o guia para longe dos ouvidos curiosos antes de continuar em voz baixa."},
+      {"npc": "Professora Chronos", "text": "O Diretor não está sendo completamente honesto sobre o que está acontecendo na floresta. É mais sério do que ele admite."},
+      {"npc": "Professora Chronos", "text": "Se você realmente quer entender, venha ao meu escritório esta noite às 22h. Venha sozinho e não conte a ninguém."}
+    ],
+    "choices_2": [
+      {"text": "Aceitar o convite", "next_dialogue": 7},
+      {"text": "Questionar por que deveria confiar nela", "next_dialogue": 8},
+      {"text": "Recusar educadamente", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Você", "text": "Estarei lá, professora."},
+        {"npc": "Professora Chronos", "text": "Bom. Traga uma mente aberta. O que vou compartilhar pode ser... difícil de aceitar inicialmente."},
+        {"npc": "Narrador", "text": "Ela olha ao redor para garantir que ninguém está ouvindo."},
+        {"npc": "Professora Chronos", "text": "E não mencione nossa conversa a ninguém. Nem mesmo ao seu mentorado. Há espiões do Diretor em toda parte."}
+      ],
+      "8": [
+        {"npc": "Você", "text": "Por que deveria confiar em você em vez do Diretor?"},
+        {"npc": "Professora Chronos", "text": "Uma pergunta justa. Não tenho como provar minha confiabilidade aqui e agora."},
+        {"npc": "Professora Chronos", "text": "Mas considere isto: por que o Diretor proibiria o acesso a uma área se fosse apenas um 'projeto de pesquisa inofensivo'?"},
+        {"npc": "Professora Chronos", "text": "A escolha é sua. 22h, meu escritório. Venha se quiser respostas reais."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "Agradeço a oferta, professora, mas prefiro não me envolver mais neste assunto."},
+        {"npc": "Professora Chronos", "text": "Entendo sua cautela. É uma resposta sensata após uma advertência do Diretor."},
+        {"npc": "Professora Chronos", "text": "No entanto, algumas verdades têm o hábito de se revelarem, quer estejamos prontos ou não."},
+        {"npc": "Narrador", "text": "Ela desliza discretamente um pequeno cartão em seu bolso."},
+        {"npc": "Professora Chronos", "text": "Se mudar de ideia, sabe onde me encontrar."},
+        {"npc": "Narrador", "text": "Mais tarde, você examina o cartão: 'A verdade sobre o Evento Zero e a anomalia. 22h. Meu escritório.'"}
+      ]
+    },
+    "completion_exp": 400,
+    "completion_tusd": 500,
+    "next_chapter": "2_6"
+  },
+  "2_5_alliance": {
+    "type": "story",
+    "title": "Aliança Inesperada",
+    "description": "Após reportar suas preocupações à Professora Chronos, você forma uma aliança inesperada.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Conforme combinado, você vai ao escritório da Professora Chronos após as aulas."},
+      {"npc": "Professora Chronos", "text": "Entre e feche a porta, por favor."},
+      {"npc": "Narrador", "text": "O escritório está repleto de relógios de todos os tipos, todos marcando horas diferentes. Estranhos símbolos e diagramas cobrem um quadro enorme."},
+      {"npc": "Professora Chronos", "text": "Obrigada por vir. E obrigada por trazer as preocupações de Hikari à minha atenção. Foi a decisão correta."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre a anomalia na floresta", "next_dialogue": 4},
+      {"text": "Questionar por que ela parece saber tanto", "next_dialogue": 5},
+      {"text": "Perguntar se Hikari está em perigo", "next_dialogue": 6, "affinity_change": {"Professora Chronos": 5}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "Direto ao ponto. Bom."},
+        {"npc": "Professora Chronos", "text": "O que está acontecendo na floresta é uma ruptura dimensional - uma fenda na própria realidade que está crescendo lentamente."},
+        {"npc": "Professora Chronos", "text": "O Diretor e seus associados estão tentando contê-la, mas seus métodos são... problemáticos. Eles estão tratando os sintomas, não a causa."},
+        {"npc": "Professora Chronos", "text": "Esta não é a primeira ruptura desse tipo. Na verdade, é uma consequência tardia de um evento muito mais significativo que ocorreu há séculos."}
+      ],
+      "5": [
+        {"npc": "Professora Chronos", "text": "Uma pergunta perspicaz. Digamos que tenho... uma perspectiva única sobre esses eventos."},
+        {"npc": "Professora Chronos", "text": "Minha especialidade é o estudo do tempo e suas anomalias. Tenho observado padrões que outros ignoram."},
+        {"npc": "Professora Chronos", "text": "A ruptura na floresta não é um fenômeno isolado. É parte de um padrão maior que começou com o que alguns chamam de 'Evento Zero' - o momento que deu origem aos poderes."},
+        {"npc": "Professora Chronos", "text": "O Diretor sabe disso, mas suas motivações para estudar a ruptura são... questionáveis."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sua preocupação com seu mentorado é admirável. É raro ver esse nível de dedicação."},
+        {"npc": "Professora Chronos", "text": "Hikari não está em perigo imediato, mas sua sensibilidade à anomalia é interessante. Alguns indivíduos são mais receptivos às energias dimensionais."},
+        {"npc": "Professora Chronos", "text": "No entanto, seria prudente mantê-lo longe da floresta por enquanto. A exposição prolongada à ruptura pode ter efeitos imprevisíveis nos poderes de uma pessoa."},
+        {"npc": "Professora Chronos", "text": "Quanto à anomalia em si, é uma ruptura dimensional - uma consequência tardia do evento que deu origem aos poderes séculos atrás."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Professora Chronos", "text": "O que poucos sabem é que os poderes não surgiram naturalmente, como ensina a história oficial. Eles são resultado de um evento catastrófico - o Evento Zero."},
+      {"npc": "Professora Chronos", "text": "Há aproximadamente 300 anos, uma ruptura massiva na realidade liberou energias que alteraram fundamentalmente a estrutura genética de algumas pessoas."},
+      {"npc": "Professora Chronos", "text": "O Diretor está tentando replicar aspectos desse evento, acreditando que pode controlar e direcionar essas energias. Um objetivo nobre, mas perigosamente ingênuo."},
+      {"npc": "Professora Chronos", "text": "Cada tentativa enfraquece ainda mais o tecido da realidade. A ruptura na floresta é apenas o sintoma mais recente."},
+      {"npc": "Narrador", "text": "Ela faz uma pausa, observando sua reação antes de continuar."}
+    ],
+    "choices_2": [
+      {"text": "Perguntar como ela sabe tudo isso", "next_dialogue": 7},
+      {"text": "Oferecer ajuda para resolver a situação", "next_dialogue": 8, "affinity_change": {"Professora Chronos": 10}},
+      {"text": "Questionar por que o Diretor faria algo tão perigoso", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Professora Chronos", "text": "Uma pergunta inevitável. A resposta completa é... complicada."},
+        {"npc": "Professora Chronos", "text": "Digamos apenas que tenho uma conexão pessoal com esses eventos. Meus poderes me permitem perceber distorções temporais e dimensionais de uma forma que outros não podem."},
+        {"npc": "Professora Chronos", "text": "Tenho estudado o Evento Zero e suas consequências por mais tempo do que você poderia imaginar."},
+        {"npc": "Professora Chronos", "text": "O que importa agora é que precisamos agir. A ruptura está crescendo, e os métodos do Diretor só estão adiando o inevitável."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "Sua disposição para ajudar é exatamente o que esperava de você."},
+        {"npc": "Professora Chronos", "text": "Na verdade, você tem um papel importante a desempenhar nesta situação. Mais importante do que imagina."},
+        {"npc": "Professora Chronos", "text": "Preciso que você continue observando e reportando qualquer atividade suspeita do Diretor ou seus associados."},
+        {"npc": "Professora Chronos", "text": "Também precisamos monitorar a ruptura. Tenho equipamentos que podem medir suas flutuações sem os riscos de exposição direta."}
+      ],
+      "9": [
+        {"npc": "Professora Chronos", "text": "O Diretor não é mal-intencionado. Ele acredita genuinamente estar trabalhando pelo bem maior."},
+        {"npc": "Professora Chronos", "text": "Seu objetivo é nobre: dar poderes a toda a humanidade, eliminando desigualdades. Mas está cego pelos riscos."},
+        {"npc": "Professora Chronos", "text": "Há também um elemento pessoal: seus próprios poderes estão falhando. É um fenômeno raro, mas documentado. Ele está desesperado para encontrar uma solução."},
+        {"npc": "Professora Chronos", "text": "Infelizmente, esse desespero o torna perigoso. Ele ignora os sinais de que suas experiências estão causando danos à própria estrutura da realidade."}
+      ]
+    },
+    "completion_exp": 400,
+    "completion_tusd": 500,
+    "next_chapter": "2_6"
+  }
+}

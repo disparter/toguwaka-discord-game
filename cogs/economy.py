@@ -1967,10 +1967,22 @@ class Economy(commands.Cog):
             }
         else:
             # Standard TUSD purchase
+            # Apply club discount if applicable
+            from utils.club_perks import apply_shop_discount
+            original_price = item["price"]
+            discounted_price = apply_shop_discount(original_price, player.get('club_id'))
+
             # Check if player has enough TUSD
-            if player["tusd"] < item["price"]:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
+            if player["tusd"] < discounted_price:
+                # Show original and discounted price if there's a discount
+                if discounted_price < original_price:
+                    await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: ~~{original_price}~~ {discounted_price} TUSD (Desconto de Clube), Seu saldo: {player['tusd']} TUSD")
+                else:
+                    await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {discounted_price} TUSD, Seu saldo: {player['tusd']} TUSD")
                 return
+
+            # Store the discounted price for later use
+            item["discounted_price"] = discounted_price
 
             # Process the purchase
             inventory = player["inventory"]
@@ -2002,8 +2014,10 @@ class Economy(commands.Cog):
                 inventory[str(item["id"])] = inventory_item
 
             # Update player data
+            # Use the discounted price if available, otherwise use the original price
+            price_to_deduct = item.get("discounted_price", item["price"])
             update_data = {
-                "tusd": player["tusd"] - item["price"],
+                "tusd": player["tusd"] - price_to_deduct,
                 "inventory": json.dumps(inventory)
             }
 
@@ -2153,7 +2167,9 @@ class Economy(commands.Cog):
 
             embed = create_basic_embed(
                 title="Compra Realizada!",
-                description=f"Você comprou {rarity['emoji']} **{item['name']}** por {item['price']} TUSD.{category_info}\n\n"
+                description=f"Você comprou {rarity['emoji']} **{item['name']}** por " + 
+                            (f"~~{item['price']}~~ {item.get('discounted_price')} TUSD (Desconto de Clube)." if item.get('discounted_price', item['price']) < item['price'] else f"{item['price']} TUSD.") +
+                            f"{category_info}\n\n"
                             f"Saldo atual: {update_data['tusd']} TUSD 💰",
                 color=rarity["color"]
             )
