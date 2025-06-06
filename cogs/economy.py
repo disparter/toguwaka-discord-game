@@ -5,6 +5,7 @@ import logging
 import random
 import asyncio
 import json
+from datetime import datetime
 from utils.database import get_player, update_player, get_club
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
@@ -213,6 +214,54 @@ class Economy(commands.Cog):
         self.bot = bot
         self.market_listings = {}  # {listing_id: {seller_id, item_id, price, item_data}}
         self.next_listing_id = 1
+
+    def _check_cooldown(self, user_id, command):
+        """Check if a command is on cooldown for a user."""
+        now = datetime.now().timestamp()
+
+        # Initialize user cooldowns if not exists
+        if user_id not in COOLDOWNS:
+            COOLDOWNS[user_id] = {}
+
+        # Check if command is on cooldown
+        if command in COOLDOWNS[user_id] and COOLDOWNS[user_id][command] > now:
+            # Calculate remaining time
+            remaining = COOLDOWNS[user_id][command] - now
+            minutes, seconds = divmod(int(remaining), 60)
+            hours, minutes = divmod(minutes, 60)
+
+            if hours > 0:
+                time_str = f"{hours}h {minutes}m {seconds}s"
+            elif minutes > 0:
+                time_str = f"{minutes}m {seconds}s"
+            else:
+                time_str = f"{seconds}s"
+
+            return time_str
+
+        return None
+
+    def _set_cooldown(self, user_id, command, custom_duration=None):
+        """Set a cooldown for a command for a user.
+
+        Args:
+            user_id: The user ID
+            command: The command name
+            custom_duration: Optional custom duration in seconds. If not provided, uses the default duration.
+        """
+        if user_id not in COOLDOWNS:
+            COOLDOWNS[user_id] = {}
+
+        duration = custom_duration if custom_duration is not None else COOLDOWN_DURATIONS.get(command, 3600)  # Default 1 hour
+        expiry_time = datetime.now().timestamp() + duration
+        COOLDOWNS[user_id][command] = expiry_time
+
+        # Store cooldown in database
+        try:
+            from utils.database import store_cooldown
+            store_cooldown(user_id, command, expiry_time)
+        except Exception as e:
+            logger.error(f"Error storing cooldown in database: {e}")
 
     # Group for economy commands
     economy_group = app_commands.Group(name="economia", description="Comandos de economia da Academia Tokugawa")
