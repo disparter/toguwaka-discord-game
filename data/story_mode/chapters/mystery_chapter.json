@@ -7,6 +7,9 @@
     "level": 5,
     "completed_chapters": ["chapter_1"]
   },
+  "choices": [
+    {"text": "Investigar a biblioteca", "next_scene": "library_introduction"}
+  ],
   "scenes": [
     {
       "scene_id": "library_introduction",

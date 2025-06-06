@@ -86,9 +86,32 @@ class BaseChapter(Chapter):
             current_dialogue = self.dialogues[0]
             if isinstance(current_dialogue, dict) and "choices" in current_dialogue:
                 current_dialogue_choices = current_dialogue.get("choices", [])
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - found dialogue-specific choices: {current_dialogue_choices}")
+
+        # Check if we need to use choices from additional_dialogues for the first dialogue
+        elif hasattr(self, 'data') and 'additional_dialogues' in self.data:
+            # First dialogue is at index 0
+            if '0' in self.data['additional_dialogues']:
+                additional_dialogue = self.data['additional_dialogues']['0']
+                # Check if the last item in additional_dialogue contains choices
+                if isinstance(additional_dialogue[-1], dict) and "choices" in additional_dialogue[-1]:
+                    current_dialogue_choices = additional_dialogue[-1].get("choices", [])
+                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - found choices in additional_dialogues: {current_dialogue_choices}")
 
         # Use dialogue-specific choices if available, otherwise use chapter-level choices
-        choices_to_display = current_dialogue_choices if current_dialogue_choices else self.choices
+        if current_dialogue_choices:
+            choices_to_display = current_dialogue_choices
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - using dialogue-specific choices")
+        else:
+            # Check if there are choices_1, choices_2, etc. for the first dialogue
+            choice_key = "choices_1"  # For the first set of choices
+            if hasattr(self, 'data') and choice_key in self.data:
+                choices_to_display = self.data[choice_key]
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - found indexed choices: {choices_to_display}")
+            else:
+                # If no specific choices found, use chapter-level choices
+                choices_to_display = self.choices
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - using chapter-level choices")
 
         # Fallback message if no choices are available
         if not choices_to_display:
@@ -117,8 +140,15 @@ class BaseChapter(Chapter):
         if current_dialogue_index < len(self.dialogues):
             current_dialogue = self.dialogues[current_dialogue_index]
         else:
-            # If we're past the dialogues, we're in the choice phase
-            current_dialogue = {"choices": self.choices}
+            # If we're past the dialogues, check if there are indexed choices for this index
+            choice_key = f"choices_{current_dialogue_index}"
+            if hasattr(self, 'data') and choice_key in self.data:
+                current_dialogue = {"choices": self.data[choice_key]}
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using indexed choices for dialogue {current_dialogue_index}")
+            else:
+                # If no indexed choices, use chapter-level choices
+                current_dialogue = {"choices": self.choices}
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using chapter-level choices for dialogue {current_dialogue_index}")
 
         # Debug log for current dialogue and choices
         logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - current_dialogue_index: {current_dialogue_index}")
@@ -153,9 +183,11 @@ class BaseChapter(Chapter):
             # Move to the next dialogue if specified
             if "next_dialogue" in choice:
                 story_progress["current_dialogue_index"] = choice["next_dialogue"]
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to specified dialogue: {choice['next_dialogue']}")
             else:
                 # Otherwise, just move to the next dialogue
                 story_progress["current_dialogue_index"] = current_dialogue_index + 1
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to next dialogue: {current_dialogue_index + 1}")
         else:
             # If there are no choices, just move to the next dialogue
             logger.warning(f"No valid choice found for index {choice_index} in chapter {self.chapter_id}, dialogue {current_dialogue_index}")
@@ -176,9 +208,42 @@ class BaseChapter(Chapter):
         next_dialogue_choices = []
         if next_dialogue and isinstance(next_dialogue, dict) and "choices" in next_dialogue:
             next_dialogue_choices = next_dialogue.get("choices", [])
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - found dialogue-specific choices: {next_dialogue_choices}")
+
+        # Check if we need to use choices from additional_dialogues
+        elif hasattr(self, 'data') and 'additional_dialogues' in self.data:
+            # Convert next_dialogue_index to string for lookup in additional_dialogues
+            next_dialogue_index_str = str(next_dialogue_index)
+            if next_dialogue_index_str in self.data['additional_dialogues']:
+                additional_dialogue = self.data['additional_dialogues'][next_dialogue_index_str]
+                # Check if the last item in additional_dialogue contains choices
+                if isinstance(additional_dialogue[-1], dict) and "choices" in additional_dialogue[-1]:
+                    next_dialogue_choices = additional_dialogue[-1].get("choices", [])
+                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - found choices in additional_dialogues: {next_dialogue_choices}")
+
+        # Check if there are indexed choices for this dialogue
+        choice_key = f"choices_{next_dialogue_index}"
+        if not next_dialogue_choices and hasattr(self, 'data') and choice_key in self.data:
+            next_dialogue_choices = self.data[choice_key]
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - found indexed choices: {next_dialogue_choices}")
+
+        # Check if there are shared_dialogue_choices for this dialogue
+        if not next_dialogue_choices and hasattr(self, 'data') and 'shared_dialogue_choices' in self.data:
+            shared_dialogue_choices = self.data.get('shared_dialogue_choices', [])
+            if shared_dialogue_choices:
+                next_dialogue_choices = shared_dialogue_choices
+                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using shared_dialogue_choices")
 
         # Use dialogue-specific choices if available, otherwise use chapter-level choices
-        choices_to_display = next_dialogue_choices if next_dialogue_choices else self.choices
+        # But only use chapter-level choices if we're at the beginning or if explicitly needed
+        if next_dialogue_choices:
+            choices_to_display = next_dialogue_choices
+        elif next_dialogue_index == 0:  # Only use chapter-level choices at the beginning
+            choices_to_display = self.choices
+        else:
+            # If no specific choices found, use chapter-level choices as fallback
+            choices_to_display = self.choices
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using fallback chapter-level choices")
 
         # Fallback message if no choices are available
         if not choices_to_display and next_dialogue is not None:
@@ -187,6 +252,12 @@ class BaseChapter(Chapter):
 
         logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - choices_to_display: {choices_to_display}")
 
+        # Check if we need to include shared dialogue after the current dialogue
+        shared_dialogue = None
+        if hasattr(self, 'data') and 'shared_dialogue' in self.data:
+            shared_dialogue = self.data.get('shared_dialogue', [])
+            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - including shared_dialogue")
+
         return {
             "player_data": player_data,
             "chapter_data": {
@@ -194,6 +265,7 @@ class BaseChapter(Chapter):
                 "title": self.title,
                 "description": self.description,
                 "current_dialogue": next_dialogue,
+                "shared_dialogue": shared_dialogue,
                 "choices": choices_to_display
             }
         }
@@ -389,6 +461,152 @@ class BranchingChapter(BaseChapter):
     def __init__(self, chapter_id: str, data: Dict[str, Any]):
         super().__init__(chapter_id, data)
         self.branches = data.get("branches", {})
+        # For branching chapters with scenes structure (like mystery_chapter.json)
+        self.scenes = data.get("scenes", [])
+
+    def start(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Starts the branching chapter for a player.
+        For chapters with a scenes structure, handles the first scene.
+        """
+        # Check if this is a scene-based chapter
+        if self.scenes:
+            logger.debug(f"[DEBUG_LOG] Starting scene-based branching chapter: {self.chapter_id}")
+            # Initialize chapter state
+            story_progress = player_data.get("story_progress", {})
+            if not story_progress:
+                story_progress = {
+                    "current_year": 1,
+                    "current_chapter": 1,
+                    "current_challenge_chapter": None,
+                    "completed_chapters": [],
+                    "completed_challenge_chapters": [],
+                    "club_progress": {},
+                    "villain_defeats": [],
+                    "minion_defeats": [],
+                    "hierarchy_tier": 0,
+                    "hierarchy_points": 0,
+                    "discovered_secrets": [],
+                    "special_items": [],
+                    "character_relationships": {},
+                    "story_choices": {}
+                }
+
+            # Set current scene to the first scene
+            story_progress["current_scene"] = self.scenes[0]["scene_id"] if self.scenes else None
+            story_progress["current_dialogue_index"] = 0
+
+            # Update player data
+            player_data["story_progress"] = story_progress
+
+            # Get the first scene
+            first_scene = self.scenes[0] if self.scenes else None
+
+            if first_scene:
+                logger.debug(f"[DEBUG_LOG] First scene: {first_scene['scene_id']}")
+                # Get choices from the first scene
+                choices_to_display = first_scene.get("choices", [])
+                logger.debug(f"[DEBUG_LOG] First scene choices: {choices_to_display}")
+
+                # Fallback message if no choices are available
+                if not choices_to_display:
+                    logger.warning(f"No choices available for first scene in chapter {self.chapter_id}")
+                    choices_to_display = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
+
+                return {
+                    "player_data": player_data,
+                    "chapter_data": {
+                        "id": self.chapter_id,
+                        "title": first_scene.get("title", self.title),
+                        "description": first_scene.get("description", self.description),
+                        "current_dialogue": first_scene.get("dialogue", []),
+                        "choices": choices_to_display
+                    }
+                }
+
+        # If not a scene-based chapter or no scenes found, fall back to standard behavior
+        return super().start(player_data)
+
+    def process_choice(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
+        """
+        Processes a player's choice in a branching chapter.
+        For scene-based chapters, handles scene transitions.
+        """
+        # Check if this is a scene-based chapter
+        if self.scenes:
+            story_progress = player_data.get("story_progress", {})
+            current_scene_id = story_progress.get("current_scene")
+
+            # Find the current scene
+            current_scene = None
+            for scene in self.scenes:
+                if scene["scene_id"] == current_scene_id:
+                    current_scene = scene
+                    break
+
+            if current_scene and "choices" in current_scene and choice_index < len(current_scene["choices"]):
+                choice = current_scene["choices"][choice_index]
+                logger.debug(f"[DEBUG_LOG] Selected choice in scene {current_scene_id}: {choice}")
+
+                # Record the choice
+                chapter_choices = story_progress.get("story_choices", {}).get(self.chapter_id, {})
+                choice_key = f"scene_{current_scene_id}_choice"
+                chapter_choices[choice_key] = choice_index
+
+                if "story_choices" not in story_progress:
+                    story_progress["story_choices"] = {}
+                story_progress["story_choices"][self.chapter_id] = chapter_choices
+
+                # Process rewards if present
+                if "rewards" in choice:
+                    for reward_type, reward_value in choice["rewards"].items():
+                        if reward_type == "exp":
+                            player_data["exp"] = player_data.get("exp", 0) + reward_value
+                        elif reward_type == "tusd":
+                            player_data["tusd"] = player_data.get("tusd", 0) + reward_value
+                        elif reward_type in player_data:
+                            player_data[reward_type] = player_data.get(reward_type, 0) + reward_value
+
+                # Move to the next scene if specified
+                next_scene_id = choice.get("next_scene")
+                if next_scene_id:
+                    story_progress["current_scene"] = next_scene_id
+
+                    # Find the next scene
+                    next_scene = None
+                    for scene in self.scenes:
+                        if scene["scene_id"] == next_scene_id:
+                            next_scene = scene
+                            break
+
+                    if next_scene:
+                        # Update player data
+                        player_data["story_progress"] = story_progress
+
+                        # Get choices from the next scene
+                        choices_to_display = next_scene.get("choices", [])
+
+                        # Fallback message if no choices are available
+                        if not choices_to_display:
+                            logger.warning(f"No choices available for scene {next_scene_id} in chapter {self.chapter_id}")
+                            choices_to_display = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
+
+                        return {
+                            "player_data": player_data,
+                            "chapter_data": {
+                                "id": self.chapter_id,
+                                "title": next_scene.get("title", self.title),
+                                "description": next_scene.get("description", self.description),
+                                "current_dialogue": next_scene.get("dialogue", []),
+                                "choices": choices_to_display
+                            }
+                        }
+
+            # If we couldn't process the choice or find the next scene, log an error
+            logger.warning(f"Could not process choice {choice_index} in scene {current_scene_id} of chapter {self.chapter_id}")
+
+        # If not a scene-based chapter or couldn't process the scene choice, fall back to standard behavior
+        return super().process_choice(player_data, choice_index)
 
     def get_next_chapter(self, player_data: Dict[str, Any]) -> Optional[str]:
         """
