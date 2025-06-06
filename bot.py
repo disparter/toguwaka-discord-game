@@ -72,6 +72,15 @@ else:
 
 # Create a custom bot class with setup_hook for loading extensions
 class TokugawaBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Initialize config dictionary with values from environment variables
+        self.config = {
+            "guild_id": int(os.environ.get('GUILD_ID', 0)) if os.environ.get('GUILD_ID') else None,
+            "admin_role_id": int(os.environ.get('ADMIN_ROLE_ID', 0)) if os.environ.get('ADMIN_ROLE_ID') else None,
+        }
+        logger.info(f"Bot initialized with config: {self.config}")
+
     async def setup_hook(self):
         """Setup hook that is called when the bot is starting up."""
         # Load all extensions
@@ -122,7 +131,8 @@ initial_extensions = [
     'cogs.junie_interaction',
     'cogs.story_mode',
     'cogs.betting',  # New betting cog for risk mechanics
-    'cogs.moral_choices'  # New moral choices cog for dilemas and collective events
+    'cogs.moral_choices',  # New moral choices cog for dilemas and collective events
+    'cogs.npc_interaction'  # New cog for NPC interactions and image registry
 ]
 
 # This function is no longer needed as extensions are loaded in setup_hook
