@@ -9,6 +9,11 @@ from datetime import datetime
 from utils.database import get_player, update_player, get_club, get_all_clubs
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
+from cogs.story_mode_enhanced import (
+    enhance_story_mode, get_character_background, get_hierarchy_tier,
+    get_hidden_secret, get_climactic_event, get_story_arc,
+    HIERARCHY_TIERS, CHARACTER_BACKGROUNDS, HIDDEN_SECRETS, CLIMACTIC_EVENTS
+)
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -22,11 +27,17 @@ logger = logging.getLogger('tokugawa_bot')
 #   "completed_challenge_chapters": [],  # List of completed challenge chapters
 #   "club_progress": {},
 #   "villain_defeats": [],
-#   "minion_defeats": []
+#   "minion_defeats": [],
+#   "hierarchy_tier": 0,  # Player's position in the hierarchy (0-5)
+#   "hierarchy_points": 0,  # Points accumulated towards advancing in the hierarchy
+#   "discovered_secrets": [],  # List of discovered secret locations
+#   "special_items": [],  # Special items obtained during the story
+#   "character_relationships": {},  # Relationship levels with NPCs
+#   "story_choices": {}  # Record of significant story choices made
 # }
 
-# Story chapters structure
-STORY_CHAPTERS = {
+# Story chapters structure - Base structure that will be enhanced
+BASE_STORY_CHAPTERS = {
     1: {  # Year 1
         1: {
             "title": "Meu Primeiro Dia de Aula",
@@ -260,6 +271,9 @@ STORY_CHAPTERS = {
     }
 }
 
+# Apply enhancements to the base story chapters
+STORY_CHAPTERS = enhance_story_mode(BASE_STORY_CHAPTERS)
+
 # Challenge chapters structure - based on strength levels
 CHALLENGE_CHAPTERS = {
     1: {  # Tier 1 (⭐)
@@ -429,9 +443,295 @@ class StoryMode(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.active_stories = {}  # {user_id: {current_dialogue: int, chapter_data: dict}}
+        self.climactic_events = {}  # Track active climactic events
+
+        # Start a background task to check for climactic events
+        self.climactic_event_task = self.bot.loop.create_task(self.check_for_climactic_events())
+
+    async def check_for_climactic_events(self):
+        """Background task to periodically check for and trigger climactic events."""
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            try:
+                # Check for climactic events every hour
+                await asyncio.sleep(3600)  # 3600 seconds = 1 hour
+
+                # Get all active players
+                # This is a simplified approach - in a real implementation, you'd want to
+                # check only players who are currently active or in specific channels
+                for guild in self.bot.guilds:
+                    for member in guild.members:
+                        if not member.bot:
+                            await self.check_player_for_events(member.id)
+            except Exception as e:
+                logger.error(f"Error in check_for_climactic_events: {e}")
+                await asyncio.sleep(60)  # Wait a minute before retrying
+
+    async def check_player_for_events(self, user_id):
+        """Check if a player is eligible for any climactic events."""
+        try:
+            player = get_player(user_id)
+            if not player:
+                return
+
+            # Get story progress
+            story_progress = player.get('story_progress', None)
+            if not story_progress:
+                return
+            elif isinstance(story_progress, str):
+                story_progress = json.loads(story_progress)
+
+            # Get player level
+            level = player.get('level', 1)
+
+            # Check each event
+            for event_name, event_data in CLIMACTIC_EVENTS.items():
+                # Skip if player doesn't meet level requirement
+                if level < event_data.get('requirements', {}).get('level', 0):
+                    continue
+
+                # Skip if event is already active for this player
+                if self.climactic_events.get(user_id) == event_name:
+                    continue
+
+                # Skip if event has already been completed recently
+                last_completion = story_progress.get('climactic_events', {}).get(event_name, 0)
+                if last_completion:
+                    # For yearly events, check if it's been at least 30 days
+                    if event_data.get('frequency') == 'yearly' and (datetime.now().timestamp() - last_completion) < 2592000:  # 30 days
+                        continue
+                    # For random events, check if it's been at least 7 days
+                    if event_data.get('frequency') == 'random' and (datetime.now().timestamp() - last_completion) < 604800:  # 7 days
+                        continue
+                    # For rare events, check if it's been at least 90 days
+                    if event_data.get('frequency') == 'rare' and (datetime.now().timestamp() - last_completion) < 7776000:  # 90 days
+                        continue
+
+                # Determine if event should trigger
+                should_trigger = False
+                if event_data.get('frequency') == 'yearly':
+                    # Yearly events have a 100% chance when eligible
+                    should_trigger = True
+                elif event_data.get('frequency') == 'random':
+                    # Random events have a 10% chance when eligible
+                    should_trigger = random.random() < 0.1
+                elif event_data.get('frequency') == 'rare':
+                    # Rare events have a 2% chance when eligible
+                    should_trigger = random.random() < 0.02
+
+                if should_trigger:
+                    # Mark event as active for this player
+                    self.climactic_events[user_id] = event_name
+
+                    # Try to find a channel to send the event notification
+                    user = self.bot.get_user(user_id)
+                    if user:
+                        try:
+                            await user.send(embed=self.create_climactic_event_embed(event_name, event_data))
+                        except:
+                            # If DM fails, try to find a guild channel
+                            for guild in self.bot.guilds:
+                                member = guild.get_member(user_id)
+                                if member:
+                                    # Look for a general or bot channel
+                                    channel = discord.utils.get(guild.text_channels, name='geral') or \
+                                             discord.utils.get(guild.text_channels, name='general') or \
+                                             discord.utils.get(guild.text_channels, name='bot-commands')
+                                    if channel and channel.permissions_for(guild.me).send_messages:
+                                        await channel.send(
+                                            f"{member.mention}, um evento especial está ocorrendo!",
+                                            embed=self.create_climactic_event_embed(event_name, event_data)
+                                        )
+                                        break
+                    break  # Only trigger one event at a time
+        except Exception as e:
+            logger.error(f"Error in check_player_for_events: {e}")
+
+    def create_climactic_event_embed(self, event_name, event_data):
+        """Create an embed for a climactic event."""
+        embed = create_basic_embed(
+            title=f"Evento Especial: {event_name}",
+            description=event_data.get('description', 'Um evento especial está ocorrendo!'),
+            color=0x9932CC  # Dark Orchid
+        )
+
+        # Add rewards info
+        rewards = event_data.get('rewards', {})
+        rewards_text = ""
+        if 'exp' in rewards:
+            rewards_text += f"**Experiência:** {rewards['exp']} EXP\n"
+        if 'tusd' in rewards:
+            rewards_text += f"**TUSD:** {rewards['tusd']} 💰\n"
+        if 'hierarchy_points' in rewards:
+            rewards_text += f"**Pontos de Hierarquia:** {rewards['hierarchy_points']}\n"
+        if 'special_item' in rewards:
+            rewards_text += f"**Item Especial:** {rewards['special_item']}\n"
+        if 'temporary_power_boost' in rewards:
+            rewards_text += f"**Aumento Temporário de Poder:** +{rewards['temporary_power_boost']}\n"
+
+        if rewards_text:
+            embed.add_field(
+                name="Recompensas Potenciais",
+                value=rewards_text,
+                inline=False
+            )
+
+        embed.add_field(
+            name="Como Participar",
+            value="Use o comando `/evento participar` para se juntar a este evento especial!",
+            inline=False
+        )
+
+        return embed
 
     # Group for story commands
     story_group = app_commands.Group(name="historia", description="Comandos do modo história da Academia Tokugawa")
+
+    # Group for event commands
+    event_group = app_commands.Group(name="evento", description="Comandos para eventos especiais da Academia Tokugawa")
+
+    @event_group.command(name="participar", description="Participar de um evento especial ativo")
+    async def slash_participate_event(self, interaction: discord.Interaction):
+        """Participate in an active climactic event."""
+        try:
+            # Check if player exists
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
+                    f"Use /registro ingressar para criar seu personagem."
+                )
+                return
+
+            # Check if player has an active event
+            active_event = self.climactic_events.get(interaction.user.id)
+            if not active_event:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não tem nenhum evento especial ativo no momento. "
+                    f"Eventos especiais ocorrem periodicamente. Fique atento às notificações!"
+                )
+                return
+
+            # Get event data
+            event_data = CLIMACTIC_EVENTS.get(active_event)
+            if not event_data:
+                await interaction.response.send_message("Erro ao encontrar dados do evento. Por favor, tente novamente mais tarde.")
+                return
+
+            # Get story progress
+            story_progress = player.get('story_progress', None)
+            if not story_progress:
+                await interaction.response.send_message("Erro ao encontrar seu progresso na história. Por favor, tente novamente mais tarde.")
+                return
+            elif isinstance(story_progress, str):
+                story_progress = json.loads(story_progress)
+
+            # Initialize climactic_events if not present
+            if 'climactic_events' not in story_progress:
+                story_progress['climactic_events'] = {}
+
+            # Mark event as completed
+            story_progress['climactic_events'][active_event] = datetime.now().timestamp()
+
+            # Calculate rewards
+            rewards = event_data.get('rewards', {})
+            exp_reward = rewards.get('exp', 0)
+            tusd_reward = rewards.get('tusd', 0)
+            hierarchy_points = rewards.get('hierarchy_points', 0)
+            special_item = rewards.get('special_item', None)
+            power_boost = rewards.get('temporary_power_boost', 0)
+
+            # Update player data
+            new_exp = player["exp"] + exp_reward
+            new_tusd = player["tusd"] + tusd_reward
+
+            # Check for level up
+            new_level = calculate_level_from_exp(new_exp)
+            level_up = new_level > player["level"]
+
+            # Update hierarchy tier if points are awarded
+            if hierarchy_points > 0:
+                story_progress['hierarchy_points'] = story_progress.get('hierarchy_points', 0) + hierarchy_points
+                # Every 10 points, increase tier by 1 (up to max of 5)
+                if story_progress['hierarchy_points'] >= 10:
+                    tier_increase = story_progress['hierarchy_points'] // 10
+                    story_progress['hierarchy_tier'] = min(5, story_progress.get('hierarchy_tier', 0) + tier_increase)
+                    story_progress['hierarchy_points'] = story_progress['hierarchy_points'] % 10
+
+            # Add special item if any
+            if special_item:
+                if 'special_items' not in story_progress:
+                    story_progress['special_items'] = []
+                story_progress['special_items'].append(special_item)
+
+            # Apply temporary power boost if any
+            power_boost_end = None
+            if power_boost > 0:
+                # Boost lasts for 24 hours
+                power_boost_end = datetime.now().timestamp() + 86400  # 24 hours
+
+            # Prepare update data
+            update_data = {
+                "exp": new_exp,
+                "tusd": new_tusd,
+                "story_progress": json.dumps(story_progress)
+            }
+
+            if level_up:
+                update_data["level"] = new_level
+
+            if power_boost > 0:
+                update_data["power_boost"] = power_boost
+                update_data["power_boost_end"] = power_boost_end
+
+            # Update player in database
+            success = update_player(interaction.user.id, **update_data)
+
+            if success:
+                # Remove event from active events
+                del self.climactic_events[interaction.user.id]
+
+                # Create completion embed
+                embed = create_basic_embed(
+                    title=f"Evento Concluído: {active_event}",
+                    description=f"Você participou com sucesso do evento especial!",
+                    color=0x9932CC  # Dark Orchid
+                )
+
+                # Add rewards to embed
+                rewards_text = ""
+                if exp_reward > 0:
+                    rewards_text += f"**Experiência:** +{exp_reward} EXP\n"
+                if tusd_reward > 0:
+                    rewards_text += f"**TUSD:** +{tusd_reward} 💰\n"
+                if hierarchy_points > 0:
+                    rewards_text += f"**Pontos de Hierarquia:** +{hierarchy_points}\n"
+                if special_item:
+                    rewards_text += f"**Item Especial:** {special_item}\n"
+                if power_boost > 0:
+                    rewards_text += f"**Aumento Temporário de Poder:** +{power_boost} (24 horas)\n"
+
+                if rewards_text:
+                    embed.add_field(
+                        name="Recompensas Recebidas",
+                        value=rewards_text,
+                        inline=False
+                    )
+
+                # Add level up message if applicable
+                if level_up:
+                    embed.add_field(
+                        name="Nível Aumentado!",
+                        value=f"Você subiu para o nível {new_level}!",
+                        inline=False
+                    )
+
+                await interaction.response.send_message(embed=embed)
+            else:
+                await interaction.response.send_message("Ocorreu um erro ao processar o evento. Por favor, tente novamente mais tarde.")
+        except Exception as e:
+            logger.error(f"Error in slash_participate_event: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao participar do evento. Por favor, tente novamente mais tarde.")
 
     @story_group.command(name="iniciar", description="Iniciar ou continuar sua jornada no modo história")
     async def slash_start_story(self, interaction: discord.Interaction):
@@ -458,7 +758,13 @@ class StoryMode(commands.Cog):
                     "completed_challenge_chapters": [],
                     "club_progress": {},
                     "villain_defeats": [],
-                    "minion_defeats": []
+                    "minion_defeats": [],
+                    "hierarchy_tier": 0,
+                    "hierarchy_points": 0,
+                    "discovered_secrets": [],
+                    "special_items": [],
+                    "character_relationships": {},
+                    "story_choices": {}
                 }
 
                 # Update player with initial story progress
@@ -663,6 +969,35 @@ class StoryMode(commands.Cog):
                 value=f"{strength_level} {STRENGTH_LEVELS.get(strength_level, '⭐')}",
                 inline=True
             )
+
+            # Add hierarchy tier info
+            hierarchy_tier = story_progress.get('hierarchy_tier', 0)
+            hierarchy_info = get_hierarchy_tier(hierarchy_tier)
+            embed.add_field(
+                name="Posição na Hierarquia",
+                value=f"{hierarchy_info['name']} (Nível {hierarchy_tier})\n{hierarchy_info['description']}",
+                inline=False
+            )
+
+            # Add discovered secrets if any
+            discovered_secrets = story_progress.get('discovered_secrets', [])
+            if discovered_secrets:
+                secrets_text = "\n".join(discovered_secrets)
+                embed.add_field(
+                    name="Segredos Descobertos",
+                    value=secrets_text,
+                    inline=False
+                )
+
+            # Add special items if any
+            special_items = story_progress.get('special_items', [])
+            if special_items:
+                items_text = "\n".join(special_items)
+                embed.add_field(
+                    name="Itens Especiais",
+                    value=items_text,
+                    inline=False
+                )
 
             await interaction.response.send_message(embed=embed)
         except Exception as e:
@@ -871,6 +1206,95 @@ class StoryMode(commands.Cog):
                 color=0x00FF00  # Green
             )
 
+            # Handle hierarchy placement if this chapter has it
+            if chapter_data.get("hierarchy_placement", False):
+                # Calculate hierarchy tier based on player's attributes
+                power_stat = player.get("power_stat", 0)
+                intellect = player.get("intellect", 0)
+                dexterity = player.get("dexterity", 0)
+                charisma = player.get("charisma", 0)
+
+                # Simple algorithm: average of attributes, weighted towards power_stat
+                hierarchy_score = (power_stat * 2 + intellect + dexterity + charisma) / 5
+
+                # Determine tier (0-5)
+                if hierarchy_score >= 18:
+                    new_tier = 5  # Rei/Rainha
+                elif hierarchy_score >= 15:
+                    new_tier = 4  # Jack/Ás
+                elif hierarchy_score >= 12:
+                    new_tier = 3  # Elite
+                elif hierarchy_score >= 9:
+                    new_tier = 2  # Médio-Alto
+                elif hierarchy_score >= 6:
+                    new_tier = 1  # Médio
+                else:
+                    new_tier = 0  # Baixo
+
+                # Update hierarchy tier
+                old_tier = story_progress.get("hierarchy_tier", 0)
+                story_progress["hierarchy_tier"] = new_tier
+
+                # Add hierarchy placement to embed
+                hierarchy_info = get_hierarchy_tier(new_tier)
+                embed.add_field(
+                    name="Posição na Hierarquia",
+                    value=f"Você foi classificado como: **{hierarchy_info['name']}** (Nível {new_tier})\n{hierarchy_info['description']}",
+                    inline=False
+                )
+
+                if new_tier > old_tier:
+                    embed.add_field(
+                        name="Promoção!",
+                        value=f"Você subiu na hierarquia da academia! De {get_hierarchy_tier(old_tier)['name']} para {hierarchy_info['name']}.",
+                        inline=False
+                    )
+
+            # Check for secret discoveries based on player attributes
+            for secret_name, secret_data in HIDDEN_SECRETS.items():
+                requirements_met = True
+                for attr, value in secret_data.get("requirements", {}).items():
+                    if attr == "club_id":
+                        if player.get("club_id") != value:
+                            requirements_met = False
+                            break
+                    elif player.get(attr, 0) < value:
+                        requirements_met = False
+                        break
+
+                # If requirements are met and secret not already discovered, add it
+                if requirements_met and secret_name not in story_progress.get("discovered_secrets", []):
+                    if "discovered_secrets" not in story_progress:
+                        story_progress["discovered_secrets"] = []
+
+                    story_progress["discovered_secrets"].append(secret_name)
+
+                    # Add rewards
+                    rewards = secret_data.get("rewards", {})
+                    exp_reward += rewards.get("exp", 0)
+                    tusd_reward += rewards.get("tusd", 0)
+
+                    # Add special item if any
+                    if "special_item" in rewards:
+                        if "special_items" not in story_progress:
+                            story_progress["special_items"] = []
+
+                        story_progress["special_items"].append(rewards["special_item"])
+
+                    # Add hierarchy boost if any
+                    if "hierarchy_boost" in rewards:
+                        story_progress["hierarchy_tier"] = min(5, story_progress.get("hierarchy_tier", 0) + rewards["hierarchy_boost"])
+
+                    # Add secret discovery to embed
+                    embed.add_field(
+                        name="Segredo Descoberto!",
+                        value=f"Você descobriu: **{secret_name}**\n{secret_data['description']}",
+                        inline=False
+                    )
+
+                    # Only discover one secret per chapter for better pacing
+                    break
+
         # Update player exp and tusd
         new_exp = player["exp"] + exp_reward
         new_tusd = player["tusd"] + tusd_reward
@@ -973,7 +1397,14 @@ class StoryMode(commands.Cog):
                 "completed_challenge_chapters": [],
                 "club_progress": {},
                 "villain_defeats": [],
-                "minion_defeats": []
+                "minion_defeats": [],
+                "hierarchy_tier": 0,
+                "hierarchy_points": 0,
+                "discovered_secrets": [],
+                "special_items": [],
+                "character_relationships": {},
+                "story_choices": {},
+                "climactic_events": {}
             }
 
             # Update player with initial story progress
