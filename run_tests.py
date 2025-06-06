@@ -12,6 +12,7 @@ from tests.utils.game_mechanics.duel.test_duel_calculator import TestDuelCalcula
 from tests.utils.game_mechanics.duel.test_duel_narrator import TestDuelNarrator
 from tests.utils.game_mechanics.events.test_random_event import TestRandomEvent
 from tests.utils.game_mechanics.events.test_training_event import TestTrainingEvent
+from tests.story_mode.test_story_mode import TestStoryMode, TestStoryModeIntegration, TestStoryModeCog
 
 # Create a test suite
 def create_test_suite():
@@ -24,6 +25,9 @@ def create_test_suite():
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestDuelNarrator))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestRandomEvent))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestTrainingEvent))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryMode))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeIntegration))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCog))
 
     return test_suite
 

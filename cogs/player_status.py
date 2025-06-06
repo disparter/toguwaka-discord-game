@@ -39,7 +39,7 @@ class PlayerStatus(commands.Cog):
 
             # Create and send player embed
             embed = create_player_embed(player, club)
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /status status")
@@ -100,9 +100,9 @@ class PlayerStatus(commands.Cog):
 
             # Send the embed with or without buttons
             if has_consumables:
-                await interaction.response.send_message(embed=embed, view=view)
+                await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
             else:
-                await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed, ephemeral=True)
 
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
@@ -125,7 +125,7 @@ class PlayerStatus(commands.Cog):
 
             # Create and send leaderboard embed
             embed = create_leaderboard_embed(top_players)
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /status top")
@@ -154,7 +154,7 @@ class PlayerStatus(commands.Cog):
 
         # Create and send player embed
         embed = create_player_embed(player, club)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
     @commands.command(name="inventario")
     async def inventory(self, ctx):
@@ -184,7 +184,7 @@ class PlayerStatus(commands.Cog):
             )
 
         # Send the embed
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
     @commands.command(name="top")
     async def leaderboard(self, ctx, limit: int = 10):
@@ -200,7 +200,7 @@ class PlayerStatus(commands.Cog):
 
         # Create and send leaderboard embed
         embed = create_leaderboard_embed(top_players)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
     @commands.command(name="perfil")
     async def profile(self, ctx, member: discord.Member = None):

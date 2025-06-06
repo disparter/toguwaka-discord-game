@@ -5,6 +5,7 @@ import logging
 import random
 import asyncio
 import json
+import os
 from datetime import datetime
 from utils.database import get_player, update_player, get_club
 from utils.embeds import create_basic_embed
@@ -13,867 +14,39 @@ from cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
 
 logger = logging.getLogger('tokugawa_bot')
 
-# Categorias de itens
-ITEM_CATEGORIES = {
-    "fixed": "Fixo",
-    "daily": "Diário",
-    "weekly": "Semanal",
-    "seasonal": "Sazonal",
-    "event": "Evento",
-    "thematic": "Temático"
-}
+# Load JSON data
+def load_json(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading JSON file {file_path}: {e}")
+        return {}
 
-# Tipos de itens
-ITEM_TYPES = {
-    "consumable": "Consumível",
-    "accessory": "Acessório",
-    "equipment": "Equipamento",
-    "legendary": "Lendário"
-}
+# Load all economy data from JSON files
+ITEM_CATEGORIES = load_json('data/economy/item_categories.json')
+ITEM_TYPES = load_json('data/economy/item_types.json')
+SEASONS = load_json('data/economy/seasons.json')
+ALTERNATIVE_CURRENCIES = load_json('data/economy/alternative_currencies.json')
 
-# Estações do ano
-SEASONS = {
-    1: "spring",  # Bimestre 1 (após férias de inverno) - Primavera
-    2: "summer",  # Bimestre 2 (antes das férias de verão) - Verão
-    3: "autumn",  # Bimestre 3 (após férias de verão) - Outono
-    4: "winter"   # Bimestre 4 (antes das férias de inverno) - Inverno
-}
-
-# Moedas alternativas
-ALTERNATIVE_CURRENCIES = {
-    "spring_token": {
-        "name": "Moeda Floral",
-        "description": "Moeda especial obtida durante o Festival da Primavera",
-        "season": "spring",
-        "icon": "🌸"
-    },
-    "summer_token": {
-        "name": "Moeda Solar",
-        "description": "Moeda especial obtida durante eventos de verão",
-        "season": "summer",
-        "icon": "☀️"
-    },
-    "autumn_token": {
-        "name": "Moeda Outonal",
-        "description": "Moeda especial obtida durante o Festival de Outono",
-        "season": "autumn",
-        "icon": "🍂"
-    },
-    "winter_token": {
-        "name": "Moeda Glacial",
-        "description": "Moeda especial obtida durante o Festival de Inverno",
-        "season": "winter",
-        "icon": "❄️"
-    },
-    "event_token": {
-        "name": "Insígnia de Evento",
-        "description": "Moeda especial obtida durante eventos globais",
-        "icon": "🏆"
-    }
-}
-
-# Itens que podem ser comprados com moedas alternativas
-SPECIAL_CURRENCY_ITEMS = {
-    "spring_token": [
-        {
-            "id": 701,
-            "name": "Coroa de Flores Raras",
-            "description": "Uma coroa feita com flores raras do Festival da Primavera. Aumenta carisma em 30%.",
-            "price": 10,
-            "currency": "spring_token",
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "spring",
-            "effects": {"attribute_boost": {"charisma": 0.3}, "season_limited": True}
-        },
-        {
-            "id": 702,
-            "name": "Elixir da Primavera Supremo",
-            "description": "Um elixir feito com as mais raras flores da primavera. Aumenta permanentemente o Carisma em +2.",
-            "price": 25,
-            "currency": "spring_token",
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "spring",
-            "effects": {"permanent_attribute": {"charisma": 2}}
-        }
-    ],
-    "summer_token": [
-        {
-            "id": 711,
-            "name": "Amuleto Solar Supremo",
-            "description": "Um amuleto que canaliza o poder máximo do sol. Adiciona 30% de dano adicional em duelos físicos.",
-            "price": 10,
-            "currency": "summer_token",
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "summer",
-            "effects": {"damage_boost": 0.3, "season_limited": True}
-        },
-        {
-            "id": 712,
-            "name": "Elixir do Verão Supremo",
-            "description": "Um elixir feito com a essência pura do sol. Aumenta permanentemente a Destreza em +2.",
-            "price": 25,
-            "currency": "summer_token",
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "summer",
-            "effects": {"permanent_attribute": {"dexterity": 2}}
-        }
-    ],
-    "autumn_token": [
-        {
-            "id": 721,
-            "name": "Lâmina Carmesim Suprema",
-            "description": "Uma lâmina com a cor das mais raras folhas de outono. Aumenta dano durante batalhas estratégicas em 30%.",
-            "price": 10,
-            "currency": "autumn_token",
-            "type": "equipment",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "autumn",
-            "effects": {"duel_boost": {"type": "strategic", "amount": 0.3}, "season_limited": True}
-        },
-        {
-            "id": 722,
-            "name": "Elixir do Outono Supremo",
-            "description": "Um elixir feito com a essência pura da sabedoria outonal. Aumenta permanentemente o Intelecto em +2.",
-            "price": 25,
-            "currency": "autumn_token",
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "autumn",
-            "effects": {"permanent_attribute": {"intellect": 2}}
-        }
-    ],
-    "winter_token": [
-        {
-            "id": 731,
-            "name": "Encanto Gelado Supremo",
-            "description": "Um amuleto que canaliza o poder máximo do inverno. Técnicas de intelecto e carisma recebem bônus +20%.",
-            "price": 10,
-            "currency": "winter_token",
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "winter",
-            "effects": {"attribute_boost": {"intellect": 0.2, "charisma": 0.2}, "season_limited": True}
-        },
-        {
-            "id": 732,
-            "name": "Elixir do Inverno Supremo",
-            "description": "Um elixir feito com a essência pura do gelo eterno. Aumenta permanentemente o Poder em +2.",
-            "price": 25,
-            "currency": "winter_token",
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "winter",
-            "effects": {"permanent_attribute": {"power_stat": 2}}
-        }
-    ],
-    "event_token": [
-        {
-            "id": 741,
-            "name": "Amuleto do Campeão",
-            "description": "Um amuleto concedido aos campeões de eventos. Aumenta todos os atributos em +1.",
-            "price": 15,
-            "currency": "event_token",
-            "type": "accessory",
-            "category": "event",
-            "rarity": "epic",
-            "effects": {"attribute_boost": {"power_stat": 1, "dexterity": 1, "intellect": 1, "charisma": 1}}
-        },
-        {
-            "id": 742,
-            "name": "Elixir do Campeão",
-            "description": "Um elixir concedido aos campeões de eventos. Aumenta permanentemente um atributo à escolha em +2.",
-            "price": 30,
-            "currency": "event_token",
-            "type": "consumable",
-            "category": "event",
-            "rarity": "legendary",
-            "effects": {"permanent_attribute_choice": 2}
-        }
-    ]
-}
-
-# Sistema de trocas coletivas
-ITEM_EXCHANGES = [
-    {
-        "id": 1,
-        "name": "Troca de Itens Comuns",
-        "description": "Troque 3 itens comuns por 1 item incomum aleatório",
-        "requirements": {
-            "items": {"rarity": "common", "count": 3}
-        },
-        "reward": {
-            "item_rarity": "uncommon",
-            "random": True
-        }
-    },
-    {
-        "id": 2,
-        "name": "Troca de Itens Incomuns",
-        "description": "Troque 3 itens incomuns por 1 item raro aleatório",
-        "requirements": {
-            "items": {"rarity": "uncommon", "count": 3}
-        },
-        "reward": {
-            "item_rarity": "rare",
-            "random": True
-        }
-    },
-    {
-        "id": 3,
-        "name": "Troca de Itens Raros",
-        "description": "Troque 3 itens raros por 1 item épico aleatório",
-        "requirements": {
-            "items": {"rarity": "rare", "count": 3}
-        },
-        "reward": {
-            "item_rarity": "epic",
-            "random": True
-        }
-    },
-    {
-        "id": 4,
-        "name": "Troca de Itens Épicos",
-        "description": "Troque 3 itens épicos + 1000 TUSD por 1 item lendário aleatório",
-        "requirements": {
-            "items": {"rarity": "epic", "count": 3},
-            "currency": {"type": "TUSD", "amount": 1000}
-        },
-        "reward": {
-            "item_rarity": "legendary",
-            "random": True
-        }
-    },
-    {
-        "id": 5,
-        "name": "Troca Sazonal",
-        "description": "Troque 5 itens sazonais de qualquer raridade por 5 tokens sazonais",
-        "requirements": {
-            "items": {"category": "seasonal", "count": 5}
-        },
-        "reward": {
-            "currency": {"type": "seasonal_token", "amount": 5}
-        }
-    }
-]
-
-# Itens fixos (sempre disponíveis)
-FIXED_ITEMS = [
-    {
-        "id": 1,
-        "name": "Poção de Treinamento",
-        "description": "Reduz o tempo de cooldown do comando !treinar em 30 minutos.",
-        "price": 50,
-        "type": "consumable",
-        "category": "fixed",
-        "rarity": "common",
-        "effects": {"cooldown_reduction": {"command": "treinar", "amount": 1800}}
-    },
-    {
-        "id": 2,
-        "name": "Amuleto de Foco",
-        "description": "Aumenta a experiência ganha em treinamentos quando equipado.",
-        "price": 100,
-        "type": "accessory",
-        "category": "fixed",
-        "rarity": "uncommon",
-        "effects": {"exp_boost": 1.5}
-    },
-    {
-        "id": 3,
-        "name": "Luvas de Combate",
-        "description": "Aumenta a Destreza em +2 durante duelos.",
-        "price": 200,
-        "type": "equipment",
-        "category": "fixed",
-        "rarity": "rare",
-        "effects": {"attribute_boost": {"dexterity": 2}}
-    },
-    {
-        "id": 4,
-        "name": "Grimório Arcano",
-        "description": "Aumenta o Intelecto em +2 durante duelos.",
-        "price": 200,
-        "type": "equipment",
-        "category": "fixed",
-        "rarity": "rare",
-        "effects": {"attribute_boost": {"intellect": 2}}
-    },
-    {
-        "id": 5,
-        "name": "Broche de Eloquência",
-        "description": "Aumenta o Carisma em +2 durante duelos.",
-        "price": 200,
-        "type": "equipment",
-        "category": "fixed",
-        "rarity": "rare",
-        "effects": {"attribute_boost": {"charisma": 2}}
-    },
-    {
-        "id": 6,
-        "name": "Cristal de Amplificação",
-        "description": "Aumenta o Poder em +2 durante duelos.",
-        "price": 200,
-        "type": "equipment",
-        "category": "fixed",
-        "rarity": "rare",
-        "effects": {"attribute_boost": {"power_stat": 2}}
-    },
-    {
-        "id": 7,
-        "name": "Pergaminho de Técnica",
-        "description": "Ensina uma técnica especial aleatória ao seu personagem.",
-        "price": 500,
-        "type": "consumable",
-        "category": "fixed",
-        "rarity": "epic",
-        "effects": {"learn_technique": True}
-    },
-    {
-        "id": 8,
-        "name": "Emblema do Clube",
-        "description": "Aumenta sua reputação no clube atual.",
-        "price": 300,
-        "type": "consumable",
-        "category": "fixed",
-        "rarity": "uncommon",
-        "effects": {"club_reputation": 50}
-    },
-    {
-        "id": 9,
-        "name": "Elixir de Atributo",
-        "description": "Aumenta permanentemente um atributo aleatório em +1.",
-        "price": 1000,
-        "type": "consumable",
-        "category": "fixed",
-        "rarity": "legendary",
-        "effects": {"permanent_attribute": 1}
-    }
-]
-
-# Itens diários (mudam todos os dias)
-DAILY_ITEMS = [
-    {
-        "id": 101,
-        "name": "Poção de Energia",
-        "description": "Recupera energia para realizar mais atividades hoje.",
-        "price": 75,
-        "type": "consumable",
-        "category": "daily",
-        "rarity": "common",
-        "effects": {"energy_restore": 50}
-    },
-    {
-        "id": 102,
-        "name": "Doce Energético",
-        "description": "Um doce que dá um boost temporário de energia.",
-        "price": 30,
-        "type": "consumable",
-        "category": "daily",
-        "rarity": "common",
-        "effects": {"energy_boost": 20, "duration": 1800}  # 30 minutos
-    },
-    {
-        "id": 103,
-        "name": "Chá Revigorante",
-        "description": "Aumenta temporariamente a regeneração de energia.",
-        "price": 50,
-        "type": "consumable",
-        "category": "daily",
-        "rarity": "uncommon",
-        "effects": {"energy_regen_boost": 2, "duration": 3600}  # 1 hora
-    },
-    {
-        "id": 104,
-        "name": "Pílula de Concentração",
-        "description": "Aumenta temporariamente o Intelecto em +1.",
-        "price": 60,
-        "type": "consumable",
-        "category": "daily",
-        "rarity": "uncommon",
-        "effects": {"temp_attribute_boost": {"intellect": 1}, "duration": 3600}  # 1 hora
-    },
-    {
-        "id": 105,
-        "name": "Bebida Energética",
-        "description": "Aumenta temporariamente a Destreza em +1.",
-        "price": 60,
-        "type": "consumable",
-        "category": "daily",
-        "rarity": "uncommon",
-        "effects": {"temp_attribute_boost": {"dexterity": 1}, "duration": 3600}  # 1 hora
-    }
-]
-
-# Itens semanais (mudam toda semana)
-WEEKLY_ITEMS = [
-    {
-        "id": 201,
-        "name": "Colar de Proteção",
-        "description": "Reduz o dano recebido em duelos em 10%.",
-        "price": 350,
-        "type": "accessory",
-        "category": "weekly",
-        "rarity": "rare",
-        "effects": {"damage_reduction": 0.1}
-    },
-    {
-        "id": 202,
-        "name": "Anel de Poder",
-        "description": "Aumenta o dano causado em duelos em 10%.",
-        "price": 350,
-        "type": "accessory",
-        "category": "weekly",
-        "rarity": "rare",
-        "effects": {"damage_boost": 0.1}
-    },
-    {
-        "id": 203,
-        "name": "Pergaminho de Técnica Avançada",
-        "description": "Ensina uma técnica avançada aleatória ao seu personagem.",
-        "price": 750,
-        "type": "consumable",
-        "category": "weekly",
-        "rarity": "epic",
-        "effects": {"learn_advanced_technique": True}
-    },
-    {
-        "id": 204,
-        "name": "Poção de Maestria",
-        "description": "Aumenta temporariamente o nível de uma técnica aleatória em +1.",
-        "price": 500,
-        "type": "consumable",
-        "category": "weekly",
-        "rarity": "epic",
-        "effects": {"technique_level_boost": 1, "duration": 86400}  # 24 horas
-    },
-    {
-        "id": 205,
-        "name": "Amuleto de Sorte",
-        "description": "Aumenta a chance de eventos raros em 15%.",
-        "price": 400,
-        "type": "accessory",
-        "category": "weekly",
-        "rarity": "rare",
-        "effects": {"rare_event_chance": 0.15}
-    }
-]
+# Load more economy data from JSON files
+SPECIAL_CURRENCY_ITEMS = load_json('data/economy/special_currency_items.json')
+ITEM_EXCHANGES = load_json('data/economy/item_exchanges.json')
+FIXED_ITEMS = load_json('data/economy/fixed_items.json')
+DAILY_ITEMS = load_json('data/economy/daily_items.json')
+WEEKLY_ITEMS = load_json('data/economy/weekly_items.json')
 
 # Itens sazonais (baseados na estação/bimestre)
-SEASONAL_ITEMS = {
-    "spring": [  # Primavera (Bimestre 1)
-        {
-            "id": 301,
-            "name": "Flauta Serena Sakura",
-            "description": "Um instrumento que canaliza a energia da primavera. Buff em Carisma +20% em duelos sociais durante a estação.",
-            "price": 450,
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "spring",
-            "effects": {"attribute_boost": {"charisma": 0.2}, "season_limited": True}
-        },
-        {
-            "id": 302,
-            "name": "Aura do Recomeço",
-            "description": "Uma aura que simboliza novos começos. Aumenta a EXP em +10% em atividades treinadas no período.",
-            "price": 400,
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "rare",
-            "season": "spring",
-            "effects": {"exp_boost": 1.1, "season_limited": True}
-        },
-        {
-            "id": 303,
-            "name": "Elixir da Primavera",
-            "description": "Um elixir feito com flores da primavera. Aumenta permanentemente o Carisma em +1.",
-            "price": 1200,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "spring",
-            "effects": {"permanent_attribute": {"charisma": 1}}
-        },
-        {
-            "id": 304,
-            "name": "Pergaminho da Técnica Primaveril",
-            "description": "Ensina a técnica sazonal 'Aura Primaveril'.",
-            "price": 800,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "spring",
-            "effects": {"learn_specific_technique": 16}  # ID da técnica Aura Primaveril
-        }
-    ],
-    "summer": [  # Verão (Bimestre 2)
-        {
-            "id": 311,
-            "name": "Sol Escaldante",
-            "description": "Um amuleto que canaliza o calor do verão. Adiciona chance de dano adicional em duelos físicos.",
-            "price": 450,
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "summer",
-            "effects": {"damage_boost": 0.15, "season_limited": True}
-        },
-        {
-            "id": 312,
-            "name": "Drink Refrescante",
-            "description": "Uma bebida que refresca até a alma. Recupera HP e adiciona atributo temporário +5 Destreza.",
-            "price": 200,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "uncommon",
-            "season": "summer",
-            "effects": {"hp_restore": 50, "temp_attribute_boost": {"dexterity": 5}, "duration": 3600}
-        },
-        {
-            "id": 313,
-            "name": "Elixir do Verão",
-            "description": "Um elixir feito com a essência do sol. Aumenta permanentemente a Destreza em +1.",
-            "price": 1200,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "summer",
-            "effects": {"permanent_attribute": {"dexterity": 1}}
-        },
-        {
-            "id": 314,
-            "name": "Pergaminho da Técnica Estival",
-            "description": "Ensina a técnica sazonal 'Calor Estival'.",
-            "price": 800,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "summer",
-            "effects": {"learn_specific_technique": 17}  # ID da técnica Calor Estival
-        }
-    ],
-    "autumn": [  # Outono (Bimestre 3)
-        {
-            "id": 321,
-            "name": "Lâmina Carmesim",
-            "description": "Uma lâmina com a cor das folhas de outono. Aumenta dano durante batalhas estratégicas.",
-            "price": 450,
-            "type": "equipment",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "autumn",
-            "effects": {"duel_boost": {"type": "strategic", "amount": 0.2}, "season_limited": True}
-        },
-        {
-            "id": 322,
-            "name": "Pilares Antigos",
-            "description": "Um amuleto que conecta com a sabedoria ancestral. Ao explorar, aumenta chance de encontrar Artefatos Raros.",
-            "price": 400,
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "rare",
-            "season": "autumn",
-            "effects": {"rare_find_chance": 0.2, "season_limited": True}
-        },
-        {
-            "id": 323,
-            "name": "Elixir do Outono",
-            "description": "Um elixir feito com a essência da sabedoria outonal. Aumenta permanentemente o Intelecto em +1.",
-            "price": 1200,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "autumn",
-            "effects": {"permanent_attribute": {"intellect": 1}}
-        },
-        {
-            "id": 324,
-            "name": "Pergaminho da Técnica Outonal",
-            "description": "Ensina a técnica sazonal 'Reflexão Outonal'.",
-            "price": 800,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "autumn",
-            "effects": {"learn_specific_technique": 18}  # ID da técnica Reflexão Outonal
-        }
-    ],
-    "winter": [  # Inverno (Bimestre 4)
-        {
-            "id": 331,
-            "name": "Encanto Gelado",
-            "description": "Um amuleto que canaliza o frio do inverno. Técnicas de intelecto e carisma recebem bônus +10%.",
-            "price": 450,
-            "type": "accessory",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "winter",
-            "effects": {"attribute_boost": {"intellect": 0.1, "charisma": 0.1}, "season_limited": True}
-        },
-        {
-            "id": 332,
-            "name": "Presença Fantasmal",
-            "description": "Um manto que permite se mover como um fantasma na névoa. Técnicas furtivas têm mais eficácia.",
-            "price": 400,
-            "type": "equipment",
-            "category": "seasonal",
-            "rarity": "rare",
-            "season": "winter",
-            "effects": {"stealth_boost": 0.25, "season_limited": True}
-        },
-        {
-            "id": 333,
-            "name": "Elixir do Inverno",
-            "description": "Um elixir feito com a essência do gelo eterno. Aumenta permanentemente o Poder em +1.",
-            "price": 1200,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "legendary",
-            "season": "winter",
-            "effects": {"permanent_attribute": {"power_stat": 1}}
-        },
-        {
-            "id": 334,
-            "name": "Pergaminho da Técnica Invernal",
-            "description": "Ensina a técnica sazonal 'Gélido Invernal'.",
-            "price": 800,
-            "type": "consumable",
-            "category": "seasonal",
-            "rarity": "epic",
-            "season": "winter",
-            "effects": {"learn_specific_technique": 19}  # ID da técnica Gélido Invernal
-        }
-    ]
-}
+SEASONAL_ITEMS = load_json('data/economy/seasonal_items.json')
 
 # Itens de eventos especiais (desbloqueados por eventos específicos)
-EVENT_ITEMS = {
-    "festival_inverno": [
-        {
-            "id": 401,
-            "name": "Espada da Tempestade Cristalina",
-            "description": "Uma espada forjada durante o Festival de Inverno. Causa dano adicional de gelo em duelos.",
-            "price": 600,
-            "type": "equipment",
-            "category": "event",
-            "rarity": "epic",
-            "event": "festival_inverno",
-            "effects": {"ice_damage": 0.3, "event_limited": True}
-        }
-    ],
-    "torneio_academia": [
-        {
-            "id": 402,
-            "name": "Escudo de Campeão",
-            "description": "Um escudo concedido aos campeões do Torneio da Academia. Aumenta defesa em 20%.",
-            "price": 600,
-            "type": "equipment",
-            "category": "event",
-            "rarity": "epic",
-            "event": "torneio_academia",
-            "effects": {"defense_boost": 0.2, "event_limited": True}
-        }
-    ],
-    "festival_primavera": [
-        {
-            "id": 403,
-            "name": "Coroa de Flores",
-            "description": "Uma coroa feita com flores do Festival da Primavera. Aumenta carisma em 20%.",
-            "price": 600,
-            "type": "accessory",
-            "category": "event",
-            "rarity": "epic",
-            "event": "festival_primavera",
-            "effects": {"attribute_boost": {"charisma": 0.2}, "event_limited": True}
-        }
-    ],
-    "excursao_verao": [
-        {
-            "id": 404,
-            "name": "Amuleto da Praia",
-            "description": "Um amuleto encontrado durante a excursão de verão. Aumenta a sorte em 15%.",
-            "price": 600,
-            "type": "accessory",
-            "category": "event",
-            "rarity": "epic",
-            "event": "excursao_verao",
-            "effects": {"luck_boost": 0.15, "event_limited": True}
-        }
-    ]
-}
+EVENT_ITEMS = load_json('data/economy/event_items.json')
 
 # Itens lendários (desbloqueados por progresso avançado ou eventos especiais)
-LEGENDARY_ITEMS = [
-    {
-        "id": 501,
-        "name": "Espada do Fundador",
-        "description": "Uma espada lendária que pertenceu ao fundador da Academia Tokugawa. Aumenta todos os atributos em +3.",
-        "price": 5000,
-        "type": "legendary",
-        "category": "fixed",
-        "rarity": "legendary",
-        "level_required": 30,
-        "effects": {"attribute_boost": {"power_stat": 3, "dexterity": 3, "intellect": 3, "charisma": 3}}
-    },
-    {
-        "id": 502,
-        "name": "Amuleto do Destino",
-        "description": "Um amuleto lendário que permite manipular o destino. Aumenta a sorte em 50% e dá uma chance de evitar derrotas em duelos.",
-        "price": 4000,
-        "type": "legendary",
-        "category": "fixed",
-        "rarity": "legendary",
-        "level_required": 25,
-        "effects": {"luck_boost": 0.5, "defeat_avoidance": 0.2}
-    },
-    {
-        "id": 503,
-        "name": "Grimório dos Antigos",
-        "description": "Um livro lendário contendo conhecimentos ancestrais. Permite aprender uma técnica lendária.",
-        "price": 3500,
-        "type": "legendary",
-        "category": "fixed",
-        "rarity": "legendary",
-        "level_required": 20,
-        "effects": {"learn_legendary_technique": True}
-    }
-]
+LEGENDARY_ITEMS = load_json('data/economy/legendary_items.json')
 
 # Itens temáticos de clubes (disponíveis apenas para membros de clubes específicos)
-CLUB_ITEMS = {
-    "clube_das_chamas": [
-        {
-            "id": 601,
-            "name": "Amuleto de Fogo",
-            "description": "Um amuleto que canaliza o poder das chamas. Aumenta o dano em duelos físicos em 15%.",
-            "price": 300,
-            "type": "accessory",
-            "category": "thematic",
-            "rarity": "rare",
-            "club_required": "clube_das_chamas",
-            "effects": {"damage_boost": 0.15, "club_specific": True}
-        },
-        {
-            "id": 602,
-            "name": "Elixir das Chamas",
-            "description": "Um elixir que fortalece o espírito de fogo. Aumenta permanentemente o Poder em +1.",
-            "price": 1000,
-            "type": "consumable",
-            "category": "thematic",
-            "rarity": "epic",
-            "club_required": "clube_das_chamas",
-            "effects": {"permanent_attribute": {"power_stat": 1}}
-        }
-    ],
-    "ilusionistas_mentais": [
-        {
-            "id": 611,
-            "name": "Máscara do Enigma",
-            "description": "Uma máscara que aumenta o poder mental. Aumenta o Intelecto em +2 e protege contra debuffs mentais.",
-            "price": 300,
-            "type": "accessory",
-            "category": "thematic",
-            "rarity": "rare",
-            "club_required": "ilusionistas_mentais",
-            "effects": {"attribute_boost": {"intellect": 2}, "mental_debuff_resistance": 0.3, "club_specific": True}
-        },
-        {
-            "id": 612,
-            "name": "Poção da Clareza",
-            "description": "Uma poção que expande a mente. Aumenta permanentemente o Intelecto em +1.",
-            "price": 1000,
-            "type": "consumable",
-            "category": "thematic",
-            "rarity": "epic",
-            "club_required": "ilusionistas_mentais",
-            "effects": {"permanent_attribute": {"intellect": 1}}
-        }
-    ],
-    "conselho_politico": [
-        {
-            "id": 621,
-            "name": "Cajado da Persuasão",
-            "description": "Um cajado que amplifica o carisma. Adiciona bônus de Carisma em interações sociais.",
-            "price": 300,
-            "type": "accessory",
-            "category": "thematic",
-            "rarity": "rare",
-            "club_required": "conselho_politico",
-            "effects": {"attribute_boost": {"charisma": 2}, "social_influence": 0.2, "club_specific": True}
-        },
-        {
-            "id": 622,
-            "name": "Medalha do Conselho",
-            "description": "Uma medalha que simboliza autoridade. Aumenta permanentemente o Carisma em +1.",
-            "price": 1000,
-            "type": "consumable",
-            "category": "thematic",
-            "rarity": "epic",
-            "club_required": "conselho_politico",
-            "effects": {"permanent_attribute": {"charisma": 1}}
-        }
-    ],
-    "clube_de_combate": [
-        {
-            "id": 631,
-            "name": "Luva do Gladiador",
-            "description": "Uma luva que aumenta a precisão dos golpes. Adiciona bônus de Destreza em ataques rápidos.",
-            "price": 300,
-            "type": "accessory",
-            "category": "thematic",
-            "rarity": "rare",
-            "club_required": "clube_de_combate",
-            "effects": {"attribute_boost": {"dexterity": 2}, "quick_attack_boost": 0.2, "club_specific": True}
-        },
-        {
-            "id": 632,
-            "name": "Tônico do Guerreiro",
-            "description": "Um tônico que fortalece os músculos. Aumenta permanentemente a Destreza em +1.",
-            "price": 1000,
-            "type": "consumable",
-            "category": "thematic",
-            "rarity": "epic",
-            "club_required": "clube_de_combate",
-            "effects": {"permanent_attribute": {"dexterity": 1}}
-        }
-    ],
-    "elementalistas": [
-        {
-            "id": 641,
-            "name": "Cristal Elemental",
-            "description": "Um cristal que amplifica o controle sobre os elementos. Aprimora habilidades elementais.",
-            "price": 300,
-            "type": "accessory",
-            "category": "thematic",
-            "rarity": "rare",
-            "club_required": "elementalistas",
-            "effects": {"elemental_control": 0.25, "club_specific": True}
-        },
-        {
-            "id": 642,
-            "name": "Essência Elemental",
-            "description": "Uma essência que fortalece a conexão com os elementos. Aumenta permanentemente o Poder em +1.",
-            "price": 1000,
-            "type": "consumable",
-            "category": "thematic",
-            "rarity": "epic",
-            "club_required": "elementalistas",
-            "effects": {"permanent_attribute": {"power_stat": 1}}
-        }
-    ]
-}
+CLUB_ITEMS = load_json('data/economy/club_items.json')
 
 # Função para obter os itens disponíveis com base no bimestre atual, eventos ativos, nível do jogador e clube
 def get_available_shop_items(bimestre=1, active_events=None, player_level=1, player_club=None, current_date=None):
@@ -2649,7 +1822,7 @@ class Economy(commands.Cog):
             # Check if player has the item
             inventory = player["inventory"]
             if str(item_id) not in inventory:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.")
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.", ephemeral=True)
                 return
 
             # Get item data
@@ -2657,7 +1830,7 @@ class Economy(commands.Cog):
 
             # Check if item is usable
             if item_data["type"] != "consumable":
-                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.")
+                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.", ephemeral=True)
                 return
 
             # Process item use
@@ -2675,13 +1848,13 @@ class Economy(commands.Cog):
                     COOLDOWNS[interaction.user.id][command] -= amount
                     use_message = f"Você usou {item_data['name']} e reduziu o cooldown do comando /{command} em 30 minutos!"
                 else:
-                    await interaction.response.send_message(f"{interaction.user.mention}, este comando não está em cooldown no momento.")
+                    await interaction.response.send_message(f"{interaction.user.mention}, este comando não está em cooldown no momento.", ephemeral=True)
                     return
 
             elif "club_reputation" in item_data["effects"]:
                 # Increase club reputation
                 if not player["club_id"]:
-                    await interaction.response.send_message(f"{interaction.user.mention}, você precisa estar em um clube para usar este item.")
+                    await interaction.response.send_message(f"{interaction.user.mention}, você precisa estar em um clube para usar este item.", ephemeral=True)
                     return
 
                 # Get club data
@@ -2716,7 +1889,7 @@ class Economy(commands.Cog):
                         }
                         use_message = f"Você bebeu {item_data['name']} e aumentou seu atributo de {attribute_names[attribute]} em {amount} pontos!"
                     else:
-                        await interaction.response.send_message(f"{interaction.user.mention}, esta poção tem um atributo inválido.")
+                        await interaction.response.send_message(f"{interaction.user.mention}, esta poção tem um atributo inválido.", ephemeral=True)
                         return
 
                 elif potion_type == "currency":
@@ -2729,11 +1902,11 @@ class Economy(commands.Cog):
                     use_message = f"Você bebeu {item_data['name']} e se sente revigorado! Sua saúde foi restaurada."
 
                 else:
-                    await interaction.response.send_message(f"{interaction.user.mention}, este tipo de poção não é reconhecido.")
+                    await interaction.response.send_message(f"{interaction.user.mention}, este tipo de poção não é reconhecido.", ephemeral=True)
                     return
 
             else:
-                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado no momento.")
+                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado no momento.", ephemeral=True)
                 return
 
             # Remove item from inventory
@@ -2755,7 +1928,7 @@ class Economy(commands.Cog):
                     color=rarity["color"]
                 )
 
-                await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
                 await interaction.response.send_message("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
@@ -2777,7 +1950,7 @@ class Economy(commands.Cog):
             # Check if player has the item
             inventory = player["inventory"]
             if str(item_id) not in inventory:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.")
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.", ephemeral=True)
                 return
 
             # Get item data
@@ -2785,7 +1958,7 @@ class Economy(commands.Cog):
 
             # Check if item is an accessory
             if item_data["type"] != "accessory":
-                await interaction.response.send_message(f"{interaction.user.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.")
+                await interaction.response.send_message(f"{interaction.user.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.", ephemeral=True)
                 return
 
             # Check if the item is already equipped
@@ -2801,7 +1974,7 @@ class Economy(commands.Cog):
                         description=f"Você desequipou {item_data['name']}.",
                         color=RARITIES.get(item_data["rarity"], RARITIES["common"])["color"]
                     )
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
                 else:
                     await interaction.response.send_message("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.")
                 return
@@ -2809,7 +1982,7 @@ class Economy(commands.Cog):
             # Check if there's a cooldown for this accessory
             cooldown = self._check_cooldown(interaction.user.id, f"accessory_{item_id}")
             if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, este acessório está em cooldown. Tempo restante: {cooldown}")
+                await interaction.response.send_message(f"{interaction.user.mention}, este acessório está em cooldown. Tempo restante: {cooldown}", ephemeral=True)
                 return
 
             # Unequip any other equipped accessories of the same type
@@ -2836,7 +2009,7 @@ class Economy(commands.Cog):
                     color=rarity["color"]
                 )
 
-                await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
                 await interaction.response.send_message("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
@@ -2871,7 +2044,7 @@ class Economy(commands.Cog):
                 inline=False
             )
 
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
     @commands.command(name="comprar")
     async def buy(self, ctx, item_id: int = None):
@@ -2884,18 +2057,18 @@ class Economy(commands.Cog):
 
         # Check if item_id is provided
         if item_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja comprar. Use `!loja` para ver os itens disponíveis.")
+            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja comprar. Use `!loja` para ver os itens disponíveis.", ephemeral=True)
             return
 
         # Find the item
         item = next((i for i in SHOP_ITEMS if i["id"] == item_id), None)
         if not item:
-            await ctx.send(f"{ctx.author.mention}, item não encontrado. Use `!loja` para ver os itens disponíveis.")
+            await ctx.send(f"{ctx.author.mention}, item não encontrado. Use `!loja` para ver os itens disponíveis.", ephemeral=True)
             return
 
         # Check if player has enough TUSD
         if player["tusd"] < item["price"]:
-            await ctx.send(f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
+            await ctx.send(f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD", ephemeral=True)
             return
 
         # Process the purchase
@@ -2987,7 +2160,7 @@ class Economy(commands.Cog):
                     inline=False
                 )
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
         else:
             await ctx.send("Ocorreu um erro durante a compra. Por favor, tente novamente mais tarde.")
 
@@ -3028,7 +2201,7 @@ class Economy(commands.Cog):
                     inline=False
                 )
 
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
     @commands.command(name="vender")
     async def sell(self, ctx, item_id: int = None, price: int = None):
@@ -3036,23 +2209,23 @@ class Economy(commands.Cog):
         # Check if player exists
         player = get_player(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
             return
 
         # Check if item_id and price are provided
         if item_id is None or price is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item e o preço. Exemplo: `!vender 1 100`")
+            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item e o preço. Exemplo: `!vender 1 100`", ephemeral=True)
             return
 
         # Check if price is valid
         if price <= 0:
-            await ctx.send(f"{ctx.author.mention}, o preço deve ser maior que zero.")
+            await ctx.send(f"{ctx.author.mention}, o preço deve ser maior que zero.", ephemeral=True)
             return
 
         # Check if player has the item
         inventory = player["inventory"]
         if str(item_id) not in inventory:
-            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.")
+            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.", ephemeral=True)
             return
 
         # Get item data
@@ -3097,17 +2270,17 @@ class Economy(commands.Cog):
         # Check if player exists
         player = get_player(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
             return
 
         # Check if listing_id is provided
         if listing_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID da listagem. Use `!mercado` para ver as listagens disponíveis.")
+            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID da listagem. Use `!mercado` para ver as listagens disponíveis.", ephemeral=True)
             return
 
         # Check if listing exists
         if listing_id not in self.market_listings:
-            await ctx.send(f"{ctx.author.mention}, listagem não encontrada. Use `!mercado` para ver as listagens disponíveis.")
+            await ctx.send(f"{ctx.author.mention}, listagem não encontrada. Use `!mercado` para ver as listagens disponíveis.", ephemeral=True)
             return
 
         # Get listing data
@@ -3171,7 +2344,7 @@ class Economy(commands.Cog):
                 color=rarity["color"]
             )
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
 
             # Notify seller if they're online
             seller_user = self.bot.get_user(listing["seller_id"])
@@ -3184,7 +2357,7 @@ class Economy(commands.Cog):
                 )
 
                 try:
-                    await seller_user.send(embed=seller_embed)
+                    await seller_user.send(embed=seller_embed, ephemeral=True)
                 except:
                     # Ignore if we can't DM the seller
                     pass
@@ -3202,13 +2375,13 @@ class Economy(commands.Cog):
 
         # Check if item_id is provided
         if item_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja equipar. Use `!inventario` para ver seus itens.")
+            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja equipar. Use `!inventario` para ver seus itens.", ephemeral=True)
             return
 
         # Check if player has the item
         inventory = player["inventory"]
         if str(item_id) not in inventory:
-            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.")
+            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.", ephemeral=True)
             return
 
         # Get item data
@@ -3216,7 +2389,7 @@ class Economy(commands.Cog):
 
         # Check if item is an accessory
         if item_data["type"] != "accessory":
-            await ctx.send(f"{ctx.author.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.")
+            await ctx.send(f"{ctx.author.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.", ephemeral=True)
             return
 
         # Check if the item is already equipped
@@ -3232,7 +2405,7 @@ class Economy(commands.Cog):
                     description=f"Você desequipou {item_data['name']}.",
                     color=RARITIES.get(item_data["rarity"], RARITIES["common"])["color"]
                 )
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed, ephemeral=True)
             else:
                 await ctx.send("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.")
             return
@@ -3267,7 +2440,7 @@ class Economy(commands.Cog):
                 color=rarity["color"]
             )
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
         else:
             await ctx.send("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.")
 
@@ -3282,13 +2455,13 @@ class Economy(commands.Cog):
 
         # Check if item_id is provided
         if item_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja usar. Use `!inventario` para ver seus itens.")
+            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja usar. Use `!inventario` para ver seus itens.", ephemeral=True)
             return
 
         # Check if player has the item
         inventory = player["inventory"]
         if str(item_id) not in inventory:
-            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.")
+            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.", ephemeral=True)
             return
 
         # Get item data
@@ -3296,7 +2469,7 @@ class Economy(commands.Cog):
 
         # Check if item is usable
         if item_data["type"] != "consumable":
-            await ctx.send(f"{ctx.author.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.")
+            await ctx.send(f"{ctx.author.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.", ephemeral=True)
             return
 
         # Process item use
@@ -3314,19 +2487,19 @@ class Economy(commands.Cog):
                 COOLDOWNS[ctx.author.id][command] -= amount
                 use_message = f"Você usou {item_data['name']} e reduziu o cooldown do comando !{command} em 30 minutos!"
             else:
-                await ctx.send(f"{ctx.author.mention}, este comando não está em cooldown no momento.")
+                await ctx.send(f"{ctx.author.mention}, este comando não está em cooldown no momento.", ephemeral=True)
                 return
 
         elif "club_reputation" in item_data["effects"]:
             # Increase club reputation
             if not player["club_id"]:
-                await ctx.send(f"{ctx.author.mention}, você precisa estar em um clube para usar este item.")
+                await ctx.send(f"{ctx.author.mention}, você precisa estar em um clube para usar este item.", ephemeral=True)
                 return
 
             # Get club data
             club = get_club(player["club_id"])
             if not club:
-                await ctx.send(f"{ctx.author.mention}, seu clube não existe mais.")
+                await ctx.send(f"{ctx.author.mention}, seu clube não existe mais.", ephemeral=True)
                 return
 
             # TODO: Implement club reputation update
@@ -3355,7 +2528,7 @@ class Economy(commands.Cog):
                     }
                     use_message = f"Você bebeu {item_data['name']} e aumentou seu atributo de {attribute_names[attribute]} em {amount} pontos!"
                 else:
-                    await ctx.send(f"{ctx.author.mention}, esta poção tem um atributo inválido.")
+                    await ctx.send(f"{ctx.author.mention}, esta poção tem um atributo inválido.", ephemeral=True)
                     return
 
             elif potion_type == "currency":
@@ -3368,11 +2541,11 @@ class Economy(commands.Cog):
                 use_message = f"Você bebeu {item_data['name']} e se sente revigorado! Sua saúde foi restaurada."
 
             else:
-                await ctx.send(f"{ctx.author.mention}, este tipo de poção não é reconhecido.")
+                await ctx.send(f"{ctx.author.mention}, este tipo de poção não é reconhecido.", ephemeral=True)
                 return
 
         else:
-            await ctx.send(f"{ctx.author.mention}, este item não pode ser usado no momento.")
+            await ctx.send(f"{ctx.author.mention}, este item não pode ser usado no momento.", ephemeral=True)
             return
 
         # Remove item from inventory
@@ -3394,7 +2567,7 @@ class Economy(commands.Cog):
                 color=rarity["color"]
             )
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
         else:
             await ctx.send("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.")
 

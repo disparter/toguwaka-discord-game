@@ -10,6 +10,10 @@
   - [Expansão do Capítulo da Biblioteca Proibida](#4-expansão-do-capítulo-da-biblioteca-proibida)
   - [Adição do Capítulo "O Despertar do Potencial"](#5-adição-do-capítulo-o-despertar-do-potencial)
   - [Otimização de Dados JSON](#6-otimização-de-dados-json)
+- [Melhorias em Sistemas Existentes](#melhorias-em-sistemas-existentes)
+  - [Melhorias no Comando "explorar"](#melhorias-no-comando-explorar)
+  - [Refatoração SOLID](#refatoração-solid)
+  - [Novos Sistemas Implementados](#novos-sistemas-implementados)
 - [Implementação dos Próximos Passos](#implementação-dos-próximos-passos)
 - [Como Usar as Novas Ferramentas](#como-usar-as-novas-ferramentas)
 - [Métricas de Sucesso e Avaliação](#métricas-de-sucesso-e-avaliação)
@@ -18,6 +22,7 @@
   - [Aprimoramentos de Gameplay](#aprimoramentos-de-gameplay)
   - [Melhorias Técnicas](#melhorias-técnicas)
   - [Engajamento da Comunidade](#engajamento-da-comunidade)
+- [Dashboard de Comparação de Decisões](#dashboard-de-comparação-de-decisões)
 - [Conclusão e Visão de Futuro](#conclusão-e-visão-de-futuro)
 
 ## Visão Geral e Objetivos
@@ -113,6 +118,161 @@ Para melhorar o desempenho e a manutenção do código:
 - Criado `data/story_mode/events/event_choices.json` para armazenar escolhas de eventos
 - Modificado `utils/narrative_events.py` para carregar dados desses arquivos JSON
 - Adicionados novos modelos de eventos para enriquecer a experiência do jogador
+
+## Melhorias em Sistemas Existentes
+
+### Melhorias no Comando "explorar"
+
+#### Problema Original
+O comando `explorar` sempre retornava o mesmo evento, tornando a experiência de exploração repetitiva e previsível.
+
+#### Solução Implementada
+
+1. **Sistema de Eventos Aleatórios Aprimorado**
+   - **Implementação de histórico de eventos**: Adicionado um sistema que rastreia os últimos eventos exibidos para evitar repetições.
+   - **Seleção verdadeiramente aleatória**: Modificado o algoritmo de seleção para garantir uma distribuição mais uniforme dos eventos.
+   - **Logging de eventos**: Adicionado registro de eventos selecionados para facilitar depuração.
+
+2. **Expansão da Variedade de Eventos**
+   - **Aumento significativo no número de eventos**: Expandido de 5 para 20 eventos diferentes.
+   - **Sistema de categorias**: Eventos agora são organizados em categorias:
+     - Social: Eventos relacionados a interações sociais na academia
+     - Treinamento: Eventos focados em aprimoramento de habilidades
+     - Combate: Desafios e confrontos com outros estudantes
+     - Descoberta: Exploração de locais secretos e artefatos
+     - Clube: Atividades relacionadas aos clubes da academia
+     - Especial: Eventos raros e únicos
+
+3. **Sistema de Raridade**
+   - **Níveis de raridade**: Implementado sistema com 5 níveis de raridade para eventos:
+     - Comum (50% de chance)
+     - Incomum (30% de chance)
+     - Raro (15% de chance)
+     - Épico (4% de chance)
+     - Lendário (1% de chance)
+   - **Recompensas baseadas em raridade**: Eventos mais raros oferecem recompensas mais valiosas.
+   - **Indicadores visuais**: Cores e emojis diferentes para cada nível de raridade.
+
+4. **Efeitos Expandidos**
+   - **Múltiplos atributos**: Eventos agora podem afetar múltiplos atributos simultaneamente.
+   - **Efeitos positivos e negativos**: Alguns eventos podem melhorar um atributo enquanto prejudicam outro.
+   - **Bônus para todos os atributos**: Eventos especiais podem aumentar todos os atributos de uma vez.
+   - **Sistema de itens aprimorado**: Itens com diferentes raridades e efeitos.
+
+5. **Melhorias na Interface**
+   - **Exibição de categoria e raridade**: O embed do evento agora mostra claramente a categoria e raridade.
+   - **Emojis temáticos**: Adicionados emojis para categorias e raridades para melhor visualização.
+   - **Cores baseadas em raridade**: Eventos raros, épicos e lendários têm cores distintas.
+   - **Exibição detalhada de efeitos**: Todos os efeitos são claramente listados no embed.
+
+6. **Tratamento de Erros Aprimorado**
+   - **Logging detalhado**: Adicionado logging mais detalhado para facilitar a depuração.
+   - **Tratamento de exceções**: Implementado tratamento de exceções para evitar falhas no comando.
+   - **Mensagens de erro amigáveis**: Mensagens de erro mais claras para os usuários.
+
+### Refatoração SOLID
+
+O projeto foi refatorado para aderir aos princípios SOLID, garantindo modularidade, reutilização de código e expansibilidade.
+
+#### Princípios SOLID Implementados
+
+1. **Princípio da Responsabilidade Única (SRP)**
+   - Cada classe e função agora tem uma única responsabilidade bem definida
+   - Separação de funcionalidades relacionadas ao cálculo, eventos, narrativa e economia em componentes dedicados
+
+2. **Princípio Aberto/Fechado (OCP)**
+   - O sistema agora está aberto para extensão, mas fechado para modificações
+   - Uso de interfaces e classes abstratas para permitir a adição de novos tipos de eventos, cálculos e interações
+
+3. **Princípio da Substituição de Liskov (LSP)**
+   - Os módulos derivados podem substituir seus módulos base sem efeitos colaterais
+   - Hierarquias de classes bem definidas
+
+4. **Princípio da Segregação de Interfaces (ISP)**
+   - Interfaces específicas aos clientes que as utilizam, evitando métodos não utilizados
+   - Divisão de interfaces complexas em interfaces menores e mais específicas
+
+5. **Princípio da Inversão de Dependência (DIP)**
+   - Componentes de alto nível não dependem de componentes de baixo nível; ambos dependem de abstrações
+   - Uso de injeção de dependência onde apropriado
+
+#### Nova Estrutura de Diretórios
+
+```
+utils/
+└── game_mechanics/
+    ├── __init__.py                      # Re-exporta classes e funções para compatibilidade
+    ├── constants.py                     # Constantes do jogo
+    ├── calculators/
+    │   ├── __init__.py
+    │   ├── calculator_interface.py      # Interface base para calculadoras
+    │   ├── experience_calculator_interface.py
+    │   ├── experience_calculator.py
+    │   ├── hp_factor_calculator_interface.py
+    │   └── hp_factor_calculator.py
+    ├── events/
+    │   ├── __init__.py
+    │   ├── event_interface.py           # Interface para eventos
+    │   ├── event_base.py                # Classe base abstrata para eventos
+    │   ├── training_event.py
+    │   └── random_event.py
+    └── duel/
+        ├── __init__.py
+        ├── duel_calculator_interface.py
+        ├── duel_calculator.py
+        ├── duel_narrator_interface.py
+        └── duel_narrator.py
+```
+
+#### Novos Tipos de Eventos
+
+O sistema foi expandido com novos tipos de eventos:
+
+1. **FestivalEvent**: Eventos especiais que ocorrem durante festivais
+   - Fornecem bônus de experiência e TUSD
+   - Aplicam bônus baseado no carisma do jogador
+   - Têm duração em dias
+
+2. **StoryEvent**: Eventos que ocorrem durante o modo história
+   - Podem ter escolhas que levam a diferentes resultados
+   - Fornecem recompensas variadas (exp, TUSD, atributos, itens)
+   - Podem atualizar o progresso da história
+
+### Novos Sistemas Implementados
+
+#### Sistema de Eventos Sazonais
+
+O Sistema de Eventos Sazonais adiciona eventos especiais que ocorrem durante estações específicas do ano, enriquecendo a experiência narrativa do jogo e oferecendo conteúdo exclusivo aos jogadores.
+
+1. **Tipos de Eventos Sazonais**
+   - **Eventos Sazonais Regulares**: Eventos que ocorrem durante uma estação específica
+   - **Festivais da Academia**: Eventos especiais com mini-jogos e desafios exclusivos
+   - **Eventos Climáticos**: Alteram a jogabilidade com efeitos climáticos específicos
+
+2. **Estações**
+   - **Primavera (Março-Maio)**: Eventos focados em renovação e novos começos
+   - **Verão (Junho-Agosto)**: Eventos focados em poder e energia
+   - **Outono (Setembro-Novembro)**: Eventos focados em sabedoria e colheita
+   - **Inverno (Dezembro-Fevereiro)**: Eventos focados em introspecção e renovação
+
+3. **Integração com o Modo História**
+   - Os eventos sazonais são verificados automaticamente durante o progresso do jogador
+
+#### Sistema de Companheiros
+
+O Sistema de Companheiros permite que os jogadores recrutem NPCs que os acompanham em certos capítulos, oferecendo assistência, histórias exclusivas e habilidades especiais.
+
+1. **Características dos Companheiros**
+   - **Arcos Narrativos Exclusivos**: Cada companheiro tem sua própria história
+   - **Habilidades de Sincronização**: Combinação de poderes entre jogador e companheiro
+   - **Especialização de Poderes**: Cada companheiro tem um tipo de poder e especialização
+
+2. **Progressão do Companheiro**
+   - **Recrutamento**: Encontre e recrute o companheiro em um capítulo específico
+   - **Ativação**: Ative o companheiro para que ele o acompanhe
+   - **Missões**: Complete missões exclusivas do companheiro
+   - **Progresso do Arco**: Avance no arco narrativo do companheiro
+   - **Sincronização**: Desbloqueie e use habilidades de sincronização
 
 ## Implementação dos Próximos Passos
 
@@ -326,7 +486,7 @@ Para futuras expansões do modo história, apresentamos um plano abrangente divi
 4. **Expandir o Universo Além da Academia**:
    - Introduzir locais externos como a "Cidade Proibida" e o "Vale dos Ancestrais"
    - Criar capítulos de "Expedição" onde os jogadores exploram o mundo além da academia
-   - Desenvolver uma mitologia mais profunda sobre a origem dos poderes e sua conexão com controle de governo mundial dist
+   - Desenvolver uma mitologia mais profunda sobre a origem dos poderes e sua conexão com controle de governo mundial distópico
 
 ### Aprimoramentos de Gameplay
 
@@ -382,7 +542,7 @@ Para futuras expansões do modo história, apresentamos um plano abrangente divi
     - Implementar testes de integração para verificar a coerência narrativa
     - Desenvolver ferramentas de simulação para testar múltiplos caminhos narrativos
 
-### Engajamento da Comunidade - Futuro Muito Distante
+### Engajamento da Comunidade
 
 15. **Criar Sistema de Histórias da Comunidade**:
     - Desenvolver ferramentas para que jogadores avançados criem conteúdo narrativo
@@ -394,8 +554,97 @@ Para futuras expansões do modo história, apresentamos um plano abrangente divi
     - Criar "Crises Dimensionais" onde jogadores colaboram para resolver ameaças à academia
     - Implementar um sistema de "Legado Compartilhado" onde as ações de todos os jogadores moldam o mundo do jogo
 
+## Dashboard de Comparação de Decisões
+
+Para enriquecer a experiência dos jogadores e proporcionar insights sobre como suas escolhas se comparam às de outros jogadores, propomos a implementação de um Dashboard de Comparação de Decisões.
+
+### Visão Geral do Dashboard
+
+O Dashboard de Comparação de Decisões será uma ferramenta interativa que permite aos jogadores visualizar como suas escolhas narrativas se comparam às da comunidade geral, tudo isso mantendo o anonimato dos dados.
+
+### Funcionalidades Principais
+
+1. **Comparação de Escolhas Narrativas**
+   - Exibição de estatísticas sobre as escolhas feitas em pontos-chave da história
+   - Gráficos visuais mostrando a distribuição de escolhas entre todos os jogadores
+   - Comparação das escolhas do jogador com as tendências gerais
+
+2. **Análise de Caminhos Narrativos**
+   - Visualização dos caminhos narrativos mais populares através da história
+   - Identificação de caminhos raros ou pouco explorados
+   - Mapa de calor mostrando pontos de decisão com maior divergência entre jogadores
+
+3. **Estatísticas de Facções e Alianças**
+   - Distribuição de jogadores entre as diferentes facções (Elite vs. Igualitários)
+   - Tendências de alianças com NPCs específicos
+   - Comparação das escolhas de facção com base no clube escolhido
+
+4. **Métricas de Estilo de Jogo**
+   - Análise do estilo de jogo baseado em padrões de escolha (diplomático, agressivo, estratégico, etc.)
+   - Comparação do estilo de jogo do jogador com a comunidade
+   - Sugestões de conteúdo baseadas no estilo de jogo identificado
+
+### Implementação Técnica
+
+1. **Coleta de Dados**
+   - Implementação de um sistema de rastreamento anônimo de escolhas narrativas
+   - Armazenamento seguro de dados agregados sem informações pessoais identificáveis
+   - Atualização periódica das estatísticas para refletir as tendências atuais
+
+2. **Backend**
+   - API RESTful para fornecer dados agregados ao frontend
+   - Sistema de cache para otimizar o desempenho
+   - Mecanismos de segurança para garantir a privacidade dos dados
+
+3. **Frontend**
+   - Interface interativa acessível via comando `/estatisticas` no Discord
+   - Visualizações gráficas usando bibliotecas como Chart.js ou D3.js
+   - Design responsivo que funciona bem em dispositivos móveis e desktop
+
+4. **Privacidade e Segurança**
+   - Todos os dados são anônimos e agregados
+   - Opção de opt-out para jogadores que não desejam participar
+   - Conformidade com regulamentos de privacidade como GDPR e LGPD
+
+### Benefícios para os Jogadores
+
+1. **Insight sobre Escolhas Coletivas**
+   - Compreensão de como suas decisões se comparam às da comunidade
+   - Descoberta de caminhos alternativos que poderiam ser explorados
+
+2. **Engajamento Comunitário**
+   - Promoção de discussões sobre diferentes abordagens narrativas
+   - Criação de um senso de comunidade compartilhada
+
+3. **Orientação para Novas Jogadas**
+   - Inspiração para experimentar diferentes caminhos em novas jogadas
+   - Descoberta de conteúdo que poderia ter sido perdido
+
+4. **Reflexão sobre Decisões Morais**
+   - Oportunidade para refletir sobre as implicações éticas das escolhas
+   - Comparação de valores morais com a comunidade mais ampla
+
+### Próximos Passos para o Dashboard
+
+1. **Fase 1: Implementação Básica**
+   - Desenvolver o sistema de coleta de dados
+   - Criar visualizações básicas para escolhas-chave
+   - Implementar o comando `/estatisticas`
+
+2. **Fase 2: Expansão de Funcionalidades**
+   - Adicionar análise de caminhos narrativos
+   - Implementar métricas de estilo de jogo
+   - Criar visualizações mais detalhadas e interativas
+
+3. **Fase 3: Integração Avançada**
+   - Conectar o dashboard com o sistema de recomendações
+   - Implementar análises preditivas para sugerir conteúdo
+   - Desenvolver recursos de compartilhamento social
+
 ## Conclusão e Visão de Futuro
 
 Esta expansão do modo história não apenas enriquece significativamente a experiência dos jogadores, oferecendo uma narrativa mais profunda e interativa, mas também estabelece as bases para um universo narrativo em constante evolução. Ao implementar estas melhorias, a Academia Tokugawa se tornará um mundo vivo e dinâmico, onde cada jogador pode criar sua própria lenda enquanto contribui para uma história coletiva mais ampla.
 
 O foco em ferramentas técnicas robustas e processos de criação de conteúdo eficientes garantirá que o jogo possa crescer organicamente, respondendo tanto às visões criativas da equipe quanto ao feedback da comunidade. Esta abordagem equilibrada entre excelência narrativa, inovação técnica e engajamento comunitário posiciona a Academia Tokugawa como uma experiência de RPG única e memorável no cenário dos jogos Discord.
+
+Com a adição do Dashboard de Comparação de Decisões, o jogo dará um passo além na criação de uma experiência verdadeiramente comunitária, onde os jogadores podem ver como suas escolhas se comparam às de outros, incentivando a reflexão, a discussão e a exploração de novos caminhos narrativos.

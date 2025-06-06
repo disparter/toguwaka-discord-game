@@ -1,0 +1,31 @@
+{
+    "spring_token": {
+        "name": "Moeda Floral",
+        "description": "Moeda especial obtida durante o Festival da Primavera",
+        "season": "spring",
+        "icon": "🌸"
+    },
+    "summer_token": {
+        "name": "Moeda Solar",
+        "description": "Moeda especial obtida durante eventos de verão",
+        "season": "summer",
+        "icon": "☀️"
+    },
+    "autumn_token": {
+        "name": "Moeda Outonal",
+        "description": "Moeda especial obtida durante o Festival de Outono",
+        "season": "autumn",
+        "icon": "🍂"
+    },
+    "winter_token": {
+        "name": "Moeda Glacial",
+        "description": "Moeda especial obtida durante o Festival de Inverno",
+        "season": "winter",
+        "icon": "❄️"
+    },
+    "event_token": {
+        "name": "Insígnia de Evento",
+        "description": "Moeda especial obtida durante eventos globais",
+        "icon": "🏆"
+    }
+}
