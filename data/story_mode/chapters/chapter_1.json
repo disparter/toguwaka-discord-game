@@ -4,20 +4,19 @@
     "title": "Meu Primeiro Dia de Aula",
     "description": "Seu primeiro dia na Academia Tokugawa. Conheça a escola e seus colegas.",
     "dialogues": [
-      {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa! Estamos felizes em receber mais um estudante com habilidades especiais."},
+      {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa! Estamos felizes em receber mais um estudante com habilidades especiais.", "gif": "welcome.gif"},
       {"npc": "Diretor", "text": "Aqui você aprenderá a controlar e aprimorar seus poderes, além de receber uma educação de primeira classe."},
       {"npc": "Diretor", "text": "Lembre-se: com grandes poderes, vêm grandes responsabilidades. Esperamos que você honre o nome da nossa academia."},
       {"npc": "Narrador", "text": "Você nota que o Diretor parece querer conversar mais. Você pode usar o comando /falar com ele a qualquer momento."},
       {"npc": "Narrador", "text": "Quando o Diretor compartilhar imagens ou gifs com você, eles serão salvos em seus registros. Use o comando /registros para vê-los novamente."},
-      {"npc": "Junie", "text": "Olá! Eu sou Junie, sua assistente virtual. Estou aqui para ajudar com qualquer dúvida que você tenha sobre a academia."},
+      {"npc": "Junie", "text": "Olá! Eu sou Junie, sua assistente virtual. Estou aqui para ajudar com qualquer dúvida que você tenha sobre a academia.", "gif": "junie_intro.gif"},
       {"npc": "Junie", "text": "A Academia Tokugawa não é uma escola comum. Aqui, os estudantes são classificados em uma hierarquia baseada em seus poderes."},
       {"npc": "Junie", "text": "Os mais fortes ocupam posições de liderança, como Rei ou Rainha, Jack e Ás. Eles são responsáveis por manter a ordem."},
-      {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!"}
-    ],
-    "choices": [
-      {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7},
-      {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8},
-      {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9}
+      {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!", "choices": [
+        {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7},
+        {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8},
+        {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9}
+      ]}
     ],
     "additional_dialogues": {
       "7": [
@@ -153,7 +152,7 @@
         ]}
       ],
       "3": [
-        {"npc": "Alexander Strategos", "text": "Um novo peão no tabuleiro. Interessante. Bem-vindo ao Conselho Político."},
+        {"npc": "Alexander Strategos", "text": "Um novo peão no tabuleiro. Interessante. Bem-vindo ao Conselho Político.", "gif": "alexander_strategos.gif"},
         {"npc": "Alexander Strategos", "text": "Nosso clube controla a política estudantil da academia. Influência e estratégia são nossas armas."},
         {"npc": "Alexander Strategos", "text": "Os Ilusionistas pensam que podem ler nossas mentes, mas sempre estamos três passos à frente."},
         {"npc": "Alexander Strategos", "text": "E então? Você tem o que é preciso para jogar o jogo do poder?", "choices": [

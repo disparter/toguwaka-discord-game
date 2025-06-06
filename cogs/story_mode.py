@@ -4,6 +4,7 @@ from discord import app_commands
 import logging
 from utils.json_utils import dumps as json_dumps
 import asyncio
+import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
 
@@ -442,7 +443,15 @@ class StoryModeCog(commands.Cog):
             # Set file to None initially
             file = None
 
-            if kai_first_interaction:
+            # Check if the dialogue has a gif field
+            if "gif" in dialogue and dialogue["gif"]:
+                gif_filename = dialogue["gif"]
+                gif_path = f"assets/gifs/{gif_filename}"
+                if os.path.exists(gif_path):
+                    embed.set_image(url=f"attachment://{gif_filename}")
+                    file = discord.File(gif_path, filename=gif_filename)
+            # If no gif field, check for specific character interactions
+            elif kai_first_interaction:
                 embed.set_image(url="attachment://kai_intro.gif")
                 # Create file object for the GIF
                 file = discord.File("assets/gifs/kai_intro.gif", filename="kai_intro.gif")
