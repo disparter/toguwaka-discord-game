@@ -1,0 +1,250 @@
+{
+  "3_1": {
+    "type": "story",
+    "title": "Ano 3: O Legado",
+    "description": "Seu terceiro ano na Academia Tokugawa começa com novas responsabilidades e um papel único na história da instituição.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O verão passou rapidamente enquanto você se preparava para seu novo papel na Academia Tokugawa."},
+      {"npc": "Narrador", "text": "Após os eventos dramáticos do ano anterior, a academia passou por mudanças significativas. O recém-formado Departamento de Estudos Dimensionais ocupa agora uma ala inteira do campus."},
+      {"npc": "Narrador", "text": "Como Assistente Especial de Pesquisa Dimensional, você recebeu um escritório próprio - um privilégio inédito para um estudante do terceiro ano."},
+      {"npc": "Junie", "text": "Bom dia! Bem-vindo ao seu terceiro ano. Seu novo cronograma está pronto, e devo dizer que é bastante diferente dos anos anteriores."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre as novas responsabilidades", "next_dialogue": 4},
+      {"text": "Perguntar sobre o programa de mentoria", "next_dialogue": 5},
+      {"text": "Perguntar sobre Hikari", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Junie", "text": "Suas responsabilidades foram significativamente expandidas. Além das aulas regulares, você terá acesso a seminários avançados normalmente reservados para professores."},
+        {"npc": "Junie", "text": "Você também participará de reuniões semanais do Conselho de Pesquisa Dimensional, onde terá voz ativa nas decisões sobre o estudo e contenção de anomalias."},
+        {"npc": "Junie", "text": "E, claro, há o programa de mentoria avançada. Você supervisionará não apenas um, mas três estudantes com potencial para manipulação dimensional."},
+        {"npc": "Junie", "text": "A Professora Chronos e o Diretor concordam que sua influência será crucial para moldar a próxima geração de especialistas dimensionais."}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "O Programa de Mentoria Avançada é uma iniciativa completamente nova, desenvolvida especificamente após os eventos do ano passado."},
+        {"npc": "Junie", "text": "Diferente da mentoria tradicional do segundo ano, este programa foca em estudantes com afinidade dimensional específica."},
+        {"npc": "Junie", "text": "Você terá três mentorados: um calouro, um estudante do segundo ano, e um colega do terceiro ano com potencial recém-descoberto."},
+        {"npc": "Junie", "text": "Suas decisões como mentor influenciarão diretamente o desenvolvimento deles, não apenas academicamente, mas também em termos de caráter e abordagem ética à energia dimensional."},
+        {"npc": "Junie", "text": "É uma responsabilidade significativa, mas a administração confia plenamente em sua capacidade de orientá-los adequadamente."}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "Hikari teve um verão bastante produtivo! Seu talento para manipulação de luz e energia se desenvolveu significativamente."},
+        {"npc": "Junie", "text": "Ele foi promovido para o programa avançado do segundo ano e, na verdade, será seu assistente no Programa de Mentoria Avançada."},
+        {"npc": "Junie", "text": "Vocês dois formaram uma parceria notável durante a crise dimensional, e a administração acredita que essa sinergia será benéfica para os novos estudantes."},
+        {"npc": "Junie", "text": "Ele deve chegar em breve para a reunião de orientação. Parece bastante animado com a oportunidade de trabalhar oficialmente com você."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Enquanto você absorve as informações sobre seu novo papel, há uma batida na porta. Hikari entra, seguido por três estudantes que você não reconhece."},
+      {"npc": "Hikari", "text": "Mentor! Quero dizer, colega mentor agora, suponho. Trouxe nossos mentorados para conhecê-lo."},
+      {"npc": "Narrador", "text": "Os três estudantes se apresentam um por um."},
+      {"npc": "Mina", "text": "Mina Starlight, primeiro ano. Meus poderes envolvem manipulação de luz estelar. Estou muito honrada por ter sido selecionada para este programa."},
+      {"npc": "Takeshi", "text": "Takeshi Voidwalker, segundo ano. Trabalho com manipulação de sombras e espaços negativos. Estava no campus durante o... incidente do ano passado."},
+      {"npc": "Elara", "text": "Elara Timeweaver, terceiro ano como você. Meus poderes estavam dormentes até recentemente. Aparentemente, posso perceber e manipular fluxos temporais em pequena escala."}
+    ],
+    "choices_2": [
+      {"text": "Dar as boas-vindas com entusiasmo", "next_dialogue": 7, "affinity_change": {"Mina": 5, "Takeshi": 3, "Elara": 5}},
+      {"text": "Estabelecer expectativas claras", "next_dialogue": 8, "affinity_change": {"Mina": 3, "Takeshi": 5, "Elara": 3}},
+      {"text": "Compartilhar sua experiência com anomalias dimensionais", "next_dialogue": 9, "affinity_change": {"Mina": 3, "Takeshi": 3, "Elara": 8}}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Você", "text": "Bem-vindos ao Programa de Mentoria Avançada! Estou genuinamente empolgado para trabalhar com cada um de vocês."},
+        {"npc": "Você", "text": "Seus talentos são extraordinários, e juntos exploraremos o verdadeiro potencial de suas habilidades."},
+        {"npc": "Você", "text": "Este não é um relacionamento unilateral - espero aprender tanto com vocês quanto vocês comigo."},
+        {"npc": "Narrador", "text": "Mina sorri radiante, Elara parece genuinamente tocada, e até Takeshi, apesar de sua expressão séria, demonstra um leve sorriso."},
+        {"npc": "Hikari", "text": "Esse é o espírito! Já preparei algumas atividades iniciais para nos conhecermos melhor. Que tal começarmos com uma sessão prática no novo Laboratório Dimensional?"}
+      ],
+      "8": [
+        {"npc": "Você", "text": "Bem-vindos. Antes de começarmos, quero estabelecer algumas expectativas claras."},
+        {"npc": "Você", "text": "O estudo da energia dimensional não é apenas sobre poder, mas responsabilidade. Espero dedicação, disciplina e, acima de tudo, cautela."},
+        {"npc": "Você", "text": "Testemunhei em primeira mão os perigos de manipular forças dimensionais sem o devido respeito. Não repetirei esses erros, nem permitirei que vocês os cometam."},
+        {"npc": "Narrador", "text": "Takeshi assente com aprovação, Mina parece ligeiramente intimidada, e Elara observa você com interesse analítico."},
+        {"npc": "Hikari", "text": "Meu mentor sempre valorizou a abordagem equilibrada. Rigor e segurança, sim, mas também exploração e descoberta. É uma linha tênue que aprenderemos a caminhar juntos."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "Antes de começarmos formalmente, quero compartilhar um pouco da minha experiência com anomalias dimensionais."},
+        {"npc": "Narrador", "text": "Você relata sua jornada do ano anterior - a descoberta da anomalia na floresta, o conflito entre o Diretor e a Professora Chronos, e os eventos dramáticos da cerimônia de encerramento."},
+        {"npc": "Você", "text": "O que aprendi é que a energia dimensional não é inerentemente perigosa nem benigna - é como fogo. Uma ferramenta poderosa e uma força potencialmente destrutiva."},
+        {"npc": "Você", "text": "Nosso trabalho será entender melhor essa energia e desenvolver métodos para utilizá-la de forma segura e benéfica."},
+        {"npc": "Narrador", "text": "Elara está completamente fascinada, absorvendo cada palavra. Mina e Takeshi também prestam atenção total, embora com diferentes níveis de apreensão."},
+        {"npc": "Elara", "text": "É por isso que meus poderes despertaram recentemente? A exposição às energias residuais da anomalia?"},
+        {"npc": "Você", "text": "Muito provavelmente. E é por isso que precisamos estudar esses fenômenos cuidadosamente - eles têm o potencial de transformar pessoas de maneiras que apenas começamos a compreender."}
+      ]
+    },
+    "completion_exp": 1000,
+    "completion_tusd": 1500,
+    "next_chapter": "3_2"
+  },
+  "3_2": {
+    "type": "story",
+    "title": "Primeiros Passos da Mentoria",
+    "description": "Você começa a trabalhar com seus mentorados, descobrindo seus potenciais únicos e desafios.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Nas semanas seguintes, você estabelece uma rotina com seus três mentorados, alternando entre sessões teóricas e práticas."},
+      {"npc": "Narrador", "text": "O novo Laboratório Dimensional oferece instalações de ponta para treinamento seguro e experimentação controlada."},
+      {"npc": "Hikari", "text": "Os relatórios iniciais de progresso são impressionantes. Cada um deles está respondendo bem ao seu estilo de mentoria."},
+      {"npc": "Hikari", "text": "No entanto, estou notando alguns desafios específicos que talvez precisem de sua atenção direta."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre Mina", "next_dialogue": 4},
+      {"text": "Perguntar sobre Takeshi", "next_dialogue": 5},
+      {"text": "Perguntar sobre Elara", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Hikari", "text": "Mina tem um talento natural extraordinário. Sua capacidade de manipular luz estelar é algo que raramente vemos em calouros."},
+        {"npc": "Hikari", "text": "O problema é que ela carece de confiança. Quando pressionada, duvida de suas habilidades e isso causa instabilidade em seus poderes."},
+        {"npc": "Hikari", "text": "Durante nosso último exercício, ela quase criou uma micro-supernova quando ficou nervosa. Por sorte, as proteções do laboratório contiveram a explosão."},
+        {"npc": "Hikari", "text": "Ela precisa de orientação para construir confiança sem perder o controle. Seu potencial é imenso, mas também potencialmente perigoso."}
+      ],
+      "5": [
+        {"npc": "Hikari", "text": "Takeshi é... complicado. Tecnicamente excelente, disciplinado, focado."},
+        {"npc": "Hikari", "text": "Mas há algo sombrio em sua abordagem. Ele parece fascinado pelos aspectos mais obscuros da manipulação dimensional."},
+        {"npc": "Hikari", "text": "Recentemente, o encontrei estudando textos antigos sobre 'vazios dimensionais' - espaços onde as leis da física não se aplicam."},
+        {"npc": "Hikari", "text": "Quando questionado, ele disse que estava apenas 'explorando todas as possibilidades'. Não fez nada errado, mas sua intensidade é preocupante."}
+      ],
+      "6": [
+        {"npc": "Hikari", "text": "Elara é um caso fascinante. Seus poderes temporais são extremamente raros, quase tão raros quanto os da Professora Chronos."},
+        {"npc": "Hikari", "text": "Ela consegue perceber 'linhas temporais' - vislumbres de possíveis futuros ou passados alternativos. Ainda não pode manipulá-las, apenas vê-las."},
+        {"npc": "Hikari", "text": "O problema é que essas visões estão se tornando mais frequentes e intensas. Ontem, ela teve um episódio durante o almoço - ficou catatônica por quase cinco minutos."},
+        {"npc": "Hikari", "text": "Quando voltou a si, disse ter visto algo perturbador relacionado à 'Cidade Proibida'. Não quis elaborar, mas parecia genuinamente assustada."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Enquanto você considera como abordar esses desafios, recebe uma notificação: a Professora Chronos solicita sua presença no Departamento de Estudos Dimensionais."},
+      {"npc": "Narrador", "text": "Ao chegar lá, você encontra não apenas a Professora Chronos, mas também o Diretor e um visitante que você não reconhece - um homem de meia-idade com roupas formais e uma insígnia governamental."},
+      {"npc": "Professora Chronos", "text": "Ah, você chegou. Obrigada por vir tão rapidamente."},
+      {"npc": "Diretor", "text": "Permita-me apresentar o Secretário Nakamura, do Departamento de Assuntos Especiais do governo."},
+      {"npc": "Secretário Nakamura", "text": "É um prazer finalmente conhecê-lo. Ouvi muito sobre suas... habilidades únicas e sua contribuição durante o incidente do ano passado."}
+    ],
+    "choices_2": [
+      {"text": "Perguntar o motivo da visita do Secretário", "next_dialogue": 7},
+      {"text": "Questionar se há algum problema com o programa de mentoria", "next_dialogue": 8},
+      {"text": "Mencionar as visões de Elara sobre a Cidade Proibida", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Secretário Nakamura", "text": "Direto ao ponto. Aprecio isso. Estou aqui porque recentemente detectamos atividade dimensional anômala em uma região remota conhecida como a Cidade Proibida."},
+        {"npc": "Secretário Nakamura", "text": "Historicamente, a área foi isolada após um... incidente há décadas. Os detalhes são classificados, mas digamos que foi uma tentativa mal-sucedida de replicar o Evento Zero."},
+        {"npc": "Diretor", "text": "O governo está preocupado que as recentes flutuações dimensionais aqui na academia possam ter afetado outras áreas sensíveis, incluindo a Cidade Proibida."},
+        {"npc": "Professora Chronos", "text": "Estamos planejando uma expedição de reconhecimento, e gostaríamos que você participasse. Sua sensibilidade à energia dimensional seria inestimável."}
+      ],
+      "8": [
+        {"npc": "Diretor", "text": "Não, o programa de mentoria está progredindo exatamente como esperávamos. Seus relatórios preliminares são bastante promissores."},
+        {"npc": "Professora Chronos", "text": "Na verdade, é parcialmente por causa do sucesso do programa que estamos tendo esta reunião."},
+        {"npc": "Secretário Nakamura", "text": "Permita-me explicar. O governo tem monitorado anomalias dimensionais por décadas. Recentemente, detectamos atividade preocupante na região conhecida como Cidade Proibida."},
+        {"npc": "Secretário Nakamura", "text": "Acreditamos que seus mentorados, especialmente a senhorita Timeweaver com suas habilidades temporais, podem estar inconscientemente detectando essa perturbação."},
+        {"npc": "Diretor", "text": "Estamos considerando uma expedição de reconhecimento, e gostaríamos que você liderasse um pequeno grupo, possivelmente incluindo um ou mais de seus mentorados."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Ao mencionar as visões de Elara, você nota uma troca de olhares significativa entre os três."},
+        {"npc": "Professora Chronos", "text": "Isso confirma nossas suspeitas. As habilidades temporais de Elara estão ressoando com perturbações dimensionais distantes."},
+        {"npc": "Secretário Nakamura", "text": "Precisamente o que temíamos. A Cidade Proibida foi isolada após um experimento dimensional catastrófico há décadas. Se está 'vazando' energia novamente..."},
+        {"npc": "Diretor", "text": "Precisamos investigar imediatamente. E acreditamos que você, possivelmente acompanhado por Elara, seria ideal para esta missão."},
+        {"npc": "Secretário Nakamura", "text": "Suas habilidades complementares - sua sensibilidade à energia dimensional atual e a percepção temporal dela - poderiam fornecer insights cruciais sobre o que está acontecendo."}
+      ]
+    },
+    "completion_exp": 1200,
+    "completion_tusd": 1800,
+    "next_chapter": "3_3"
+  },
+  "3_3": {
+    "type": "branching",
+    "title": "Decisões de Mentor",
+    "description": "Suas escolhas como mentor serão testadas enquanto se prepara para a expedição à Cidade Proibida.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Após a reunião com o Secretário Nakamura, você retorna ao seu escritório para considerar a proposta da expedição à Cidade Proibida."},
+      {"npc": "Narrador", "text": "A missão é claramente importante, mas também potencialmente perigosa. Além disso, você precisa decidir quais, se algum, de seus mentorados levar com você."},
+      {"npc": "Hikari", "text": "Então, eles querem que você vá à Cidade Proibida? Esse lugar é quase mítico entre os estudantes - dizem que o tempo e o espaço se comportam de maneira estranha lá."},
+      {"npc": "Hikari", "text": "Quanto aos mentorados, cada um deles traria habilidades valiosas, mas também riscos únicos. A decisão é sua, como mentor principal."}
+    ],
+    "choices": [
+      {"text": "Levar Elara devido às suas visões temporais", "next_dialogue": 4},
+      {"text": "Levar Takeshi por sua disciplina e controle", "next_dialogue": 5},
+      {"text": "Levar Mina para ajudá-la a construir confiança", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Você", "text": "Vou levar Elara. Suas visões temporais podem ser cruciais para entender o que está acontecendo na Cidade Proibida."},
+        {"npc": "Hikari", "text": "Faz sentido. Ela já está conectada de alguma forma com o lugar. Além disso, a experiência prática pode ajudá-la a desenvolver melhor controle sobre suas habilidades."},
+        {"npc": "Narrador", "text": "Quando você informa Elara sobre sua decisão, ela parece simultaneamente nervosa e determinada."},
+        {"npc": "Elara", "text": "Eu... suspeitava que isso aconteceria. Nas minhas visões, nos vi lá juntos. Não sei o que encontraremos, mas sei que é importante."},
+        {"npc": "Elara", "text": "Há algo na Cidade Proibida que está... chamando por mim, de alguma forma. Como se o tempo estivesse dobrado sobre si mesmo lá."}
+      ],
+      "5": [
+        {"npc": "Você", "text": "Vou levar Takeshi. Sua disciplina e controle serão valiosos em um ambiente potencialmente instável."},
+        {"npc": "Hikari", "text": "Uma escolha interessante. Ele certamente tem o temperamento para uma missão perigosa. E talvez dar a ele um propósito construtivo ajude a canalizar seus interesses para uma direção mais positiva."},
+        {"npc": "Narrador", "text": "Quando você informa Takeshi, ele recebe a notícia com sua habitual compostura, mas você nota um brilho de entusiasmo em seus olhos."},
+        {"npc": "Takeshi", "text": "Agradeço a confiança, mentor. Estudei extensivamente anomalias dimensionais e suas manifestações. A Cidade Proibida é um caso fascinante de realidade distorcida."},
+        {"npc": "Takeshi", "text": "Prometo não decepcioná-lo. Esta é uma oportunidade de aplicar meus estudos em um contexto real e significativo."}
+      ],
+      "6": [
+        {"npc": "Você", "text": "Vou levar Mina. Esta missão pode ser exatamente o que ela precisa para construir confiança em suas habilidades."},
+        {"npc": "Hikari", "text": "É uma escolha arriscada. Ela tem o menor treinamento dos três. Por outro lado, seu potencial é imenso, e sua manipulação de luz estelar poderia ser incrivelmente útil."},
+        {"npc": "Narrador", "text": "Quando você informa Mina, ela inicialmente parece chocada, depois ansiosa, e finalmente determinada."},
+        {"npc": "Mina", "text": "Eu? Tem certeza? Quero dizer... obrigada pela oportunidade! Prometo que não vou decepcioná-lo."},
+        {"npc": "Mina", "text": "Vou praticar extra até a partida. Meus poderes podem iluminar até os lugares mais escuros, e prometo mantê-los sob controle."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Nos dias que antecedem a expedição, você e seu mentorado escolhido participam de sessões de preparação especiais com a Professora Chronos."},
+      {"npc": "Professora Chronos", "text": "A Cidade Proibida não é um lugar comum. Foi isolada por boas razões após o incidente de 1987."},
+      {"npc": "Professora Chronos", "text": "O experimento que deu errado lá criou o que chamamos de 'bolha dimensional' - uma área onde as leis normais do espaço-tempo são... flexíveis."},
+      {"npc": "Professora Chronos", "text": "Dentro da cidade, vocês podem experimentar dilatação temporal, loops espaciais, e ecos dimensionais - fragmentos de realidades alternativas que sangram para a nossa."},
+      {"npc": "Professora Chronos", "text": "Mais importante ainda: não se separem, não toquem em anomalias visíveis, e mantenham contato constante com a base através destes comunicadores especiais."}
+    ],
+    "choices_2": [
+      {"text": "Perguntar sobre o objetivo específico da missão", "next_dialogue": 7},
+      {"text": "Questionar os riscos para seu mentorado", "next_dialogue": 8},
+      {"text": "Perguntar sobre o governo e seu interesse na cidade", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Você", "text": "Qual é exatamente nosso objetivo lá? O que estamos procurando?"},
+        {"npc": "Professora Chronos", "text": "Primariamente, avaliação e reconhecimento. Queremos entender por que a atividade dimensional na cidade aumentou recentemente."},
+        {"npc": "Professora Chronos", "text": "Vocês levarão sensores avançados para mapear as flutuações energéticas e, se possível, localizar o epicentro da perturbação."},
+        {"npc": "Professora Chronos", "text": "Se encontrarem a fonte, não tentem neutralizá-la - apenas documentem e reportem. Uma equipe especializada será enviada posteriormente se necessário."},
+        {"npc": "Professora Chronos", "text": "E, claro, qualquer insight que suas habilidades únicas proporcionarem será inestimável. Confio em seu julgamento para interpretar o que encontrarem."}
+      ],
+      "8": [
+        {"npc": "Você", "text": "Quais são os riscos reais para meu mentorado? Não quero expô-lo a perigo desnecessário."},
+        {"npc": "Professora Chronos", "text": "Uma preocupação admirável. Os riscos são significativos, não vou minimizá-los."},
+        {"npc": "Professora Chronos", "text": "Exposição prolongada às anomalias pode causar desorientação, alucinações e, em casos extremos, deslocamento temporal temporário - a sensação de estar em múltiplos momentos simultaneamente."},
+        {"npc": "Professora Chronos", "text": "Os trajes especiais que forneceremos oferecem proteção considerável, e vocês serão treinados em técnicas de ancoragem mental para resistir a efeitos psicológicos."},
+        {"npc": "Professora Chronos", "text": "Além disso, a expedição será breve - não mais que seis horas dentro da zona de anomalia. E vocês terão autoridade para abortar a missão se a situação se tornar perigosa."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "Por que o governo está tão interessado na Cidade Proibida agora? O incidente foi há décadas."},
+        {"npc": "Professora Chronos", "text": "Uma pergunta perspicaz. O interesse oficial é, naturalmente, segurança pública. Se a bolha dimensional estiver se expandindo, populações civis poderiam ser afetadas."},
+        {"npc": "Professora Chronos", "text": "No entanto..."},
+        {"npc": "Narrador", "text": "Ela olha ao redor para garantir que estão sozinhos antes de continuar em voz baixa."},
+        {"npc": "Professora Chronos", "text": "Há rumores de que o Departamento de Assuntos Especiais nunca abandonou completamente a pesquisa iniciada lá. Alguns acreditam que eles veem as recentes perturbações como uma oportunidade para retomar certos... projetos."},
+        {"npc": "Professora Chronos", "text": "É por isso que sua participação é crucial. Precisamos de observadores independentes que reportem a verdade, não apenas o que o governo quer ouvir."}
+      ]
+    },
+    "branches": {
+      "elara_branch": {
+        "conditions": {
+          "choice": 0
+        },
+        "next_chapter": "3_4_elara"
+      },
+      "takeshi_branch": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "3_4_takeshi"
+      },
+      "mina_branch": {
+        "conditions": {
+          "choice": 2
+        },
+        "next_chapter": "3_4_mina"
+      }
+    },
+    "completion_exp": 1500,
+    "completion_tusd": 2000
+  }
+}
