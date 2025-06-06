@@ -469,7 +469,10 @@ class StoryMode(commands.Cog):
         self.bot = bot
         self.active_stories = {}  # {user_id: {current_dialogue: int, chapter_data: dict}}
         self.climactic_events = {}  # Track active climactic events
+        self.climactic_event_task = None  # Will be initialized in cog_load
 
+    async def cog_load(self):
+        """Async hook that is called when the cog is loaded."""
         # Start a background task to check for climactic events
         self.climactic_event_task = self.bot.loop.create_task(self.check_for_climactic_events())
 
