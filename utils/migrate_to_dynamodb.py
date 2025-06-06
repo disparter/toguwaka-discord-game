@@ -7,8 +7,8 @@ from datetime import datetime
 from pathlib import Path
 
 # Import both database modules
-import database as sqlite_db
-import dynamodb as dynamo_db
+from . import database as sqlite_db
+from . import dynamodb as dynamo_db
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -18,14 +18,14 @@ SQLITE_DB_PATH = Path('data/tokugawa.db')
 def migrate_players():
     """Migrate players from SQLite to DynamoDB."""
     logger.info("Migrating players...")
-    
+
     # Get all players from SQLite
     players = sqlite_db.get_all_players()
     count = 0
-    
+
     for player in players:
         user_id = player['user_id']
-        
+
         # Create player profile in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -52,17 +52,17 @@ def migrate_players():
                 'last_active': player['last_active']
             }
         )
-        
+
         # Create inventory in DynamoDB
         inventory = json.loads(player['inventory']) if isinstance(player['inventory'], str) else player['inventory']
         inventory_items = []
-        
+
         for item_id, quantity in inventory.items():
             inventory_items.append({
                 'id': item_id,
                 'quantidade': quantity
             })
-        
+
         dynamo_db.table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
@@ -70,11 +70,11 @@ def migrate_players():
                 'itens': inventory_items
             }
         )
-        
+
         # Create techniques in DynamoDB
         techniques = json.loads(player['techniques']) if isinstance(player['techniques'], str) else player['techniques']
         techniques_list = []
-        
+
         for tech_id, tech_data in techniques.items():
             techniques_list.append({
                 'id': tech_id,
@@ -82,7 +82,7 @@ def migrate_players():
                 'nivel': tech_data.get('level', 1),
                 'dano': tech_data.get('damage', 0)
             })
-        
+
         dynamo_db.table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
@@ -90,25 +90,25 @@ def migrate_players():
                 'tecnicas': techniques_list
             }
         )
-        
+
         count += 1
         if count % 10 == 0:
             logger.info(f"Migrated {count} players...")
-    
+
     logger.info(f"Migrated {count} players successfully.")
     return count
 
 def migrate_clubs():
     """Migrate clubs from SQLite to DynamoDB."""
     logger.info("Migrating clubs...")
-    
+
     # Get all clubs from SQLite
     clubs = sqlite_db.get_all_clubs()
     count = 0
-    
+
     for club in clubs:
         club_id = club['club_id']
-        
+
         # Create club profile in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -124,11 +124,11 @@ def migrate_clubs():
                 'created_at': club['created_at']
             }
         )
-        
+
         # Get club members
         members = sqlite_db.get_club_members(club_id)
         member_ids = [f'PLAYER#{member["user_id"]}' for member in members]
-        
+
         # Create club members in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -137,33 +137,33 @@ def migrate_clubs():
                 'membros': member_ids
             }
         )
-        
+
         count += 1
-    
+
     logger.info(f"Migrated {count} clubs successfully.")
     return count
 
 def migrate_events():
     """Migrate events from SQLite to DynamoDB."""
     logger.info("Migrating events...")
-    
+
     # Connect to SQLite database
     conn = sqlite3.connect(SQLITE_DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     # Get all events
     cursor.execute("SELECT * FROM events")
     events = cursor.fetchall()
     count = 0
-    
+
     for event in events:
         event_id = event['event_id']
-        
+
         # Parse JSON fields
         participants = json.loads(event['participants'])
         data = json.loads(event['data'])
-        
+
         # Create event in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -184,9 +184,9 @@ def migrate_events():
                 'created_at': event['created_at']
             }
         )
-        
+
         count += 1
-    
+
     conn.close()
     logger.info(f"Migrated {count} events successfully.")
     return count
@@ -194,21 +194,21 @@ def migrate_events():
 def migrate_cooldowns():
     """Migrate cooldowns from SQLite to DynamoDB."""
     logger.info("Migrating cooldowns...")
-    
+
     # Connect to SQLite database
     conn = sqlite3.connect(SQLITE_DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     # Get all cooldowns
     cursor.execute("SELECT * FROM cooldowns")
     cooldowns = cursor.fetchall()
     count = 0
-    
+
     for cooldown in cooldowns:
         user_id = cooldown['user_id']
         command = cooldown['command']
-        
+
         # Create cooldown in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -217,9 +217,9 @@ def migrate_cooldowns():
                 'expiry_time': cooldown['expiry_time']
             }
         )
-        
+
         count += 1
-    
+
     conn.close()
     logger.info(f"Migrated {count} cooldowns successfully.")
     return count
@@ -227,20 +227,20 @@ def migrate_cooldowns():
 def migrate_system_flags():
     """Migrate system flags from SQLite to DynamoDB."""
     logger.info("Migrating system flags...")
-    
+
     # Connect to SQLite database
     conn = sqlite3.connect(SQLITE_DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     # Get all system flags
     cursor.execute("SELECT * FROM system_flags")
     flags = cursor.fetchall()
     count = 0
-    
+
     for flag in flags:
         flag_name = flag['flag_name']
-        
+
         # Create system flag in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -250,9 +250,9 @@ def migrate_system_flags():
                 'updated_at': flag['updated_at']
             }
         )
-        
+
         count += 1
-    
+
     conn.close()
     logger.info(f"Migrated {count} system flags successfully.")
     return count
@@ -260,23 +260,23 @@ def migrate_system_flags():
 def migrate_items():
     """Migrate items from SQLite to DynamoDB."""
     logger.info("Migrating items...")
-    
+
     # Connect to SQLite database
     conn = sqlite3.connect(SQLITE_DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     # Get all items
     cursor.execute("SELECT * FROM items")
     items = cursor.fetchall()
     count = 0
-    
+
     for item in items:
         item_id = item['item_id']
-        
+
         # Parse effects JSON
         effects = json.loads(item['effects'])
-        
+
         # Create item in DynamoDB
         dynamo_db.table.put_item(
             Item={
@@ -292,9 +292,9 @@ def migrate_items():
                 'efeitos': effects
             }
         )
-        
+
         count += 1
-    
+
     conn.close()
     logger.info(f"Migrated {count} items successfully.")
     return count
@@ -302,16 +302,65 @@ def migrate_items():
 def migrate_all():
     """Migrate all data from SQLite to DynamoDB."""
     logger.info("Starting migration from SQLite to DynamoDB...")
-    
+
     try:
+        # Check if SQLite database exists
+        if not os.path.exists(SQLITE_DB_PATH):
+            logger.error(f"SQLite database file not found: {SQLITE_DB_PATH}")
+            return False
+
+        # Check if DynamoDB table is accessible
+        try:
+            dynamo_db.table.table_status
+            logger.info(f"DynamoDB table {dynamo_db.TABLE_NAME} is accessible")
+        except Exception as e:
+            logger.error(f"Error accessing DynamoDB table: {e}")
+            logger.error("Make sure the table exists and AWS credentials are properly configured")
+            return False
+
         # Migrate in order of dependencies
-        clubs_count = migrate_clubs()
-        players_count = migrate_players()
-        events_count = migrate_events()
-        cooldowns_count = migrate_cooldowns()
-        system_flags_count = migrate_system_flags()
-        items_count = migrate_items()
-        
+        try:
+            clubs_count = migrate_clubs()
+            logger.info(f"Migrated {clubs_count} clubs")
+        except Exception as e:
+            logger.error(f"Error migrating clubs: {e}")
+            return False
+
+        try:
+            players_count = migrate_players()
+            logger.info(f"Migrated {players_count} players")
+        except Exception as e:
+            logger.error(f"Error migrating players: {e}")
+            return False
+
+        try:
+            events_count = migrate_events()
+            logger.info(f"Migrated {events_count} events")
+        except Exception as e:
+            logger.error(f"Error migrating events: {e}")
+            return False
+
+        try:
+            cooldowns_count = migrate_cooldowns()
+            logger.info(f"Migrated {cooldowns_count} cooldowns")
+        except Exception as e:
+            logger.error(f"Error migrating cooldowns: {e}")
+            return False
+
+        try:
+            system_flags_count = migrate_system_flags()
+            logger.info(f"Migrated {system_flags_count} system flags")
+        except Exception as e:
+            logger.error(f"Error migrating system flags: {e}")
+            return False
+
+        try:
+            items_count = migrate_items()
+            logger.info(f"Migrated {items_count} items")
+        except Exception as e:
+            logger.error(f"Error migrating items: {e}")
+            return False
+
         logger.info(f"""
         Migration completed successfully:
         - {clubs_count} clubs
@@ -321,10 +370,14 @@ def migrate_all():
         - {system_flags_count} system flags
         - {items_count} items
         """)
-        
+
         return True
     except Exception as e:
         logger.error(f"Error during migration: {e}")
+        logger.error(f"Exception type: {type(e).__name__}")
+        logger.error(f"Exception args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         return False
 
 if __name__ == "__main__":
@@ -333,6 +386,6 @@ if __name__ == "__main__":
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
-    
+
     # Run migration
     migrate_all()
