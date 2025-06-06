@@ -185,27 +185,152 @@ def create_event_embed(event):
     }
     color = event_colors.get(event["type"], 0x1E90FF)
 
+    # Rarity colors (override event type color for rare+ events)
+    rarity_colors = {
+        "rare": 0x0000FF,      # Blue
+        "epic": 0x800080,      # Purple
+        "legendary": 0xFFA500  # Orange
+    }
+
+    # If event has rarity, use it for color for rare+ events
+    if "rarity" in event and event["rarity"] in rarity_colors:
+        color = rarity_colors[event["rarity"]]
+
+    # Rarity emoji
+    rarity_emoji = {
+        "common": "🔘",
+        "uncommon": "🟢",
+        "rare": "🔵",
+        "epic": "🟣",
+        "legendary": "🟠"
+    }
+
+    # Category emoji
+    category_emoji = {
+        "social": "👥",
+        "training": "💪",
+        "combat": "⚔️",
+        "discovery": "🔍",
+        "club": "🏛️",
+        "special": "✨",
+        "general": "📜"
+    }
+
+    # Create title with rarity and category if available
+    title = event["title"]
+    if "rarity" in event and "category" in event:
+        emoji_rarity = rarity_emoji.get(event["rarity"], "")
+        emoji_category = category_emoji.get(event["category"], "")
+        title = f"{emoji_rarity} {title} {emoji_category}"
+
     # Create embed
     embed = discord.Embed(
-        title=event["title"],
+        title=title,
         description=event["description"],
         color=color,
         timestamp=datetime.utcnow()
     )
 
-    # Add effects if any
+    # Add category and rarity if available
+    if "category" in event or "rarity" in event:
+        category_text = event.get("category", "").capitalize() if "category" in event else ""
+        rarity_text = event.get("rarity", "").capitalize() if "rarity" in event else ""
+
+        if category_text and rarity_text:
+            info_text = f"**Categoria:** {category_text} | **Raridade:** {rarity_text}"
+        elif category_text:
+            info_text = f"**Categoria:** {category_text}"
+        else:
+            info_text = f"**Raridade:** {rarity_text}"
+
+        embed.add_field(
+            name="Informações",
+            value=info_text,
+            inline=False
+        )
+
+    # Add effects from the event object directly
     effects = []
-    for key, value in event["effect"].items():
-        if key == "exp":
-            effects.append(f"**Experiência:** {'+' if value > 0 else ''}{value} EXP")
-        elif key == "tusd":
-            effects.append(f"**TUSD:** {'+' if value > 0 else ''}{value} 💰")
-        elif key == "attribute":
-            effects.append(f"**Atributo Bônus:** {value}")
-        elif key == "duel":
-            effects.append("**Duelo:** Desafio para um duelo!")
-        elif key == "item":
-            effects.append("**Item:** Recebeu um item especial!")
+
+    # Experience change
+    if "exp_change" in event:
+        effects.append(f"**Experiência:** {'+' if event['exp_change'] > 0 else ''}{event['exp_change']} EXP")
+
+    # TUSD change
+    if "tusd_change" in event:
+        effects.append(f"**TUSD:** {'+' if event['tusd_change'] > 0 else ''}{event['tusd_change']} 💰")
+
+    # Primary attribute change
+    if "attribute_change" in event:
+        attribute_names = {
+            "dexterity": "Destreza 🏃‍♂️",
+            "intellect": "Intelecto 🧠",
+            "charisma": "Carisma 💬",
+            "power_stat": "Poder ⚡"
+        }
+        attr_name = attribute_names.get(event["attribute_change"], event["attribute_change"])
+        value = event["attribute_value"]
+        effects.append(f"**{attr_name}:** {'+' if value > 0 else ''}{value}")
+
+    # Secondary attribute change (usually negative)
+    if "secondary_attribute_change" in event:
+        attribute_names = {
+            "dexterity": "Destreza 🏃‍♂️",
+            "intellect": "Intelecto 🧠",
+            "charisma": "Carisma 💬",
+            "power_stat": "Poder ⚡"
+        }
+        attr_name = attribute_names.get(event["secondary_attribute_change"], event["secondary_attribute_change"])
+        value = event["secondary_attribute_value"]
+        effects.append(f"**{attr_name}:** {'+' if value > 0 else ''}{value}")
+
+    # All attributes boost
+    if "all_attributes_change" in event:
+        value = event["all_attributes_change"]
+        effects.append(f"**Todos os Atributos:** {'+' if value > 0 else ''}{value}")
+
+    # Item reward
+    if "item_reward" in event:
+        item_text = event["item_reward"]
+        if "item_rarity" in event:
+            rarity_emoji_item = rarity_emoji.get(event["item_rarity"], "")
+            item_text = f"{rarity_emoji_item} {item_text}"
+        effects.append(f"**Item:** {item_text}")
+
+    # Duel trigger
+    if "trigger_duel" in event and event["trigger_duel"]:
+        effects.append("**Duelo:** Desafio para um duelo!")
+
+    # If no effects were added from the event object, try to extract from the effect dictionary
+    if not effects and "effect" in event:
+        for key, value in event["effect"].items():
+            if key == "exp":
+                effects.append(f"**Experiência:** {'+' if value > 0 else ''}{value} EXP")
+            elif key == "tusd":
+                effects.append(f"**TUSD:** {'+' if value > 0 else ''}{value} 💰")
+            elif key == "attribute":
+                if value == "random":
+                    effects.append("**Atributo Bônus:** Aleatório +1")
+                else:
+                    effects.append(f"**Atributo Bônus:** {value}")
+            elif key == "duel" and value:
+                effects.append("**Duelo:** Desafio para um duelo!")
+            elif key == "item":
+                if value == "random":
+                    effects.append("**Item:** Item aleatório")
+                else:
+                    effects.append(f"**Item:** Item {value}")
+            elif key in ["dexterity", "intellect", "charisma", "power_stat"]:
+                attribute_names = {
+                    "dexterity": "Destreza 🏃‍♂️",
+                    "intellect": "Intelecto 🧠",
+                    "charisma": "Carisma 💬",
+                    "power_stat": "Poder ⚡"
+                }
+                attr_name = attribute_names.get(key, key)
+                effects.append(f"**{attr_name}:** {'+' if value > 0 else ''}{value}")
+            elif key == "all_attributes" and value:
+                effects.append(f"**Todos os Atributos:** +{value}")
 
     if effects:
         embed.add_field(

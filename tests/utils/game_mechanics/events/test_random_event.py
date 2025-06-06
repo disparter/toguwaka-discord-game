@@ -1,12 +1,13 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 import sys
 import os
+import json
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../')))
 
-from utils.game_mechanics.events.random_event import RandomEvent
+from utils.game_mechanics.events.random_event import RandomEvent, load_events_from_json
 from utils.game_mechanics.constants import RANDOM_EVENTS
 
 class TestRandomEvent(unittest.TestCase):
@@ -210,6 +211,61 @@ class TestRandomEvent(unittest.TestCase):
 
         # Check that the event is the mock event
         self.assertEqual(event, mock_event)
+
+    def test_load_events_from_json_success(self):
+        """Test that events are correctly loaded from a JSON file."""
+        # Mock JSON data
+        mock_events = [
+            {
+                "title": "Test Event 1",
+                "description": "Test description 1",
+                "type": "positive",
+                "category": "test",
+                "effect": {"exp": 50, "tusd": 20},
+                "rarity": "common"
+            },
+            {
+                "title": "Test Event 2",
+                "description": "Test description 2",
+                "type": "negative",
+                "category": "test",
+                "effect": {"exp": 30, "tusd": -10},
+                "rarity": "rare"
+            }
+        ]
+
+        # Mock the open function to return our mock JSON data
+        mock_file = mock_open(read_data=json.dumps(mock_events))
+
+        # Patch the open function and json.load
+        with patch('builtins.open', mock_file):
+            events = load_events_from_json('mock_path.json')
+
+            # Check that the events were loaded correctly
+            self.assertEqual(len(events), 2)
+            self.assertEqual(events[0]["title"], "Test Event 1")
+            self.assertEqual(events[1]["title"], "Test Event 2")
+
+    def test_load_events_from_json_file_not_found(self):
+        """Test that an empty list is returned when the file is not found."""
+        # Patch the open function to raise FileNotFoundError
+        with patch('builtins.open', side_effect=FileNotFoundError):
+            events = load_events_from_json('nonexistent_file.json')
+
+            # Check that an empty list is returned
+            self.assertEqual(events, [])
+
+    def test_load_events_from_json_invalid_json(self):
+        """Test that an empty list is returned when the JSON is invalid."""
+        # Mock the open function to return invalid JSON
+        mock_file = mock_open(read_data="invalid json")
+
+        # Patch the open function
+        with patch('builtins.open', mock_file):
+            events = load_events_from_json('invalid_json.json')
+
+            # Check that an empty list is returned
+            self.assertEqual(events, [])
 
 if __name__ == '__main__':
     unittest.main()

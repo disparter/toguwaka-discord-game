@@ -382,7 +382,7 @@ Para futuras expansões do modo história, apresentamos um plano abrangente divi
     - Implementar testes de integração para verificar a coerência narrativa
     - Desenvolver ferramentas de simulação para testar múltiplos caminhos narrativos
 
-### Engajamento da Comunidade
+### Engajamento da Comunidade - Futuro Muito Distante
 
 15. **Criar Sistema de Histórias da Comunidade**:
     - Desenvolver ferramentas para que jogadores avançados criem conteúdo narrativo
