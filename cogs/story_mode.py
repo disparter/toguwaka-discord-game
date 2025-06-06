@@ -2028,22 +2028,18 @@ class StoryMode(commands.Cog):
                 f"Novos capítulos serão adicionados em breve!"
             )
 
-def setup(bot):
+async def setup(bot):
     """Add the cog to the bot."""
     from utils.command_registrar import CommandRegistrar
 
     # Create the cog
     cog = StoryMode(bot)
 
-    # Use bot.loop.create_task for async operations
-    async def _setup():
-        await bot.add_cog(cog)
-        logger.info("StoryMode cog loaded")
+    # Add the cog to the bot
+    await bot.add_cog(cog)
+    logger.info("StoryMode cog loaded")
 
-        # Register commands using the CommandRegistrar
-        await CommandRegistrar.register_commands(bot, cog)
-
-    # Schedule the async setup
-    bot.loop.create_task(_setup())
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)
 
     return cog
