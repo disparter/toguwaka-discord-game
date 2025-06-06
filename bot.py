@@ -70,8 +70,20 @@ else:
     logger.warning("Some features like member tracking and message content access will not work")
     # No privileged intents used
 
+# Create a custom bot class with setup_hook for loading extensions
+class TokugawaBot(commands.Bot):
+    async def setup_hook(self):
+        """Setup hook that is called when the bot is starting up."""
+        # Load all extensions
+        for extension in initial_extensions:
+            try:
+                await self.load_extension(extension)
+                logger.info(f'Loaded extension: {extension}')
+            except Exception as e:
+                logger.error(f'Failed to load extension {extension}: {e}')
+
 # Create bot instance with command prefix and command tree for slash commands
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = TokugawaBot(command_prefix='!', intents=intents)
 
 # Make sure the bot is syncing application commands
 bot.tree.on_error = lambda interaction, error: logger.error(f"Command tree error: {error}")
@@ -111,14 +123,7 @@ initial_extensions = [
     'cogs.story_mode'
 ]
 
-async def load_extensions():
-    """Load all extensions/cogs."""
-    for extension in initial_extensions:
-        try:
-            await bot.load_extension(extension)
-            logger.info(f'Loaded extension: {extension}')
-        except Exception as e:
-            logger.error(f'Failed to load extension {extension}: {e}')
+# This function is no longer needed as extensions are loaded in setup_hook
 
 # Flag to track whether commands have been synced
 commands_synced = False
@@ -193,11 +198,10 @@ async def sync_commands():
 async def main():
     """Main function to run the bot."""
     try:
-        # First load all extensions
-        await load_extensions()
-
-        # Start the bot (sync_commands will be called in on_ready)
-        await bot.start(TOKEN)
+        # Start the bot using async context manager
+        # Extensions are loaded in setup_hook
+        async with bot:
+            await bot.start(TOKEN)
     except discord.errors.PrivilegedIntentsRequired:
         logger.error("ERROR: Privileged intents are required but not enabled!")
         logger.error("Please follow these steps to enable privileged intents:")
