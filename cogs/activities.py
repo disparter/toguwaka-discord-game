@@ -51,13 +51,13 @@ class Activities(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
 
             # Check cooldown
             cooldown = self._check_cooldown(interaction.user.id, "treinar")
             if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
+                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}", ephemeral=True)
                 return
 
             # Create a random training event using the new SOLID architecture
@@ -149,9 +149,9 @@ class Activities(commands.Cog):
                         inline=False
                     )
 
-                await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
-                await interaction.response.send_message("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.", ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade treinar")
@@ -165,7 +165,7 @@ class Activities(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
 
             # Check cooldown

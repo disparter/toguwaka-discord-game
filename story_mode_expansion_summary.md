@@ -326,7 +326,7 @@ Para futuras expansões do modo história, apresentamos um plano abrangente divi
 4. **Expandir o Universo Além da Academia**:
    - Introduzir locais externos como a "Cidade Proibida" e o "Vale dos Ancestrais"
    - Criar capítulos de "Expedição" onde os jogadores exploram o mundo além da academia
-   - Desenvolver uma mitologia mais profunda sobre a origem dos poderes e sua conexão com dimensões alternativas
+   - Desenvolver uma mitologia mais profunda sobre a origem dos poderes e sua conexão com controle de governo mundial dist
 
 ### Aprimoramentos de Gameplay
 

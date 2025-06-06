@@ -1393,13 +1393,13 @@ class Economy(commands.Cog):
         # Check if player exists
         player = get_player(interaction.user.id)
         if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
             return
 
         # Check if player has the technique
         techniques = player["techniques"]
         if str(technique_id) not in techniques:
-            await interaction.response.send_message(f"{interaction.user.mention}, você não possui esta técnica. Use `/tecnica listar` para ver suas técnicas.")
+            await interaction.response.send_message(f"{interaction.user.mention}, você não possui esta técnica. Use `/tecnica listar` para ver suas técnicas.", ephemeral=True)
             return
 
         # Get the technique from player's techniques
