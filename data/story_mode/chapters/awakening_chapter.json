@@ -325,7 +325,7 @@
       "choices": [
         {
           "text": "Estou pronto para enfrentar qualquer desafio",
-          "next_scene": "embrace_challenge",
+          "next_scene": "accept_challenge",
           "rewards": {
             "exp": 20,
             "power_stat": 1,
@@ -334,7 +334,7 @@
         },
         {
           "text": "Talvez seja melhor esconder meu verdadeiro potencial por enquanto",
-          "next_scene": "strategic_hiding",
+          "next_scene": "secret_development",
           "rewards": {
             "exp": 15,
             "intellect": 2
@@ -342,7 +342,7 @@
         },
         {
           "text": "Há alguma maneira de subir sem fazer inimigos?",
-          "next_scene": "diplomatic_approach",
+          "next_scene": "elite_invitation",
           "attribute_check": {
             "attribute": "charisma",
             "difficulty": 8
