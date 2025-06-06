@@ -39,6 +39,27 @@ Foram adicionados três novos capítulos à história do Ano 1:
 - Descrições detalhadas de cada capítulo foram adicionadas
 - A sequência de capítulos foi reorganizada para manter a consistência narrativa
 
+### 4. Expansão do Capítulo da Biblioteca Proibida
+
+O Capítulo 4 foi expandido com uma implementação detalhada chamada "O Mistério da Biblioteca Proibida":
+
+- Narrativa ramificada completa com mais de 12 cenas únicas
+- Múltiplos caminhos e finais baseados nas decisões do jogador
+- Verificações de atributos que testam as estatísticas do jogador (intelecto, carisma, poder)
+- Introdução de um novo personagem: Takeshi Koga, um ex-aluno preso entre dimensões
+- Exploração de temas de conhecimento proibido e consequências de experimentos perigosos
+- Recompensas variadas incluindo experiência, moeda e itens únicos
+
+### 5. Otimização de Dados JSON
+
+Para melhorar o desempenho e a manutenção do código:
+
+- Dados JSON estáticos foram movidos de arrays codificados para arquivos JSON externos
+- Criado `data/story_mode/events/event_templates.json` para armazenar modelos de eventos
+- Criado `data/story_mode/events/event_choices.json` para armazenar escolhas de eventos
+- Modificado `utils/narrative_events.py` para carregar dados desses arquivos JSON
+- Adicionados novos modelos de eventos para enriquecer a experiência do jogador
+
 ## Próximos Passos
 
 Para futuras expansões do modo história, recomenda-se:
@@ -48,5 +69,8 @@ Para futuras expansões do modo história, recomenda-se:
 3. Expandir o sistema de relacionamentos com NPCs
 4. Adicionar mais locais secretos e eventos climáticos
 5. Implementar consequências de longo prazo para as escolhas dos jogadores
+6. Continuar movendo dados estáticos para arquivos JSON para melhorar o desempenho
+7. Criar ferramentas para ajudar a gerar e validar conteúdo JSON
+8. Implementar um sistema de gerenciamento de conteúdo para atualizações mais fáceis
 
-Esta expansão criativa do modo história enriquece significativamente a experiência dos jogadores, oferecendo uma narrativa mais profunda e interativa que se alinha com a visão original do jogo.
+Esta expansão criativa do modo história enriquece significativamente a experiência dos jogadores, oferecendo uma narrativa mais profunda e interativa que se alinha com a visão original do jogo, enquanto também melhora o desempenho técnico do sistema.
