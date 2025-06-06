@@ -95,6 +95,16 @@ Após os eventos do ano anterior, a Academia Tokugawa passa por mudanças signif
 - Rumores sobre uma organização externa interessada nos estudantes
 - Escolhas que afetam sua relação com o novo diretor
 
+#### Ano 2, Capítulo 2: A Organização Sombra
+
+Investigue os rumores sobre uma organização misteriosa que está recrutando estudantes com habilidades especiais.
+
+- Descoberta de estudantes desaparecidos com habilidades excepcionais
+- Investigação sobre uma possível organização secreta
+- Encontro com um estudante misterioso que oferece informações
+- Confronto com um agente encapuzado
+- Diferentes abordagens para a investigação baseadas em seus atributos
+
 ### Capítulos de Desafio
 
 Os Capítulos de Desafio são uma nova funcionalidade que permite aos jogadores enfrentar desafios especiais baseados em seu nível de força. Diferente da história principal, que segue uma progressão linear, os Capítulos de Desafio são acessíveis a qualquer momento e são adaptados ao seu nível atual de força.

@@ -320,6 +320,42 @@ BASE_STORY_CHAPTERS = {
             "completion_exp": 250,
             "completion_tusd": 450,
             "next_chapter": 2
+        },
+        2: {
+            "title": "A Organização Sombra",
+            "description": "Investigue os rumores sobre uma organização misteriosa que está recrutando estudantes com habilidades especiais.",
+            "dialogues": [
+                {"npc": "Akira", "text": "Ei, você ouviu sobre os estudantes que desapareceram recentemente? Três alunos sumiram na última semana."},
+                {"npc": "Akira", "text": "Todos eles eram conhecidos por terem habilidades excepcionais. Acho que isso não é coincidência."},
+                {"npc": "Akira", "text": "Tenho uma teoria: lembra daquela organização externa que seu líder de clube mencionou? Acho que eles estão por trás disso."},
+                {"npc": "Junie", "text": "Devo alertar que investigações não autorizadas podem violar as regras da academia. Mas entendo sua preocupação com os colegas desaparecidos."}
+            ],
+            "choices": [
+                {"text": "Investigar discretamente", "next_dialogue": 4, "attribute_check": "dexterity", "threshold": 12},
+                {"text": "Reportar suas suspeitas ao Diretor Hikari", "next_dialogue": 5, "affinity_change": {"Diretor Hikari": 5}},
+                {"text": "Recrutar outros estudantes para ajudar na investigação", "next_dialogue": 6, "attribute_check": "charisma", "threshold": 12}
+            ],
+            "dialogues_after_choice": [
+                {"npc": "Estudante Misterioso", "text": "Psst! Você está investigando os desaparecimentos, não é? Tenho informações que podem te interessar."},
+                {"npc": "Estudante Misterioso", "text": "Encontre-me à meia-noite na antiga sala de armazenamento no subsolo. Venha sozinho."},
+                {"npc": "Akira", "text": "Isso parece perigoso. Eu vou com você. Duas pessoas têm mais chance do que uma se algo der errado."}
+            ],
+            "minion_battle": {
+                "name": "Agente Encapuzado",
+                "description": "Um misterioso agente vestindo roupas pretas e uma máscara que oculta seu rosto.",
+                "power": "Manipulação de Sombras",
+                "level": 10,
+                "hp": 150,
+                "attributes": {
+                    "dexterity": 14,
+                    "intellect": 12,
+                    "charisma": 8,
+                    "power_stat": 15
+                }
+            },
+            "completion_exp": 300,
+            "completion_tusd": 500,
+            "next_chapter": 3
         }
     }
 }
