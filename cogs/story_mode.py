@@ -575,7 +575,7 @@ class StoryModeCog(commands.Cog):
                 inline=False
             )
 
-        embed.set_footer(text="Use /evento [evento_id] para participar de um evento.", ephemeral=True)
+        embed.set_footer(text="Use /evento [evento_id] para participar de um evento.")
 
         # Get the member object for the user
         guild = self.bot.get_guild(self.bot.config.get("guild_id"))
@@ -584,7 +584,7 @@ class StoryModeCog(commands.Cog):
             if member:
                 try:
                     # Send a direct message to the user instead of posting in the channel
-                    await member.send(embed=embed, ephemeral=True)
+                    await member.send(embed=embed)
                     return
                 except discord.errors.Forbidden:
                     # If the user has DMs disabled, fall back to an ephemeral message in the channel
