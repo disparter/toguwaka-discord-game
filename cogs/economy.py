@@ -19,7 +19,16 @@ ITEM_CATEGORIES = {
     "daily": "Diário",
     "weekly": "Semanal",
     "seasonal": "Sazonal",
-    "event": "Evento"
+    "event": "Evento",
+    "thematic": "Temático"
+}
+
+# Tipos de itens
+ITEM_TYPES = {
+    "consumable": "Consumível",
+    "accessory": "Acessório",
+    "equipment": "Equipamento",
+    "legendary": "Lendário"
 }
 
 # Estações do ano
@@ -29,6 +38,235 @@ SEASONS = {
     3: "autumn",  # Bimestre 3 (após férias de verão) - Outono
     4: "winter"   # Bimestre 4 (antes das férias de inverno) - Inverno
 }
+
+# Moedas alternativas
+ALTERNATIVE_CURRENCIES = {
+    "spring_token": {
+        "name": "Moeda Floral",
+        "description": "Moeda especial obtida durante o Festival da Primavera",
+        "season": "spring",
+        "icon": "🌸"
+    },
+    "summer_token": {
+        "name": "Moeda Solar",
+        "description": "Moeda especial obtida durante eventos de verão",
+        "season": "summer",
+        "icon": "☀️"
+    },
+    "autumn_token": {
+        "name": "Moeda Outonal",
+        "description": "Moeda especial obtida durante o Festival de Outono",
+        "season": "autumn",
+        "icon": "🍂"
+    },
+    "winter_token": {
+        "name": "Moeda Glacial",
+        "description": "Moeda especial obtida durante o Festival de Inverno",
+        "season": "winter",
+        "icon": "❄️"
+    },
+    "event_token": {
+        "name": "Insígnia de Evento",
+        "description": "Moeda especial obtida durante eventos globais",
+        "icon": "🏆"
+    }
+}
+
+# Itens que podem ser comprados com moedas alternativas
+SPECIAL_CURRENCY_ITEMS = {
+    "spring_token": [
+        {
+            "id": 701,
+            "name": "Coroa de Flores Raras",
+            "description": "Uma coroa feita com flores raras do Festival da Primavera. Aumenta carisma em 30%.",
+            "price": 10,
+            "currency": "spring_token",
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "spring",
+            "effects": {"attribute_boost": {"charisma": 0.3}, "season_limited": True}
+        },
+        {
+            "id": 702,
+            "name": "Elixir da Primavera Supremo",
+            "description": "Um elixir feito com as mais raras flores da primavera. Aumenta permanentemente o Carisma em +2.",
+            "price": 25,
+            "currency": "spring_token",
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "spring",
+            "effects": {"permanent_attribute": {"charisma": 2}}
+        }
+    ],
+    "summer_token": [
+        {
+            "id": 711,
+            "name": "Amuleto Solar Supremo",
+            "description": "Um amuleto que canaliza o poder máximo do sol. Adiciona 30% de dano adicional em duelos físicos.",
+            "price": 10,
+            "currency": "summer_token",
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "summer",
+            "effects": {"damage_boost": 0.3, "season_limited": True}
+        },
+        {
+            "id": 712,
+            "name": "Elixir do Verão Supremo",
+            "description": "Um elixir feito com a essência pura do sol. Aumenta permanentemente a Destreza em +2.",
+            "price": 25,
+            "currency": "summer_token",
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "summer",
+            "effects": {"permanent_attribute": {"dexterity": 2}}
+        }
+    ],
+    "autumn_token": [
+        {
+            "id": 721,
+            "name": "Lâmina Carmesim Suprema",
+            "description": "Uma lâmina com a cor das mais raras folhas de outono. Aumenta dano durante batalhas estratégicas em 30%.",
+            "price": 10,
+            "currency": "autumn_token",
+            "type": "equipment",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "autumn",
+            "effects": {"duel_boost": {"type": "strategic", "amount": 0.3}, "season_limited": True}
+        },
+        {
+            "id": 722,
+            "name": "Elixir do Outono Supremo",
+            "description": "Um elixir feito com a essência pura da sabedoria outonal. Aumenta permanentemente o Intelecto em +2.",
+            "price": 25,
+            "currency": "autumn_token",
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "autumn",
+            "effects": {"permanent_attribute": {"intellect": 2}}
+        }
+    ],
+    "winter_token": [
+        {
+            "id": 731,
+            "name": "Encanto Gelado Supremo",
+            "description": "Um amuleto que canaliza o poder máximo do inverno. Técnicas de intelecto e carisma recebem bônus +20%.",
+            "price": 10,
+            "currency": "winter_token",
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "winter",
+            "effects": {"attribute_boost": {"intellect": 0.2, "charisma": 0.2}, "season_limited": True}
+        },
+        {
+            "id": 732,
+            "name": "Elixir do Inverno Supremo",
+            "description": "Um elixir feito com a essência pura do gelo eterno. Aumenta permanentemente o Poder em +2.",
+            "price": 25,
+            "currency": "winter_token",
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "winter",
+            "effects": {"permanent_attribute": {"power_stat": 2}}
+        }
+    ],
+    "event_token": [
+        {
+            "id": 741,
+            "name": "Amuleto do Campeão",
+            "description": "Um amuleto concedido aos campeões de eventos. Aumenta todos os atributos em +1.",
+            "price": 15,
+            "currency": "event_token",
+            "type": "accessory",
+            "category": "event",
+            "rarity": "epic",
+            "effects": {"attribute_boost": {"power_stat": 1, "dexterity": 1, "intellect": 1, "charisma": 1}}
+        },
+        {
+            "id": 742,
+            "name": "Elixir do Campeão",
+            "description": "Um elixir concedido aos campeões de eventos. Aumenta permanentemente um atributo à escolha em +2.",
+            "price": 30,
+            "currency": "event_token",
+            "type": "consumable",
+            "category": "event",
+            "rarity": "legendary",
+            "effects": {"permanent_attribute_choice": 2}
+        }
+    ]
+}
+
+# Sistema de trocas coletivas
+ITEM_EXCHANGES = [
+    {
+        "id": 1,
+        "name": "Troca de Itens Comuns",
+        "description": "Troque 3 itens comuns por 1 item incomum aleatório",
+        "requirements": {
+            "items": {"rarity": "common", "count": 3}
+        },
+        "reward": {
+            "item_rarity": "uncommon",
+            "random": True
+        }
+    },
+    {
+        "id": 2,
+        "name": "Troca de Itens Incomuns",
+        "description": "Troque 3 itens incomuns por 1 item raro aleatório",
+        "requirements": {
+            "items": {"rarity": "uncommon", "count": 3}
+        },
+        "reward": {
+            "item_rarity": "rare",
+            "random": True
+        }
+    },
+    {
+        "id": 3,
+        "name": "Troca de Itens Raros",
+        "description": "Troque 3 itens raros por 1 item épico aleatório",
+        "requirements": {
+            "items": {"rarity": "rare", "count": 3}
+        },
+        "reward": {
+            "item_rarity": "epic",
+            "random": True
+        }
+    },
+    {
+        "id": 4,
+        "name": "Troca de Itens Épicos",
+        "description": "Troque 3 itens épicos + 1000 TUSD por 1 item lendário aleatório",
+        "requirements": {
+            "items": {"rarity": "epic", "count": 3},
+            "currency": {"type": "TUSD", "amount": 1000}
+        },
+        "reward": {
+            "item_rarity": "legendary",
+            "random": True
+        }
+    },
+    {
+        "id": 5,
+        "name": "Troca Sazonal",
+        "description": "Troque 5 itens sazonais de qualquer raridade por 5 tokens sazonais",
+        "requirements": {
+            "items": {"category": "seasonal", "count": 5}
+        },
+        "reward": {
+            "currency": {"type": "seasonal_token", "amount": 5}
+        }
+    }
+]
 
 # Itens fixos (sempre disponíveis)
 FIXED_ITEMS = [
@@ -476,41 +714,258 @@ EVENT_ITEMS = {
     ]
 }
 
-# Função para obter os itens disponíveis com base no bimestre atual e eventos ativos
-def get_available_shop_items(bimestre=1, active_events=None):
+# Itens lendários (desbloqueados por progresso avançado ou eventos especiais)
+LEGENDARY_ITEMS = [
+    {
+        "id": 501,
+        "name": "Espada do Fundador",
+        "description": "Uma espada lendária que pertenceu ao fundador da Academia Tokugawa. Aumenta todos os atributos em +3.",
+        "price": 5000,
+        "type": "legendary",
+        "category": "fixed",
+        "rarity": "legendary",
+        "level_required": 30,
+        "effects": {"attribute_boost": {"power_stat": 3, "dexterity": 3, "intellect": 3, "charisma": 3}}
+    },
+    {
+        "id": 502,
+        "name": "Amuleto do Destino",
+        "description": "Um amuleto lendário que permite manipular o destino. Aumenta a sorte em 50% e dá uma chance de evitar derrotas em duelos.",
+        "price": 4000,
+        "type": "legendary",
+        "category": "fixed",
+        "rarity": "legendary",
+        "level_required": 25,
+        "effects": {"luck_boost": 0.5, "defeat_avoidance": 0.2}
+    },
+    {
+        "id": 503,
+        "name": "Grimório dos Antigos",
+        "description": "Um livro lendário contendo conhecimentos ancestrais. Permite aprender uma técnica lendária.",
+        "price": 3500,
+        "type": "legendary",
+        "category": "fixed",
+        "rarity": "legendary",
+        "level_required": 20,
+        "effects": {"learn_legendary_technique": True}
+    }
+]
+
+# Itens temáticos de clubes (disponíveis apenas para membros de clubes específicos)
+CLUB_ITEMS = {
+    "clube_das_chamas": [
+        {
+            "id": 601,
+            "name": "Amuleto de Fogo",
+            "description": "Um amuleto que canaliza o poder das chamas. Aumenta o dano em duelos físicos em 15%.",
+            "price": 300,
+            "type": "accessory",
+            "category": "thematic",
+            "rarity": "rare",
+            "club_required": "clube_das_chamas",
+            "effects": {"damage_boost": 0.15, "club_specific": True}
+        },
+        {
+            "id": 602,
+            "name": "Elixir das Chamas",
+            "description": "Um elixir que fortalece o espírito de fogo. Aumenta permanentemente o Poder em +1.",
+            "price": 1000,
+            "type": "consumable",
+            "category": "thematic",
+            "rarity": "epic",
+            "club_required": "clube_das_chamas",
+            "effects": {"permanent_attribute": {"power_stat": 1}}
+        }
+    ],
+    "ilusionistas_mentais": [
+        {
+            "id": 611,
+            "name": "Máscara do Enigma",
+            "description": "Uma máscara que aumenta o poder mental. Aumenta o Intelecto em +2 e protege contra debuffs mentais.",
+            "price": 300,
+            "type": "accessory",
+            "category": "thematic",
+            "rarity": "rare",
+            "club_required": "ilusionistas_mentais",
+            "effects": {"attribute_boost": {"intellect": 2}, "mental_debuff_resistance": 0.3, "club_specific": True}
+        },
+        {
+            "id": 612,
+            "name": "Poção da Clareza",
+            "description": "Uma poção que expande a mente. Aumenta permanentemente o Intelecto em +1.",
+            "price": 1000,
+            "type": "consumable",
+            "category": "thematic",
+            "rarity": "epic",
+            "club_required": "ilusionistas_mentais",
+            "effects": {"permanent_attribute": {"intellect": 1}}
+        }
+    ],
+    "conselho_politico": [
+        {
+            "id": 621,
+            "name": "Cajado da Persuasão",
+            "description": "Um cajado que amplifica o carisma. Adiciona bônus de Carisma em interações sociais.",
+            "price": 300,
+            "type": "accessory",
+            "category": "thematic",
+            "rarity": "rare",
+            "club_required": "conselho_politico",
+            "effects": {"attribute_boost": {"charisma": 2}, "social_influence": 0.2, "club_specific": True}
+        },
+        {
+            "id": 622,
+            "name": "Medalha do Conselho",
+            "description": "Uma medalha que simboliza autoridade. Aumenta permanentemente o Carisma em +1.",
+            "price": 1000,
+            "type": "consumable",
+            "category": "thematic",
+            "rarity": "epic",
+            "club_required": "conselho_politico",
+            "effects": {"permanent_attribute": {"charisma": 1}}
+        }
+    ],
+    "clube_de_combate": [
+        {
+            "id": 631,
+            "name": "Luva do Gladiador",
+            "description": "Uma luva que aumenta a precisão dos golpes. Adiciona bônus de Destreza em ataques rápidos.",
+            "price": 300,
+            "type": "accessory",
+            "category": "thematic",
+            "rarity": "rare",
+            "club_required": "clube_de_combate",
+            "effects": {"attribute_boost": {"dexterity": 2}, "quick_attack_boost": 0.2, "club_specific": True}
+        },
+        {
+            "id": 632,
+            "name": "Tônico do Guerreiro",
+            "description": "Um tônico que fortalece os músculos. Aumenta permanentemente a Destreza em +1.",
+            "price": 1000,
+            "type": "consumable",
+            "category": "thematic",
+            "rarity": "epic",
+            "club_required": "clube_de_combate",
+            "effects": {"permanent_attribute": {"dexterity": 1}}
+        }
+    ],
+    "elementalistas": [
+        {
+            "id": 641,
+            "name": "Cristal Elemental",
+            "description": "Um cristal que amplifica o controle sobre os elementos. Aprimora habilidades elementais.",
+            "price": 300,
+            "type": "accessory",
+            "category": "thematic",
+            "rarity": "rare",
+            "club_required": "elementalistas",
+            "effects": {"elemental_control": 0.25, "club_specific": True}
+        },
+        {
+            "id": 642,
+            "name": "Essência Elemental",
+            "description": "Uma essência que fortalece a conexão com os elementos. Aumenta permanentemente o Poder em +1.",
+            "price": 1000,
+            "type": "consumable",
+            "category": "thematic",
+            "rarity": "epic",
+            "club_required": "elementalistas",
+            "effects": {"permanent_attribute": {"power_stat": 1}}
+        }
+    ]
+}
+
+# Função para obter os itens disponíveis com base no bimestre atual, eventos ativos, nível do jogador e clube
+def get_available_shop_items(bimestre=1, active_events=None, player_level=1, player_club=None, current_date=None):
     """
-    Retorna os itens disponíveis na loja com base no bimestre atual e eventos ativos.
+    Retorna os itens disponíveis na loja com base no bimestre atual, eventos ativos, nível do jogador e clube.
 
     Args:
         bimestre (int): O bimestre atual (1-4)
         active_events (list): Lista de eventos ativos
+        player_level (int): Nível atual do jogador
+        player_club (str): Clube do jogador
+        current_date (datetime): Data atual para rotação de itens
 
     Returns:
-        list: Lista de itens disponíveis na loja
+        dict: Dicionário com categorias de itens disponíveis na loja
     """
     if active_events is None:
         active_events = []
 
-    # Itens fixos sempre estão disponíveis
-    available_items = FIXED_ITEMS.copy()
+    if current_date is None:
+        current_date = datetime.now()
 
-    # Adiciona itens diários (na implementação real, seria baseado na data atual)
-    # Aqui estamos apenas adicionando todos para demonstração
-    available_items.extend(DAILY_ITEMS)
+    # Inicializa o dicionário de itens por categoria
+    available_items = {
+        "consumable": [],
+        "accessory": [],
+        "equipment": [],
+        "legendary": [],
+        "thematic": []
+    }
 
-    # Adiciona itens semanais (na implementação real, seria baseado na semana atual)
-    # Aqui estamos apenas adicionando todos para demonstração
-    available_items.extend(WEEKLY_ITEMS)
+    # Adiciona itens fixos sempre disponíveis
+    for item in FIXED_ITEMS:
+        item_type = item.get("type", "consumable")
+        if item_type in available_items:
+            available_items[item_type].append(item)
+
+    # Adiciona itens diários com base na data atual
+    # Na implementação real, usaríamos o dia do ano para selecionar itens específicos
+    day_of_year = current_date.timetuple().tm_yday
+    daily_rotation = day_of_year % len(DAILY_ITEMS)
+
+    # Seleciona alguns itens diários com base na rotação
+    daily_items_count = min(3, len(DAILY_ITEMS))
+    for i in range(daily_items_count):
+        item_index = (daily_rotation + i) % len(DAILY_ITEMS)
+        item = DAILY_ITEMS[item_index]
+        item_type = item.get("type", "consumable")
+        if item_type in available_items:
+            available_items[item_type].append(item)
+
+    # Adiciona itens semanais com base na semana atual
+    # Na implementação real, usaríamos a semana do ano para selecionar itens específicos
+    week_of_year = current_date.isocalendar()[1]
+    weekly_rotation = week_of_year % len(WEEKLY_ITEMS)
+
+    # Seleciona alguns itens semanais com base na rotação
+    weekly_items_count = min(3, len(WEEKLY_ITEMS))
+    for i in range(weekly_items_count):
+        item_index = (weekly_rotation + i) % len(WEEKLY_ITEMS)
+        item = WEEKLY_ITEMS[item_index]
+        item_type = item.get("type", "consumable")
+        if item_type in available_items:
+            available_items[item_type].append(item)
 
     # Adiciona itens sazonais com base no bimestre atual
     season = SEASONS.get(bimestre, "spring")
     if season in SEASONAL_ITEMS:
-        available_items.extend(SEASONAL_ITEMS[season])
+        for item in SEASONAL_ITEMS[season]:
+            item_type = item.get("type", "consumable")
+            if item_type in available_items:
+                available_items[item_type].append(item)
 
     # Adiciona itens de eventos ativos
     for event in active_events:
         if event in EVENT_ITEMS:
-            available_items.extend(EVENT_ITEMS[event])
+            for item in EVENT_ITEMS[event]:
+                item_type = item.get("type", "consumable")
+                if item_type in available_items:
+                    available_items[item_type].append(item)
+
+    # Adiciona itens lendários com base no nível do jogador
+    for item in LEGENDARY_ITEMS:
+        if player_level >= item.get("level_required", 1):
+            available_items["legendary"].append(item)
+
+    # Adiciona itens temáticos de clube se o jogador pertencer a um clube
+    if player_club and player_club in CLUB_ITEMS:
+        for item in CLUB_ITEMS[player_club]:
+            item_type = item.get("type", "consumable")
+            if item_type in available_items:
+                available_items["thematic"].append(item)
 
     return available_items
 
@@ -876,6 +1331,7 @@ class Economy(commands.Cog):
         self.bot = bot
         self.market_listings = {}  # {listing_id: {seller_id, item_id, price, item_data}}
         self.next_listing_id = 1
+        self.exchange_cooldowns = {}  # {user_id: timestamp}
 
     def _check_cooldown(self, user_id, command):
         """Check if a command is on cooldown for a user."""
@@ -1277,9 +1733,16 @@ class Economy(commands.Cog):
         story_progress = player.get('story_progress', {})
         bimestre = story_progress.get('bimestre_corrente', 1)
         active_events = story_progress.get('eventos_ativos', [])
+        player_level = player.get('level', 1)
+        player_club = player.get('club', None)
 
-        # Get available items based on bimester and active events
-        available_items = get_available_shop_items(bimestre, active_events)
+        # Get available items based on bimester, active events, player level, and club
+        available_items = get_available_shop_items(
+            bimestre=bimestre, 
+            active_events=active_events,
+            player_level=player_level,
+            player_club=player_club
+        )
 
         # Create shop embed
         season_name = {
@@ -1289,33 +1752,46 @@ class Economy(commands.Cog):
             "winter": "Inverno"
         }.get(SEASONS.get(bimestre, "spring"), "Primavera")
 
+        # Get player's alternative currencies
+        alt_currencies = player.get('currencies', {})
+        currency_display = f"Você tem {player['tusd']} TUSD 💰\n"
+
+        # Add seasonal currency if applicable
+        season = SEASONS.get(bimestre, "spring")
+        season_token = f"{season}_token"
+        if season_token in ALTERNATIVE_CURRENCIES:
+            currency_info = ALTERNATIVE_CURRENCIES[season_token]
+            currency_amount = alt_currencies.get(season_token, 0)
+            currency_display += f"{currency_info['icon']} {currency_amount} {currency_info['name']}\n"
+
+        # Add event currency if player has any
+        if 'event_token' in alt_currencies and alt_currencies['event_token'] > 0:
+            currency_info = ALTERNATIVE_CURRENCIES['event_token']
+            currency_display += f"{currency_info['icon']} {alt_currencies['event_token']} {currency_info['name']}\n"
+
         embed = create_basic_embed(
             title=f"Loja da Academia Tokugawa - {season_name}",
-            description=f"Bem-vindo à loja oficial da Academia! Você tem {player['tusd']} TUSD 💰\n\n"
+            description=f"Bem-vindo à loja oficial da Academia!\n{currency_display}\n"
                         f"Estamos no {bimestre}º bimestre ({season_name}). Aproveite os itens sazonais!\n\n"
                         f"Para comprar um item, use o comando `/economia comprar <id>`",
             color=0xFFD700  # Gold
         )
 
-        # Group items by category
-        items_by_category = {}
-        for item in available_items:
-            category = item.get("category", "fixed")
-            if category not in items_by_category:
-                items_by_category[category] = []
-            items_by_category[category].append(item)
+        # Add items to embed by type
+        for item_type, items in available_items.items():
+            if not items:  # Skip empty categories
+                continue
 
-        # Add items to embed by category
-        for category, items in items_by_category.items():
-            category_name = ITEM_CATEGORIES.get(category, "Outros")
+            type_name = ITEM_TYPES.get(item_type, item_type.capitalize())
             embed.add_field(
-                name=f"--- {category_name} ---",
+                name=f"--- {type_name} ---",
                 value="",
                 inline=False
             )
 
             for item in items:
                 rarity = RARITIES.get(item["rarity"], RARITIES["common"])
+                category = item.get("category", "fixed")
 
                 # Add special indicators for seasonal or event items
                 special_tag = ""
@@ -1324,10 +1800,72 @@ class Economy(commands.Cog):
                 elif category == "event":
                     event_name = item.get("event", "").replace("_", " ").title()
                     special_tag = f" [Evento: {event_name}]"
+                elif category == "thematic" and "club_required" in item:
+                    club_name = item["club_required"].replace("_", " ").title()
+                    special_tag = f" [Clube: {club_name}]"
+
+                # Check if item requires alternative currency
+                price_display = f"{item['price']} TUSD"
+                if "currency" in item and item["currency"] in ALTERNATIVE_CURRENCIES:
+                    currency_info = ALTERNATIVE_CURRENCIES[item["currency"]]
+                    price_display = f"{item['price']} {currency_info['icon']} {currency_info['name']}"
 
                 embed.add_field(
-                    name=f"{item['id']}. {rarity['emoji']} {item['name']} - {item['price']} TUSD{special_tag}",
-                    value=f"{item['description']}\nTipo: {item['type'].capitalize()}",
+                    name=f"{item['id']}. {rarity['emoji']} {item['name']} - {price_display}{special_tag}",
+                    value=f"{item['description']}\nTipo: {ITEM_TYPES.get(item_type, item_type.capitalize())}",
+                    inline=False
+                )
+
+        # Add special currency items if applicable
+        season_token = f"{season}_token"
+        if season_token in SPECIAL_CURRENCY_ITEMS:
+            embed.add_field(
+                name=f"--- Itens Especiais ({ALTERNATIVE_CURRENCIES[season_token]['name']}) ---",
+                value="",
+                inline=False
+            )
+
+            for item in SPECIAL_CURRENCY_ITEMS[season_token]:
+                rarity = RARITIES.get(item["rarity"], RARITIES["common"])
+                currency_info = ALTERNATIVE_CURRENCIES[item["currency"]]
+
+                embed.add_field(
+                    name=f"{item['id']}. {rarity['emoji']} {item['name']} - {item['price']} {currency_info['icon']} {currency_info['name']}",
+                    value=f"{item['description']}\nTipo: {ITEM_TYPES.get(item['type'], item['type'].capitalize())}",
+                    inline=False
+                )
+
+        # Add item exchanges section
+        if ITEM_EXCHANGES:
+            embed.add_field(
+                name="--- Sistema de Trocas ---",
+                value="Troque itens antigos por novos itens ou moedas especiais!",
+                inline=False
+            )
+
+            for exchange in ITEM_EXCHANGES:
+                requirements = []
+                if "items" in exchange["requirements"]:
+                    req = exchange["requirements"]["items"]
+                    requirements.append(f"{req['count']} itens de raridade {req.get('rarity', 'qualquer').capitalize()}")
+
+                if "currency" in exchange["requirements"]:
+                    req = exchange["requirements"]["currency"]
+                    requirements.append(f"{req['amount']} {req['type']}")
+
+                reward = ""
+                if "item_rarity" in exchange["reward"]:
+                    reward = f"1 item de raridade {exchange['reward']['item_rarity'].capitalize()}"
+                    if exchange["reward"].get("random", False):
+                        reward += " aleatório"
+
+                if "currency" in exchange["reward"]:
+                    req = exchange["reward"]["currency"]
+                    reward = f"{req['amount']} {req['type']}"
+
+                embed.add_field(
+                    name=f"Troca #{exchange['id']}: {exchange['name']}",
+                    value=f"{exchange['description']}\nRequisitos: {', '.join(requirements)}\nRecompensa: {reward}",
                     inline=False
                 )
 
@@ -1346,9 +1884,32 @@ class Economy(commands.Cog):
         story_progress = player.get('story_progress', {})
         bimestre = story_progress.get('bimestre_corrente', 1)
         active_events = story_progress.get('eventos_ativos', [])
+        player_level = player.get('level', 1)
+        player_club = player.get('club', None)
 
-        # Get available items based on bimester and active events
-        available_items = get_available_shop_items(bimestre, active_events)
+        # Get player's alternative currencies
+        alt_currencies = player.get('currencies', {})
+
+        # Get current season
+        season = SEASONS.get(bimestre, "spring")
+        season_token = f"{season}_token"
+
+        # Get available items based on bimester, active events, player level, and club
+        available_items_dict = get_available_shop_items(
+            bimestre=bimestre, 
+            active_events=active_events,
+            player_level=player_level,
+            player_club=player_club
+        )
+
+        # Flatten the items dictionary for easier searching
+        available_items = []
+        for item_list in available_items_dict.values():
+            available_items.extend(item_list)
+
+        # Check special currency items
+        if season_token in SPECIAL_CURRENCY_ITEMS:
+            available_items.extend(SPECIAL_CURRENCY_ITEMS[season_token])
 
         # Find the item
         item = next((i for i in available_items if i["id"] == item_id), None)
@@ -1356,45 +1917,95 @@ class Economy(commands.Cog):
             await interaction.response.send_message(f"{interaction.user.mention}, item não encontrado ou não disponível neste momento. Use `/economia loja` para ver os itens disponíveis.")
             return
 
-        # Check if player has enough TUSD
-        if player["tusd"] < item["price"]:
-            await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
-            return
+        # Check if item requires alternative currency
+        if "currency" in item and item["currency"] in ALTERNATIVE_CURRENCIES:
+            currency_type = item["currency"]
+            currency_info = ALTERNATIVE_CURRENCIES[currency_type]
 
-        # Process the purchase
-        inventory = player["inventory"]
+            # Check if player has enough of the alternative currency
+            if alt_currencies.get(currency_type, 0) < item["price"]:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não tem {currency_info['name']} suficiente para comprar este item. "
+                    f"Preço: {item['price']} {currency_info['name']}, Seu saldo: {alt_currencies.get(currency_type, 0)} {currency_info['name']}"
+                )
+                return
 
-        # Add item to inventory
-        if str(item["id"]) in inventory:
-            # If player already has this item, increase quantity
-            inventory[str(item["id"])]["quantity"] += 1
-        else:
-            # Add new item to inventory
-            inventory_item = {
-                "id": item["id"],
-                "name": item["name"],
-                "description": item["description"],
-                "type": item["type"],
-                "rarity": item["rarity"],
-                "effects": item["effects"],
-                "quantity": 1
+            # Process the purchase with alternative currency
+            inventory = player["inventory"]
+
+            # Add item to inventory
+            if str(item["id"]) in inventory:
+                # If player already has this item, increase quantity
+                inventory[str(item["id"])]["quantity"] += 1
+            else:
+                # Add new item to inventory
+                inventory_item = {
+                    "id": item["id"],
+                    "name": item["name"],
+                    "description": item["description"],
+                    "type": item["type"],
+                    "rarity": item["rarity"],
+                    "effects": item["effects"],
+                    "quantity": 1
+                }
+
+                # Add category and season/event info if applicable
+                if "category" in item:
+                    inventory_item["category"] = item["category"]
+                if "season" in item:
+                    inventory_item["season"] = item["season"]
+                if "event" in item:
+                    inventory_item["event"] = item["event"]
+
+                inventory[str(item["id"])] = inventory_item
+
+            # Update player data
+            alt_currencies[currency_type] = alt_currencies.get(currency_type, 0) - item["price"]
+            update_data = {
+                "currencies": json.dumps(alt_currencies),
+                "inventory": json.dumps(inventory)
             }
+        else:
+            # Standard TUSD purchase
+            # Check if player has enough TUSD
+            if player["tusd"] < item["price"]:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
+                return
 
-            # Add category and season/event info if applicable
-            if "category" in item:
-                inventory_item["category"] = item["category"]
-            if "season" in item:
-                inventory_item["season"] = item["season"]
-            if "event" in item:
-                inventory_item["event"] = item["event"]
+            # Process the purchase
+            inventory = player["inventory"]
 
-            inventory[str(item["id"])] = inventory_item
+            # Add item to inventory
+            if str(item["id"]) in inventory:
+                # If player already has this item, increase quantity
+                inventory[str(item["id"])]["quantity"] += 1
+            else:
+                # Add new item to inventory
+                inventory_item = {
+                    "id": item["id"],
+                    "name": item["name"],
+                    "description": item["description"],
+                    "type": item["type"],
+                    "rarity": item["rarity"],
+                    "effects": item["effects"],
+                    "quantity": 1
+                }
 
-        # Update player data
-        update_data = {
-            "tusd": player["tusd"] - item["price"],
-            "inventory": json.dumps(inventory)
-        }
+                # Add category and season/event info if applicable
+                if "category" in item:
+                    inventory_item["category"] = item["category"]
+                if "season" in item:
+                    inventory_item["season"] = item["season"]
+                if "event" in item:
+                    inventory_item["event"] = item["event"]
+
+                inventory[str(item["id"])] = inventory_item
+
+            # Update player data
+            update_data = {
+                "tusd": player["tusd"] - item["price"],
+                "inventory": json.dumps(inventory)
+            }
 
         # Special handling for permanent attribute items
         if item["type"] == "consumable" and "permanent_attribute" in item["effects"]:
@@ -1801,6 +2412,213 @@ class Economy(commands.Cog):
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia comprar_mercado")
         except Exception as e:
             logger.error(f"Error in slash_buy_market: {e}")
+
+    @economy_group.command(name="trocar", description="Trocar itens por recompensas")
+    async def slash_exchange(self, interaction: discord.Interaction, exchange_id: int):
+        """Permite trocar itens por outros itens ou moedas especiais."""
+        # Check if player exists
+        player = get_player(interaction.user.id)
+        if not player:
+            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+            return
+
+        # Check cooldown (1 hour between exchanges)
+        user_id = str(interaction.user.id)
+        now = datetime.now().timestamp()
+        if user_id in self.exchange_cooldowns and self.exchange_cooldowns[user_id] > now:
+            remaining = self.exchange_cooldowns[user_id] - now
+            minutes, seconds = divmod(int(remaining), 60)
+            await interaction.response.send_message(f"{interaction.user.mention}, você precisa esperar {minutes}m {seconds}s para fazer outra troca.")
+            return
+
+        # Find the exchange
+        exchange = next((e for e in ITEM_EXCHANGES if e["id"] == exchange_id), None)
+        if not exchange:
+            await interaction.response.send_message(f"{interaction.user.mention}, troca não encontrada. Use `/economia loja` para ver as trocas disponíveis.")
+            return
+
+        # Check requirements
+        inventory = player["inventory"]
+        requirements_met = True
+        items_to_remove = []
+
+        # Check item requirements
+        if "items" in exchange["requirements"]:
+            req = exchange["requirements"]["items"]
+            rarity = req.get("rarity", None)
+            category = req.get("category", None)
+            count = req.get("count", 1)
+
+            # Find matching items
+            matching_items = []
+            for item_id, item in inventory.items():
+                if rarity and item.get("rarity") != rarity:
+                    continue
+                if category and item.get("category") != category:
+                    continue
+
+                # Add item to matching items (considering quantity)
+                for _ in range(item.get("quantity", 1)):
+                    matching_items.append(item_id)
+                    if len(matching_items) >= count:
+                        break
+
+                if len(matching_items) >= count:
+                    break
+
+            if len(matching_items) < count:
+                requirements_met = False
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não tem itens suficientes para esta troca. "
+                    f"Necessário: {count} itens de raridade {rarity or 'qualquer'}"
+                )
+                return
+
+            # Mark items for removal
+            for item_id in matching_items[:count]:
+                items_to_remove.append(item_id)
+
+        # Check currency requirements
+        if "currency" in exchange["requirements"]:
+            req = exchange["requirements"]["currency"]
+            currency_type = req.get("type", "TUSD")
+            amount = req.get("amount", 0)
+
+            if currency_type == "TUSD":
+                if player["tusd"] < amount:
+                    requirements_met = False
+                    await interaction.response.send_message(
+                        f"{interaction.user.mention}, você não tem TUSD suficiente para esta troca. "
+                        f"Necessário: {amount} TUSD, Seu saldo: {player['tusd']} TUSD"
+                    )
+                    return
+            else:
+                alt_currencies = player.get("currencies", {})
+                if alt_currencies.get(currency_type, 0) < amount:
+                    requirements_met = False
+                    currency_info = ALTERNATIVE_CURRENCIES.get(currency_type, {"name": currency_type})
+                    await interaction.response.send_message(
+                        f"{interaction.user.mention}, você não tem {currency_info['name']} suficiente para esta troca. "
+                        f"Necessário: {amount} {currency_info['name']}, Seu saldo: {alt_currencies.get(currency_type, 0)} {currency_info['name']}"
+                    )
+                    return
+
+        # Process the exchange if requirements are met
+        if requirements_met:
+            # Remove items from inventory
+            for item_id in items_to_remove:
+                if inventory[item_id]["quantity"] > 1:
+                    inventory[item_id]["quantity"] -= 1
+                else:
+                    del inventory[item_id]
+
+            # Remove currency if required
+            update_data = {"inventory": json.dumps(inventory)}
+            if "currency" in exchange["requirements"]:
+                req = exchange["requirements"]["currency"]
+                currency_type = req.get("type", "TUSD")
+                amount = req.get("amount", 0)
+
+                if currency_type == "TUSD":
+                    update_data["tusd"] = player["tusd"] - amount
+                else:
+                    alt_currencies = player.get("currencies", {})
+                    alt_currencies[currency_type] = alt_currencies.get(currency_type, 0) - amount
+                    update_data["currencies"] = json.dumps(alt_currencies)
+
+            # Process reward
+            reward_message = ""
+
+            # Item reward
+            if "item_rarity" in exchange["reward"]:
+                rarity = exchange["reward"]["item_rarity"]
+                is_random = exchange["reward"].get("random", False)
+
+                # Get all items of the specified rarity
+                all_items = []
+                for item_list in [FIXED_ITEMS, DAILY_ITEMS, WEEKLY_ITEMS]:
+                    all_items.extend([item for item in item_list if item["rarity"] == rarity])
+
+                for season_items in SEASONAL_ITEMS.values():
+                    all_items.extend([item for item in season_items if item["rarity"] == rarity])
+
+                for event_items in EVENT_ITEMS.values():
+                    all_items.extend([item for item in event_items if item["rarity"] == rarity])
+
+                # Choose a random item or a specific one
+                if all_items:
+                    if is_random:
+                        reward_item = random.choice(all_items)
+                    else:
+                        reward_item = all_items[0]  # First item as default
+
+                    # Add item to inventory
+                    if str(reward_item["id"]) in inventory:
+                        inventory[str(reward_item["id"])]["quantity"] += 1
+                    else:
+                        inventory_item = {
+                            "id": reward_item["id"],
+                            "name": reward_item["name"],
+                            "description": reward_item["description"],
+                            "type": reward_item["type"],
+                            "rarity": reward_item["rarity"],
+                            "effects": reward_item["effects"],
+                            "quantity": 1
+                        }
+
+                        # Add category and season/event info if applicable
+                        if "category" in reward_item:
+                            inventory_item["category"] = reward_item["category"]
+                        if "season" in reward_item:
+                            inventory_item["season"] = reward_item["season"]
+                        if "event" in reward_item:
+                            inventory_item["event"] = reward_item["event"]
+
+                        inventory[str(reward_item["id"])] = inventory_item
+
+                    update_data["inventory"] = json.dumps(inventory)
+                    reward_message = f"Você recebeu: {reward_item['name']} (Raridade: {rarity.capitalize()})"
+
+            # Currency reward
+            if "currency" in exchange["reward"]:
+                req = exchange["reward"]["currency"]
+                currency_type = req.get("type", "TUSD")
+                amount = req.get("amount", 0)
+
+                if currency_type == "TUSD":
+                    update_data["tusd"] = player["tusd"] + amount
+                    reward_message = f"Você recebeu: {amount} TUSD"
+                elif currency_type == "seasonal_token":
+                    # Get current season token
+                    story_progress = player.get('story_progress', {})
+                    bimestre = story_progress.get('bimestre_corrente', 1)
+                    season = SEASONS.get(bimestre, "spring")
+                    season_token = f"{season}_token"
+
+                    alt_currencies = player.get("currencies", {})
+                    alt_currencies[season_token] = alt_currencies.get(season_token, 0) + amount
+                    update_data["currencies"] = json.dumps(alt_currencies)
+
+                    currency_info = ALTERNATIVE_CURRENCIES.get(season_token, {"name": season_token})
+                    reward_message = f"Você recebeu: {amount} {currency_info['name']}"
+                else:
+                    alt_currencies = player.get("currencies", {})
+                    alt_currencies[currency_type] = alt_currencies.get(currency_type, 0) + amount
+                    update_data["currencies"] = json.dumps(alt_currencies)
+
+                    currency_info = ALTERNATIVE_CURRENCIES.get(currency_type, {"name": currency_type})
+                    reward_message = f"Você recebeu: {amount} {currency_info['name']}"
+
+            # Update player data
+            update_player(interaction.user.id, update_data)
+
+            # Set cooldown (1 hour)
+            self.exchange_cooldowns[user_id] = now + 3600
+
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, troca realizada com sucesso!\n{reward_message}\n"
+                f"Você poderá fazer outra troca em 1 hora."
+            )
 
     @economy_group.command(name="usar", description="Usar um item do inventário")
     async def slash_use_item(self, interaction: discord.Interaction, item_id: int):
