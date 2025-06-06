@@ -49,6 +49,7 @@ def init_db():
         columns = cursor.fetchall()
         has_hp_column = any(col[1] == 'hp' for col in columns)
         has_max_hp_column = any(col[1] == 'max_hp' for col in columns)
+        has_story_progress_column = any(col[1] == 'story_progress' for col in columns)
 
         if not has_hp_column:
             logger.info("Adding 'hp' column to players table")
@@ -58,6 +59,11 @@ def init_db():
         if not has_max_hp_column:
             logger.info("Adding 'max_hp' column to players table")
             cursor.execute("ALTER TABLE players ADD COLUMN max_hp INTEGER DEFAULT 100")
+            conn.commit()
+
+        if not has_story_progress_column:
+            logger.info("Adding 'story_progress' column to players table")
+            cursor.execute("ALTER TABLE players ADD COLUMN story_progress TEXT DEFAULT NULL")
             conn.commit()
 
         # Update existing players to have default HP values if they don't already
@@ -106,6 +112,7 @@ def init_db():
         reputation INTEGER DEFAULT 0,
         hp INTEGER DEFAULT 100,
         max_hp INTEGER DEFAULT 100,
+        story_progress TEXT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (club_id) REFERENCES clubs(club_id)
