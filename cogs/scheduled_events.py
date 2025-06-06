@@ -837,7 +837,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the announcement
             await channel.send(
-                content="@everyone O ranking semanal de clubes foi atualizado!",
+                content="@here O ranking semanal de clubes foi atualizado!",
                 embed=embed
             )
 
@@ -896,7 +896,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the announcement
             message = await channel.send(
-                content="@everyone O Torneio Semanal da Academia Tokugawa está começando!",
+                content="@here O Torneio Semanal da Academia Tokugawa está começando!",
                 embed=embed
             )
 
@@ -1211,7 +1211,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the announcement
             message = await channel.send(
-                content="@everyone As Turf Wars Dominicais estão começando!",
+                content="@here As Turf Wars Dominicais estão começando!",
                 embed=embed
             )
 
@@ -2329,7 +2329,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the announcement
             message = await channel.send(
-                content="@everyone Uma ameaça foi detectada na Academia Tokugawa! Todos os estudantes são convocados!",
+                content="@here Uma ameaça foi detectada na Academia Tokugawa! Todos os estudantes são convocados!",
                 embed=embed
             )
 
@@ -2607,7 +2607,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the announcement
             await channel.send(
-                content="@everyone Uma nova aula começou na Academia Tokugawa!",
+                content="@here Uma nova aula começou na Academia Tokugawa!",
                 embed=embed
             )
 
@@ -2934,7 +2934,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the announcement
             message = await channel.send(
-                content="@everyone Um novo evento mensal está chegando!",
+                content="@here Um novo evento mensal está chegando!",
                 embed=embed
             )
 
