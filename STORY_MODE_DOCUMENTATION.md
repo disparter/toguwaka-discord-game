@@ -74,6 +74,27 @@ Enfrente seu primeiro grande desafio na academia: um estudante valentão que est
 - Confronto com Drake, o Valentão
 - Recompensas baseadas no resultado da batalha
 
+#### Ano 1, Capítulos 6-10
+
+Continue sua jornada no primeiro ano com desafios crescentes, incluindo:
+- Aula de Controle de Poder
+- Rivalidade entre Clubes
+- Torneio de Habilidades
+- Mistério na Biblioteca
+- Excursão ao Mundo Exterior
+- Segredos da Academia
+- Confronto com o Diretor Sombrio
+
+#### Ano 2, Capítulo 1: Novo Começo
+
+Após os eventos do ano anterior, a Academia Tokugawa passa por mudanças significativas. Um novo semestre começa com novos desafios.
+
+- Introdução ao novo diretor, Hikari
+- Mudanças na administração da academia
+- Encontro com Akira, um estudante transferido
+- Rumores sobre uma organização externa interessada nos estudantes
+- Escolhas que afetam sua relação com o novo diretor
+
 ### Capítulos de Desafio
 
 Os Capítulos de Desafio são uma nova funcionalidade que permite aos jogadores enfrentar desafios especiais baseados em seu nível de força. Diferente da história principal, que segue uma progressão linear, os Capítulos de Desafio são acessíveis a qualquer momento e são adaptados ao seu nível atual de força.
