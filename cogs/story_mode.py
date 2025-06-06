@@ -401,7 +401,7 @@ class StoryModeCog(commands.Cog):
                     button.callback = self._create_choice_callback(user_id, i)
                     view.add_item(button)
 
-                message = await channel.send(embed=embed, view=view)
+                message = await channel.send(embed=embed, view=view, ephemeral=True)
                 return
 
             # If no choices, add a "Continue" button
@@ -414,7 +414,7 @@ class StoryModeCog(commands.Cog):
             button.callback = self._create_continue_callback(user_id)
             view.add_item(button)
 
-            message = await channel.send(embed=embed, view=view)
+            message = await channel.send(embed=embed, view=view, ephemeral=True)
             return
 
         # If there are choices but no current dialogue, send the choices
@@ -436,7 +436,7 @@ class StoryModeCog(commands.Cog):
                 button.callback = self._create_choice_callback(user_id, i)
                 view.add_item(button)
 
-            message = await channel.send(embed=embed, view=view)
+            message = await channel.send(embed=embed, view=view, ephemeral=True)
             return
 
         # If no dialogue or choices, the chapter is complete
@@ -446,7 +446,7 @@ class StoryModeCog(commands.Cog):
             color=discord.Color.green()
         )
 
-        await channel.send(embed=embed)
+        await channel.send(embed=embed, ephemeral=True)
 
     def _create_choice_callback(self, user_id: int, choice_index: int):
         """
@@ -492,14 +492,14 @@ class StoryModeCog(commands.Cog):
                         description="Parabéns! Você concluiu a história principal do jogo.",
                         color=discord.Color.gold()
                     )
-                    await interaction.channel.send(embed=embed)
+                    await interaction.channel.send(embed=embed, ephemeral=True)
                 elif "next_chapter_id" in result:
                     embed = create_basic_embed(
                         title="Capítulo Concluído",
                         description=f"Você concluiu este capítulo da história. O próximo capítulo está disponível.",
                         color=discord.Color.green()
                     )
-                    await interaction.channel.send(embed=embed)
+                    await interaction.channel.send(embed=embed, ephemeral=True)
 
         return choice_callback
 
@@ -584,7 +584,7 @@ class StoryModeCog(commands.Cog):
             if member:
                 try:
                     # Send a direct message to the user instead of posting in the channel
-                    await member.send(embed=embed)
+                    await member.send(embed=embed, ephemeral=True)
                     return
                 except discord.errors.Forbidden:
                     # If the user has DMs disabled, fall back to an ephemeral message in the channel
