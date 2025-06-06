@@ -174,22 +174,41 @@ class Activities(commands.Cog):
                 await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
                 return
 
-            # Get a random event
-            event = get_random_event()
+            # Create a random event using the enhanced RandomEvent class
+            from utils.game_mechanics.events.random_event import RandomEvent
+            random_event = RandomEvent.create_random_event()
+
+            # Trigger the event for the player
+            event_result = random_event.trigger(player)
 
             # Process event effects
             update_data = {}
 
-            for key, value in event["effect"].items():
-                if key == "exp":
-                    update_data["exp"] = player["exp"] + value
-                elif key == "tusd":
-                    update_data["tusd"] = max(0, player["tusd"] + value)  # Ensure TUSD doesn't go below 0
-                elif key == "attribute" and value == "random":
-                    # Randomly increase an attribute
-                    attribute = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
-                    update_data[attribute] = player[attribute] + 1
-                    event["effect"][key] = attribute  # Update the event effect for display
+            # Experience change
+            if "exp_change" in event_result:
+                update_data["exp"] = player["exp"] + event_result["exp_change"]
+
+            # TUSD change
+            if "tusd_change" in event_result:
+                update_data["tusd"] = max(0, player["tusd"] + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
+
+            # Primary attribute change
+            if "attribute_change" in event_result:
+                attribute = event_result["attribute_change"]
+                value = event_result["attribute_value"]
+                update_data[attribute] = player[attribute] + value
+
+            # Secondary attribute change (usually negative)
+            if "secondary_attribute_change" in event_result:
+                attribute = event_result["secondary_attribute_change"]
+                value = event_result["secondary_attribute_value"]
+                update_data[attribute] = max(1, player[attribute] + value)  # Ensure attribute doesn't go below 1
+
+            # All attributes boost
+            if "all_attributes_change" in event_result:
+                value = event_result["all_attributes_change"]
+                for attr in ["dexterity", "intellect", "charisma", "power_stat"]:
+                    update_data[attr] = player[attr] + value
 
             # Check for level up
             if "exp" in update_data:
@@ -202,6 +221,11 @@ class Activities(commands.Cog):
                     else:
                         update_data["tusd"] = player["tusd"] + (new_level * 50)
 
+            # Handle item rewards (placeholder - would need inventory system integration)
+            if "item_reward" in event_result:
+                logger.info(f"Player {player['name']} received item: {event_result['item_reward']}")
+                # Future: Add item to player's inventory
+
             # Update player in database
             success = update_player(interaction.user.id, **update_data)
 
@@ -210,7 +234,7 @@ class Activities(commands.Cog):
                 self._set_cooldown(interaction.user.id, "explorar")
 
                 # Create embed for event
-                embed = create_event_embed(event)
+                embed = create_event_embed(event_result)
 
                 # Add level up message if applicable
                 if "level" in update_data:
@@ -227,7 +251,7 @@ class Activities(commands.Cog):
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade explorar")
         except Exception as e:
-            logger.error(f"Error in slash_explore: {e}")
+            logger.error(f"Error in slash_explore: {e}", exc_info=True)
 
     @activity_group.command(name="duelar", description="Desafiar outro jogador para um duelo")
     async def slash_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
@@ -694,66 +718,94 @@ class Activities(commands.Cog):
     @commands.command(name="explorar")
     async def explore(self, ctx):
         """Explorar a academia em busca de eventos aleatórios."""
-        # Check if player exists
-        player = get_player(ctx.author.id)
-        if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
-            return
+        try:
+            # Check if player exists
+            player = get_player(ctx.author.id)
+            if not player:
+                await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                return
 
-        # Check cooldown
-        cooldown = self._check_cooldown(ctx.author.id, "explorar")
-        if cooldown:
-            await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
-            return
+            # Check cooldown
+            cooldown = self._check_cooldown(ctx.author.id, "explorar")
+            if cooldown:
+                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
+                return
 
-        # Get a random event
-        event = get_random_event()
+            # Create a random event using the enhanced RandomEvent class
+            from utils.game_mechanics.events.random_event import RandomEvent
+            random_event = RandomEvent.create_random_event()
 
-        # Process event effects
-        update_data = {}
+            # Trigger the event for the player
+            event_result = random_event.trigger(player)
 
-        for key, value in event["effect"].items():
-            if key == "exp":
-                update_data["exp"] = player["exp"] + value
-            elif key == "tusd":
-                update_data["tusd"] = max(0, player["tusd"] + value)  # Ensure TUSD doesn't go below 0
-            elif key == "attribute" and value == "random":
-                # Randomly increase an attribute
-                attribute = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
-                update_data[attribute] = player[attribute] + 1
-                event["effect"][key] = attribute  # Update the event effect for display
+            # Process event effects
+            update_data = {}
 
-        # Check for level up
-        if "exp" in update_data:
-            new_level = calculate_level_from_exp(update_data["exp"])
-            if new_level > player["level"]:
-                update_data["level"] = new_level
-                # Bonus TUSD for level up
-                if "tusd" in update_data:
-                    update_data["tusd"] += new_level * 50
-                else:
-                    update_data["tusd"] = player["tusd"] + (new_level * 50)
+            # Experience change
+            if "exp_change" in event_result:
+                update_data["exp"] = player["exp"] + event_result["exp_change"]
 
-        # Update player in database
-        success = update_player(ctx.author.id, **update_data)
+            # TUSD change
+            if "tusd_change" in event_result:
+                update_data["tusd"] = max(0, player["tusd"] + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
 
-        if success:
-            # Set cooldown
-            self._set_cooldown(ctx.author.id, "explorar")
+            # Primary attribute change
+            if "attribute_change" in event_result:
+                attribute = event_result["attribute_change"]
+                value = event_result["attribute_value"]
+                update_data[attribute] = player[attribute] + value
 
-            # Create embed for event
-            embed = create_event_embed(event)
+            # Secondary attribute change (usually negative)
+            if "secondary_attribute_change" in event_result:
+                attribute = event_result["secondary_attribute_change"]
+                value = event_result["secondary_attribute_value"]
+                update_data[attribute] = max(1, player[attribute] + value)  # Ensure attribute doesn't go below 1
 
-            # Add level up message if applicable
-            if "level" in update_data:
-                embed.add_field(
-                    name="Nível Aumentado!",
-                    value=f"Você subiu para o nível {update_data['level']}!\n+{update_data['level'] * 50} TUSD",
-                    inline=False
-                )
+            # All attributes boost
+            if "all_attributes_change" in event_result:
+                value = event_result["all_attributes_change"]
+                for attr in ["dexterity", "intellect", "charisma", "power_stat"]:
+                    update_data[attr] = player[attr] + value
 
-            await ctx.send(embed=embed)
-        else:
+            # Check for level up
+            if "exp" in update_data:
+                new_level = calculate_level_from_exp(update_data["exp"])
+                if new_level > player["level"]:
+                    update_data["level"] = new_level
+                    # Bonus TUSD for level up
+                    if "tusd" in update_data:
+                        update_data["tusd"] += new_level * 50
+                    else:
+                        update_data["tusd"] = player["tusd"] + (new_level * 50)
+
+            # Handle item rewards (placeholder - would need inventory system integration)
+            if "item_reward" in event_result:
+                logger.info(f"Player {player['name']} received item: {event_result['item_reward']}")
+                # Future: Add item to player's inventory
+
+            # Update player in database
+            success = update_player(ctx.author.id, **update_data)
+
+            if success:
+                # Set cooldown
+                self._set_cooldown(ctx.author.id, "explorar")
+
+                # Create embed for event
+                embed = create_event_embed(event_result)
+
+                # Add level up message if applicable
+                if "level" in update_data:
+                    embed.add_field(
+                        name="Nível Aumentado!",
+                        value=f"Você subiu para o nível {update_data['level']}!\n+{update_data['level'] * 50} TUSD",
+                        inline=False
+                    )
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
+        except Exception as e:
+            logger.error(f"Error in explore command: {e}", exc_info=True)
             await ctx.send("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
 
     @commands.command(name="duelar")

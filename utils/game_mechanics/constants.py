@@ -3,6 +3,7 @@ Constants used throughout the game mechanics.
 Extracted from the original game_mechanics.py to follow the Single Responsibility Principle.
 """
 import math
+import os
 
 # HP factor constants
 HP_FACTOR_THRESHOLD = 0.5  # Below 50% HP, attributes start to be affected
@@ -41,8 +42,43 @@ TRAINING_OUTCOMES = [
     "O treinamento foi exaustivo, mas valeu a pena pelo crescimento obtido."
 ]
 
+# Function to load events from JSON files
+def load_events_from_json(file_path):
+    """Load events from a JSON file.
+
+    Args:
+        file_path (str): Path to the JSON file
+
+    Returns:
+        list: List of event dictionaries
+    """
+    import json
+    import os
+    import logging
+
+    logger = logging.getLogger('tokugawa_bot')
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            events = json.load(f)
+        logger.info(f"Successfully loaded {len(events)} events from {file_path}")
+        return events
+    except FileNotFoundError:
+        logger.warning(f"Events file not found: {file_path}")
+        return []
+    except json.JSONDecodeError:
+        logger.error(f"Error decoding JSON from {file_path}")
+        return []
+    except Exception as e:
+        logger.error(f"Error loading events from {file_path}: {e}")
+        return []
+
 # Random events
-RANDOM_EVENTS = [
+RANDOM_EVENTS_PATH = os.path.join('data', 'events', 'random_events.json')
+RANDOM_EVENTS_FROM_FILE = load_events_from_json(RANDOM_EVENTS_PATH)
+
+# Fallback hardcoded events if file loading fails
+RANDOM_EVENTS_FALLBACK = [
     {
         "title": "Festival dos Poderes",
         "description": "Você foi convidado para o Festival dos Poderes! Ganhe experiência extra por participar.",
@@ -74,3 +110,6 @@ RANDOM_EVENTS = [
         "effect": {"item": "random"}
     }
 ]
+
+# Use events from file if available, otherwise use fallback
+RANDOM_EVENTS = RANDOM_EVENTS_FROM_FILE if RANDOM_EVENTS_FROM_FILE else RANDOM_EVENTS_FALLBACK
