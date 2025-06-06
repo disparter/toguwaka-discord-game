@@ -1,0 +1,246 @@
+{
+  "origin": {
+    "Bairro Popular": {
+      "professor": [
+        {"npc": "Professor", "text": "Sua perspectiva única traz uma visão refrescante para a discussão. Nem tudo se aprende nos livros."},
+        {"npc": "Professor", "text": "Interessante como você aborda os problemas de forma prática. Isso vem da sua experiência no bairro?"}
+      ],
+      "elite_student": [
+        {"npc": "Estudante de Elite", "text": "Não esperava que alguém do seu... background... tivesse ideias tão interessantes."},
+        {"npc": "Estudante de Elite", "text": "Você até que se adaptou bem à academia, considerando de onde veio."}
+      ],
+      "friendly_student": [
+        {"npc": "Colega", "text": "Adoro suas histórias do bairro! Deve ter sido uma infância cheia de aventuras."},
+        {"npc": "Colega", "text": "Você tem uma força que muitos aqui, criados em berço de ouro, não têm."}
+      ]
+    },
+    "Família de Elite": {
+      "professor": [
+        {"npc": "Professor", "text": "Sua educação privilegiada é evidente, mas é bom ver que você não se apoia apenas nisso."},
+        {"npc": "Professor", "text": "Seus pais devem ter investido muito em sua formação. Use esse privilégio com sabedoria."}
+      ],
+      "working_class_student": [
+        {"npc": "Estudante Comum", "text": "Nem todos aqui nasceram com uma colher de prata na boca, sabia?"},
+        {"npc": "Estudante Comum", "text": "Surpreendente ver alguém da sua classe social se misturando com o resto de nós."}
+      ],
+      "friendly_student": [
+        {"npc": "Colega", "text": "Seus contatos da alta sociedade podem ser úteis para todos nós algum dia."},
+        {"npc": "Colega", "text": "É legal ver que você não é esnobe como outros da elite."}
+      ]
+    },
+    "Órfão": {
+      "professor": [
+        {"npc": "Professor", "text": "Sua independência é admirável. Muitos estudantes com famílias completas não têm metade da sua determinação."},
+        {"npc": "Professor", "text": "A academia pode se tornar sua família agora, se você permitir."}
+      ],
+      "family_student": [
+        {"npc": "Estudante com Família", "text": "Não consigo imaginar como deve ser não ter pais. Você é muito forte."},
+        {"npc": "Estudante com Família", "text": "Meus pais estão sempre me pressionando. Às vezes invejo sua liberdade."}
+      ],
+      "friendly_student": [
+        {"npc": "Colega", "text": "Ei, alguns de nós vamos fazer um almoço no fim de semana. Você deveria vir."},
+        {"npc": "Colega", "text": "Você construiu sua própria força. Isso é mais impressionante do que qualquer linhagem."}
+      ]
+    },
+    "Transferido": {
+      "professor": [
+        {"npc": "Professor", "text": "Sua experiência em outra instituição traz uma perspectiva valiosa para nossas discussões."},
+        {"npc": "Professor", "text": "Como nossa academia se compara à sua escola anterior?"}
+      ],
+      "local_student": [
+        {"npc": "Estudante Local", "text": "Ainda se adaptando? A Academia Tokugawa tem tradições que levam tempo para entender."},
+        {"npc": "Estudante Local", "text": "O que te fez vir para cá? Ouvi dizer que sua antiga escola também era boa."}
+      ],
+      "friendly_student": [
+        {"npc": "Colega", "text": "Suas histórias da outra escola são fascinantes! Como era o sistema de hierarquia lá?"},
+        {"npc": "Colega", "text": "É bom ter sangue novo por aqui. Traz novas ideias."}
+      ]
+    },
+    "Comunidade Isolada": {
+      "professor": [
+        {"npc": "Professor", "text": "Seus conhecimentos tradicionais oferecem uma perspectiva única que enriquece nossa aula."},
+        {"npc": "Professor", "text": "A sabedoria antiga às vezes supera a ciência moderna. Sua comunidade preservou conhecimentos valiosos."}
+      ],
+      "modern_student": [
+        {"npc": "Estudante Moderno", "text": "Sério que você cresceu sem internet? Como sobreviveu?"},
+        {"npc": "Estudante Moderno", "text": "Suas tradições parecem interessantes, mesmo que um pouco... antiquadas."}
+      ],
+      "friendly_student": [
+        {"npc": "Colega", "text": "Poderia me ensinar mais sobre as técnicas de meditação da sua comunidade?"},
+        {"npc": "Colega", "text": "Sua conexão com a natureza é incrível. Nunca vi ninguém com tanta sensibilidade aos elementos."}
+      ]
+    }
+  },
+  "power": {
+    "Fogo": {
+      "mentor": [
+        {"npc": "Mentor", "text": "O fogo reflete seu espírito - intenso, apaixonado, às vezes difícil de controlar."},
+        {"npc": "Mentor", "text": "Lembre-se: o fogo pode aquecer ou destruir. A escolha é sua."}
+      ],
+      "water_user": [
+        {"npc": "Usuário de Água", "text": "Nossos poderes são opostos, mas isso não significa que devemos ser inimigos."},
+        {"npc": "Usuário de Água", "text": "Sua intensidade é impressionante, mas às vezes é preciso fluidez, não apenas força."}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "Uau! Nunca vi ninguém manipular o fogo com tanta precisão!"},
+        {"npc": "Colega", "text": "O calor que você gera poderia ser útil na próxima excursão de inverno."}
+      ]
+    },
+    "Água": {
+      "mentor": [
+        {"npc": "Mentor", "text": "Como a água, você se adapta às circunstâncias. Essa é sua maior força."},
+        {"npc": "Mentor", "text": "A água pode ser gentil como um riacho ou poderosa como um tsunami. Aprenda a ser ambos."}
+      ],
+      "fire_user": [
+        {"npc": "Usuário de Fogo", "text": "Sua calma me irrita às vezes, sabia? Nem tudo se resolve com paciência."},
+        {"npc": "Usuário de Fogo", "text": "Tenho que admitir, sua adaptabilidade é uma vantagem que o fogo não tem."}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "A forma como você manipula a água é quase hipnótica."},
+        {"npc": "Colega", "text": "Poderia nos ajudar com o sistema de irrigação do jardim da academia?"}
+      ]
+    },
+    "Terra": {
+      "mentor": [
+        {"npc": "Mentor", "text": "Sua conexão com a terra lhe dá estabilidade. Use isso como fundação para crescer."},
+        {"npc": "Mentor", "text": "A terra é paciente e duradoura. Cultive essas qualidades em si mesmo."}
+      ],
+      "air_user": [
+        {"npc": "Usuário de Ar", "text": "Como você consegue ficar tão... parado? Não sente vontade de se mover, explorar?"},
+        {"npc": "Usuário de Ar", "text": "Sua solidez compensa minha tendência a me dispersar. Formamos uma boa equipe."}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "A forma como você moldou aquela escultura de pedra foi incrível!"},
+        {"npc": "Colega", "text": "Poderia nos ajudar a reforçar as fundações do novo prédio do clube?"}
+      ]
+    },
+    "Ar": {
+      "mentor": [
+        {"npc": "Mentor", "text": "O ar é o elemento da liberdade e do intelecto. Seu poder reflete sua mente ágil."},
+        {"npc": "Mentor", "text": "Não deixe sua natureza dispersa impedir seu progresso. O ar precisa de direção."}
+      ],
+      "earth_user": [
+        {"npc": "Usuário de Terra", "text": "Como você consegue pensar tão rápido? Às vezes mal consigo acompanhar."},
+        {"npc": "Usuário de Terra", "text": "Sua agilidade compensa minha lentidão. Poderíamos aprender um com o outro."}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "Incrível como você pode praticamente voar! Deve ser a melhor sensação do mundo."},
+        {"npc": "Colega", "text": "Poderia criar uma brisa refrescante? Este verão está insuportável."}
+      ]
+    },
+    "Telepatia": {
+      "mentor": [
+        {"npc": "Mentor", "text": "Seu dom é raro e poderoso. Lembre-se sempre da responsabilidade que vem com ele."},
+        {"npc": "Mentor", "text": "A mente dos outros é um território sagrado. Entre com respeito ou não entre."}
+      ],
+      "suspicious_peer": [
+        {"npc": "Colega Desconfiado", "text": "Você está lendo minha mente agora? Porque isso seria uma invasão de privacidade."},
+        {"npc": "Colega Desconfiado", "text": "Deve ser conveniente sempre saber o que os outros estão pensando..."}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "Sua telepatia poderia nos ajudar muito no próximo projeto em grupo!"},
+        {"npc": "Colega", "text": "Como é? Ouvir tantas vozes na sua cabeça?"}
+      ]
+    },
+    "Força": {
+      "mentor": [
+        {"npc": "Mentor", "text": "Força sem controle é apenas destruição. Aprenda a dosar seu poder."},
+        {"npc": "Mentor", "text": "Sua força física é impressionante, mas não negligencie o desenvolvimento da sua mente."}
+      ],
+      "intellect_user": [
+        {"npc": "Usuário de Intelecto", "text": "Nem tudo se resolve com músculos, sabia? Às vezes é preciso estratégia."},
+        {"npc": "Usuário de Intelecto", "text": "Sua força seria muito mais eficaz se combinada com um plano inteligente."}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "Uau! Você levantou aquilo como se não pesasse nada!"},
+        {"npc": "Colega", "text": "Poderia nos ajudar a mover alguns equipamentos pesados para o laboratório?"}
+      ]
+    },
+    "Manipulação do Tempo": {
+      "mentor": [
+        {"npc": "Mentor", "text": "Seu poder sobre o tempo é extremamente raro. Use-o com sabedoria, pois cada alteração tem consequências."},
+        {"npc": "Mentor", "text": "O tempo é a mais fundamental das forças. Compreendê-lo é compreender o universo."}
+      ],
+      "curious_peer": [
+        {"npc": "Colega Curioso", "text": "É verdade que você pode ver o futuro? Ou voltar no tempo?"},
+        {"npc": "Colega Curioso", "text": "Como é experimentar o tempo de forma diferente de todos nós?"}
+      ],
+      "impressed_peer": [
+        {"npc": "Colega", "text": "A forma como você desacelerou aquele objeto em queda foi incrível!"},
+        {"npc": "Colega", "text": "Seu poder deve ser útil para nunca se atrasar para as aulas, hein?"}
+      ]
+    }
+  },
+  "club": {
+    "1": {
+      "club_leader": [
+        {"npc": "Kai Flameheart", "text": "Mostre a intensidade que define nosso clube! Não aceite menos que a vitória!"},
+        {"npc": "Kai Flameheart", "text": "Lembre-se do nosso lema: 'A chama mais brilhante forja o espírito mais forte!'"}
+      ],
+      "rival_club_member": [
+        {"npc": "Membro dos Elementalistas", "text": "Típico do Clube das Chamas - tudo força, nenhum controle."},
+        {"npc": "Membro dos Elementalistas", "text": "Seu clube tem potencial, mas falta refinamento e equilíbrio."}
+      ],
+      "club_member": [
+        {"npc": "Colega de Clube", "text": "Vamos mostrar a eles o poder das chamas! Estamos com você!"},
+        {"npc": "Colega de Clube", "text": "Depois do treino, vamos todos para o café da esquina. Tradição do clube!"}
+      ]
+    },
+    "2": {
+      "club_leader": [
+        {"npc": "Luna Mindweaver", "text": "A mente é a arma mais poderosa. Use-a para ver além das aparências."},
+        {"npc": "Luna Mindweaver", "text": "Nosso clube valoriza a sutileza e a percepção. Mostre que você entende isso."}
+      ],
+      "rival_club_member": [
+        {"npc": "Membro do Conselho Político", "text": "Vocês Ilusionistas acham que podem ler mentes, mas não entendem nada de estratégia real."},
+        {"npc": "Membro do Conselho Político", "text": "Ilusões são interessantes, mas o verdadeiro poder está na influência concreta."}
+      ],
+      "club_member": [
+        {"npc": "Colega de Clube", "text": "Percebi uma mudança sutil na sua aura mental. Tem praticado as técnicas que ensinei?"},
+        {"npc": "Colega de Clube", "text": "Vamos nos reunir na sala de meditação mais tarde. Descobrimos algo fascinante."}
+      ]
+    },
+    "3": {
+      "club_leader": [
+        {"npc": "Alexander Strategos", "text": "Cada interação é uma negociação. Cada palavra, um movimento no tabuleiro."},
+        {"npc": "Alexander Strategos", "text": "Nosso clube controla a política estudantil. Use essa influência com sabedoria."}
+      ],
+      "rival_club_member": [
+        {"npc": "Membro dos Ilusionistas", "text": "Vocês do Conselho são tão previsíveis com suas manipulações óbvias."},
+        {"npc": "Membro dos Ilusionistas", "text": "Política é um jogo superficial comparado às profundezas da mente."}
+      ],
+      "club_member": [
+        {"npc": "Colega de Clube", "text": "Temos uma reunião estratégica hoje à noite. Sua presença é importante."},
+        {"npc": "Colega de Clube", "text": "Consegui aquelas informações que você pediu. Muito úteis para nosso próximo movimento."}
+      ]
+    },
+    "4": {
+      "club_leader": [
+        {"npc": "Gaia Naturae", "text": "Busque o equilíbrio em todas as coisas. Essa é a essência do nosso clube."},
+        {"npc": "Gaia Naturae", "text": "Os elementos não são ferramentas, são extensões de nós mesmos. Respeite-os."}
+      ],
+      "rival_club_member": [
+        {"npc": "Membro do Clube das Chamas", "text": "Vocês Elementalistas são tão lentos com toda essa conversa de 'equilíbrio'."},
+        {"npc": "Membro do Clube das Chamas", "text": "Por que se preocupar com todos os elementos quando pode se especializar em um?"}
+      ],
+      "club_member": [
+        {"npc": "Colega de Clube", "text": "A meditação elemental de hoje será no jardim zen. Não se atrase."},
+        {"npc": "Colega de Clube", "text": "Sua conexão com os elementos está ficando mais forte. Posso sentir."}
+      ]
+    },
+    "5": {
+      "club_leader": [
+        {"npc": "Ryuji Battleborn", "text": "A disciplina forja o guerreiro. Nunca esqueça seu treinamento."},
+        {"npc": "Ryuji Battleborn", "text": "Nosso clube valoriza a força, mas também a honra. Uma vitória sem honra não é vitória."}
+      ],
+      "rival_club_member": [
+        {"npc": "Membro do Conselho Político", "text": "O Clube de Combate é tão... primitivo. A verdadeira batalha acontece nas sombras."},
+        {"npc": "Membro do Conselho Político", "text": "Força física impressiona apenas os simples. O poder real está na influência."}
+      ],
+      "club_member": [
+        {"npc": "Colega de Clube", "text": "Treino extra hoje à noite. O torneio está chegando e precisamos estar preparados."},
+        {"npc": "Colega de Clube", "text": "Sua técnica melhorou muito. Continue assim e logo enfrentará o próprio Ryuji."}
+      ]
+    }
+  }
+}

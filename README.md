@@ -232,9 +232,75 @@ A Academia Tokugawa possui diversos clubes, cada um com suas especialidades:
 
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
+## 🧪 Testes
+
+O projeto inclui testes unitários para garantir a qualidade e o funcionamento correto do código. Os testes estão localizados no diretório `tests/` e seguem a mesma estrutura de diretórios do código-fonte.
+
+Para mais detalhes sobre os testes, consulte o arquivo [tests/README.md](tests/README.md).
+
+### Executando os Testes
+
+Para executar todos os testes:
+
+```bash
+# Certifique-se de que o diretório raiz do projeto está no PYTHONPATH
+PYTHONPATH=$PYTHONPATH:$(pwd) python -m unittest discover -s tests
+```
+
+Para executar um teste específico:
+
+```bash
+PYTHONPATH=$PYTHONPATH:$(pwd) python -m unittest tests.utils.game_mechanics.calculators.test_experience_calculator
+```
+
+### Escrevendo Novos Testes
+
+Ao adicionar novas funcionalidades, é recomendado criar testes correspondentes:
+
+1. Crie um arquivo de teste no diretório apropriado dentro de `tests/`
+2. Nomeie o arquivo com o prefixo `test_` seguido do nome do módulo que está testando
+3. Estenda a classe `unittest.TestCase` e implemente métodos de teste
+4. Use asserções para verificar o comportamento esperado
+
+Exemplo:
+```python
+import unittest
+from utils.seu_modulo import SuaClasse
+
+class TestSuaClasse(unittest.TestCase):
+    def test_seu_metodo(self):
+        # Arrange
+        instancia = SuaClasse()
+        # Act
+        resultado = instancia.seu_metodo()
+        # Assert
+        self.assertEqual(resultado, valor_esperado)
+```
+
+### Integração Contínua
+
+Os testes são executados automaticamente como parte do pipeline de CI/CD no GitHub Actions antes da implantação. Isso garante que apenas código que passa em todos os testes seja implantado em produção.
+
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+Contribuições são bem-vindas! Siga estas etapas para contribuir:
+
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. Escreva testes para sua funcionalidade
+4. Implemente sua funcionalidade
+5. Execute os testes para garantir que tudo está funcionando
+6. Faça commit das suas alterações (`git commit -am 'Adiciona nova funcionalidade'`)
+7. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
+8. Abra um Pull Request
+
+### Diretrizes de Contribuição
+
+- Mantenha o código limpo e bem documentado
+- Siga o estilo de código existente
+- Escreva testes para novas funcionalidades
+- Atualize a documentação quando necessário
+- Certifique-se de que todos os testes passam antes de enviar um Pull Request
 
 ## 🎮 Divirta-se!
 

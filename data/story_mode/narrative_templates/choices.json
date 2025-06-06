@@ -1,0 +1,93 @@
+{
+  "origin": {
+    "Bairro Popular": [
+      {"text": "Usar sua experiência de rua para encontrar uma solução alternativa.", "attribute_bonus": {"charisma": 1}},
+      {"text": "Defender um colega excluído pela elite escolar.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Mostrar que sua origem humilde não define suas capacidades.", "attribute_bonus": {"power_stat": 1}}
+    ],
+    "Família de Elite": [
+      {"text": "Usar seus contatos para obter informações privilegiadas.", "attribute_bonus": {"intellect": 1}},
+      {"text": "Mostrar que nem todos da elite são arrogantes e distantes.", "attribute_bonus": {"charisma": 1}},
+      {"text": "Aproveitar sua educação privilegiada para resolver o problema.", "attribute_bonus": {"intellect": 2}}
+    ],
+    "Órfão": [
+      {"text": "Usar sua independência e resiliência para superar o desafio.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Mostrar que você não precisa de família para ser forte.", "attribute_bonus": {"power_stat": 1, "charisma": 1}},
+      {"text": "Formar laços com outros que entendem sua situação.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Transferido": [
+      {"text": "Usar sua perspectiva externa para ver o que os outros não veem.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Compartilhar experiências de sua escola anterior.", "attribute_bonus": {"charisma": 1}},
+      {"text": "Mostrar que novatos também podem fazer a diferença.", "attribute_bonus": {"power_stat": 1, "charisma": 1}}
+    ],
+    "Comunidade Isolada": [
+      {"text": "Usar conhecimentos tradicionais que outros não possuem.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Mostrar o valor de uma perspectiva diferente e única.", "attribute_bonus": {"charisma": 1, "intellect": 1}},
+      {"text": "Adaptar-se rapidamente para superar as diferenças culturais.", "attribute_bonus": {"charisma": 2}}
+    ]
+  },
+  "power": {
+    "Fogo": [
+      {"text": "Usar seu poder de fogo para intimidar.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Demonstrar controle preciso sobre as chamas.", "attribute_bonus": {"power_stat": 1, "intellect": 1}},
+      {"text": "Aquecer o ambiente para criar uma atmosfera acolhedora.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Água": [
+      {"text": "Adaptar-se como a água para encontrar uma solução.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Usar a água para acalmar os ânimos exaltados.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Demonstrar a força persistente da água.", "attribute_bonus": {"power_stat": 2}}
+    ],
+    "Terra": [
+      {"text": "Manter-se firme como a rocha diante da adversidade.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Usar sua conexão com a terra para sentir vibrações e movimentos.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Mostrar a importância da estabilidade e paciência.", "attribute_bonus": {"charisma": 1, "intellect": 1}}
+    ],
+    "Ar": [
+      {"text": "Usar sua agilidade e leveza para evitar o confronto.", "attribute_bonus": {"dexterity": 2}},
+      {"text": "Sussurrar mensagens através do vento.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Demonstrar a liberdade e adaptabilidade do ar.", "attribute_bonus": {"intellect": 1, "dexterity": 1}}
+    ],
+    "Telepatia": [
+      {"text": "Ler os pensamentos para entender as verdadeiras intenções.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Usar comunicação telepática para coordenar ações.", "attribute_bonus": {"charisma": 1, "intellect": 1}},
+      {"text": "Projetar pensamentos tranquilizadores.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Força": [
+      {"text": "Demonstrar força bruta para impressionar.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Usar força controlada para ajudar em uma tarefa difícil.", "attribute_bonus": {"power_stat": 1, "charisma": 1}},
+      {"text": "Mostrar que força vem com responsabilidade.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Manipulação do Tempo": [
+      {"text": "Desacelerar o tempo para analisar a situação com calma.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Usar pequenos saltos temporais para prever reações.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Demonstrar o valor da precisão temporal.", "attribute_bonus": {"power_stat": 1, "intellect": 1}}
+    ]
+  },
+  "club": {
+    "1": [
+      {"text": "Usar a intensidade e paixão característica do Clube das Chamas.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Mostrar que o fogo pode iluminar, não apenas destruir.", "attribute_bonus": {"charisma": 1, "power_stat": 1}},
+      {"text": "Desafiar alguém para um duelo amistoso para resolver o impasse.", "attribute_bonus": {"power_stat": 1, "charisma": 1}}
+    ],
+    "2": [
+      {"text": "Usar sutileza e manipulação psicológica para alcançar seus objetivos.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Revelar que você percebe mais do que os outros imaginam.", "attribute_bonus": {"intellect": 1, "charisma": 1}},
+      {"text": "Criar uma ilusão para distrair ou impressionar.", "attribute_bonus": {"power_stat": 1, "intellect": 1}}
+    ],
+    "3": [
+      {"text": "Negociar um acordo que beneficie todas as partes.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Usar informações estratégicas para ganhar vantagem.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Demonstrar liderança ao tomar a iniciativa.", "attribute_bonus": {"charisma": 1, "power_stat": 1}}
+    ],
+    "4": [
+      {"text": "Buscar o equilíbrio e a harmonia na situação.", "attribute_bonus": {"intellect": 1, "charisma": 1}},
+      {"text": "Demonstrar a versatilidade do controle elemental.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Conectar-se com o ambiente natural para encontrar uma solução.", "attribute_bonus": {"intellect": 2}}
+    ],
+    "5": [
+      {"text": "Enfrentar o desafio diretamente, sem hesitação.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Mostrar disciplina e autocontrole mesmo sob pressão.", "attribute_bonus": {"power_stat": 1, "charisma": 1}},
+      {"text": "Usar técnicas de combate para uma demonstração impressionante.", "attribute_bonus": {"power_stat": 1, "dexterity": 1}}
+    ]
+  }
+}
