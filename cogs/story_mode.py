@@ -1593,6 +1593,12 @@ class StoryMode(commands.Cog):
         # Increment dialogue counter
         self.active_stories[user_id]["current_dialogue"] += 1
 
+        # Check if there are additional choices for this specific dialogue
+        if "additional_choices" in chapter_data and (current_dialogue + 1) in chapter_data["additional_choices"]:
+            # Send additional choices for this dialogue
+            await self.send_choices(user_id, channel, chapter_data["additional_choices"][current_dialogue + 1])
+            return
+
         # Wait a moment before sending next dialogue
         await asyncio.sleep(3)
 
