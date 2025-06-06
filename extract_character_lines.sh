@@ -9,9 +9,9 @@ OUTPUT_DIR="./npc_dialogues"
 
 # Função para converter nomes em snake_case
 convert_to_snake_case() {
-    local name="$1"
-    # Converte o nome para letras minúsculas, substitui espaços por underlines e remove caracteres especiais
-    echo "$name" | tr '[:upper:]' '[:lower:]' | sed -r 's/[^a-z0-9]+/_/g' | sed -r 's/^_|_$//g'
+   local name="$1"
+   # Converte o nome para letras minúsculas, substitui espaços por underlines e remove caracteres especiais
+   echo "$name" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/_/g' | sed -E 's/^_|_$//g'
 }
 
 # Cria o diretório de saída, se ainda não existir
@@ -23,27 +23,30 @@ echo ""
 
 # Itera por todas as extensões especificadas
 for EXTENSION in "${FILE_EXTENSIONS[@]}"; do
-    echo "Procurando em arquivos com extensão: $EXTENSION"
+   echo "Procurando nos arquivos com extensão: $EXTENSION"
 
-    # Busca todos os arquivos correspondentes à extensão
-    find "$SEARCH_DIR" -type f -name "$EXTENSION" | while read -r FILE; do
-        echo "Verificando falas no arquivo: $FILE"
+   find "$SEARCH_DIR" -type f -name "$EXTENSION" | while read -r FILE; do
+       echo "Verificando falas no arquivo: $FILE"
 
-        # Extraia falas de NPCs com "npc" como atributo e "text" como fala
-        grep -Po '"npc":\s*"\K[^"]+' "$FILE" | sort -u | while read -r NPC_NAME; do
-            SNAKE_CASE_NAME=$(convert_to_snake_case "$NPC_NAME")
-            OUTPUT_FILE="$OUTPUT_DIR/${SNAKE_CASE_NAME}.txt"
+       # Extrai os NPCs encontrados no arquivo (baseado no campo "npc")
+       grep -o '"npc"[[:space:]]*:[[:space:]]*"[^"]*"' "$FILE" | sed -E 's/"npc"[[:space:]]*:[[:space:]]*"([^"]*)"/\1/' | sort -u | while read -r NPC_NAME; do
+           # Converte o nome do NPC para snake_case
+           SNAKE_CASE_NAME=$(convert_to_snake_case "$NPC_NAME")
+           OUTPUT_FILE="$OUTPUT_DIR/${SNAKE_CASE_NAME}.txt"
 
-            # Extrai todas as falas do NPC atual e salva no arquivo
-            grep -Pzo '\{[^}]*"npc":\s*"'$NPC_NAME'"\s*,[^}]*\}' "$FILE" |
-            grep -Po '"text":\s*"\K([^"]+)' >> "$OUTPUT_FILE"
+           # Extrai todas as falas do NPC atual e salva no arquivo (baseado no campo "text")
+           grep -E '"npc"[[:space:]]*:[[:space:]]*"'$NPC_NAME'".*?"text"[[:space:]]*:[[:space:]]*"' "$FILE" | \
+           grep -o '"text"[[:space:]]*:[[:space:]]*"[^"]*"' | \
+           sed -E 's/"text"[[:space:]]*:[[:space:]]*"([^"]*)"/\1/' >> "$OUTPUT_FILE"
 
-            # Mensagem de status
-            if [ -s "$OUTPUT_FILE" ]; then
-                echo "Falas de '$NPC_NAME' encontradas e salvas em: $OUTPUT_FILE"
-            fi
-        done
-    done
+           # Mensagem de status
+           if [ -s "$OUTPUT_FILE" ]; then
+               echo "Falas de '$NPC_NAME' encontradas e salvas em: $OUTPUT_FILE"
+           else
+               rm -f "$OUTPUT_FILE" # Remove arquivos vazios
+           fi
+       done
+   done
 done
 
 echo ""

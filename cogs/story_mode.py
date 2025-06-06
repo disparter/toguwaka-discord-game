@@ -435,12 +435,21 @@ class StoryModeCog(commands.Cog):
                 color=discord.Color.blue()
             )
 
-            # Add kai_intro.gif for first interaction with Kai Flameheart
+            # Add character intro GIFs for first interactions
             kai_first_interaction = npc_name == "Kai Flameheart" and "Então você é o novato?" in text
+            junie_first_interaction = npc_name == "Junie" and "Olá! Eu sou Junie, sua assistente virtual." in text
+
+            # Set file to None initially
+            file = None
+
             if kai_first_interaction:
                 embed.set_image(url="attachment://kai_intro.gif")
                 # Create file object for the GIF
                 file = discord.File("assets/gifs/kai_intro.gif", filename="kai_intro.gif")
+            elif junie_first_interaction:
+                embed.set_image(url="attachment://junie_intro.gif")
+                # Create file object for the GIF
+                file = discord.File("assets/gifs/junie_intro.gif", filename="junie_intro.gif")
 
             # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
@@ -456,7 +465,7 @@ class StoryModeCog(commands.Cog):
                     view.add_item(button)
 
                 # Don't use ephemeral for messages with choices so they're visible to everyone
-                if kai_first_interaction:
+                if file:
                     message = await channel.send(file=file, embed=embed, view=view)
                 else:
                     message = await channel.send(embed=embed, view=view)
@@ -477,7 +486,7 @@ class StoryModeCog(commands.Cog):
                     view.add_item(button)
 
                 # Don't use ephemeral for messages with choices so they're visible to everyone
-                if kai_first_interaction:
+                if file:
                     message = await channel.send(file=file, embed=embed, view=view)
                 else:
                     message = await channel.send(embed=embed, view=view)
@@ -494,7 +503,7 @@ class StoryModeCog(commands.Cog):
                 view.add_item(button)
 
                 # Don't use ephemeral for messages with continue button so they're visible to everyone
-                if kai_first_interaction:
+                if file:
                     message = await channel.send(file=file, embed=embed, view=view)
                 else:
                     message = await channel.send(embed=embed, view=view)
