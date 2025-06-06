@@ -1618,6 +1618,8 @@ class ScheduledEvents(commands.Cog):
     async def send_daily_announcements(self):
         """Send daily announcements, rankings, and news."""
         try:
+            from utils.ranking_formatter import RankingFormatter, ClubEffectEngine
+
             logger.info("Preparing to send daily announcements")
 
             # If we don't have a channel ID, try to find one
@@ -1702,97 +1704,41 @@ class ScheduledEvents(commands.Cog):
             weekly_players.sort(key=lambda x: x['exp_gained'], reverse=True)
             reputation_players.sort(key=lambda x: x['reputation'], reverse=True)
 
-            # Get top players for each category
-            top_daily = daily_players[:5]
-            top_weekly = weekly_players[:5]
-            top_reputation = reputation_players[:5]
+            # Get featured club and news from generate_daily_news
+            news_data = await self.generate_daily_news(return_data=True)
+            featured_club = news_data.get('featured_club')
+            buff_description = news_data.get('buff_description')
+            news_items = news_data.get('news_items', [])
 
-            # Create daily ranking embed
+            # Create embeds using the new RankingFormatter
             embeds = []
 
-            # Daily ranking embed
-            if top_daily:
-                ranking_text = ""
-                for i, player in enumerate(top_daily, 1):
-                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-                    club = get_club(player['club_id']) if player.get('club_id') else None
-                    club_name = club['name'] if club else "Sem clube"
-                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
-                    ranking_text += f"   EXP: +{player['exp_gained']} | Duelos: {player['duels_won']} | Eventos: {player['events_completed']}\n\n"
+            # Create daily summary embed (combines rankings and news in one embed)
+            daily_summary = RankingFormatter.create_daily_summary(
+                daily_players, 
+                reputation_players, 
+                featured_club, 
+                buff_description, 
+                news_items
+            )
 
-                daily_embed = create_basic_embed(
-                    title="📊 Ranking Diário da Academia Tokugawa 📊",
-                    description=ranking_text or "Nenhuma atividade registrada ontem.",
-                    color=0x00FF00  # Green
-                )
-            else:
-                daily_embed = create_basic_embed(
-                    title="📊 Ranking Diário da Academia Tokugawa 📊",
-                    description="Nenhuma atividade registrada ontem.",
-                    color=0x00FF00  # Green
-                )
-
+            # Create individual ranking embeds
+            daily_embed = RankingFormatter.format_diario(daily_players)
             embeds.append(daily_embed)
 
             # Weekly ranking embed
-            if top_weekly:
-                ranking_text = ""
-                for i, player in enumerate(top_weekly, 1):
-                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-                    club = get_club(player['club_id']) if player.get('club_id') else None
-                    club_name = club['name'] if club else "Sem clube"
-                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
-                    ranking_text += f"   EXP: +{player['exp_gained']} | Duelos: {player['duels_won']} | Eventos: {player['events_completed']}\n\n"
-
-                weekly_embed = create_basic_embed(
-                    title="📈 Ranking Semanal da Academia Tokugawa 📈",
-                    description=ranking_text or "Nenhuma atividade registrada esta semana.",
-                    color=0x1E90FF  # Blue
-                )
-
-                embeds.append(weekly_embed)
-
-            # Overall ranking embed
-            if overall_players:
-                ranking_text = ""
-                for i, player in enumerate(overall_players, 1):
-                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-                    club = get_club(player.get('club_id')) if player.get('club_id') else None
-                    club_name = club['name'] if club else "Sem clube"
-                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
-                    ranking_text += f"   EXP Total: {player['exp']} | Poder: {player['power']}\n\n"
-
-                overall_embed = create_basic_embed(
-                    title="🏆 Ranking Geral da Academia Tokugawa 🏆",
-                    description=ranking_text or "Nenhum estudante registrado.",
-                    color=0xFFD700  # Gold
-                )
-
-                embeds.append(overall_embed)
+            weekly_embed = RankingFormatter.format_geral(overall_players)
+            embeds.append(weekly_embed)
 
             # Reputation ranking embed
-            if top_reputation:
-                ranking_text = ""
-                for i, player in enumerate(top_reputation, 1):
-                    medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-                    club = get_club(player['club_id']) if player.get('club_id') else None
-                    club_name = club['name'] if club else "Sem clube"
-                    ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
-                    ranking_text += f"   Reputação: {player['reputation']} pontos\n\n"
+            reputation_embed = RankingFormatter.format_reputacao(reputation_players)
+            embeds.append(reputation_embed)
 
-                reputation_embed = create_basic_embed(
-                    title="⭐ Ranking de Reputação da Academia Tokugawa ⭐",
-                    description=ranking_text or "Nenhum estudante com reputação registrada.",
-                    color=0xFFA500  # Orange
-                )
-
-                embeds.append(reputation_embed)
-
-            # Generate daily news
-            news_embed = await self.generate_daily_news()
+            # News embed
+            news_embed = RankingFormatter.format_noticias(featured_club, buff_description, news_items)
             embeds.append(news_embed)
 
-            # Send morning message
+            # Send morning message with the daily summary
             greeting_messages = [
                 "Bom dia, estudantes da Academia Tokugawa! Preparem-se para mais um dia épico!",
                 "Amanheceu na Academia Tokugawa! Que desafios nos aguardam hoje?",
@@ -1801,26 +1747,64 @@ class ScheduledEvents(commands.Cog):
                 "O Conselho Estudantil saúda todos os estudantes nesta bela manhã!"
             ]
 
-            # Send the first message with greeting and daily ranking
+            # Create a view with reaction buttons
+            view = discord.ui.View(timeout=None)
+
+            # Add "View Previous Rankings" button
+            previous_button = discord.ui.Button(
+                style=discord.ButtonStyle.secondary,
+                label="Ver Rankings Anteriores",
+                emoji="🔁",
+                custom_id="view_previous_rankings"
+            )
+            view.add_item(previous_button)
+
+            # Add "View Rewards" button if there's a featured club
+            if featured_club:
+                rewards_button = discord.ui.Button(
+                    style=discord.ButtonStyle.primary,
+                    label="Ver Recompensas",
+                    emoji="💎",
+                    custom_id="view_club_rewards"
+                )
+                view.add_item(rewards_button)
+
+            # Send the first message with greeting and daily summary
             await channel.send(
                 content=random.choice(greeting_messages),
-                embed=embeds[0]  # Daily ranking
+                embed=daily_summary,
+                view=view
             )
 
-            # Send the rest of the embeds in groups of 2 to avoid Discord's embed limit
-            for i in range(1, len(embeds), 2):
+            # Send the individual ranking embeds in groups of 2 to avoid Discord's embed limit
+            for i in range(0, len(embeds), 2):
                 group = embeds[i:i+2]
                 await channel.send(embeds=group)
 
-            logger.info("Daily announcements sent")
+            logger.info("Daily announcements sent with improved formatting")
         except Exception as e:
             logger.error(f"Error sending daily announcements: {e}")
 
-    async def generate_daily_news(self):
-        """Generate daily news and buffs."""
+    async def generate_daily_news(self, return_data=False):
+        """Generate daily news and buffs.
+
+        Args:
+            return_data (bool): If True, returns a dictionary with news data instead of an embed
+
+        Returns:
+            discord.Embed or dict: News embed or dictionary with news data
+        """
         try:
+            # Import ClubEffectEngine for formatting buff descriptions
+            from utils.ranking_formatter import ClubEffectEngine
+
             # Get all clubs
             clubs = get_all_clubs()
+
+            # Variables to store news data
+            featured_club = None
+            buff_description = None
+            news_items = []
 
             # Select a random club for today's buff
             if clubs:
@@ -1845,13 +1829,8 @@ class ScheduledEvents(commands.Cog):
                         'expires': datetime.now() + timedelta(days=1)
                     }
 
-                    buff_description = ""
-                    if buff_type == 'exp':
-                        buff_description = f"+{buff_value}% de EXP em treinamentos"
-                    elif buff_type == 'tusd':
-                        buff_description = f"+{buff_value}% de TUSD em atividades"
-                    elif buff_type == 'attribute':
-                        buff_description = f"+{buff_value}% de chance de aumentar atributos"
+                    # Use ClubEffectEngine to format buff description
+                    buff_description = ClubEffectEngine.format_buff_description(buff_type, buff_value)
 
                     # Generate news content with more creative messages
                     news_items = [
@@ -1895,6 +1874,15 @@ class ScheduledEvents(commands.Cog):
                 news_items.append(random.choice(random_news))
                 random_news.remove(news_items[-1])  # Prevent duplicates
 
+            # If return_data is True, return a dictionary with the news data
+            if return_data:
+                return {
+                    'featured_club': featured_club,
+                    'buff_description': buff_description,
+                    'news_items': news_items
+                }
+
+            # Otherwise, create and return a news embed
             # Create news embed with a more engaging title
             news_text = "\n\n".join([f"• {item}" for item in news_items])
 
@@ -1907,11 +1895,18 @@ class ScheduledEvents(commands.Cog):
             return news_embed
         except Exception as e:
             logger.error(f"Error generating daily news: {e}")
-            return create_basic_embed(
-                title="📰 Notícias do Conselho Estudantil 📰",
-                description="O Conselho Estudantil está ocupado hoje. Notícias serão divulgadas em breve.",
-                color=0x4169E1
-            )
+            if return_data:
+                return {
+                    'featured_club': None,
+                    'buff_description': None,
+                    'news_items': ["O Conselho Estudantil está ocupado hoje. Notícias serão divulgadas em breve."]
+                }
+            else:
+                return create_basic_embed(
+                    title="📰 Notícias do Conselho Estudantil 📰",
+                    description="O Conselho Estudantil está ocupado hoje. Notícias serão divulgadas em breve.",
+                    color=0x4169E1
+                )
 
     async def check_random_events(self):
         """Check if a random event should be triggered."""
@@ -4158,11 +4153,14 @@ class ScheduledEvents(commands.Cog):
     @app_commands.choices(tipo=[
         app_commands.Choice(name="diário", value="daily"),
         app_commands.Choice(name="semanal", value="weekly"),
-        app_commands.Choice(name="geral", value="overall")
+        app_commands.Choice(name="geral", value="overall"),
+        app_commands.Choice(name="reputação", value="reputation")
     ])
     async def slash_ranking(self, interaction: discord.Interaction, tipo: str = "overall"):
-        """View daily, weekly, and overall rankings."""
+        """View daily, weekly, overall, and reputation rankings with improved visuals."""
         try:
+            from utils.ranking_formatter import RankingFormatter
+
             if tipo == "daily":
                 # Get daily rankings
                 daily_players = []
@@ -4174,36 +4172,25 @@ class ScheduledEvents(commands.Cog):
                             'name': player['name'],
                             'level': player['level'],
                             'club_id': player.get('club_id'),
-                            'club_name': get_club(player.get('club_id'))['name'] if player.get('club_id') else "Sem clube",
                             'exp_gained': progress['exp_gained'],
                             'duels_won': progress['duels_won'],
                             'events_completed': progress['events_completed']
                         })
 
-                # Sort by exp gained
-                daily_players.sort(key=lambda x: x['exp_gained'], reverse=True)
+                # Create ranking embed using RankingFormatter
+                embed = RankingFormatter.format_diario(daily_players)
 
-                # Create ranking embed
-                if daily_players:
-                    ranking_text = ""
-                    for i, player in enumerate(daily_players[:10], 1):
-                        medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-                        ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {player['club_name']}\n"
-                        ranking_text += f"   EXP: +{player['exp_gained']} | Duelos: {player['duels_won']} | Eventos: {player['events_completed']}\n\n"
+                # Create view with reaction button
+                view = discord.ui.View(timeout=60)
+                previous_button = discord.ui.Button(
+                    style=discord.ButtonStyle.secondary,
+                    label="Ver Rankings Anteriores",
+                    emoji="🔁",
+                    custom_id="view_previous_rankings"
+                )
+                view.add_item(previous_button)
 
-                    embed = create_basic_embed(
-                        title="📊 Ranking Diário da Academia Tokugawa 📊",
-                        description=ranking_text or "Nenhuma atividade registrada hoje.",
-                        color=0x00FF00  # Green
-                    )
-                else:
-                    embed = create_basic_embed(
-                        title="📊 Ranking Diário da Academia Tokugawa 📊",
-                        description="Nenhuma atividade registrada hoje.",
-                        color=0x00FF00  # Green
-                    )
-
-                await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed, view=view)
 
             elif tipo == "weekly":
                 # Get weekly rankings
@@ -4216,7 +4203,6 @@ class ScheduledEvents(commands.Cog):
                             'name': player['name'],
                             'level': player['level'],
                             'club_id': player.get('club_id'),
-                            'club_name': get_club(player.get('club_id'))['name'] if player.get('club_id') else "Sem clube",
                             'exp_gained': progress['exp_gained'],
                             'duels_won': progress['duels_won'],
                             'events_completed': progress['events_completed']
@@ -4225,25 +4211,41 @@ class ScheduledEvents(commands.Cog):
                 # Sort by exp gained
                 weekly_players.sort(key=lambda x: x['exp_gained'], reverse=True)
 
-                # Create ranking embed
-                if weekly_players:
-                    ranking_text = ""
-                    for i, player in enumerate(weekly_players[:10], 1):
-                        medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-                        ranking_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {player['club_name']}\n"
-                        ranking_text += f"   EXP: +{player['exp_gained']} | Duelos: {player['duels_won']} | Eventos: {player['events_completed']}\n\n"
+                # Use daily formatter for weekly rankings too (similar format)
+                embed = RankingFormatter.format_diario(weekly_players)
+                embed.title = "🎓 Conselho Estudantil da Tokugawa · 📈 Ranking Semanal"
 
-                    embed = create_basic_embed(
-                        title="📊 Ranking Semanal da Academia Tokugawa 📊",
-                        description=ranking_text or "Nenhuma atividade registrada esta semana.",
-                        color=0xFFA500  # Orange
-                    )
-                else:
-                    embed = create_basic_embed(
-                        title="📊 Ranking Semanal da Academia Tokugawa 📊",
-                        description="Nenhuma atividade registrada esta semana.",
-                        color=0xFFA500  # Orange
-                    )
+                # Create view with reaction button
+                view = discord.ui.View(timeout=60)
+                previous_button = discord.ui.Button(
+                    style=discord.ButtonStyle.secondary,
+                    label="Ver Rankings Anteriores",
+                    emoji="🔁",
+                    custom_id="view_previous_rankings"
+                )
+                view.add_item(previous_button)
+
+                await interaction.response.send_message(embed=embed, view=view)
+
+            elif tipo == "reputation":
+                # Get top players by reputation
+                reputation_players = []
+                try:
+                    # Use the database function to get top players by reputation
+                    top_by_reputation = get_top_players_by_reputation(10)
+                    for player in top_by_reputation:
+                        reputation_players.append({
+                            'user_id': player['user_id'],
+                            'name': player['name'],
+                            'level': player['level'],
+                            'club_id': player.get('club_id'),
+                            'reputation': player.get('reputation', 0)
+                        })
+                except Exception as e:
+                    logger.error(f"Error getting top players by reputation: {e}")
+
+                # Create ranking embed using RankingFormatter
+                embed = RankingFormatter.format_reputacao(reputation_players)
 
                 await interaction.response.send_message(embed=embed)
 
@@ -4251,10 +4253,20 @@ class ScheduledEvents(commands.Cog):
                 # Get top players
                 top_players = get_top_players(10)
 
-                # Create leaderboard embed
-                embed = create_leaderboard_embed(top_players, "🏆 Ranking Geral da Academia Tokugawa 🏆")
+                # Create ranking embed using RankingFormatter
+                embed = RankingFormatter.format_geral(top_players)
 
-                await interaction.response.send_message(embed=embed)
+                # Create view with reaction button
+                view = discord.ui.View(timeout=60)
+                previous_button = discord.ui.Button(
+                    style=discord.ButtonStyle.secondary,
+                    label="Ver Rankings Completos",
+                    emoji="🔁",
+                    custom_id="view_full_rankings"
+                )
+                view.add_item(previous_button)
+
+                await interaction.response.send_message(embed=embed, view=view)
 
         except Exception as e:
             logger.error(f"Error in slash_ranking: {e}")
