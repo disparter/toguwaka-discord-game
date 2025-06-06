@@ -114,11 +114,11 @@ def create_duel_embed(duel_result):
         "mental": 0x800080,    # Purple
         "social": 0xFFD700     # Gold
     }
-    color = duel_colors.get(duel_result["type"], 0x1E90FF)
+    color = duel_colors.get(duel_result["duel_type"], 0x1E90FF)
 
     # Create embed
     embed = discord.Embed(
-        title=f"Resultado do Duelo: {duel_result['type'].capitalize()}",
+        title=f"Resultado do Duelo: {duel_result['duel_type'].capitalize()}",
         description=duel_result["narration"],
         color=color,
         timestamp=datetime.utcnow()
