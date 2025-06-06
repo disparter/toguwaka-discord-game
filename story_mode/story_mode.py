@@ -85,24 +85,36 @@ class FileChapterLoader(ChapterLoader):
         """
         return self.chapters.get(chapter_id)
 
-    def get_available_chapters(self, player_data: Dict[str, Any]) -> List[str]:
+    def get_available_chapters(self, player_data: Dict[str, Any], progress_manager=None) -> List[str]:
         """
         Returns a list of chapter IDs available to the player.
+
+        Args:
+            player_data: Player data from the database
+            progress_manager: Optional progress manager to use for getting available chapters
+
+        Returns:
+            List of available chapter IDs that exist in the loader
         """
-        story_progress = player_data.get("story_progress", {})
-        completed_chapters = story_progress.get("completed_chapters", [])
-        available_chapters = story_progress.get("available_chapters", [])
+        if progress_manager:
+            # Use the progress manager to get available chapters
+            available_chapters = progress_manager.get_next_available_chapters(player_data)
+        else:
+            # Fallback to the old implementation
+            story_progress = player_data.get("story_progress", {})
+            completed_chapters = story_progress.get("completed_chapters", [])
+            available_chapters = story_progress.get("available_chapters", [])
 
-        # Add the next sequential chapter if applicable
-        current_year = story_progress.get("current_year", 1)
-        current_chapter = story_progress.get("current_chapter", 1)
-        next_chapter = f"{current_year}_{current_chapter + 1}"
+            # Add the next sequential chapter if applicable
+            current_year = story_progress.get("current_year", 1)
+            current_chapter = story_progress.get("current_chapter", 1)
+            next_chapter = f"{current_year}_{current_chapter + 1}"
 
-        # Combine all available chapters
-        all_available = list(set(available_chapters + [next_chapter]))
+            # Combine all available chapters
+            available_chapters = list(set(available_chapters + [next_chapter]))
 
-        # Filter out completed chapters and ensure they exist
-        return [chapter for chapter in all_available if chapter not in completed_chapters and chapter in self.chapters]
+        # Filter out chapters that don't exist in the loader
+        return [chapter for chapter in available_chapters if chapter in self.chapters]
 
 
 class StoryMode:
@@ -274,7 +286,7 @@ class StoryMode:
         if not chapter:
             logger.warning(f"Chapter not found: {chapter_id}, using first chapter")
             # Use the first available chapter
-            available_chapters = self.chapter_loader.get_available_chapters(player_data)
+            available_chapters = self.chapter_loader.get_available_chapters(player_data, self.progress_manager)
             if available_chapters:
                 chapter_id = available_chapters[0]
                 chapter = self.chapter_loader.load_chapter(chapter_id)
