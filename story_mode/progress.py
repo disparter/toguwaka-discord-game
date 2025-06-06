@@ -112,7 +112,7 @@ class DefaultStoryProgressManager(StoryProgressManager):
         # Update player data
         player_data["story_progress"] = story_progress
 
-        logger.info(f"Recorded choice {choice_key}={choice_value} in chapter {chapter_id} for player {player_data.get('user_id')}")
+        logger.debug(f"Recorded choice {choice_key}={choice_value} in chapter {chapter_id} for player {player_data.get('user_id')}")
 
         return player_data
 

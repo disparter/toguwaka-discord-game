@@ -282,20 +282,32 @@ class StoryMode:
                 if next_chapter:
                     result = next_chapter.start(player_data)
                 else:
-                    logger.warning(f"Next chapter not found: {next_chapter_id}. Using fallback chapter or ending story.")
+                    logger.warning(f"Next chapter not found: {next_chapter_id} for player {player_data.get('user_id')}. Story will be marked as complete.")
                     # Fallback for the chapter final or a message amigável
                     result = {
                         "player_data": player_data,
                         "chapter_complete": True,
                         "story_complete": True,
-                        "message": "Parabéns! Você concluiu todos os capítulos disponíveis até agora."
+                        "message": "Parabéns! Você concluiu todos os capítulos disponíveis até agora.",
+                        "chapter_data": {
+                            "title": "Fim da História",
+                            "description": "Você chegou ao fim dos capítulos disponíveis. Mais conteúdo será adicionado em breve!",
+                            "current_dialogue": None,
+                            "choices": []
+                        }
                     }
             else:
                 # No next chapter, story complete
                 result = {
                     "player_data": player_data,
                     "chapter_complete": True,
-                    "story_complete": True
+                    "story_complete": True,
+                    "chapter_data": {
+                        "title": "Fim da História",
+                        "description": "Você concluiu todos os capítulos disponíveis. Parabéns!",
+                        "current_dialogue": None,
+                        "choices": []
+                    }
                 }
 
         # Check for events

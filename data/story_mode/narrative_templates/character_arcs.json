@@ -1,0 +1,228 @@
+{
+  "player_development_arc": {
+    "title": "Título do Arco de Desenvolvimento do Jogador",
+    "description": "Descrição do arco de desenvolvimento do personagem do jogador",
+    "stages": [
+      {
+        "id": "stage_1",
+        "title": "Estágio Inicial",
+        "description": "Descrição do estágio inicial do desenvolvimento do personagem",
+        "requirements": {
+          "chapters_completed": ["1_1", "1_2"],
+          "min_level": 1
+        },
+        "trigger_event": "event_id_1",
+        "completion_rewards": {
+          "exp": 100,
+          "tusd": 150,
+          "attribute_bonuses": {"power_stat": 1}
+        }
+      },
+      {
+        "id": "stage_2",
+        "title": "Estágio de Crescimento",
+        "description": "Descrição do estágio de crescimento do personagem",
+        "requirements": {
+          "previous_stage": "stage_1",
+          "chapters_completed": ["1_3", "1_4"],
+          "min_level": 3
+        },
+        "trigger_event": "event_id_2",
+        "completion_rewards": {
+          "exp": 200,
+          "tusd": 250,
+          "attribute_bonuses": {"intellect": 1}
+        }
+      },
+      {
+        "id": "stage_3",
+        "title": "Estágio de Transformação",
+        "description": "Descrição do estágio de transformação do personagem",
+        "requirements": {
+          "previous_stage": "stage_2",
+          "chapters_completed": ["1_7", "1_8"],
+          "min_level": 5
+        },
+        "trigger_event": "event_id_3",
+        "completion_rewards": {
+          "exp": 300,
+          "tusd": 350,
+          "attribute_bonuses": {"charisma": 1, "power_stat": 1},
+          "special_ability": "ability_id_1"
+        }
+      },
+      {
+        "id": "stage_4",
+        "title": "Estágio de Maestria",
+        "description": "Descrição do estágio final de maestria do personagem",
+        "requirements": {
+          "previous_stage": "stage_3",
+          "chapters_completed": ["1_9"],
+          "min_level": 8
+        },
+        "trigger_event": "event_id_4",
+        "completion_rewards": {
+          "exp": 500,
+          "tusd": 600,
+          "attribute_bonuses": {"power_stat": 2, "intellect": 1, "charisma": 1},
+          "special_ability": "ability_id_2",
+          "title": "Título de Reconhecimento"
+        }
+      }
+    ]
+  },
+  "npc_relationship_arc": {
+    "title": "Título do Arco de Relacionamento com NPC",
+    "description": "Descrição do arco de desenvolvimento do relacionamento com um NPC específico",
+    "npc_id": "npc_id_1",
+    "stages": [
+      {
+        "id": "stage_1",
+        "title": "Conhecendo o NPC",
+        "description": "Descrição do estágio inicial do relacionamento",
+        "affinity_threshold": 10,
+        "trigger_dialogue": {
+          "npc": "NPC_Nome",
+          "text": "Diálogo que inicia o relacionamento."
+        },
+        "completion_rewards": {
+          "exp": 50,
+          "tusd": 75,
+          "affinity_bonus": 5
+        }
+      },
+      {
+        "id": "stage_2",
+        "title": "Construindo Confiança",
+        "description": "Descrição do estágio de construção de confiança",
+        "affinity_threshold": 30,
+        "requirements": {
+          "previous_stage": "stage_1",
+          "chapters_completed": ["1_3"]
+        },
+        "trigger_event": "npc_event_id_1",
+        "completion_rewards": {
+          "exp": 100,
+          "tusd": 150,
+          "affinity_bonus": 10,
+          "attribute_bonuses": {"charisma": 1}
+        }
+      },
+      {
+        "id": "stage_3",
+        "title": "Aliança Forte",
+        "description": "Descrição do estágio de aliança forte",
+        "affinity_threshold": 60,
+        "requirements": {
+          "previous_stage": "stage_2",
+          "chapters_completed": ["1_7"]
+        },
+        "trigger_event": "npc_event_id_2",
+        "completion_rewards": {
+          "exp": 200,
+          "tusd": 250,
+          "affinity_bonus": 15,
+          "special_item": "item_id_1",
+          "attribute_bonuses": {"intellect": 1}
+        }
+      },
+      {
+        "id": "stage_4",
+        "title": "Vínculo Profundo",
+        "description": "Descrição do estágio final de vínculo profundo",
+        "affinity_threshold": 90,
+        "requirements": {
+          "previous_stage": "stage_3",
+          "chapters_completed": ["1_9"]
+        },
+        "trigger_event": "npc_event_id_3",
+        "completion_rewards": {
+          "exp": 300,
+          "tusd": 400,
+          "affinity_bonus": 20,
+          "special_ability": "ability_id_3",
+          "attribute_bonuses": {"charisma": 2}
+        }
+      }
+    ]
+  },
+  "club_progression_arc": {
+    "title": "Título do Arco de Progressão no Clube",
+    "description": "Descrição do arco de desenvolvimento e progressão dentro de um clube",
+    "club_id": 1,
+    "stages": [
+      {
+        "id": "stage_1",
+        "title": "Novato",
+        "description": "Descrição do estágio inicial como novato no clube",
+        "requirements": {
+          "min_level": 1
+        },
+        "trigger_event": "club_event_id_1",
+        "completion_rewards": {
+          "exp": 50,
+          "tusd": 100,
+          "club_rank": "Novato",
+          "club_abilities": ["ability_id_1"]
+        }
+      },
+      {
+        "id": "stage_2",
+        "title": "Membro",
+        "description": "Descrição do estágio como membro regular do clube",
+        "requirements": {
+          "previous_stage": "stage_1",
+          "min_level": 3,
+          "club_challenges_completed": 2
+        },
+        "trigger_event": "club_event_id_2",
+        "completion_rewards": {
+          "exp": 150,
+          "tusd": 200,
+          "club_rank": "Membro",
+          "club_abilities": ["ability_id_2"],
+          "attribute_bonuses": {"power_stat": 1}
+        }
+      },
+      {
+        "id": "stage_3",
+        "title": "Veterano",
+        "description": "Descrição do estágio como veterano respeitado do clube",
+        "requirements": {
+          "previous_stage": "stage_2",
+          "min_level": 6,
+          "club_challenges_completed": 5,
+          "affinity": {"club_leader": 50}
+        },
+        "trigger_event": "club_event_id_3",
+        "completion_rewards": {
+          "exp": 250,
+          "tusd": 350,
+          "club_rank": "Veterano",
+          "club_abilities": ["ability_id_3"],
+          "attribute_bonuses": {"power_stat": 1, "charisma": 1}
+        }
+      },
+      {
+        "id": "stage_4",
+        "title": "Elite",
+        "description": "Descrição do estágio como membro da elite do clube",
+        "requirements": {
+          "previous_stage": "stage_3",
+          "min_level": 10,
+          "club_challenges_completed": 10,
+          "affinity": {"club_leader": 80}
+        },
+        "trigger_event": "club_event_id_4",
+        "completion_rewards": {
+          "exp": 400,
+          "tusd": 500,
+          "club_rank": "Elite",
+          "club_abilities": ["ability_id_4"],
+          "attribute_bonuses": {"power_stat": 2, "charisma": 1, "intellect": 1},
+          "special_item": "club_item_id_1"
+        }
+      }
+    ]
+  }
+}

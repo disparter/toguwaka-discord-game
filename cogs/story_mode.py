@@ -458,7 +458,7 @@ class StoryModeCog(commands.Cog):
                 await interaction.response.send_message("Esta não é a sua história!", ephemeral=True)
                 return
 
-            await interaction.response.defer(ephemeral=False)
+            await interaction.response.defer(ephemeral=True)
 
             # Get player data
             player_data = get_player(user_id)
@@ -513,7 +513,7 @@ class StoryModeCog(commands.Cog):
                 await interaction.response.send_message("Esta não é a sua história!", ephemeral=True)
                 return
 
-            await interaction.response.defer(ephemeral=False)
+            await interaction.response.defer(ephemeral=True)
 
             # Get player data
             player_data = get_player(user_id)
