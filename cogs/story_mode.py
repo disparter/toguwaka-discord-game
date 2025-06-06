@@ -435,6 +435,13 @@ class StoryModeCog(commands.Cog):
                 color=discord.Color.blue()
             )
 
+            # Add kai_intro.gif for first interaction with Kai Flameheart
+            kai_first_interaction = npc_name == "Kai Flameheart" and "Então você é o novato?" in text
+            if kai_first_interaction:
+                embed.set_image(url="attachment://kai_intro.gif")
+                # Create file object for the GIF
+                file = discord.File("assets/gifs/kai_intro.gif", filename="kai_intro.gif")
+
             # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
                 view = discord.ui.View(timeout=300)
@@ -449,7 +456,10 @@ class StoryModeCog(commands.Cog):
                     view.add_item(button)
 
                 # Don't use ephemeral for messages with choices so they're visible to everyone
-                message = await channel.send(embed=embed, view=view)
+                if kai_first_interaction:
+                    message = await channel.send(file=file, embed=embed, view=view)
+                else:
+                    message = await channel.send(embed=embed, view=view)
                 return
 
             # If there are choices in the chapter data but not in the dialogue, check if we should show them
@@ -467,7 +477,10 @@ class StoryModeCog(commands.Cog):
                     view.add_item(button)
 
                 # Don't use ephemeral for messages with choices so they're visible to everyone
-                message = await channel.send(embed=embed, view=view)
+                if kai_first_interaction:
+                    message = await channel.send(file=file, embed=embed, view=view)
+                else:
+                    message = await channel.send(embed=embed, view=view)
                 return
             else:
                 # If no choices, add a "Continue" button
@@ -481,7 +494,10 @@ class StoryModeCog(commands.Cog):
                 view.add_item(button)
 
                 # Don't use ephemeral for messages with continue button so they're visible to everyone
-                message = await channel.send(embed=embed, view=view)
+                if kai_first_interaction:
+                    message = await channel.send(file=file, embed=embed, view=view)
+                else:
+                    message = await channel.send(embed=embed, view=view)
                 return
 
         # If there are choices but no current dialogue, send the choices
