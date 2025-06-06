@@ -588,9 +588,16 @@ class StoryModeCog(commands.Cog):
 
         return admin_role in member.roles
 
-def setup(bot):
+async def setup(bot):
     """
     Setup function for the cog.
     """
-    bot.add_cog(StoryModeCog(bot))
+    from utils.command_registrar import CommandRegistrar
+
+    # Create and add the cog
+    cog = StoryModeCog(bot)
+    await bot.add_cog(cog)
     logger.info("StoryModeCog setup complete")
+
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)
