@@ -26,6 +26,14 @@ Foram adicionados três novos capítulos à história do Ano 1:
 - Inclui um sistema de batalha com recompensas baseadas no resultado
 - Permite que o jogador prove seu valor na hierarquia da academia
 
+#### Capítulo 6: O Despertar do Potencial
+- Explora o despertar de novos poderes no personagem do jogador
+- Apresenta o conceito de "Despertar Secundário" inspirado em histórias de super-heróis
+- Introduz facções políticas dentro da academia (Elite e Igualitários)
+- Oferece escolhas significativas sobre alianças e posicionamento na hierarquia
+- Aborda temas de discriminação baseada em poder e responsabilidade
+- Inclui mais de 15 cenas com múltiplos caminhos narrativos
+
 ### 2. Aprimoramento da Narrativa
 
 - Aprofundamento das relações entre clubes e suas dinâmicas políticas
@@ -50,7 +58,21 @@ O Capítulo 4 foi expandido com uma implementação detalhada chamada "O Mistér
 - Exploração de temas de conhecimento proibido e consequências de experimentos perigosos
 - Recompensas variadas incluindo experiência, moeda e itens únicos
 
-### 5. Otimização de Dados JSON
+### 5. Adição do Capítulo "O Despertar do Potencial"
+
+Um novo capítulo completo foi implementado, inspirado em histórias como Unordinary e X-Men:
+
+- Narrativa ramificada com mais de 15 cenas únicas e múltiplos finais
+- Foco em temas de descoberta de poderes e evolução de habilidades
+- Introdução do conceito de "Despertar Secundário" como ponto central da trama
+- Exploração de dinâmicas sociais e políticas baseadas em níveis de poder
+- Apresentação de duas facções opostas: a Elite (que defende a hierarquia) e os Igualitários (que lutam por igualdade)
+- Personagens novos como Professor Takeda, Drake, Aria e o líder dos Igualitários
+- Escolhas morais que afetam a reputação do jogador e seu lugar na sociedade da academia
+- Sistema de consequências que reflete as decisões do jogador em seu desenvolvimento
+- Recompensas especiais incluindo o "Cristal do Despertar", um item raro que melhora o controle de habilidades
+
+### 6. Otimização de Dados JSON
 
 Para melhorar o desempenho e a manutenção do código:
 
@@ -64,7 +86,7 @@ Para melhorar o desempenho e a manutenção do código:
 
 Para futuras expansões do modo história, recomenda-se:
 
-1. Implementar o Capítulo 6 e os capítulos subsequentes do Ano 1
+1. Implementar o Capítulo 7 e os capítulos subsequentes do Ano 1
 2. Desenvolver os capítulos do Ano 2, conforme descrito na estrutura existente
 3. Expandir o sistema de relacionamentos com NPCs
 4. Adicionar mais locais secretos e eventos climáticos
