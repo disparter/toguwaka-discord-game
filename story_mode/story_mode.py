@@ -369,6 +369,27 @@ class StoryMode:
             choice_metadata
         )
 
+        # Check if this is a challenge chapter and if the choice indicates success or failure
+        if isinstance(chapter, ChallengeChapter) and "challenge_result" in choice_metadata:
+            challenge_result = choice_metadata["challenge_result"]
+            if challenge_result == "success":
+                # Complete the challenge successfully
+                result["player_data"] = chapter.complete(result["player_data"])
+                result["challenge_success"] = True
+            elif challenge_result == "failure":
+                # Handle challenge failure
+                result["player_data"] = chapter.fail(result["player_data"])
+                result["challenge_failure"] = True
+
+                # If there's a secret chapter to unlock on failure, set it as the next chapter
+                if chapter.secret_chapter:
+                    next_chapter_id = chapter.secret_chapter
+                    result["player_data"] = self.progress_manager.set_current_chapter(result["player_data"], next_chapter_id)
+                    next_chapter = self.chapter_loader.load_chapter(next_chapter_id)
+                    if next_chapter:
+                        result = next_chapter.start(result["player_data"])
+                        return result
+
         # Check if the chapter is complete
         if "current_dialogue" not in result["chapter_data"] or result["chapter_data"]["current_dialogue"] is None:
             # Complete the chapter
@@ -376,7 +397,27 @@ class StoryMode:
 
             # Get the next chapter
             next_chapter_id = chapter.get_next_chapter(player_data)
-            if next_chapter_id:
+
+            # Check if this chapter arc is blocked due to previous failures
+            story_progress = player_data.get("story_progress", {})
+            blocked_chapter_arcs = story_progress.get("blocked_chapter_arcs", [])
+            chapter_arc = next_chapter_id.split("_")[0] if next_chapter_id and "_" in next_chapter_id else None
+
+            if chapter_arc and chapter_arc in blocked_chapter_arcs:
+                logger.info(f"Chapter arc {chapter_arc} is blocked for player {player_data.get('user_id')} due to previous failures")
+                # Provide a message about the blocked path
+                result = {
+                    "player_data": player_data,
+                    "chapter_complete": True,
+                    "path_blocked": True,
+                    "chapter_data": {
+                        "title": "Caminho Bloqueado",
+                        "description": "Devido a falhas anteriores, este caminho da história está bloqueado para você.",
+                        "current_dialogue": None,
+                        "choices": []
+                    }
+                }
+            elif next_chapter_id:
                 # Set the next chapter as current
                 player_data = self.progress_manager.set_current_chapter(player_data, next_chapter_id)
 

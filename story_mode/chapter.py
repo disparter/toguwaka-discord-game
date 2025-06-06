@@ -220,6 +220,8 @@ class ChallengeChapter(BaseChapter):
         self.challenge_type = data.get("challenge_type", "generic")
         self.difficulty = data.get("difficulty", 1)
         self.rewards = data.get("rewards", {})
+        self.failure_consequences = data.get("failure_consequences", {})
+        self.secret_chapter = data.get("secret_chapter")
 
     def start(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -227,10 +229,23 @@ class ChallengeChapter(BaseChapter):
         """
         result = super().start(player_data)
 
-        # Set current challenge chapter
+        # Check if this challenge has already been completed
         story_progress = result["player_data"]["story_progress"]
-        story_progress["current_challenge_chapter"] = self.chapter_id
-        result["player_data"]["story_progress"] = story_progress
+        completed_challenge_chapters = story_progress.get("completed_challenge_chapters", [])
+        failed_challenge_chapters = story_progress.get("failed_challenge_chapters", [])
+
+        if self.chapter_id in completed_challenge_chapters:
+            # Challenge already completed, add a flag to indicate this
+            result["chapter_data"]["already_completed"] = True
+            logger.info(f"Challenge {self.chapter_id} already completed by player {player_data.get('user_id')}")
+        elif self.chapter_id in failed_challenge_chapters:
+            # Challenge already failed, add a flag to indicate this
+            result["chapter_data"]["already_failed"] = True
+            logger.info(f"Challenge {self.chapter_id} already failed by player {player_data.get('user_id')}")
+        else:
+            # Set current challenge chapter
+            story_progress["current_challenge_chapter"] = self.chapter_id
+            result["player_data"]["story_progress"] = story_progress
 
         # Add challenge-specific data
         result["chapter_data"]["challenge_type"] = self.challenge_type
@@ -267,9 +282,57 @@ class ChallengeChapter(BaseChapter):
                 if reward_value not in special_items:
                     special_items.append(reward_value)
                 story_progress["special_items"] = special_items
+            elif reward_type == "unlock_chapter":
+                # Unlock a special chapter
+                available_chapters = story_progress.get("available_chapters", [])
+                if reward_value not in available_chapters:
+                    available_chapters.append(reward_value)
+                story_progress["available_chapters"] = available_chapters
 
         # Update player data
         player_data["story_progress"] = story_progress
+
+        return player_data
+
+    def fail(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Handles the failure of a challenge and applies consequences.
+        """
+        # Add to failed challenge chapters
+        story_progress = player_data.get("story_progress", {})
+        failed_challenge_chapters = story_progress.get("failed_challenge_chapters", [])
+        if self.chapter_id not in failed_challenge_chapters:
+            failed_challenge_chapters.append(self.chapter_id)
+        story_progress["failed_challenge_chapters"] = failed_challenge_chapters
+
+        # Clear current challenge chapter
+        story_progress["current_challenge_chapter"] = None
+
+        # Apply failure consequences
+        for consequence_type, consequence_value in self.failure_consequences.items():
+            if consequence_type == "exp_loss":
+                player_data["exp"] = max(0, player_data.get("exp", 0) - consequence_value)
+            elif consequence_type == "tusd_loss":
+                player_data["tusd"] = max(0, player_data.get("tusd", 0) - consequence_value)
+            elif consequence_type == "hierarchy_points_loss":
+                story_progress["hierarchy_points"] = max(0, story_progress.get("hierarchy_points", 0) - consequence_value)
+            elif consequence_type == "block_chapter_arc":
+                # Block future chapters in this arc
+                blocked_chapter_arcs = story_progress.get("blocked_chapter_arcs", [])
+                if consequence_value not in blocked_chapter_arcs:
+                    blocked_chapter_arcs.append(consequence_value)
+                story_progress["blocked_chapter_arcs"] = blocked_chapter_arcs
+            elif consequence_type == "unlock_secret_chapter":
+                # Unlock a secret chapter (alternative path)
+                available_chapters = story_progress.get("available_chapters", [])
+                if consequence_value not in available_chapters:
+                    available_chapters.append(consequence_value)
+                story_progress["available_chapters"] = available_chapters
+
+        # Update player data
+        player_data["story_progress"] = story_progress
+
+        logger.info(f"Challenge {self.chapter_id} failed by player {player_data.get('user_id')}")
 
         return player_data
 

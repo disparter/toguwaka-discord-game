@@ -176,6 +176,8 @@ class DefaultStoryProgressManager(StoryProgressManager):
                 "current_challenge_chapter": None,
                 "completed_chapters": [],
                 "completed_challenge_chapters": [],
+                "failed_challenge_chapters": [],  # Track failed challenges
+                "blocked_chapter_arcs": [],       # Track blocked chapter arcs
                 "available_chapters": [],
                 "club_progress": {},
                 "villain_defeats": [],
@@ -190,6 +192,14 @@ class DefaultStoryProgressManager(StoryProgressManager):
             }
 
             logger.info(f"Initialized story progress for player {player_data.get('user_id')}")
+        else:
+            # Ensure new fields exist in existing player data
+            story_progress = player_data["story_progress"]
+            if "failed_challenge_chapters" not in story_progress:
+                story_progress["failed_challenge_chapters"] = []
+            if "blocked_chapter_arcs" not in story_progress:
+                story_progress["blocked_chapter_arcs"] = []
+            player_data["story_progress"] = story_progress
 
         return player_data
 
