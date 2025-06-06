@@ -61,6 +61,21 @@ class Activities(commands.Cog):
             exp_gain = random.randint(10, 30)
             attribute_gain = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
 
+            # Check if player has equipped accessories that boost experience
+            inventory = player["inventory"]
+            accessory_boost_applied = False
+            accessory_name = ""
+            original_exp = exp_gain
+
+            for item_id, item in inventory.items():
+                if item["type"] == "accessory" and item.get("equipped", False) and "exp_boost" in item["effects"]:
+                    # Apply experience boost from accessory
+                    exp_boost = item["effects"]["exp_boost"]
+                    exp_gain = int(exp_gain * exp_boost)
+                    accessory_boost_applied = True
+                    accessory_name = item["name"]
+                    logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+
             # Update player data
             new_exp = player["exp"] + exp_gain
             new_level = calculate_level_from_exp(new_exp)
@@ -92,11 +107,18 @@ class Activities(commands.Cog):
                 )
 
                 # Add experience gain
-                embed.add_field(
-                    name="Experiência Ganha",
-                    value=f"+{exp_gain} EXP",
-                    inline=True
-                )
+                if accessory_boost_applied:
+                    embed.add_field(
+                        name="Experiência Ganha",
+                        value=f"+{exp_gain} EXP (Bônus de {accessory_name}: +{exp_gain - original_exp} EXP)",
+                        inline=True
+                    )
+                else:
+                    embed.add_field(
+                        name="Experiência Ganha",
+                        value=f"+{exp_gain} EXP",
+                        inline=True
+                    )
 
                 # Add attribute gain
                 attribute_names = {
@@ -440,12 +462,18 @@ class Activities(commands.Cog):
 
         return None
 
-    def _set_cooldown(self, user_id, command):
-        """Set a cooldown for a command for a user."""
+    def _set_cooldown(self, user_id, command, custom_duration=None):
+        """Set a cooldown for a command for a user.
+
+        Args:
+            user_id: The user ID
+            command: The command name
+            custom_duration: Optional custom duration in seconds. If not provided, uses the default duration.
+        """
         if user_id not in COOLDOWNS:
             COOLDOWNS[user_id] = {}
 
-        duration = COOLDOWN_DURATIONS.get(command, 3600)  # Default 1 hour
+        duration = custom_duration if custom_duration is not None else COOLDOWN_DURATIONS.get(command, 3600)  # Default 1 hour
         expiry_time = datetime.now().timestamp() + duration
         COOLDOWNS[user_id][command] = expiry_time
 
@@ -478,6 +506,21 @@ class Activities(commands.Cog):
         exp_gain = random.randint(10, 30)
         attribute_gain = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
 
+        # Check if player has equipped accessories that boost experience
+        inventory = player["inventory"]
+        accessory_boost_applied = False
+        accessory_name = ""
+        original_exp = exp_gain
+
+        for item_id, item in inventory.items():
+            if item["type"] == "accessory" and item.get("equipped", False) and "exp_boost" in item["effects"]:
+                # Apply experience boost from accessory
+                exp_boost = item["effects"]["exp_boost"]
+                exp_gain = int(exp_gain * exp_boost)
+                accessory_boost_applied = True
+                accessory_name = item["name"]
+                logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+
         # Update player data
         new_exp = player["exp"] + exp_gain
         new_level = calculate_level_from_exp(new_exp)
@@ -509,11 +552,18 @@ class Activities(commands.Cog):
             )
 
             # Add experience gain
-            embed.add_field(
-                name="Experiência Ganha",
-                value=f"+{exp_gain} EXP",
-                inline=True
-            )
+            if accessory_boost_applied:
+                embed.add_field(
+                    name="Experiência Ganha",
+                    value=f"+{exp_gain} EXP (Bônus de {accessory_name}: +{exp_gain - original_exp} EXP)",
+                    inline=True
+                )
+            else:
+                embed.add_field(
+                    name="Experiência Ganha",
+                    value=f"+{exp_gain} EXP",
+                    inline=True
+                )
 
             # Add attribute gain
             attribute_names = {

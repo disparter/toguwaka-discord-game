@@ -26,11 +26,11 @@ SHOP_ITEMS = [
     {
         "id": 2,
         "name": "Amuleto de Foco",
-        "description": "Aumenta a experiência ganha em treinamentos por 24 horas.",
+        "description": "Aumenta a experiência ganha em treinamentos quando equipado.",
         "price": 100,
         "type": "accessory",
         "rarity": "uncommon",
-        "effects": {"exp_boost": 1.5, "duration": 86400}
+        "effects": {"exp_boost": 1.5}
     },
     {
         "id": 3,
@@ -694,6 +694,87 @@ class Economy(commands.Cog):
         except Exception as e:
             logger.error(f"Error in slash_use_item: {e}")
 
+    @economy_group.command(name="equipar", description="Equipar um acessório do inventário")
+    async def slash_equip_item(self, interaction: discord.Interaction, item_id: int):
+        """Slash command to equip an accessory item."""
+        try:
+            # Check if player exists
+            player = get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                return
+
+            # Check if player has the item
+            inventory = player["inventory"]
+            if str(item_id) not in inventory:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.")
+                return
+
+            # Get item data
+            item_data = inventory[str(item_id)]
+
+            # Check if item is an accessory
+            if item_data["type"] != "accessory":
+                await interaction.response.send_message(f"{interaction.user.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.")
+                return
+
+            # Check if the item is already equipped
+            if item_data.get("equipped", False):
+                # Unequip the item
+                inventory[str(item_id)]["equipped"] = False
+                update_data = {"inventory": json.dumps(inventory)}
+                success = update_player(interaction.user.id, **update_data)
+
+                if success:
+                    embed = create_basic_embed(
+                        title="Acessório Desequipado!",
+                        description=f"Você desequipou {item_data['name']}.",
+                        color=RARITIES.get(item_data["rarity"], RARITIES["common"])["color"]
+                    )
+                    await interaction.response.send_message(embed=embed)
+                else:
+                    await interaction.response.send_message("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.")
+                return
+
+            # Check if there's a cooldown for this accessory
+            cooldown = self._check_cooldown(interaction.user.id, f"accessory_{item_id}")
+            if cooldown:
+                await interaction.response.send_message(f"{interaction.user.mention}, este acessório está em cooldown. Tempo restante: {cooldown}")
+                return
+
+            # Unequip any other equipped accessories of the same type
+            for inv_item_id, inv_item in inventory.items():
+                if inv_item["type"] == "accessory" and inv_item.get("equipped", False):
+                    inventory[inv_item_id]["equipped"] = False
+
+            # Equip the new accessory
+            inventory[str(item_id)]["equipped"] = True
+
+            # Set cooldown for this accessory (4 hours)
+            self._set_cooldown(interaction.user.id, f"accessory_{item_id}", 14400)  # 4 hours in seconds
+
+            # Update player in database
+            update_data = {"inventory": json.dumps(inventory)}
+            success = update_player(interaction.user.id, **update_data)
+
+            if success:
+                # Create equip confirmation embed
+                rarity = RARITIES.get(item_data["rarity"], RARITIES["common"])
+                embed = create_basic_embed(
+                    title="Acessório Equipado!",
+                    description=f"Você equipou {item_data['name']}. Os efeitos do acessório estão ativos!",
+                    color=rarity["color"]
+                )
+
+                await interaction.response.send_message(embed=embed)
+            else:
+                await interaction.response.send_message("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.")
+        except discord.errors.NotFound:
+            # If the interaction has expired, log it but don't try to respond
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia equipar")
+        except Exception as e:
+            logger.error(f"Error in slash_equip_item: {e}")
+
     @commands.command(name="loja")
     async def shop(self, ctx):
         """Acessar a loja da Academia Tokugawa."""
@@ -1039,6 +1120,86 @@ class Economy(commands.Cog):
                     pass
         else:
             await ctx.send("Ocorreu um erro durante a compra. Por favor, tente novamente mais tarde.")
+
+    @commands.command(name="equipar")
+    async def equip_item(self, ctx, item_id: int = None):
+        """Equipar um acessório do inventário."""
+        # Check if player exists
+        player = get_player(ctx.author.id)
+        if not player:
+            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            return
+
+        # Check if item_id is provided
+        if item_id is None:
+            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja equipar. Use `!inventario` para ver seus itens.")
+            return
+
+        # Check if player has the item
+        inventory = player["inventory"]
+        if str(item_id) not in inventory:
+            await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.")
+            return
+
+        # Get item data
+        item_data = inventory[str(item_id)]
+
+        # Check if item is an accessory
+        if item_data["type"] != "accessory":
+            await ctx.send(f"{ctx.author.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.")
+            return
+
+        # Check if the item is already equipped
+        if item_data.get("equipped", False):
+            # Unequip the item
+            inventory[str(item_id)]["equipped"] = False
+            update_data = {"inventory": json.dumps(inventory)}
+            success = update_player(ctx.author.id, **update_data)
+
+            if success:
+                embed = create_basic_embed(
+                    title="Acessório Desequipado!",
+                    description=f"Você desequipou {item_data['name']}.",
+                    color=RARITIES.get(item_data["rarity"], RARITIES["common"])["color"]
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.")
+            return
+
+        # Check if there's a cooldown for this accessory
+        cooldown = self._check_cooldown(ctx.author.id, f"accessory_{item_id}")
+        if cooldown:
+            await ctx.send(f"{ctx.author.mention}, este acessório está em cooldown. Tempo restante: {cooldown}")
+            return
+
+        # Unequip any other equipped accessories of the same type
+        for inv_item_id, inv_item in inventory.items():
+            if inv_item["type"] == "accessory" and inv_item.get("equipped", False):
+                inventory[inv_item_id]["equipped"] = False
+
+        # Equip the new accessory
+        inventory[str(item_id)]["equipped"] = True
+
+        # Set cooldown for this accessory (4 hours)
+        self._set_cooldown(ctx.author.id, f"accessory_{item_id}", 14400)  # 4 hours in seconds
+
+        # Update player in database
+        update_data = {"inventory": json.dumps(inventory)}
+        success = update_player(ctx.author.id, **update_data)
+
+        if success:
+            # Create equip confirmation embed
+            rarity = RARITIES.get(item_data["rarity"], RARITIES["common"])
+            embed = create_basic_embed(
+                title="Acessório Equipado!",
+                description=f"Você equipou {item_data['name']}. Os efeitos do acessório estão ativos!",
+                color=rarity["color"]
+            )
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.")
 
     @commands.command(name="usar")
     async def use_item(self, ctx, item_id: int = None):
