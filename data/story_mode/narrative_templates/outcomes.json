@@ -1,0 +1,93 @@
+{
+  "origin": {
+    "Bairro Popular": [
+      {"text": "Sua experiência nas ruas te deu uma perspicácia que surpreendeu a todos.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Você mostrou que determinação e esperteza valem mais que privilégios.", "attribute_bonus": {"power_stat": 1, "charisma": 1}},
+      {"text": "Sua abordagem direta e prática resolveu o problema quando teorias falharam.", "attribute_bonus": {"intellect": 1, "power_stat": 1}}
+    ],
+    "Família de Elite": [
+      {"text": "Seus contatos e conhecimentos privilegiados abriram portas que estavam fechadas para outros.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Você provou que nem todos da elite são arrogantes, ganhando o respeito dos colegas.", "attribute_bonus": {"charisma": 1, "intellect": 1}},
+      {"text": "Sua educação refinada permitiu que você encontrasse uma solução elegante.", "attribute_bonus": {"intellect": 2}}
+    ],
+    "Órfão": [
+      {"text": "Sua independência e resiliência impressionaram até os mais céticos.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Você transformou a ausência de laços familiares em uma força, não uma fraqueza.", "attribute_bonus": {"charisma": 1, "power_stat": 1}},
+      {"text": "Sua capacidade de se adaptar e sobreviver sozinho provou ser uma vantagem crucial.", "attribute_bonus": {"intellect": 1, "power_stat": 1}}
+    ],
+    "Transferido": [
+      {"text": "Sua perspectiva externa trouxe uma solução inovadora que ninguém havia considerado.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Você usou conhecimentos de sua escola anterior para superar o desafio.", "attribute_bonus": {"intellect": 1, "power_stat": 1}},
+      {"text": "Sua adaptabilidade como transferido te permitiu navegar a situação com facilidade.", "attribute_bonus": {"charisma": 1, "intellect": 1}}
+    ],
+    "Comunidade Isolada": [
+      {"text": "Seus conhecimentos tradicionais ofereceram uma solução que a ciência moderna não conseguia.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Sua conexão com a natureza e os elementos surpreendeu a todos.", "attribute_bonus": {"power_stat": 1, "intellect": 1}},
+      {"text": "Você mostrou o valor de uma perspectiva diferente e única.", "attribute_bonus": {"charisma": 2}}
+    ]
+  },
+  "power": {
+    "Fogo": [
+      {"text": "As chamas responderam ao seu comando com precisão impressionante.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Você demonstrou que o fogo pode criar e iluminar, não apenas destruir.", "attribute_bonus": {"charisma": 1, "power_stat": 1}},
+      {"text": "Seu controle sobre o calor criou a atmosfera perfeita para a situação.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Água": [
+      {"text": "Como a água, você se adaptou perfeitamente às circunstâncias.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Sua capacidade de fluir ao redor dos obstáculos levou a uma solução elegante.", "attribute_bonus": {"dexterity": 1, "intellect": 1}},
+      {"text": "A calma e clareza de seu poder aquático acalmou a situação tensa.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Terra": [
+      {"text": "Sua firmeza inabalável como a própria terra garantiu o sucesso.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Você criou uma fundação sólida sobre a qual todos puderam construir.", "attribute_bonus": {"charisma": 1, "power_stat": 1}},
+      {"text": "Sua paciência e persistência, qualidades da terra, foram recompensadas.", "attribute_bonus": {"intellect": 1, "power_stat": 1}}
+    ],
+    "Ar": [
+      {"text": "Sua agilidade e pensamento rápido como o vento superaram todos os obstáculos.", "attribute_bonus": {"dexterity": 2}},
+      {"text": "Você encontrou espaço para manobrar onde outros viram apenas barreiras.", "attribute_bonus": {"dexterity": 1, "intellect": 1}},
+      {"text": "Suas palavras, carregadas pelo ar, inspiraram todos ao seu redor.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Telepatia": [
+      {"text": "Sua compreensão profunda das mentes alheias revelou o caminho perfeito.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Você coordenou perfeitamente as ações do grupo através de comunicação telepática.", "attribute_bonus": {"charisma": 1, "intellect": 1}},
+      {"text": "Sua capacidade de sentir emoções criou uma conexão profunda com os presentes.", "attribute_bonus": {"charisma": 2}}
+    ],
+    "Força": [
+      {"text": "Sua demonstração de poder físico resolveu a situação imediatamente.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Você mostrou que força pode ser usada para proteger e construir, não apenas destruir.", "attribute_bonus": {"charisma": 1, "power_stat": 1}},
+      {"text": "Seu controle preciso sobre sua força impressionou a todos.", "attribute_bonus": {"dexterity": 1, "power_stat": 1}}
+    ],
+    "Manipulação do Tempo": [
+      {"text": "Sua manipulação sutil do fluxo temporal criou a oportunidade perfeita.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Você demonstrou que timing é tudo, e ninguém entende isso melhor que você.", "attribute_bonus": {"dexterity": 1, "intellect": 1}},
+      {"text": "Sua capacidade de prever reações através de pequenos saltos temporais foi decisiva.", "attribute_bonus": {"charisma": 1, "intellect": 1}}
+    ]
+  },
+  "club": {
+    "1": [
+      {"text": "A intensidade característica do Clube das Chamas brilhou através de suas ações.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Você provou que a paixão e determinação do seu clube podem superar qualquer obstáculo.", "attribute_bonus": {"power_stat": 1, "charisma": 1}},
+      {"text": "Kai Flameheart ficaria orgulhoso de como você representou o espírito do clube.", "affinity_change": {"Kai Flameheart": 5}}
+    ],
+    "2": [
+      {"text": "Sua sutileza e percepção, marcas registradas dos Ilusionistas Mentais, levaram ao sucesso.", "attribute_bonus": {"intellect": 2}},
+      {"text": "Você manipulou a situação com a precisão mental que seu clube valoriza.", "attribute_bonus": {"intellect": 1, "charisma": 1}},
+      {"text": "Luna Mindweaver notou sua habilidade em ver além das aparências.", "affinity_change": {"Luna Mindweaver": 5}}
+    ],
+    "3": [
+      {"text": "Suas habilidades diplomáticas refletiram perfeitamente os valores do Conselho Político.", "attribute_bonus": {"charisma": 2}},
+      {"text": "Você transformou um potencial conflito em uma oportunidade de aliança, como um verdadeiro estrategista.", "attribute_bonus": {"intellect": 1, "charisma": 1}},
+      {"text": "Alexander Strategos observou sua manobra política com aprovação.", "affinity_change": {"Alexander Strategos": 5}}
+    ],
+    "4": [
+      {"text": "O equilíbrio e harmonia que você demonstrou são a essência dos Elementalistas.", "attribute_bonus": {"intellect": 1, "power_stat": 1}},
+      {"text": "Sua conexão com todos os elementos provou ser superior à especialização limitada.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Gaia Naturae sorriu ao ver como você honrou os princípios do clube.", "affinity_change": {"Gaia Naturae": 5}}
+    ],
+    "5": [
+      {"text": "A disciplina e determinação do Clube de Combate foram evidentes em cada movimento seu.", "attribute_bonus": {"power_stat": 2}},
+      {"text": "Você enfrentou o desafio com a honra e coragem de um verdadeiro guerreiro.", "attribute_bonus": {"power_stat": 1, "charisma": 1}},
+      {"text": "Ryuji Battleborn reconheceu seu espírito de lutador com um aceno de aprovação.", "affinity_change": {"Ryuji Battleborn": 5}}
+    ]
+  }
+}

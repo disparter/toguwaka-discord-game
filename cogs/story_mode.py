@@ -273,13 +273,22 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to participate in an available event.
         """
-        await interaction.response.defer(ephemeral=False)
+        try:
+            await interaction.response.defer(ephemeral=False)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que pudesse ser processada.")
+            return
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
 
         if not player_data:
-            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar")
+            try:
+                await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar")
+            except discord.errors.NotFound:
+                logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
+            except Exception as e:
+                logger.error(f"Erro ao enviar resposta: {e}")
             return
 
         # If no event ID specified, show available events
@@ -287,11 +296,21 @@ class StoryModeCog(commands.Cog):
             result = self.story_mode.start_story(player_data)
 
             if "error" in result:
-                await interaction.followup.send(f"Erro ao verificar eventos disponíveis: {result['error']}")
+                try:
+                    await interaction.followup.send(f"Erro ao verificar eventos disponíveis: {result['error']}")
+                except discord.errors.NotFound:
+                    logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
+                except Exception as e:
+                    logger.error(f"Erro ao enviar resposta: {e}")
                 return
 
             if "available_events" not in result or not result["available_events"]:
-                await interaction.followup.send("Não há eventos disponíveis para você no momento.")
+                try:
+                    await interaction.followup.send("Não há eventos disponíveis para você no momento.")
+                except discord.errors.NotFound:
+                    logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
+                except Exception as e:
+                    logger.error(f"Erro ao enviar resposta: {e}")
                 return
 
             embed = create_basic_embed(
@@ -309,14 +328,24 @@ class StoryModeCog(commands.Cog):
 
             embed.set_footer(text="Use /evento [evento_id] para participar de um evento.")
 
-            await interaction.followup.send(embed=embed)
+            try:
+                await interaction.followup.send(embed=embed)
+            except discord.errors.NotFound:
+                logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
+            except Exception as e:
+                logger.error(f"Erro ao enviar resposta: {e}")
             return
 
         # Trigger the event
         result = self.story_mode.trigger_event(player_data, evento_id)
 
         if "error" in result:
-            await interaction.followup.send(f"Erro ao participar do evento: {result['error']}")
+            try:
+                await interaction.followup.send(f"Erro ao participar do evento: {result['error']}")
+            except discord.errors.NotFound:
+                logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
+            except Exception as e:
+                logger.error(f"Erro ao enviar resposta: {e}")
             return
 
         # Update player data in database
@@ -325,13 +354,19 @@ class StoryModeCog(commands.Cog):
         event_result = result["event_result"]
 
         # Create embed for event result
-        embed = create_event_embed(
-            title=f"Evento: {event_result['name']}",
-            description=event_result['description'],
-            rewards=event_result['rewards']
-        )
+        embed = create_event_embed({
+            "title": f"Evento: {event_result['name']}",
+            "description": event_result['description'],
+            "type": "neutral",  # Considerar tipo real do evento aqui
+            "effect": event_result["rewards"]  # Rewards equivale a "effect" nos dicionários
+        })
 
-        await interaction.followup.send(embed=embed)
+        try:
+            await interaction.followup.send(embed=embed)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
+        except Exception as e:
+            logger.error(f"Erro ao enviar resposta: {e}")
 
     async def _send_dialogue_or_choices(self, channel, user_id: int, result: Dict[str, Any]):
         """

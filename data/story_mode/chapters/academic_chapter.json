@@ -1,0 +1,465 @@
+{
+  "2_1": {
+    "type": "story",
+    "title": "Início do Semestre",
+    "description": "O novo semestre acadêmico começa na Academia Tokugawa. Novas aulas, novos desafios e novas oportunidades aguardam.",
+    "academic_period": {
+      "year": 2,
+      "semester": 1,
+      "term": 1
+    },
+    "dialogues": [
+      {"npc": "Narrador", "text": "O sol nasce sobre a Academia Tokugawa, marcando o início de um novo semestre. Os estudantes retornam de suas férias, ansiosos para retomar seus estudos e treinamentos."},
+      {"npc": "Junie", "text": "Bom dia! Espero que tenha aproveitado suas férias. O novo semestre está começando e há muitas novidades!"},
+      {"npc": "Junie", "text": "Primeiro, vamos verificar seu horário de aulas. Como estudante do {club_name}, você terá algumas disciplinas específicas além das matérias obrigatórias."}
+    ],
+    "choices": [
+      {"text": "Verificar horário de aulas", "next_dialogue": 3},
+      {"text": "Perguntar sobre eventos do semestre", "next_dialogue": 4},
+      {"text": "Perguntar sobre os colegas", "next_dialogue": 5}
+    ],
+    "additional_dialogues": {
+      "3": [
+        {"npc": "Junie", "text": "Aqui está seu horário para este semestre:"},
+        {"npc": "Junie", "text": "Segunda-feira: Controle de Poder Avançado, História dos Conflitos Elementais"},
+        {"npc": "Junie", "text": "Terça-feira: Ética e Responsabilidade, Atividades de Clube"},
+        {"npc": "Junie", "text": "Quarta-feira: Teoria dos Poderes, Matemática Aplicada"},
+        {"npc": "Junie", "text": "Quinta-feira: Literatura Mundial, Aplicações Práticas de Poder"},
+        {"npc": "Junie", "text": "Sexta-feira: Estudos Sociais, Disciplina Eletiva"},
+        {"npc": "Junie", "text": "Cada aula oferece oportunidades para melhorar seus atributos e aprender novas habilidades. Não se esqueça de comparecer às atividades do seu clube também!"},
+        {"npc": "Junie", "text": "O que mais gostaria de saber?", "choices": [
+          {"text": "Perguntar sobre eventos do semestre", "next_dialogue": 4},
+          {"text": "Perguntar sobre os colegas", "next_dialogue": 5},
+          {"text": "Ir para a primeira aula", "next_dialogue": 6}
+        ]}
+      ],
+      "4": [
+        {"npc": "Junie", "text": "Este semestre será repleto de eventos importantes!"},
+        {"npc": "Junie", "text": "No final do primeiro bimestre, teremos a Feira de Clubes, onde cada clube apresentará seus projetos e tentará recrutar novos membros."},
+        {"npc": "Junie", "text": "No meio do semestre, ocorrerá o tradicional Torneio Inter-Clubes, uma competição amistosa que testa as habilidades dos estudantes em diversas categorias."},
+        {"npc": "Junie", "text": "E, é claro, no final do semestre teremos o Festival Cultural, seguido pelos exames finais."},
+        {"npc": "Junie", "text": "Além disso, cada clube organiza seus próprios eventos. O {club_name} tem planos especiais para este semestre."},
+        {"npc": "Junie", "text": "O que mais gostaria de saber?", "choices": [
+          {"text": "Verificar horário de aulas", "next_dialogue": 3},
+          {"text": "Perguntar sobre os colegas", "next_dialogue": 5},
+          {"text": "Ir para a primeira aula", "next_dialogue": 6}
+        ]}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "Seus colegas também retornaram das férias. Alguns parecem ter treinado bastante durante o recesso."},
+        {"npc": "Junie", "text": "Kai Flameheart está mais intenso que nunca após um treinamento especial nas montanhas vulcânicas."},
+        {"npc": "Junie", "text": "Luna Mindweaver parece ter descoberto novos aspectos de seus poderes telepáticos durante uma meditação prolongada."},
+        {"npc": "Junie", "text": "Alexander Strategos passou as férias em estágio no governo, aprimorando suas habilidades políticas."},
+        {"npc": "Junie", "text": "Gaia Naturae retornou à sua comunidade isolada para reconectar-se com os espíritos elementais."},
+        {"npc": "Junie", "text": "E Ryuji Battleborn participou de um torneio internacional, trazendo ainda mais honra para sua linhagem de guerreiros."},
+        {"npc": "Junie", "text": "Todos estão ansiosos para ver como você evoluiu também!"},
+        {"npc": "Junie", "text": "O que mais gostaria de saber?", "choices": [
+          {"text": "Verificar horário de aulas", "next_dialogue": 3},
+          {"text": "Perguntar sobre eventos do semestre", "next_dialogue": 4},
+          {"text": "Ir para a primeira aula", "next_dialogue": 6}
+        ]}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você se dirige à sua primeira aula do semestre: Controle de Poder Avançado."},
+        {"npc": "Professor Elementus", "text": "Bem-vindos de volta, estudantes! Este semestre, vamos aprofundar nosso entendimento sobre o controle preciso dos poderes."},
+        {"npc": "Professor Elementus", "text": "Lembrem-se: poder sem controle é como um rio sem margens - destrutivo e desperdiçado. Nosso objetivo é canalizar esse poder com precisão cirúrgica."},
+        {"npc": "Professor Elementus", "text": "Hoje, começaremos com um exercício prático. Quero que cada um demonstre o nível atual de controle sobre seu poder. Quem gostaria de começar?"}
+      ]
+    },
+    "completion_exp": 50,
+    "completion_tusd": 100,
+    "next_chapter": "2_2"
+  },
+  "2_2": {
+    "type": "branching",
+    "title": "Primeira Aula",
+    "description": "Sua primeira aula do semestre testa seu controle sobre seus poderes e estabelece sua reputação entre os colegas.",
+    "academic_period": {
+      "year": 2,
+      "semester": 1,
+      "term": 1,
+      "day": 1
+    },
+    "dialogues": [
+      {"npc": "Professor Elementus", "text": "Ah, {player_name}! Por que não nos mostra seu nível atual de controle? Estou curioso para ver como você evoluiu desde o semestre passado."}
+    ],
+    "choices": [
+      {"text": "Demonstrar controle máximo, mesmo que seja difícil", "next_dialogue": 1, "attribute_check": "power_stat", "threshold": 12},
+      {"text": "Mostrar um controle moderado, mas seguro", "next_dialogue": 2, "attribute_check": "intellect", "threshold": 10},
+      {"text": "Pedir para observar os outros primeiro", "next_dialogue": 3, "attribute_check": "charisma", "threshold": 8}
+    ],
+    "additional_dialogues": {
+      "1": [
+        {"npc": "Narrador", "text": "Você se concentra intensamente, canalizando seu poder ao máximo enquanto tenta manter controle absoluto."},
+        {"npc": "Narrador", "text": "O esforço é visível em seu rosto, mas sua determinação é ainda maior."},
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "2": [
+        {"npc": "Narrador", "text": "Você opta por uma demonstração calculada, mostrando precisão e controle em vez de poder bruto."},
+        {"npc": "Narrador", "text": "Sua abordagem é metódica e cuidadosa, priorizando a estabilidade."},
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "3": [
+        {"npc": "Narrador", "text": "Com um sorriso educado, você sugere que gostaria de observar alguns exemplos primeiro para entender melhor as expectativas."},
+        {"npc": "Narrador", "text": "Sua humildade e abordagem estratégica são notadas pelo professor e pelos colegas."},
+        {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
+        {"npc": "Narrador", "text": "FAILURE_PLACEHOLDER"}
+      ],
+      "success_1": [
+        {"npc": "Narrador", "text": "Sua demonstração é impressionante! Você consegue canalizar uma quantidade significativa de poder enquanto mantém controle perfeito."},
+        {"npc": "Professor Elementus", "text": "Excelente, {player_name}! Seu controle evoluiu significativamente. Vejo que esteve praticando durante as férias."},
+        {"npc": "Narrador", "text": "Os outros estudantes observam com uma mistura de admiração e, em alguns casos, inveja. Sua reputação na classe aumenta consideravelmente."},
+        {"npc": "Colega de Classe", "text": "Isso foi incrível! Como você consegue manter tanto controle com esse nível de poder?"},
+        {"affinity_change": {"Professor Elementus": 10}}
+      ],
+      "failure_1": [
+        {"npc": "Narrador", "text": "Apesar de seu esforço, o poder se torna difícil de controlar. Uma pequena explosão de energia escapa, causando um leve caos na sala de aula."},
+        {"npc": "Professor Elementus", "text": "Controle, {player_name}, controle! É exatamente por isso que estamos aqui. Poder sem controle é perigoso."},
+        {"npc": "Narrador", "text": "Alguns colegas riem discretamente, enquanto outros parecem preocupados com sua falta de controle."},
+        {"npc": "Colega de Classe", "text": "Ei, não se preocupe. Acontece com todos nós às vezes."},
+        {"affinity_change": {"Professor Elementus": -5}}
+      ],
+      "success_2": [
+        {"npc": "Narrador", "text": "Sua demonstração é precisa e controlada. Embora não seja a mais poderosa, impressiona pela técnica refinada."},
+        {"npc": "Professor Elementus", "text": "Muito bom, {player_name}. Seu controle é exemplar, embora ainda haja espaço para aumentar a potência sem perder precisão."},
+        {"npc": "Narrador", "text": "Seus colegas apreciam a demonstração técnica, especialmente aqueles que valorizam precisão sobre poder bruto."},
+        {"npc": "Colega de Classe", "text": "Gostei da sua abordagem. Muita gente aqui só se preocupa com poder, mas controle é igualmente importante."},
+        {"affinity_change": {"Professor Elementus": 5}}
+      ],
+      "failure_2": [
+        {"npc": "Narrador", "text": "Sua demonstração começa bem, mas logo você percebe que está sendo demasiadamente cauteloso. O efeito é fraco e pouco impressionante."},
+        {"npc": "Professor Elementus", "text": "Hmm, {player_name}, você está sendo excessivamente conservador. Precisamos encontrar um equilíbrio entre controle e potência."},
+        {"npc": "Narrador", "text": "Alguns colegas parecem desapontados com a demonstração pouco inspiradora."},
+        {"npc": "Colega de Classe", "text": "Você consegue fazer melhor que isso, não é?"},
+        {"affinity_change": {"Professor Elementus": 0}}
+      ],
+      "success_3": [
+        {"npc": "Narrador", "text": "O professor aprecia sua abordagem estratégica e pede que outros estudantes demonstrem primeiro."},
+        {"npc": "Professor Elementus", "text": "Uma abordagem sábia, {player_name}. Observar e aprender é uma habilidade valiosa."},
+        {"npc": "Narrador", "text": "Você observa atentamente as demonstrações dos outros, notando tanto seus sucessos quanto seus erros."},
+        {"npc": "Narrador", "text": "Quando chega sua vez, você incorpora o que aprendeu e faz uma demonstração equilibrada e bem executada."},
+        {"npc": "Professor Elementus", "text": "Excelente! Vejo que você aprendeu com as demonstrações anteriores. Essa capacidade de adaptação será valiosa em sua jornada."},
+        {"affinity_change": {"Professor Elementus": 8}}
+      ],
+      "failure_3": [
+        {"npc": "Narrador", "text": "O professor parece ligeiramente desapontado com sua relutância."},
+        {"npc": "Professor Elementus", "text": "Entendo sua cautela, {player_name}, mas às vezes precisamos nos arriscar para evoluir. Vamos deixar que outros demonstrem primeiro, mas espero que você esteja prestando atenção."},
+        {"npc": "Narrador", "text": "Quando finalmente chega sua vez, você está nervoso e sua demonstração é hesitante e descoordenada."},
+        {"npc": "Professor Elementus", "text": "Hmm, parece que observar não foi suficiente. Precisamos trabalhar em sua confiança este semestre."},
+        {"affinity_change": {"Professor Elementus": -3}}
+      ]
+    },
+    "branches": {
+      "success_branch_1": {
+        "conditions": {
+          "choice": 0,
+          "check_result": "success"
+        },
+        "dialogues": "success_1",
+        "next_chapter": "2_3_high_reputation"
+      },
+      "failure_branch_1": {
+        "conditions": {
+          "choice": 0,
+          "check_result": "failure"
+        },
+        "dialogues": "failure_1",
+        "next_chapter": "2_3_low_reputation"
+      },
+      "success_branch_2": {
+        "conditions": {
+          "choice": 1,
+          "check_result": "success"
+        },
+        "dialogues": "success_2",
+        "next_chapter": "2_3_medium_reputation"
+      },
+      "failure_branch_2": {
+        "conditions": {
+          "choice": 1,
+          "check_result": "failure"
+        },
+        "dialogues": "failure_2",
+        "next_chapter": "2_3_low_reputation"
+      },
+      "success_branch_3": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "success"
+        },
+        "dialogues": "success_3",
+        "next_chapter": "2_3_medium_reputation"
+      },
+      "failure_branch_3": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "failure"
+        },
+        "dialogues": "failure_3",
+        "next_chapter": "2_3_low_reputation"
+      }
+    },
+    "completion_exp": 75,
+    "completion_tusd": 150
+  },
+  "2_3_high_reputation": {
+    "type": "story",
+    "title": "Reconhecimento",
+    "description": "Sua demonstração impressionante chamou a atenção de estudantes e professores, abrindo novas oportunidades.",
+    "academic_period": {
+      "year": 2,
+      "semester": 1,
+      "term": 1,
+      "day": 2
+    },
+    "dialogues": [
+      {"npc": "Narrador", "text": "No dia seguinte, você percebe que sua reputação na academia aumentou significativamente após sua impressionante demonstração na aula de Controle de Poder."},
+      {"npc": "Estudante", "text": "Ei, você é {player_name}, certo? Sua demonstração ontem foi incrível! Todo mundo está falando sobre isso."},
+      {"npc": "Narrador", "text": "Enquanto caminha pelos corredores, você nota olhares de admiração e respeito. Até mesmo estudantes de anos superiores parecem ter notado seu potencial."},
+      {"npc": "Junie", "text": "Bom dia! Parece que você causou uma ótima impressão ontem. O Professor Elementus raramente elogia estudantes assim."},
+      {"npc": "Junie", "text": "Na verdade, ele recomendou seu nome para um programa especial de treinamento avançado que normalmente é reservado para estudantes do terceiro ano."},
+      {"npc": "Junie", "text": "Além disso, o líder do seu clube quer falar com você. Parece que ele tem planos especiais para você neste semestre."}
+    ],
+    "choices": [
+      {"text": "Agradecer e aceitar o programa especial", "next_dialogue": 6},
+      {"text": "Perguntar mais detalhes sobre o programa", "next_dialogue": 7},
+      {"text": "Ir falar com o líder do clube primeiro", "next_dialogue": 8}
+    ],
+    "additional_dialogues": {
+      "6": [
+        {"npc": "Junie", "text": "Excelente escolha! O programa começa na próxima semana. Será um treinamento intensivo, mas os benefícios valem o esforço extra."},
+        {"npc": "Junie", "text": "Agora, sugiro que você vá falar com o líder do seu clube. Ele está ansioso para discutir seus planos com você."}
+      ],
+      "7": [
+        {"npc": "Junie", "text": "O programa de treinamento avançado foi criado para estudantes excepcionais que demonstram potencial além de seu ano acadêmico."},
+        {"npc": "Junie", "text": "Você terá sessões especiais com professores especialistas, acesso a materiais restritos da biblioteca e oportunidades de participar em pesquisas avançadas."},
+        {"npc": "Junie", "text": "É bastante exigente e ocupará parte de seu tempo livre, mas os benefícios para o desenvolvimento de seus poderes são substanciais."},
+        {"npc": "Junie", "text": "Então, o que acha? Gostaria de participar?", "choices": [
+          {"text": "Sim, quero participar do programa", "next_dialogue": 6},
+          {"text": "Preciso pensar um pouco mais", "next_dialogue": 9}
+        ]}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você decide ir falar com o líder do seu clube primeiro para entender o que ele tem em mente antes de comprometer-se com o programa especial."}
+      ],
+      "9": [
+        {"npc": "Junie", "text": "Claro, entendo que é uma decisão importante. Você tem até o final da semana para decidir."},
+        {"npc": "Junie", "text": "Enquanto isso, sugiro que você converse com o líder do seu clube. Ele está ansioso para falar com você."}
+      ]
+    },
+    "completion_exp": 100,
+    "completion_tusd": 200,
+    "next_chapter": "2_4"
+  },
+  "2_3_medium_reputation": {
+    "type": "story",
+    "title": "Potencial Reconhecido",
+    "description": "Sua demonstração competente chamou alguma atenção positiva, abrindo algumas oportunidades.",
+    "academic_period": {
+      "year": 2,
+      "semester": 1,
+      "term": 1,
+      "day": 2
+    },
+    "dialogues": [
+      {"npc": "Narrador", "text": "No dia seguinte, você percebe que sua demonstração na aula de Controle de Poder foi bem recebida, embora não tenha causado uma impressão extraordinária."},
+      {"npc": "Estudante", "text": "Ei, {player_name}! Sua demonstração ontem foi bem legal. Você tem um bom controle."},
+      {"npc": "Narrador", "text": "Alguns colegas de classe cumprimentam você nos corredores, reconhecendo seu desempenho competente."},
+      {"npc": "Junie", "text": "Bom dia! O Professor Elementus comentou positivamente sobre sua demonstração ontem."},
+      {"npc": "Junie", "text": "Ele mencionou que você tem potencial e sugeriu que você participe do grupo de estudos avançados que se reúne às quartas-feiras."},
+      {"npc": "Junie", "text": "Além disso, o líder do seu clube quer conversar com você sobre suas atividades neste semestre."}
+    ],
+    "choices": [
+      {"text": "Agradecer e aceitar participar do grupo de estudos", "next_dialogue": 6},
+      {"text": "Perguntar mais detalhes sobre o grupo", "next_dialogue": 7},
+      {"text": "Ir falar com o líder do clube primeiro", "next_dialogue": 8}
+    ],
+    "additional_dialogues": {
+      "6": [
+        {"npc": "Junie", "text": "Ótimo! O grupo se reúne na biblioteca às quartas-feiras após as aulas regulares. Tenho certeza que será benéfico para você."},
+        {"npc": "Junie", "text": "Agora, sugiro que você vá falar com o líder do seu clube sobre as atividades deste semestre."}
+      ],
+      "7": [
+        {"npc": "Junie", "text": "O grupo de estudos avançados é formado por estudantes dedicados que querem aprofundar seus conhecimentos além do currículo regular."},
+        {"npc": "Junie", "text": "Eles discutem técnicas avançadas, compartilham dicas de treinamento e ocasionalmente recebem orientação de professores especialistas."},
+        {"npc": "Junie", "text": "Não é tão intensivo quanto o programa especial reservado para os melhores estudantes, mas definitivamente ajudará em seu desenvolvimento."},
+        {"npc": "Junie", "text": "Então, gostaria de participar?", "choices": [
+          {"text": "Sim, quero participar do grupo", "next_dialogue": 6},
+          {"text": "Preciso pensar um pouco mais", "next_dialogue": 9}
+        ]}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você decide ir falar com o líder do seu clube primeiro para entender suas responsabilidades antes de comprometer-se com atividades adicionais."}
+      ],
+      "9": [
+        {"npc": "Junie", "text": "Claro, não há pressa. O grupo sempre aceita novos membros ao longo do semestre."},
+        {"npc": "Junie", "text": "Enquanto isso, sugiro que você converse com o líder do seu clube sobre as atividades deste semestre."}
+      ]
+    },
+    "completion_exp": 75,
+    "completion_tusd": 150,
+    "next_chapter": "2_4"
+  },
+  "2_3_low_reputation": {
+    "type": "story",
+    "title": "Oportunidade para Melhorar",
+    "description": "Após uma demonstração abaixo das expectativas, você enfrenta desafios mas também encontra oportunidades para crescer.",
+    "academic_period": {
+      "year": 2,
+      "semester": 1,
+      "term": 1,
+      "day": 2
+    },
+    "dialogues": [
+      {"npc": "Narrador", "text": "No dia seguinte, você sente alguns olhares e sussurros enquanto caminha pelos corredores. Sua demonstração na aula de Controle de Poder claramente não impressionou."},
+      {"npc": "Estudante", "text": "Ei, {player_name}... não se preocupe com ontem. Todo mundo tem dias ruins, certo?"},
+      {"npc": "Narrador", "text": "Alguns colegas tentam ser gentis, enquanto outros parecem duvidar de suas habilidades."},
+      {"npc": "Junie", "text": "Bom dia! O Professor Elementus notou que você teve dificuldades ontem."},
+      {"npc": "Junie", "text": "Ele sugeriu que você considere participar das sessões de tutoria que acontecem às segundas e quintas após as aulas regulares."},
+      {"npc": "Junie", "text": "Além disso, o líder do seu clube quer conversar com você. Provavelmente para discutir como ajudar em seu desenvolvimento."}
+    ],
+    "choices": [
+      {"text": "Agradecer e aceitar a tutoria", "next_dialogue": 6},
+      {"text": "Recusar educadamente, prometendo melhorar sozinho", "next_dialogue": 7},
+      {"text": "Ir falar com o líder do clube primeiro", "next_dialogue": 8}
+    ],
+    "additional_dialogues": {
+      "6": [
+        {"npc": "Junie", "text": "Essa é a atitude certa! Reconhecer áreas para melhoria e buscar ajuda é um sinal de maturidade."},
+        {"npc": "Junie", "text": "As sessões de tutoria são conduzidas por estudantes do último ano e já ajudaram muitos a superarem suas dificuldades."},
+        {"npc": "Junie", "text": "Agora, sugiro que você vá falar com o líder do seu clube. Tenho certeza que ele terá conselhos valiosos."}
+      ],
+      "7": [
+        {"npc": "Junie", "text": "Entendo seu desejo de superar isso por conta própria, mas não há vergonha em aceitar ajuda."},
+        {"npc": "Junie", "text": "Se mudar de ideia, as sessões de tutoria estão sempre disponíveis."},
+        {"npc": "Junie", "text": "Enquanto isso, talvez o líder do seu clube possa oferecer alguma orientação. Ele está esperando para falar com você."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você decide ir falar com o líder do seu clube primeiro, esperando que ele possa oferecer orientação específica para suas necessidades."}
+      ]
+    },
+    "completion_exp": 50,
+    "completion_tusd": 100,
+    "next_chapter": "2_4"
+  },
+  "2_4": {
+    "type": "story",
+    "title": "Planos do Clube",
+    "description": "O líder do seu clube discute os planos para o semestre e seu papel neles.",
+    "academic_period": {
+      "year": 2,
+      "semester": 1,
+      "term": 1,
+      "day": 2
+    },
+    "dialogues": [
+      {"npc": "Narrador", "text": "Você se dirige à sede do {club_name}, ansioso para descobrir o que o líder do clube tem a dizer."},
+      {"npc": "Narrador", "text": "Ao entrar, você encontra outros membros do clube já reunidos, discutindo animadamente os planos para o novo semestre."}
+    ],
+    "club_specific_dialogues": {
+      "1": [
+        {"npc": "Kai Flameheart", "text": "Ah, {player_name}! Estávamos esperando por você. Venha, junte-se a nós."},
+        {"npc": "Kai Flameheart", "text": "Como vocês sabem, este semestre temos o Torneio Inter-Clubes se aproximando, e o Clube das Chamas pretende mostrar a todos o verdadeiro significado de poder!"},
+        {"npc": "Kai Flameheart", "text": "Além disso, recebi permissão para organizar uma expedição às Montanhas Vulcânicas durante o recesso do meio do semestre. Será uma oportunidade única para aprimorarmos nosso controle sobre o fogo em seu ambiente mais puro."},
+        {"npc": "Kai Flameheart", "text": "{player_name}, ouvi sobre sua demonstração na aula do Professor Elementus. Baseado no que vi de você até agora, gostaria que assumisse um papel importante em nossos planos para este semestre."}
+      ],
+      "2": [
+        {"npc": "Luna Mindweaver", "text": "Ah, {player_name}. Sua mente está... diferente hoje. Mais focada, talvez? Interessante."},
+        {"npc": "Luna Mindweaver", "text": "Este semestre, os Ilusionistas Mentais estarão focados em explorar as camadas mais profundas da consciência. Além de nos prepararmos para o Torneio Inter-Clubes, é claro."},
+        {"npc": "Luna Mindweaver", "text": "Também planejamos uma série de sessões especiais na Câmara de Eco Mental, onde poderemos amplificar nossas habilidades telepáticas coletivamente."},
+        {"npc": "Luna Mindweaver", "text": "{player_name}, tenho observado os padrões de sua mente. Há um potencial interessante ali que gostaria de explorar mais. Tenho um papel específico em mente para você neste semestre."}
+      ],
+      "3": [
+        {"npc": "Alexander Strategos", "text": "Pontual como sempre, {player_name}. Excelente. A pontualidade é a cortesia dos reis... e dos futuros líderes."},
+        {"npc": "Alexander Strategos", "text": "O Conselho Político tem grandes ambições para este semestre. Além de nossa participação no Torneio Inter-Clubes, estamos planejando uma simulação de crise diplomática com a Academia Rivale."},
+        {"npc": "Alexander Strategos", "text": "Também estaremos organizando debates semanais sobre políticas educacionais, com o objetivo de influenciar algumas... mudanças necessárias na administração da academia."},
+        {"npc": "Alexander Strategos", "text": "{player_name}, tenho observado seu progresso com interesse. Suas... habilidades poderiam ser valiosas para alguns de nossos projetos mais sensíveis este semestre."}
+      ],
+      "4": [
+        {"npc": "Gaia Naturae", "text": "Bem-vindo, {player_name}. Os espíritos elementais me disseram que você viria. Sua aura está... interessante hoje."},
+        {"npc": "Gaia Naturae", "text": "Os Elementalistas têm um semestre importante pela frente. O equilíbrio entre os elementos tem estado instável, e isso se refletirá no Torneio Inter-Clubes."},
+        {"npc": "Gaia Naturae", "text": "Planejamos uma cerimônia de harmonização elemental durante o equinócio, e também expedições mensais aos quatro santuários elementais nos arredores da academia."},
+        {"npc": "Gaia Naturae", "text": "{player_name}, sinto que você tem um papel importante a desempenhar no restabelecimento do equilíbrio. Gostaria de contar com sua participação especial em nossos rituais este semestre."}
+      ],
+      "5": [
+        {"npc": "Ryuji Battleborn", "text": "Ah, {player_name}! Pronto para um semestre de glória e honra? O campo de batalha nos aguarda!"},
+        {"npc": "Ryuji Battleborn", "text": "O Clube de Combate tem grandes desafios pela frente. O Torneio Inter-Clubes será nossa chance de provar mais uma vez que somos os mais fortes da academia!"},
+        {"npc": "Ryuji Battleborn", "text": "Além disso, recebi um convite para um torneio internacional em Kyoto. Levarei apenas os melhores guerreiros do clube para representar a Academia Tokugawa."},
+        {"npc": "Ryuji Battleborn", "text": "{player_name}, tenho observado seu progresso. Há o espírito de um verdadeiro guerreiro em você. Este semestre, quero que assuma responsabilidades maiores no clube."}
+      ]
+    },
+    "choices": [
+      {"text": "Aceitar entusiasticamente o desafio", "next_dialogue": 2, "affinity_change": {"club_leader": 10}},
+      {"text": "Perguntar mais detalhes sobre suas responsabilidades", "next_dialogue": 3, "affinity_change": {"club_leader": 5}},
+      {"text": "Expressar preocupação com a carga de trabalho", "next_dialogue": 4, "affinity_change": {"club_leader": -3}}
+    ],
+    "additional_dialogues": {
+      "2": [
+        {"npc": "club_leader", "text": "ENTHUSIASM_RESPONSE_PLACEHOLDER"},
+        {"npc": "club_leader", "text": "Excelente! Com essa atitude, tenho certeza que você irá longe. Vamos discutir os detalhes mais tarde."},
+        {"npc": "club_leader", "text": "Por enquanto, sugiro que você se concentre em suas aulas e comece a se preparar para o Torneio Inter-Clubes. Será um evento importante para todos nós."}
+      ],
+      "3": [
+        {"npc": "club_leader", "text": "DETAILS_RESPONSE_PLACEHOLDER"},
+        {"npc": "club_leader", "text": "Compreensível que queira saber mais antes de se comprometer. Isso mostra prudência."},
+        {"npc": "club_leader", "text": "Vamos discutir os detalhes completos em nossa próxima reunião. Por enquanto, concentre-se em suas aulas e comece a se preparar para o Torneio Inter-Clubes."}
+      ],
+      "4": [
+        {"npc": "club_leader", "text": "CONCERN_RESPONSE_PLACEHOLDER"},
+        {"npc": "club_leader", "text": "Entendo suas preocupações. O equilíbrio entre estudos, treinamento e atividades de clube pode ser desafiador."},
+        {"npc": "club_leader", "text": "Vamos ajustar suas responsabilidades para que sejam gerenciáveis. No entanto, espero comprometimento com o que for acordado."},
+        {"npc": "club_leader", "text": "Por enquanto, concentre-se em suas aulas e comece a se preparar para o Torneio Inter-Clubes como puder."}
+      ],
+      "enthusiasm_1": [
+        {"npc": "Kai Flameheart", "text": "Esse é o espírito! A paixão e a determinação são as fagulhas que acendem a chama da grandeza!"}
+      ],
+      "enthusiasm_2": [
+        {"npc": "Luna Mindweaver", "text": "Sua mente irradia entusiasmo. Essa energia será valiosa para nossos projetos mais... delicados."}
+      ],
+      "enthusiasm_3": [
+        {"npc": "Alexander Strategos", "text": "Excelente atitude. O entusiasmo, quando canalizado estrategicamente, é uma ferramenta poderosa."}
+      ],
+      "enthusiasm_4": [
+        {"npc": "Gaia Naturae", "text": "Sua energia é como um vento fresco da primavera. Os elementos respondem bem a esse tipo de entusiasmo."}
+      ],
+      "enthusiasm_5": [
+        {"npc": "Ryuji Battleborn", "text": "Haha! Esse é o espírito de um verdadeiro guerreiro! Com essa determinação, a vitória já é metade conquistada!"}
+      ],
+      "details_1": [
+        {"npc": "Kai Flameheart", "text": "Direto ao ponto, gosto disso. Quero que você lidere o treinamento dos novatos e represente nosso clube na categoria individual do Torneio."}
+      ],
+      "details_2": [
+        {"npc": "Luna Mindweaver", "text": "Curiosidade... uma qualidade valiosa. Quero que você ajude a mapear os padrões mentais coletivos durante nossas sessões e participe de um projeto especial de pesquisa."}
+      ],
+      "details_3": [
+        {"npc": "Alexander Strategos", "text": "Cautela antes de comprometer-se. Sábio. Você será nosso representante nos debates e ajudará a coletar... informações estratégicas para nossas negociações."}
+      ],
+      "details_4": [
+        {"npc": "Gaia Naturae", "text": "A sabedoria busca compreensão antes da ação. Você ajudará a conduzir os rituais de harmonização e será nosso representante no Torneio, demonstrando o equilíbrio dos elementos."}
+      ],
+      "details_5": [
+        {"npc": "Ryuji Battleborn", "text": "Um guerreiro prudente conhece o campo de batalha antes de lutar. Você treinará os novatos em técnicas básicas e representará nosso clube no Torneio."}
+      ],
+      "concern_1": [
+        {"npc": "Kai Flameheart", "text": "Hmm... hesitação não é algo que esperamos no Clube das Chamas. Mas entendo que as chamas precisam de combustível para queimar."}
+      ],
+      "concern_2": [
+        {"npc": "Luna Mindweaver", "text": "Sua mente está... preocupada. Interessante. A sobrecarga mental é um risco real em nosso campo de estudo."}
+      ],
+      "concern_3": [
+        {"npc": "Alexander Strategos", "text": "Avaliação de recursos antes de comprometer-se. Uma abordagem calculista que posso respeitar, mesmo que demonstre certa... falta de ambição."}
+      ],
+      "concern_4": [
+        {"npc": "Gaia Naturae", "text": "O equilíbrio é fundamental. Não podemos esperar que uma planta floresça sem dar-lhe tempo para crescer."}
+      ],
+      "concern_5": [
+        {"npc": "Ryuji Battleborn", "text": "Um guerreiro deve conhecer seus limites... mas também deve esforçar-se para superá-los. Espero mais determinação no futuro."}
+      ]
+    },
+    "completion_exp": 100,
+    "completion_tusd": 200,
+    "next_chapter": "2_5"
+  }
+}

@@ -399,8 +399,11 @@ def sync_db_to_s3():
             now = datetime.now()
 
             # If not enough time has passed, skip the sync
-            if now - last_sync_time < timedelta(minutes=sync_interval_minutes):
-                logger.info(f"Skipping database sync, last sync was {(now - last_sync_time).total_seconds() / 60:.1f} minutes ago")
+            time_since_last_sync = (now - last_sync_time).total_seconds() / 60
+            if time_since_last_sync < sync_interval_minutes:
+                # Only log if time since last sync is significant (more than 10 minutes)
+                if time_since_last_sync > 10:
+                    logger.info(f"Skipping database sync, last sync was {time_since_last_sync:.1f} minutes ago")
                 return True
 
         from utils.s3_storage import upload_db_to_s3

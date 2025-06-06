@@ -1,0 +1,122 @@
+{
+  "friendly": [
+    {
+      "name": "Estudo em Grupo",
+      "description": "Você e {npc_name} estudam juntos para uma prova difícil.",
+      "affinity_change": 5,
+      "attribute_bonus": {"intellect": 1}
+    },
+    {
+      "name": "Almoço Casual",
+      "description": "Você encontra {npc_name} no refeitório e vocês almoçam juntos.",
+      "affinity_change": 3,
+      "attribute_bonus": {"charisma": 1}
+    },
+    {
+      "name": "Treino Conjunto",
+      "description": "Você e {npc_name} treinam juntos no campo de prática.",
+      "affinity_change": 4,
+      "attribute_bonus": {"power_stat": 1}
+    }
+  ],
+  "close": [
+    {
+      "name": "Segredo Compartilhado",
+      "description": "{npc_name} compartilha um segredo pessoal com você, fortalecendo a confiança entre vocês.",
+      "affinity_change": 8,
+      "attribute_bonus": {"charisma": 2}
+    },
+    {
+      "name": "Exploração do Campus",
+      "description": "Você e {npc_name} exploram partes pouco conhecidas do campus juntos.",
+      "affinity_change": 7,
+      "attribute_bonus": {"intellect": 1, "dexterity": 1}
+    },
+    {
+      "name": "Ajuda em Momento Difícil",
+      "description": "Você ajuda {npc_name} durante um momento pessoal difícil.",
+      "affinity_change": 10,
+      "attribute_bonus": {"charisma": 2}
+    }
+  ],
+  "trusted": [
+    {
+      "name": "Treinamento Especial",
+      "description": "{npc_name} te ensina uma técnica especial que poucos conhecem.",
+      "affinity_change": 12,
+      "attribute_bonus": {"power_stat": 2}
+    },
+    {
+      "name": "Confidência Importante",
+      "description": "{npc_name} confia a você uma informação importante sobre a academia.",
+      "affinity_change": 10,
+      "attribute_bonus": {"intellect": 2}
+    },
+    {
+      "name": "Apoio em Crise",
+      "description": "Em um momento de crise, {npc_name} está ao seu lado, oferecendo apoio incondicional.",
+      "affinity_change": 15,
+      "attribute_bonus": {"charisma": 2, "power_stat": 1}
+    }
+  ],
+  "romantic_interest": [
+    {
+      "name": "Momento de Conexão",
+      "description": "Você e {npc_name} compartilham um momento especial que sugere algo além da amizade.",
+      "affinity_change": 10,
+      "attribute_bonus": {"charisma": 2}
+    },
+    {
+      "name": "Passeio ao Pôr do Sol",
+      "description": "Você convida {npc_name} para um passeio ao pôr do sol nos jardins da academia.",
+      "affinity_change": 12,
+      "attribute_bonus": {"charisma": 3}
+    },
+    {
+      "name": "Presente Especial",
+      "description": "Você dá um presente especial para {npc_name}, que fica visivelmente tocado(a).",
+      "affinity_change": 15,
+      "attribute_bonus": {"charisma": 2}
+    }
+  ],
+  "dating": [
+    {
+      "name": "Encontro Romântico",
+      "description": "Você e {npc_name} têm um encontro romântico na cidade próxima à academia.",
+      "affinity_change": 15,
+      "attribute_bonus": {"charisma": 3}
+    },
+    {
+      "name": "Treino Especial",
+      "description": "{npc_name} te ensina uma técnica especial que poucos conhecem.",
+      "affinity_change": 12,
+      "attribute_bonus": {"power_stat": 3}
+    },
+    {
+      "name": "Segredos da Academia",
+      "description": "Você e {npc_name} descobrem juntos um segredo antigo da academia.",
+      "affinity_change": 18,
+      "attribute_bonus": {"intellect": 2, "power_stat": 1}
+    }
+  ],
+  "committed": [
+    {
+      "name": "Promessa de Futuro",
+      "description": "Você e {npc_name} fazem planos para o futuro após a graduação.",
+      "affinity_change": 20,
+      "attribute_bonus": {"charisma": 3, "power_stat": 2}
+    },
+    {
+      "name": "Técnica Combinada",
+      "description": "Você e {npc_name} desenvolvem uma técnica que combina seus poderes de forma única.",
+      "affinity_change": 18,
+      "attribute_bonus": {"power_stat": 4}
+    },
+    {
+      "name": "Revelação Profunda",
+      "description": "{npc_name} revela seu segredo mais profundo, algo que nunca contou a ninguém.",
+      "affinity_change": 25,
+      "attribute_bonus": {"intellect": 3, "charisma": 2}
+    }
+  ]
+}
