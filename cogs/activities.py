@@ -12,6 +12,12 @@ from utils.game_mechanics import (
     calculate_duel_outcome, generate_duel_narration,
     calculate_level_from_exp, calculate_hp_factor
 )
+from utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
+from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from utils.game_mechanics.events.training_event import TrainingEvent
+from utils.game_mechanics.events.random_event import RandomEvent
+from utils.game_mechanics.duel.duel_calculator import DuelCalculator
+from utils.game_mechanics.duel.duel_narrator import DuelNarrator
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -54,12 +60,14 @@ class Activities(commands.Cog):
                 await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
                 return
 
-            # Get a random training outcome
-            outcome = get_random_training_outcome()
+            # Create a random training event using the new SOLID architecture
+            training_event = TrainingEvent.create_random_training_event()
+            training_result = training_event.trigger(player)
 
-            # Calculate experience and attribute gains
-            exp_gain = random.randint(10, 30)
-            attribute_gain = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
+            # Get the outcome, experience and attribute gains from the event
+            outcome = training_event.get_description()
+            exp_gain = training_result["exp_gain"]
+            attribute_gain = training_result.get("attribute_gain", random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
 
             # Check if player has equipped accessories that boost experience
             inventory = player["inventory"]
@@ -76,9 +84,9 @@ class Activities(commands.Cog):
                     accessory_name = item["name"]
                     logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
-            # Update player data
+            # Update player data using the new ExperienceCalculator
             new_exp = player["exp"] + exp_gain
-            new_level = calculate_level_from_exp(new_exp)
+            new_level = ExperienceCalculator.calculate_level(new_exp)
             level_up = new_level > player["level"]
 
             # Prepare update data
@@ -300,11 +308,11 @@ class Activities(commands.Cog):
                 # Mark duel as active
                 self.active_duels[interaction.user.id] = opponent.id
 
-                # Calculate duel outcome
-                duel_result = calculate_duel_outcome(challenger, opponent_player, duel_type)
+                # Calculate duel outcome using the new DuelCalculator
+                duel_result = DuelCalculator.calculate_outcome(challenger, opponent_player, duel_type)
 
-                # Generate narration
-                narration = generate_duel_narration(duel_result)
+                # Generate narration using the new DuelNarrator
+                narration = DuelNarrator.generate_narration(duel_result)
                 duel_result["narration"] = narration
 
                 # Update winner and loser
@@ -428,8 +436,101 @@ class Activities(commands.Cog):
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
-            # This is a placeholder for future weekly events
-            await interaction.response.send_message("Não há eventos ativos no momento. Fique atento para futuros eventos na Academia Tokugawa!")
+            # Check cooldown
+            cooldown = self._check_cooldown(interaction.user.id, "evento")
+            if cooldown:
+                await interaction.response.send_message(f"{interaction.user.mention}, você precisa esperar antes de participar de outro evento. Tempo restante: {cooldown}")
+                return
+
+            # Create a random event using the new SOLID architecture
+            random_event = RandomEvent.create_random_event()
+            event_result = random_event.trigger(player)
+
+            # Process the event result
+            update_data = {}
+
+            # Experience change
+            if "exp_change" in event_result:
+                exp_change = event_result["exp_change"]
+                new_exp = player["exp"] + exp_change
+                update_data["exp"] = new_exp
+
+                # Check for level up
+                new_level = ExperienceCalculator.calculate_level(new_exp)
+                if new_level > player["level"]:
+                    update_data["level"] = new_level
+                    # Bonus TUSD for level up
+                    update_data["tusd"] = player.get("tusd", 0) + (new_level * 50)
+
+            # TUSD change
+            if "tusd_change" in event_result and "tusd" not in update_data:
+                tusd_change = event_result["tusd_change"]
+                update_data["tusd"] = player.get("tusd", 0) + tusd_change
+
+            # Attribute change
+            if "attribute_change" in event_result:
+                attribute = event_result["attribute_change"]
+                value = event_result.get("attribute_value", 1)
+                update_data[attribute] = player.get(attribute, 0) + value
+
+            # Update player in database
+            success = update_player(interaction.user.id, **update_data)
+
+            if success:
+                # Set cooldown
+                self._set_cooldown(interaction.user.id, "evento")
+
+                # Create embed for event result
+                embed = create_event_embed(
+                    title=random_event.get_title(),
+                    description=random_event.get_description(),
+                    event_type=random_event.get_type()
+                )
+
+                # Add fields for changes
+                if "exp_change" in event_result:
+                    embed.add_field(
+                        name="Experiência",
+                        value=f"{'+' if event_result['exp_change'] >= 0 else ''}{event_result['exp_change']} EXP",
+                        inline=True
+                    )
+
+                if "tusd_change" in event_result:
+                    embed.add_field(
+                        name="TUSD",
+                        value=f"{'+' if event_result['tusd_change'] >= 0 else ''}{event_result['tusd_change']} TUSD",
+                        inline=True
+                    )
+
+                if "attribute_change" in event_result:
+                    attribute_names = {
+                        "dexterity": "Destreza",
+                        "intellect": "Intelecto",
+                        "charisma": "Carisma",
+                        "power_stat": "Poder"
+                    }
+                    attribute_name = attribute_names.get(event_result["attribute_change"], event_result["attribute_change"])
+                    embed.add_field(
+                        name=attribute_name,
+                        value=f"+{event_result.get('attribute_value', 1)}",
+                        inline=True
+                    )
+
+                if "item_reward" in event_result:
+                    embed.add_field(
+                        name="Item",
+                        value=f"Você recebeu: {event_result['item_reward']}",
+                        inline=False
+                    )
+
+                await interaction.response.send_message(embed=embed)
+
+                # If the event triggers a duel, start it
+                if event_result.get("trigger_duel", False):
+                    # This would be implemented in a future update
+                    await interaction.followup.send("Um duelo foi desencadeado pelo evento! Esta funcionalidade será implementada em breve.")
+            else:
+                await interaction.response.send_message("Ocorreu um erro ao processar o evento. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade evento")
@@ -521,9 +622,9 @@ class Activities(commands.Cog):
                 accessory_name = item["name"]
                 logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
-        # Update player data
+        # Update player data using the new ExperienceCalculator
         new_exp = player["exp"] + exp_gain
-        new_level = calculate_level_from_exp(new_exp)
+        new_level = ExperienceCalculator.calculate_level(new_exp)
         level_up = new_level > player["level"]
 
         # Prepare update data
@@ -726,11 +827,11 @@ class Activities(commands.Cog):
 
             # Process response
             if response.content.lower() in ["sim", "yes"]:
-                # Calculate duel outcome
-                duel_result = calculate_duel_outcome(challenger, opponent_player, duel_type)
+                # Calculate duel outcome using the new DuelCalculator
+                duel_result = DuelCalculator.calculate_outcome(challenger, opponent_player, duel_type)
 
-                # Generate narration
-                narration = generate_duel_narration(duel_result)
+                # Generate narration using the new DuelNarrator
+                narration = DuelNarrator.generate_narration(duel_result)
                 duel_result["narration"] = narration
 
                 # Update winner and loser
@@ -743,8 +844,8 @@ class Activities(commands.Cog):
                     "tusd": duel_result["winner"]["tusd"] + duel_result["tusd_reward"]
                 }
 
-                # Check for level up
-                new_level = calculate_level_from_exp(winner_update["exp"])
+                # Check for level up using the new ExperienceCalculator
+                new_level = ExperienceCalculator.calculate_level(winner_update["exp"])
                 if new_level > duel_result["winner"]["level"]:
                     winner_update["level"] = new_level
                     # Add level up bonus
@@ -755,8 +856,8 @@ class Activities(commands.Cog):
                     "exp": duel_result["loser"]["exp"] + (duel_result["exp_reward"] // 2)
                 }
 
-                # Check for level up
-                new_level = calculate_level_from_exp(loser_update["exp"])
+                # Check for level up using the new ExperienceCalculator
+                new_level = ExperienceCalculator.calculate_level(loser_update["exp"])
                 if new_level > duel_result["loser"]["level"]:
                     loser_update["level"] = new_level
 
