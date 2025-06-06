@@ -1,0 +1,186 @@
+{
+    "spring": [
+        {
+            "id": 301,
+            "name": "Flauta Serena Sakura",
+            "description": "Um instrumento que canaliza a energia da primavera. Buff em Carisma +20% em duelos sociais durante a estação.",
+            "price": 450,
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "spring",
+            "effects": {"attribute_boost": {"charisma": 0.2}, "season_limited": true}
+        },
+        {
+            "id": 302,
+            "name": "Aura do Recomeço",
+            "description": "Uma aura que simboliza novos começos. Aumenta a EXP em +10% em atividades treinadas no período.",
+            "price": 400,
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "rare",
+            "season": "spring",
+            "effects": {"exp_boost": 1.1, "season_limited": true}
+        },
+        {
+            "id": 303,
+            "name": "Elixir da Primavera",
+            "description": "Um elixir feito com flores da primavera. Aumenta permanentemente o Carisma em +1.",
+            "price": 1200,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "spring",
+            "effects": {"permanent_attribute": {"charisma": 1}}
+        },
+        {
+            "id": 304,
+            "name": "Pergaminho da Técnica Primaveril",
+            "description": "Ensina a técnica sazonal 'Aura Primaveril'.",
+            "price": 800,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "spring",
+            "effects": {"learn_specific_technique": 16}
+        }
+    ],
+    "summer": [
+        {
+            "id": 311,
+            "name": "Sol Escaldante",
+            "description": "Um amuleto que canaliza o calor do verão. Adiciona chance de dano adicional em duelos físicos.",
+            "price": 450,
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "summer",
+            "effects": {"damage_boost": 0.15, "season_limited": true}
+        },
+        {
+            "id": 312,
+            "name": "Drink Refrescante",
+            "description": "Uma bebida que refresca até a alma. Recupera HP e adiciona atributo temporário +5 Destreza.",
+            "price": 200,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "uncommon",
+            "season": "summer",
+            "effects": {"hp_restore": 50, "temp_attribute_boost": {"dexterity": 5}, "duration": 3600}
+        },
+        {
+            "id": 313,
+            "name": "Elixir do Verão",
+            "description": "Um elixir feito com a essência do sol. Aumenta permanentemente a Destreza em +1.",
+            "price": 1200,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "summer",
+            "effects": {"permanent_attribute": {"dexterity": 1}}
+        },
+        {
+            "id": 314,
+            "name": "Pergaminho da Técnica Estival",
+            "description": "Ensina a técnica sazonal 'Calor Estival'.",
+            "price": 800,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "summer",
+            "effects": {"learn_specific_technique": 17}
+        }
+    ],
+    "autumn": [
+        {
+            "id": 321,
+            "name": "Lâmina Carmesim",
+            "description": "Uma lâmina com a cor das folhas de outono. Aumenta dano durante batalhas estratégicas.",
+            "price": 450,
+            "type": "equipment",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "autumn",
+            "effects": {"duel_boost": {"type": "strategic", "amount": 0.2}, "season_limited": true}
+        },
+        {
+            "id": 322,
+            "name": "Pilares Antigos",
+            "description": "Um amuleto que conecta com a sabedoria ancestral. Ao explorar, aumenta chance de encontrar Artefatos Raros.",
+            "price": 400,
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "rare",
+            "season": "autumn",
+            "effects": {"rare_find_chance": 0.2, "season_limited": true}
+        },
+        {
+            "id": 323,
+            "name": "Elixir do Outono",
+            "description": "Um elixir feito com a essência da sabedoria outonal. Aumenta permanentemente o Intelecto em +1.",
+            "price": 1200,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "autumn",
+            "effects": {"permanent_attribute": {"intellect": 1}}
+        },
+        {
+            "id": 324,
+            "name": "Pergaminho da Técnica Outonal",
+            "description": "Ensina a técnica sazonal 'Reflexão Outonal'.",
+            "price": 800,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "autumn",
+            "effects": {"learn_specific_technique": 18}
+        }
+    ],
+    "winter": [
+        {
+            "id": 331,
+            "name": "Encanto Gelado",
+            "description": "Um amuleto que canaliza o frio do inverno. Técnicas de intelecto e carisma recebem bônus +10%.",
+            "price": 450,
+            "type": "accessory",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "winter",
+            "effects": {"attribute_boost": {"intellect": 0.1, "charisma": 0.1}, "season_limited": true}
+        },
+        {
+            "id": 332,
+            "name": "Presença Fantasmal",
+            "description": "Um manto que permite se mover como um fantasma na névoa. Técnicas furtivas têm mais eficácia.",
+            "price": 400,
+            "type": "equipment",
+            "category": "seasonal",
+            "rarity": "rare",
+            "season": "winter",
+            "effects": {"stealth_boost": 0.25, "season_limited": true}
+        },
+        {
+            "id": 333,
+            "name": "Elixir do Inverno",
+            "description": "Um elixir feito com a essência do gelo eterno. Aumenta permanentemente o Poder em +1.",
+            "price": 1200,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "legendary",
+            "season": "winter",
+            "effects": {"permanent_attribute": {"power_stat": 1}}
+        },
+        {
+            "id": 334,
+            "name": "Pergaminho da Técnica Invernal",
+            "description": "Ensina a técnica sazonal 'Gélido Invernal'.",
+            "price": 800,
+            "type": "consumable",
+            "category": "seasonal",
+            "rarity": "epic",
+            "season": "winter",
+            "effects": {"learn_specific_technique": 19}
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+{
+    "festival_inverno": [
+        {
+            "id": 401,
+            "name": "Espada da Tempestade Cristalina",
+            "description": "Uma espada forjada durante o Festival de Inverno. Causa dano adicional de gelo em duelos.",
+            "price": 600,
+            "type": "equipment",
+            "category": "event",
+            "rarity": "epic",
+            "event": "festival_inverno",
+            "effects": {"ice_damage": 0.3, "event_limited": true}
+        }
+    ],
+    "torneio_academia": [
+        {
+            "id": 402,
+            "name": "Escudo de Campeão",
+            "description": "Um escudo concedido aos campeões do Torneio da Academia. Aumenta defesa em 20%.",
+            "price": 600,
+            "type": "equipment",
+            "category": "event",
+            "rarity": "epic",
+            "event": "torneio_academia",
+            "effects": {"defense_boost": 0.2, "event_limited": true}
+        }
+    ],
+    "festival_primavera": [
+        {
+            "id": 403,
+            "name": "Coroa de Flores",
+            "description": "Uma coroa feita com flores do Festival da Primavera. Aumenta carisma em 20%.",
+            "price": 600,
+            "type": "accessory",
+            "category": "event",
+            "rarity": "epic",
+            "event": "festival_primavera",
+            "effects": {"attribute_boost": {"charisma": 0.2}, "event_limited": true}
+        }
+    ],
+    "excursao_verao": [
+        {
+            "id": 404,
+            "name": "Amuleto da Praia",
+            "description": "Um amuleto encontrado durante a excursão de verão. Aumenta a sorte em 15%.",
+            "price": 600,
+            "type": "accessory",
+            "category": "event",
+            "rarity": "epic",
+            "event": "excursao_verao",
+            "effects": {"luck_boost": 0.15, "event_limited": true}
+        }
+    ]
+}

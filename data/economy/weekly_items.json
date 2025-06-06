@@ -1,0 +1,52 @@
+[
+    {
+        "id": 201,
+        "name": "Colar de Proteção",
+        "description": "Reduz o dano recebido em duelos em 10%.",
+        "price": 350,
+        "type": "accessory",
+        "category": "weekly",
+        "rarity": "rare",
+        "effects": {"damage_reduction": 0.1}
+    },
+    {
+        "id": 202,
+        "name": "Anel de Poder",
+        "description": "Aumenta o dano causado em duelos em 10%.",
+        "price": 350,
+        "type": "accessory",
+        "category": "weekly",
+        "rarity": "rare",
+        "effects": {"damage_boost": 0.1}
+    },
+    {
+        "id": 203,
+        "name": "Pergaminho de Técnica Avançada",
+        "description": "Ensina uma técnica avançada aleatória ao seu personagem.",
+        "price": 750,
+        "type": "consumable",
+        "category": "weekly",
+        "rarity": "epic",
+        "effects": {"learn_advanced_technique": true}
+    },
+    {
+        "id": 204,
+        "name": "Poção de Maestria",
+        "description": "Aumenta temporariamente o nível de uma técnica aleatória em +1.",
+        "price": 500,
+        "type": "consumable",
+        "category": "weekly",
+        "rarity": "epic",
+        "effects": {"technique_level_boost": 1, "duration": 86400}
+    },
+    {
+        "id": 205,
+        "name": "Amuleto de Sorte",
+        "description": "Aumenta a chance de eventos raros em 15%.",
+        "price": 400,
+        "type": "accessory",
+        "category": "weekly",
+        "rarity": "rare",
+        "effects": {"rare_event_chance": 0.15}
+    }
+]

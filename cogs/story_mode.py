@@ -575,9 +575,33 @@ class StoryModeCog(commands.Cog):
                 inline=False
             )
 
-        embed.set_footer(text="Use /evento [evento_id] para participar de um evento.")
+        embed.set_footer(text="Use /evento [evento_id] para participar de um evento.", ephemeral=True)
 
-        await channel.send(embed=embed)
+        # Get the member object for the user
+        guild = self.bot.get_guild(self.bot.config.get("guild_id"))
+        if guild:
+            member = guild.get_member(user_id)
+            if member:
+                try:
+                    # Send a direct message to the user instead of posting in the channel
+                    await member.send(embed=embed)
+                    return
+                except discord.errors.Forbidden:
+                    # If the user has DMs disabled, fall back to an ephemeral message in the channel
+                    pass
+
+        # If we couldn't send a DM or get the member, store the message for later delivery
+        # when the user interacts with the bot
+        if not hasattr(self, 'pending_event_notifications'):
+            self.pending_event_notifications = {}
+
+        self.pending_event_notifications[user_id] = {
+            'embed': embed,
+            'timestamp': datetime.now()
+        }
+
+        # Send a private notification that only mentions the user
+        await channel.send(f"<@{user_id}>, você tem novas notificações! Use `/evento` para verificar.", delete_after=60, ephemeral=True)
 
     def _get_hierarchy_name(self, tier: int) -> str:
         """

@@ -1,0 +1,52 @@
+[
+    {
+        "id": 101,
+        "name": "Poção de Energia",
+        "description": "Recupera energia para realizar mais atividades hoje.",
+        "price": 75,
+        "type": "consumable",
+        "category": "daily",
+        "rarity": "common",
+        "effects": {"energy_restore": 50}
+    },
+    {
+        "id": 102,
+        "name": "Doce Energético",
+        "description": "Um doce que dá um boost temporário de energia.",
+        "price": 30,
+        "type": "consumable",
+        "category": "daily",
+        "rarity": "common",
+        "effects": {"energy_boost": 20, "duration": 1800}
+    },
+    {
+        "id": 103,
+        "name": "Chá Revigorante",
+        "description": "Aumenta temporariamente a regeneração de energia.",
+        "price": 50,
+        "type": "consumable",
+        "category": "daily",
+        "rarity": "uncommon",
+        "effects": {"energy_regen_boost": 2, "duration": 3600}
+    },
+    {
+        "id": 104,
+        "name": "Pílula de Concentração",
+        "description": "Aumenta temporariamente o Intelecto em +1.",
+        "price": 60,
+        "type": "consumable",
+        "category": "daily",
+        "rarity": "uncommon",
+        "effects": {"temp_attribute_boost": {"intellect": 1}, "duration": 3600}
+    },
+    {
+        "id": 105,
+        "name": "Bebida Energética",
+        "description": "Aumenta temporariamente a Destreza em +1.",
+        "price": 60,
+        "type": "consumable",
+        "category": "daily",
+        "rarity": "uncommon",
+        "effects": {"temp_attribute_boost": {"dexterity": 1}, "duration": 3600}
+    }
+]
