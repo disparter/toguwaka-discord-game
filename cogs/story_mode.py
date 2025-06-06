@@ -374,6 +374,53 @@ class StoryModeCog(commands.Cog):
         """
         chapter_data = result["chapter_data"]
 
+        # Check if this is a challenge that has already been completed or failed
+        if "already_completed" in chapter_data and chapter_data["already_completed"]:
+            embed = create_basic_embed(
+                title="Desafio Já Completado",
+                description="Você já completou este desafio com sucesso. Não é possível refazê-lo.",
+                color=discord.Color.gold()
+            )
+            await channel.send(embed=embed)
+            return
+
+        if "already_failed" in chapter_data and chapter_data["already_failed"]:
+            embed = create_basic_embed(
+                title="Desafio Já Tentado",
+                description="Você já falhou neste desafio. Não é possível tentá-lo novamente.",
+                color=discord.Color.red()
+            )
+            await channel.send(embed=embed)
+            return
+
+        # Check if a path is blocked due to previous failures
+        if "path_blocked" in result and result["path_blocked"]:
+            embed = create_basic_embed(
+                title="Caminho Bloqueado",
+                description="Devido a falhas anteriores, este caminho da história está bloqueado para você.",
+                color=discord.Color.red()
+            )
+            await channel.send(embed=embed)
+            return
+
+        # Check if a challenge was just completed successfully
+        if "challenge_success" in result and result["challenge_success"]:
+            embed = create_basic_embed(
+                title="Desafio Completado",
+                description="Parabéns! Você completou o desafio com sucesso e recebeu recompensas.",
+                color=discord.Color.green()
+            )
+            await channel.send(embed=embed)
+
+        # Check if a challenge was just failed
+        if "challenge_failure" in result and result["challenge_failure"]:
+            embed = create_basic_embed(
+                title="Desafio Falhou",
+                description="Você falhou no desafio. Isso terá consequências para sua jornada.",
+                color=discord.Color.red()
+            )
+            await channel.send(embed=embed)
+
         # If there's a current dialogue, send it
         if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
             dialogue = chapter_data["current_dialogue"]
@@ -388,7 +435,7 @@ class StoryModeCog(commands.Cog):
                 color=discord.Color.blue()
             )
 
-            # If the dialogue has choices, add buttons
+            # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
                 view = discord.ui.View(timeout=300)
 
@@ -405,26 +452,55 @@ class StoryModeCog(commands.Cog):
                 message = await channel.send(embed=embed, view=view)
                 return
 
-            # If no choices, add a "Continue" button
-            view = discord.ui.View(timeout=300)
-            button = discord.ui.Button(
-                style=discord.ButtonStyle.primary,
-                label="Continuar",
-                custom_id="continue"
-            )
-            button.callback = self._create_continue_callback(user_id)
-            view.add_item(button)
+            # If there are choices in the chapter data but not in the dialogue, check if we should show them
+            elif "choices" in chapter_data and chapter_data["choices"]:
+                # This is a story event with choices
+                view = discord.ui.View(timeout=300)
 
-            # Don't use ephemeral for messages with continue button so they're visible to everyone
-            message = await channel.send(embed=embed, view=view)
-            return
+                for i, choice in enumerate(chapter_data["choices"]):
+                    button = discord.ui.Button(
+                        style=discord.ButtonStyle.primary,
+                        label=choice["text"],
+                        custom_id=f"choice_{i}"
+                    )
+                    button.callback = self._create_choice_callback(user_id, i)
+                    view.add_item(button)
+
+                # Don't use ephemeral for messages with choices so they're visible to everyone
+                message = await channel.send(embed=embed, view=view)
+                return
+            else:
+                # If no choices, add a "Continue" button
+                view = discord.ui.View(timeout=300)
+                button = discord.ui.Button(
+                    style=discord.ButtonStyle.primary,
+                    label="Continuar",
+                    custom_id="continue"
+                )
+                button.callback = self._create_continue_callback(user_id)
+                view.add_item(button)
+
+                # Don't use ephemeral for messages with continue button so they're visible to everyone
+                message = await channel.send(embed=embed, view=view)
+                return
 
         # If there are choices but no current dialogue, send the choices
         if "choices" in chapter_data and chapter_data["choices"]:
+            # Check if this is a challenge chapter
+            challenge_type = chapter_data.get("challenge_type")
+            if challenge_type:
+                title = f"Desafio: {challenge_type.capitalize()}"
+                description = "Escolha como enfrentar este desafio:"
+                color = discord.Color.gold()
+            else:
+                title = "Escolha uma opção"
+                description = "O que você deseja fazer?"
+                color = discord.Color.blue()
+
             embed = create_basic_embed(
-                title="Escolha uma opção",
-                description="O que você deseja fazer?",
-                color=discord.Color.blue()
+                title=title,
+                description=description,
+                color=color
             )
 
             view = discord.ui.View(timeout=300)
@@ -443,10 +519,24 @@ class StoryModeCog(commands.Cog):
             return
 
         # If no dialogue or choices, the chapter is complete
+        if "chapter_complete" in result and result["chapter_complete"]:
+            if "story_complete" in result and result["story_complete"]:
+                title = "História Concluída"
+                description = "Parabéns! Você concluiu a história principal do jogo."
+                color = discord.Color.gold()
+            else:
+                title = "Capítulo Concluído"
+                description = "Você concluiu este capítulo da história."
+                color = discord.Color.green()
+        else:
+            title = "Capítulo Concluído"
+            description = "Você concluiu este capítulo da história."
+            color = discord.Color.green()
+
         embed = create_basic_embed(
-            title="Capítulo Concluído",
-            description="Você concluiu este capítulo da história.",
-            color=discord.Color.green()
+            title=title,
+            description=description,
+            color=color
         )
 
         # Don't use ephemeral for chapter complete message so it's visible to everyone
