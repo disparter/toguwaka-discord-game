@@ -328,6 +328,14 @@ def get_player(user_id):
         player_dict = dict(player)
         player_dict['inventory'] = json.loads(player_dict['inventory'])
         player_dict['techniques'] = json.loads(player_dict['techniques'])
+
+        # Parse story_progress if it exists and is not None
+        if 'story_progress' in player_dict and player_dict['story_progress']:
+            try:
+                player_dict['story_progress'] = json.loads(player_dict['story_progress'])
+            except json.JSONDecodeError:
+                logger.error(f"Error parsing story_progress for player {player_dict['user_id']}")
+
         return player_dict
 
     return None
