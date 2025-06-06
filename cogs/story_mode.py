@@ -448,17 +448,76 @@ class StoryModeCog(commands.Cog):
                 gif_filename = dialogue["gif"]
                 gif_path = f"assets/gifs/{gif_filename}"
                 if os.path.exists(gif_path):
-                    embed.set_image(url=f"attachment://{gif_filename}")
-                    file = discord.File(gif_path, filename=gif_filename)
+                    # Check file size before attaching
+                    file_size = os.path.getsize(gif_path)
+                    # Discord's file size limit (8MB)
+                    if file_size < 8 * 1024 * 1024:  
+                        embed.set_image(url=f"attachment://{gif_filename}")
+                        file = discord.File(gif_path, filename=gif_filename)
+                    else:
+                        # File is too large, add a note to the embed
+                        embed.add_field(
+                            name="Nota",
+                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
+                            inline=False
+                        )
+                        logger.warning(f"GIF file {gif_filename} is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
             # If no gif field, check for specific character interactions
             elif kai_first_interaction:
-                embed.set_image(url="attachment://kai_intro.gif")
-                # Create file object for the GIF
-                file = discord.File("assets/gifs/kai_intro.gif", filename="kai_intro.gif")
+                kai_gif_path = "assets/gifs/kai_intro.gif"
+                if os.path.exists(kai_gif_path):
+                    # Check file size before attaching
+                    file_size = os.path.getsize(kai_gif_path)
+                    # Discord's file size limit (8MB)
+                    if file_size < 8 * 1024 * 1024:
+                        embed.set_image(url="attachment://kai_intro.gif")
+                        # Create file object for the GIF
+                        file = discord.File(kai_gif_path, filename="kai_intro.gif")
+                    else:
+                        # File is too large, add a note to the embed
+                        embed.add_field(
+                            name="Nota",
+                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
+                            inline=False
+                        )
+                        logger.warning(f"Kai intro GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
             elif junie_first_interaction:
-                embed.set_image(url="attachment://junie_intro.gif")
-                # Create file object for the GIF
-                file = discord.File("assets/gifs/junie_intro.gif", filename="junie_intro.gif")
+                junie_gif_path = "assets/gifs/junie_intro.gif"
+                if os.path.exists(junie_gif_path):
+                    # Check file size before attaching
+                    file_size = os.path.getsize(junie_gif_path)
+                    # Discord's file size limit (8MB)
+                    if file_size < 8 * 1024 * 1024:
+                        embed.set_image(url="attachment://junie_intro.gif")
+                        # Create file object for the GIF
+                        file = discord.File(junie_gif_path, filename="junie_intro.gif")
+                    else:
+                        # File is too large, add a note to the embed
+                        embed.add_field(
+                            name="Nota",
+                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
+                            inline=False
+                        )
+                        logger.warning(f"Junie intro GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+            # Check for Gaia Naturae's first interaction
+            elif npc_name == "Gaia Naturae" and "Bem-vindo, {player_name}. Os espíritos elementais me disseram que você viria." in text:
+                gaia_gif_path = "assets/gifs/gaia_naturae.gif"
+                if os.path.exists(gaia_gif_path):
+                    # Check file size before attaching
+                    file_size = os.path.getsize(gaia_gif_path)
+                    # Discord's file size limit (8MB)
+                    if file_size < 8 * 1024 * 1024:
+                        embed.set_image(url="attachment://gaia_naturae.gif")
+                        # Create file object for the GIF
+                        file = discord.File(gaia_gif_path, filename="gaia_naturae.gif")
+                    else:
+                        # File is too large, add a note to the embed
+                        embed.add_field(
+                            name="Nota",
+                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
+                            inline=False
+                        )
+                        logger.warning(f"Gaia Naturae GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
 
             # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
