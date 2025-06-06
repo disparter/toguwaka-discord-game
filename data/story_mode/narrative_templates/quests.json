@@ -1,0 +1,234 @@
+{
+  "main_quest": {
+    "title": "Título da Missão Principal",
+    "description": "Descrição detalhada da missão principal",
+    "quest_giver": "NPC_Nome",
+    "quest_type": "main",
+    "difficulty": "médio",
+    "min_level": 5,
+    "prerequisites": {
+      "chapters_completed": ["1_5", "1_6"],
+      "quests_completed": ["side_quest_id_1"]
+    },
+    "stages": [
+      {
+        "id": "stage_1",
+        "title": "Início da Missão",
+        "description": "Descrição do primeiro estágio da missão",
+        "objectives": [
+          {
+            "type": "talk_to",
+            "target": "NPC_Nome_2",
+            "description": "Fale com NPC_Nome_2 para obter informações"
+          }
+        ],
+        "completion_dialogue": {
+          "npc": "NPC_Nome_2",
+          "text": "Diálogo que conclui o primeiro estágio da missão."
+        },
+        "rewards": {
+          "exp": 50,
+          "tusd": 100
+        }
+      },
+      {
+        "id": "stage_2",
+        "title": "Investigação",
+        "description": "Descrição do estágio de investigação",
+        "objectives": [
+          {
+            "type": "collect",
+            "target": "item_id_1",
+            "quantity": 3,
+            "description": "Colete 3 itens específicos"
+          },
+          {
+            "type": "explore",
+            "target": "location_id_1",
+            "description": "Explore um local específico"
+          }
+        ],
+        "completion_dialogue": {
+          "npc": "NPC_Nome",
+          "text": "Diálogo que conclui o estágio de investigação."
+        },
+        "rewards": {
+          "exp": 100,
+          "tusd": 150,
+          "items": ["item_id_2"]
+        }
+      },
+      {
+        "id": "stage_3",
+        "title": "Confronto",
+        "description": "Descrição do estágio de confronto",
+        "objectives": [
+          {
+            "type": "defeat",
+            "target": "npc_id_3",
+            "description": "Derrote um oponente específico"
+          }
+        ],
+        "completion_dialogue": {
+          "npc": "NPC_Nome",
+          "text": "Diálogo que conclui o estágio de confronto."
+        },
+        "rewards": {
+          "exp": 200,
+          "tusd": 250,
+          "attribute_bonuses": {"power_stat": 1}
+        }
+      },
+      {
+        "id": "stage_4",
+        "title": "Conclusão",
+        "description": "Descrição do estágio final da missão",
+        "objectives": [
+          {
+            "type": "return",
+            "target": "NPC_Nome",
+            "description": "Retorne ao NPC que deu a missão"
+          }
+        ],
+        "completion_dialogue": {
+          "npc": "NPC_Nome",
+          "text": "Diálogo que conclui a missão principal."
+        },
+        "rewards": {
+          "exp": 300,
+          "tusd": 400,
+          "items": ["special_item_id_1"],
+          "attribute_bonuses": {"intellect": 1, "charisma": 1},
+          "affinity_changes": {"NPC_Nome": 15}
+        }
+      }
+    ],
+    "failure_conditions": {
+      "time_limit": "7 dias",
+      "special_conditions": ["condição_especial_1", "condição_especial_2"]
+    },
+    "failure_consequences": {
+      "exp_penalty": 50,
+      "tusd_penalty": 100,
+      "affinity_changes": {"NPC_Nome": -10},
+      "failure_dialogue": {
+        "npc": "NPC_Nome",
+        "text": "Diálogo que ocorre quando a missão falha."
+      }
+    }
+  },
+  "side_quest": {
+    "title": "Título da Missão Secundária",
+    "description": "Descrição detalhada da missão secundária",
+    "quest_giver": "NPC_Nome_3",
+    "quest_type": "side",
+    "difficulty": "fácil",
+    "min_level": 3,
+    "prerequisites": {
+      "chapters_completed": ["1_3"]
+    },
+    "objectives": [
+      {
+        "type": "collect",
+        "target": "item_id_3",
+        "quantity": 5,
+        "description": "Colete 5 itens específicos"
+      },
+      {
+        "type": "deliver",
+        "target": "NPC_Nome_4",
+        "item": "item_id_3",
+        "description": "Entregue os itens coletados para NPC_Nome_4"
+      }
+    ],
+    "completion_dialogue": {
+      "npc": "NPC_Nome_4",
+      "text": "Diálogo que conclui a missão secundária."
+    },
+    "rewards": {
+      "exp": 150,
+      "tusd": 200,
+      "items": ["item_id_4"],
+      "affinity_changes": {"NPC_Nome_3": 5, "NPC_Nome_4": 10}
+    },
+    "time_limit": "5 dias",
+    "repeatable": false
+  },
+  "daily_quest": {
+    "title": "Título da Missão Diária",
+    "description": "Descrição detalhada da missão diária",
+    "quest_giver": "NPC_Nome_5",
+    "quest_type": "daily",
+    "difficulty": "fácil",
+    "min_level": 2,
+    "objectives": [
+      {
+        "type": "defeat",
+        "target": "npc_type_id_1",
+        "quantity": 3,
+        "description": "Derrote 3 oponentes de um tipo específico"
+      }
+    ],
+    "completion_dialogue": {
+      "npc": "NPC_Nome_5",
+      "text": "Diálogo que conclui a missão diária."
+    },
+    "rewards": {
+      "exp": 50,
+      "tusd": 75,
+      "random_items": [
+        {"item_id": "item_id_5", "chance": 0.7},
+        {"item_id": "item_id_6", "chance": 0.3}
+      ]
+    },
+    "cooldown": "24 horas",
+    "repeatable": true
+  },
+  "challenge_quest": {
+    "title": "Título da Missão de Desafio",
+    "description": "Descrição detalhada da missão de desafio",
+    "quest_giver": "NPC_Nome_6",
+    "quest_type": "challenge",
+    "difficulty": "difícil",
+    "min_level": 10,
+    "prerequisites": {
+      "chapters_completed": ["1_8"],
+      "quests_completed": ["main_quest_id_1"],
+      "attributes": {
+        "power_stat": 12,
+        "intellect": 10
+      }
+    },
+    "objectives": [
+      {
+        "type": "defeat",
+        "target": "boss_npc_id_1",
+        "description": "Derrote um chefe poderoso",
+        "time_limit": "10 minutos"
+      }
+    ],
+    "completion_dialogue": {
+      "npc": "NPC_Nome_6",
+      "text": "Diálogo que conclui a missão de desafio."
+    },
+    "rewards": {
+      "exp": 500,
+      "tusd": 1000,
+      "items": ["rare_item_id_1"],
+      "attribute_bonuses": {"power_stat": 2, "intellect": 1, "charisma": 1, "dexterity": 1},
+      "affinity_changes": {"NPC_Nome_6": 20},
+      "title": "Título de Reconhecimento"
+    },
+    "failure_consequences": {
+      "exp_penalty": 100,
+      "tusd_penalty": 200,
+      "cooldown": "3 dias",
+      "failure_dialogue": {
+        "npc": "NPC_Nome_6",
+        "text": "Diálogo que ocorre quando a missão de desafio falha."
+      }
+    },
+    "repeatable": true,
+    "cooldown": "7 dias"
+  }
+}

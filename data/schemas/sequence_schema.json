@@ -1,0 +1,348 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Narrative Sequence Schema",
+  "description": "Schema for validating narrative sequence data in the story mode",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["title", "description"],
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1
+      },
+      "scenes": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "type"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["dialogue", "narration", "choice_point", "conclusion"]
+                },
+                "npc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "next_scene": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "choices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["text"],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "next_scene": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "affinity_change": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer"
+                        }
+                      },
+                      "attribute_check": {
+                        "type": "string",
+                        "enum": ["power_stat", "intellect", "charisma", "dexterity"]
+                      },
+                      "threshold": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                },
+                "rewards": {
+                  "type": "object",
+                  "properties": {
+                    "exp": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "tusd": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "affinity_changes": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    },
+                    "attribute_bonuses": {
+                      "type": "object",
+                      "properties": {
+                        "power_stat": {
+                          "type": "integer"
+                        },
+                        "intellect": {
+                          "type": "integer"
+                        },
+                        "charisma": {
+                          "type": "integer"
+                        },
+                        "dexterity": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["dialogue"] } }
+                  },
+                  "then": {
+                    "required": ["npc", "text"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["narration"] } }
+                  },
+                  "then": {
+                    "required": ["text"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["choice_point"] } }
+                  },
+                  "then": {
+                    "required": ["text", "choices"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["conclusion"] } }
+                  },
+                  "then": {
+                    "required": ["text", "rewards"]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["dialogue", "narration", "choice_point", "conclusion", "conditional"]
+                },
+                "npc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "next_scene": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "choices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["text"],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "next_scene": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "affinity_change": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer"
+                        }
+                      },
+                      "attribute_check": {
+                        "type": "string",
+                        "enum": ["power_stat", "intellect", "charisma", "dexterity"]
+                      },
+                      "threshold": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "attribute": {
+                        "type": "string",
+                        "enum": ["power_stat", "intellect", "charisma", "dexterity"]
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": ["==", "!=", ">", "<", ">=", "<="]
+                      },
+                      "value": {
+                        "type": "integer"
+                      },
+                      "next_scene": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "default": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "rewards": {
+                  "type": "object",
+                  "properties": {
+                    "exp": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "tusd": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "affinity_changes": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    },
+                    "attribute_bonuses": {
+                      "type": "object",
+                      "properties": {
+                        "power_stat": {
+                          "type": "integer"
+                        },
+                        "intellect": {
+                          "type": "integer"
+                        },
+                        "charisma": {
+                          "type": "integer"
+                        },
+                        "dexterity": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["dialogue"] } }
+                  },
+                  "then": {
+                    "required": ["npc", "text"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["narration"] } }
+                  },
+                  "then": {
+                    "required": ["text"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["choice_point"] } }
+                  },
+                  "then": {
+                    "required": ["text", "choices"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["conclusion"] } }
+                  },
+                  "then": {
+                    "required": ["text", "rewards"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "enum": ["conditional"] } }
+                  },
+                  "then": {
+                    "required": ["conditions"]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "start_scene": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": { "scenes": { "type": "array" } }
+        },
+        "then": {
+          "required": ["scenes"]
+        }
+      },
+      {
+        "if": {
+          "properties": { "scenes": { "type": "object" } }
+        },
+        "then": {
+          "required": ["scenes", "start_scene"]
+        }
+      }
+    ]
+  }
+}

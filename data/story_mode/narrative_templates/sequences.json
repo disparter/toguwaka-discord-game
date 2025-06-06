@@ -1,0 +1,207 @@
+{
+  "linear_sequence": {
+    "title": "Título da Sequência Linear",
+    "description": "Descrição da sequência de eventos que ocorre em ordem fixa",
+    "scenes": [
+      {
+        "id": "scene_1",
+        "type": "dialogue",
+        "npc": "NPC_Nome",
+        "text": "Diálogo inicial da cena 1.",
+        "next_scene": "scene_2"
+      },
+      {
+        "id": "scene_2",
+        "type": "narration",
+        "text": "Descrição narrativa da cena 2.",
+        "next_scene": "scene_3"
+      },
+      {
+        "id": "scene_3",
+        "type": "choice_point",
+        "text": "Momento de decisão na cena 3.",
+        "choices": [
+          {
+            "text": "Primeira opção",
+            "next_scene": "scene_4a",
+            "affinity_change": {"NPC_Nome": 5}
+          },
+          {
+            "text": "Segunda opção",
+            "next_scene": "scene_4b",
+            "affinity_change": {"NPC_Nome": -3}
+          }
+        ]
+      },
+      {
+        "id": "scene_4a",
+        "type": "dialogue",
+        "npc": "NPC_Nome",
+        "text": "Resposta à primeira escolha.",
+        "next_scene": "scene_5"
+      },
+      {
+        "id": "scene_4b",
+        "type": "dialogue",
+        "npc": "NPC_Nome",
+        "text": "Resposta à segunda escolha.",
+        "next_scene": "scene_5"
+      },
+      {
+        "id": "scene_5",
+        "type": "conclusion",
+        "text": "Conclusão da sequência narrativa.",
+        "rewards": {
+          "exp": 100,
+          "tusd": 150,
+          "affinity_changes": {"NPC_Nome": 2}
+        }
+      }
+    ]
+  },
+  "branching_sequence": {
+    "title": "Título da Sequência Ramificada",
+    "description": "Descrição da sequência com múltiplos caminhos possíveis",
+    "start_scene": "scene_1",
+    "scenes": {
+      "scene_1": {
+        "type": "dialogue",
+        "npc": "NPC_Nome",
+        "text": "Diálogo inicial que apresenta uma situação.",
+        "next_scene": "scene_2"
+      },
+      "scene_2": {
+        "type": "choice_point",
+        "text": "Momento de decisão importante.",
+        "choices": [
+          {
+            "text": "Caminho A",
+            "next_scene": "scene_3a"
+          },
+          {
+            "text": "Caminho B",
+            "next_scene": "scene_3b"
+          },
+          {
+            "text": "Caminho C",
+            "next_scene": "scene_3c",
+            "attribute_check": "intellect",
+            "threshold": 10
+          }
+        ]
+      },
+      "scene_3a": {
+        "type": "dialogue",
+        "npc": "NPC_Aliado",
+        "text": "Diálogo específico do Caminho A.",
+        "next_scene": "scene_4a"
+      },
+      "scene_3b": {
+        "type": "dialogue",
+        "npc": "NPC_Neutro",
+        "text": "Diálogo específico do Caminho B.",
+        "next_scene": "scene_4b"
+      },
+      "scene_3c": {
+        "type": "dialogue",
+        "npc": "NPC_Desafiador",
+        "text": "Diálogo específico do Caminho C, que requer inteligência.",
+        "next_scene": "scene_4c"
+      },
+      "scene_4a": {
+        "type": "conclusion",
+        "text": "Conclusão do Caminho A.",
+        "rewards": {
+          "exp": 100,
+          "tusd": 150,
+          "affinity_changes": {"NPC_Aliado": 5}
+        }
+      },
+      "scene_4b": {
+        "type": "conclusion",
+        "text": "Conclusão do Caminho B.",
+        "rewards": {
+          "exp": 120,
+          "tusd": 120,
+          "affinity_changes": {"NPC_Neutro": 3}
+        }
+      },
+      "scene_4c": {
+        "type": "conclusion",
+        "text": "Conclusão do Caminho C.",
+        "rewards": {
+          "exp": 150,
+          "tusd": 200,
+          "affinity_changes": {"NPC_Desafiador": 8},
+          "attribute_bonuses": {"intellect": 1}
+        }
+      }
+    }
+  },
+  "conditional_sequence": {
+    "title": "Título da Sequência Condicional",
+    "description": "Descrição da sequência que se adapta com base em condições do jogador",
+    "start_scene": "scene_1",
+    "scenes": {
+      "scene_1": {
+        "type": "conditional",
+        "conditions": [
+          {
+            "attribute": "power_stat",
+            "operator": ">=",
+            "value": 12,
+            "next_scene": "scene_high_power"
+          },
+          {
+            "attribute": "intellect",
+            "operator": ">=",
+            "value": 12,
+            "next_scene": "scene_high_intellect"
+          },
+          {
+            "attribute": "charisma",
+            "operator": ">=",
+            "value": 12,
+            "next_scene": "scene_high_charisma"
+          },
+          {
+            "default": true,
+            "next_scene": "scene_default"
+          }
+        ]
+      },
+      "scene_high_power": {
+        "type": "dialogue",
+        "npc": "NPC_Mentor",
+        "text": "Seu poder impressionante abre novos caminhos.",
+        "next_scene": "scene_2"
+      },
+      "scene_high_intellect": {
+        "type": "dialogue",
+        "npc": "NPC_Mentor",
+        "text": "Sua inteligência excepcional revela soluções únicas.",
+        "next_scene": "scene_2"
+      },
+      "scene_high_charisma": {
+        "type": "dialogue",
+        "npc": "NPC_Mentor",
+        "text": "Seu carisma natural influencia todos ao seu redor.",
+        "next_scene": "scene_2"
+      },
+      "scene_default": {
+        "type": "dialogue",
+        "npc": "NPC_Mentor",
+        "text": "Você ainda tem muito potencial a desenvolver.",
+        "next_scene": "scene_2"
+      },
+      "scene_2": {
+        "type": "conclusion",
+        "text": "Conclusão adaptada às suas características.",
+        "rewards": {
+          "exp": 100,
+          "tusd": 150
+        }
+      }
+    }
+  }
+}

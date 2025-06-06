@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Character Arc Schema",
+  "description": "Schema for validating character development arc data in the story mode",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["title", "description", "stages"],
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1
+      },
+      "npc_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "club_id": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      },
+      "stages": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": ["id", "title", "description"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "requirements": {
+              "type": "object",
+              "properties": {
+                "previous_stage": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "chapters_completed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "min_level": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "club_challenges_completed": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "affinity": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "affinity_threshold": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "trigger_event": {
+              "type": "string",
+              "minLength": 1
+            },
+            "trigger_dialogue": {
+              "type": "object",
+              "required": ["npc", "text"],
+              "properties": {
+                "npc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "completion_rewards": {
+              "type": "object",
+              "properties": {
+                "exp": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "tusd": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "affinity_bonus": {
+                  "type": "integer"
+                },
+                "attribute_bonuses": {
+                  "type": "object",
+                  "properties": {
+                    "power_stat": {
+                      "type": "integer"
+                    },
+                    "intellect": {
+                      "type": "integer"
+                    },
+                    "charisma": {
+                      "type": "integer"
+                    },
+                    "dexterity": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "special_ability": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "special_item": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "club_rank": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "club_abilities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": { "npc_id": { "type": "string" } }
+        },
+        "then": {
+          "required": ["npc_id"]
+        }
+      },
+      {
+        "if": {
+          "properties": { "club_id": { "type": "integer" } }
+        },
+        "then": {
+          "required": ["club_id"]
+        }
+      }
+    ]
+  }
+}
