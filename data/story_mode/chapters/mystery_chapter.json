@@ -1,0 +1,576 @@
+{
+  "chapter_id": "mystery_chapter",
+  "title": "O Mistério da Biblioteca Proibida",
+  "description": "Uma série de eventos misteriosos está acontecendo na biblioteca proibida da Academia Tokugawa. Livros antigos desaparecem, estranhos sons são ouvidos à noite, e alguns estudantes relatam ter visto sombras se movendo entre as estantes. Como membro da academia, você é convidado a investigar esses acontecimentos.",
+  "type": "branching",
+  "prerequisites": {
+    "level": 5,
+    "completed_chapters": ["chapter_1"]
+  },
+  "scenes": [
+    {
+      "scene_id": "library_introduction",
+      "title": "A Biblioteca Proibida",
+      "description": "Você recebe um convite do bibliotecário chefe, Sr. Haruto, para visitar a Biblioteca Proibida - uma seção restrita que contém livros raros e conhecimentos antigos. Ele explica que eventos estranhos têm ocorrido e precisa de sua ajuda para investigar.",
+      "dialogue": [
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Obrigado por vir. A Biblioteca Proibida guarda os segredos mais profundos da Academia Tokugawa, mas ultimamente... coisas estranhas têm acontecido."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Livros desaparecem e reaparecem em lugares diferentes, ouvimos sons estranhos à noite, e alguns estudantes juram ter visto sombras se movendo sozinhas."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Preciso de alguém com suas habilidades para investigar. Você aceita esse desafio?"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar a investigação",
+          "next_scene": "night_investigation",
+          "rewards": {
+            "exp": 10
+          }
+        },
+        {
+          "text": "Perguntar mais detalhes antes de aceitar",
+          "next_scene": "more_details",
+          "rewards": {
+            "intellect": 1
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "more_details",
+      "title": "Buscando Informações",
+      "description": "Você decide obter mais informações antes de se comprometer com a investigação.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Pode me contar mais sobre esses eventos? Quando começaram? Há algum padrão?"
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Começou há cerca de um mês, logo após recebermos uma coleção de livros antigos doada por um ex-aluno."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Os eventos sempre ocorrem à noite, e os livros que desaparecem são principalmente sobre alquimia e artes arcanas."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Também encontramos símbolos estranhos desenhados no chão algumas vezes, mas eles desaparecem pela manhã."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar a investigação agora",
+          "next_scene": "night_investigation",
+          "rewards": {
+            "exp": 15,
+            "intellect": 1
+          }
+        },
+        {
+          "text": "Pesquisar sobre a coleção de livros doada",
+          "next_scene": "research_collection",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 7
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "research_collection",
+      "title": "A Coleção Misteriosa",
+      "description": "Você decide pesquisar sobre a coleção de livros recentemente doada.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Após horas de pesquisa nos registros da biblioteca, você descobre que a coleção pertencia a Takeshi Koga, um ex-aluno que se especializou em estudos ocultos."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Takeshi desapareceu misteriosamente há cinco anos durante uma expedição a um templo antigo. Sua coleção foi mantida selada até recentemente."
+        },
+        {
+          "speaker": "Você",
+          "text": "Interessante... parece que esses livros podem ter mais segredos do que imaginamos."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Compartilhar essas informações com o bibliotecário",
+          "next_scene": "share_findings",
+          "rewards": {
+            "exp": 20,
+            "reputation": 5
+          }
+        },
+        {
+          "text": "Manter a descoberta para si e investigar à noite",
+          "next_scene": "night_investigation",
+          "rewards": {
+            "exp": 15,
+            "intellect": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "share_findings",
+      "title": "Revelações",
+      "description": "Você compartilha suas descobertas com o bibliotecário Haruto.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Descobri que a coleção pertencia a Takeshi Koga, que desapareceu durante uma expedição a um templo antigo."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Takeshi Koga? Eu me lembro dele... um estudante brilhante, mas obcecado com conhecimentos proibidos."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Isso explica muita coisa. Há rumores de que ele encontrou um ritual antigo que permitiria comunicação com outras dimensões."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Se ele tentou realizar esse ritual e algo deu errado... talvez estejamos lidando com algo além da nossa compreensão."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Sugerir uma investigação noturna",
+          "next_scene": "night_investigation",
+          "rewards": {
+            "exp": 10,
+            "charisma": 1
+          }
+        },
+        {
+          "text": "Propor selar a coleção novamente",
+          "next_scene": "seal_collection",
+          "rewards": {
+            "exp": 5,
+            "reputation": 10
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "night_investigation",
+      "title": "Sombras na Noite",
+      "description": "Você decide investigar a biblioteca durante a noite, quando os eventos estranhos supostamente ocorrem.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "A biblioteca está silenciosa e escura, iluminada apenas pela luz da lua que entra pelas janelas altas. As estantes de livros projetam sombras longas pelo chão."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Enquanto você caminha entre as estantes, ouve um som suave - como páginas sendo viradas. Seguindo o som, você chega à seção onde a coleção de Takeshi está armazenada."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Para sua surpresa, um dos livros está aberto sobre uma mesa, suas páginas virando sozinhas. Um brilho azulado emana das páginas."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aproximar-se e examinar o livro",
+          "next_scene": "examine_book",
+          "attribute_check": {
+            "attribute": "power_stat",
+            "difficulty": 8
+          }
+        },
+        {
+          "text": "Observar à distância e tomar notas",
+          "next_scene": "observe_book",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 6
+          }
+        },
+        {
+          "text": "Chamar por ajuda",
+          "next_scene": "call_for_help",
+          "rewards": {
+            "exp": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "examine_book",
+      "title": "O Livro Proibido",
+      "description": "Você se aproxima do livro misterioso, sentindo uma estranha energia emanando dele.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Ao se aproximar, você sente uma energia estranha pulsando do livro. As páginas continuam a virar, revelando símbolos arcanos e diagramas complexos."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Quando você toca o livro, uma luz intensa emana das páginas, e você tem uma visão - Takeshi Koga realizando um ritual, cercado por símbolos semelhantes aos do livro."
+        },
+        {
+          "speaker": "Voz Misteriosa",
+          "text": "Finalmente... alguém com potencial suficiente para completar o que comecei..."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Fechar o livro imediatamente",
+          "next_scene": "close_book",
+          "rewards": {
+            "exp": 25,
+            "power_stat": 2
+          }
+        },
+        {
+          "text": "Tentar comunicar-se com a voz",
+          "next_scene": "communicate_voice",
+          "attribute_check": {
+            "attribute": "charisma",
+            "difficulty": 9
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "observe_book",
+      "title": "Observações Cautelosas",
+      "description": "Você decide observar o fenômeno à distância, tomando notas detalhadas.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "De uma distância segura, você observa o livro. As páginas continuam a virar, e você nota que os símbolos nas páginas parecem formar um padrão."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Você reconhece alguns dos símbolos de seus estudos - eles estão relacionados a portais dimensionais e comunicação com outros planos de existência."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Enquanto observa, percebe que o brilho do livro aumenta e diminui em um ritmo específico, como se estivesse respirando."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Continuar observando e documentando",
+          "next_scene": "continue_observing",
+          "rewards": {
+            "exp": 30,
+            "intellect": 3
+          }
+        },
+        {
+          "text": "Tentar interromper o fenômeno de longe",
+          "next_scene": "interrupt_ritual",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "call_for_help",
+      "title": "Pedido de Ajuda",
+      "description": "Você decide que precisa de ajuda para lidar com este fenômeno sobrenatural.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Bibliotecário Haruto! Professores! Alguém!"
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Sua voz ecoa pela biblioteca vazia. Por um momento, nada acontece. Então, você ouve passos apressados."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "O que aconteceu? Eu estava no meu escritório quando senti uma perturbação..."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Quando vocês retornam à mesa, o livro está fechado e a luz azulada desapareceu, mas um símbolo estranho foi queimado na superfície da mesa."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Explicar o que viu ao bibliotecário",
+          "next_scene": "explain_haruto",
+          "rewards": {
+            "exp": 15,
+            "reputation": 5
+          }
+        },
+        {
+          "text": "Examinar o símbolo na mesa",
+          "next_scene": "examine_symbol",
+          "attribute_check": {
+            "attribute": "intellect",
+            "difficulty": 7
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "close_book",
+      "title": "Encerrando o Ritual",
+      "description": "Você decide fechar o livro e interromper o que quer que esteja acontecendo.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Com determinação, você avança e fecha o livro com força. Há uma explosão de luz azul, e você sente uma onda de energia passando por você."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Por um momento, você vê uma figura translúcida - um jovem com roupas de estudante, olhando para você com uma expressão de desapontamento antes de desaparecer."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "O que aconteceu? Senti uma perturbação e vim correndo!"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Explicar tudo ao bibliotecário",
+          "next_scene": "explain_haruto",
+          "rewards": {
+            "exp": 20,
+            "reputation": 10
+          }
+        },
+        {
+          "text": "Guardar algumas informações para si",
+          "next_scene": "keep_secret",
+          "rewards": {
+            "exp": 25,
+            "power_stat": 1,
+            "reputation": -5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "communicate_voice",
+      "title": "Conversando com o Desconhecido",
+      "description": "Você decide tentar se comunicar com a voz misteriosa.",
+      "dialogue": [
+        {
+          "speaker": "Você",
+          "text": "Quem é você? O que você quer?"
+        },
+        {
+          "speaker": "Voz Misteriosa",
+          "text": "Eu sou... ou era... Takeshi Koga. Meu experimento deu errado, e agora estou preso entre dimensões."
+        },
+        {
+          "speaker": "Takeshi",
+          "text": "Preciso de alguém com habilidade para completar o ritual corretamente e me libertar. Você tem o potencial que procuro."
+        },
+        {
+          "speaker": "Takeshi",
+          "text": "Ajude-me, e compartilharei conhecimentos além da sua imaginação. Recuse, e ficarei preso para sempre neste limbo."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar ajudar Takeshi",
+          "next_scene": "help_takeshi",
+          "rewards": {
+            "exp": 30,
+            "power_stat": 3,
+            "reputation": -10
+          }
+        },
+        {
+          "text": "Recusar e fechar o livro",
+          "next_scene": "refuse_takeshi",
+          "rewards": {
+            "exp": 20,
+            "reputation": 15
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "continue_observing",
+      "title": "Revelações Acadêmicas",
+      "description": "Você continua observando e documentando o fenômeno sobrenatural.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Após horas de observação meticulosa, você consegue decifrar parte do padrão. O livro está tentando completar um ritual que Takeshi começou."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Seus conhecimentos acadêmicos permitem que você entenda que o ritual não é necessariamente maligno - é uma tentativa de comunicação interdimensional."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Eventualmente, o livro para de brilhar e se fecha sozinho. Você tem informações valiosas que podem ajudar a entender o que está acontecendo."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Compartilhar suas descobertas com a academia",
+          "next_scene": "share_academy",
+          "rewards": {
+            "exp": 35,
+            "intellect": 2,
+            "reputation": 20
+          }
+        },
+        {
+          "text": "Manter as descobertas para pesquisa pessoal",
+          "next_scene": "personal_research",
+          "rewards": {
+            "exp": 40,
+            "intellect": 4,
+            "reputation": -5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "explain_haruto",
+      "title": "Revelações ao Bibliotecário",
+      "description": "Você explica tudo o que viu e descobriu ao bibliotecário Haruto.",
+      "dialogue": [
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Isso é extraordinário... e preocupante. Takeshi sempre foi brilhante, mas imprudente."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Se ele realmente está preso entre dimensões, precisamos decidir o que fazer. Ajudá-lo poderia trazer conhecimentos valiosos, mas também riscos desconhecidos."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Por outro lado, deixá-lo preso seria cruel, mas talvez mais seguro para todos."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Sugerir que ajudem Takeshi com precauções",
+          "next_scene": "help_with_caution",
+          "rewards": {
+            "exp": 25,
+            "charisma": 2
+          }
+        },
+        {
+          "text": "Recomendar que selem a coleção permanentemente",
+          "next_scene": "seal_permanently",
+          "rewards": {
+            "exp": 20,
+            "reputation": 10
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "help_with_caution",
+      "title": "Um Resgate Cauteloso",
+      "description": "Você e o bibliotecário decidem ajudar Takeshi, mas com extrema cautela.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Nas semanas seguintes, você trabalha com o bibliotecário e um grupo seleto de professores para desenvolver um ritual seguro."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Usando seus conhecimentos combinados, vocês conseguem abrir um portal controlado e estável."
+        },
+        {
+          "speaker": "Takeshi",
+          "text": "Obrigado... Depois de anos no vazio, finalmente estou livre. Como prometido, compartilharei meus conhecimentos com a academia."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Concluir o capítulo",
+          "next_scene": "chapter_conclusion",
+          "rewards": {
+            "exp": 50,
+            "tusd": 100,
+            "reputation": 25,
+            "intellect": 3,
+            "power_stat": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "seal_permanently",
+      "title": "Proteção Acima de Tudo",
+      "description": "Você e o bibliotecário decidem que o risco é grande demais e selam a coleção permanentemente.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Com a ajuda de especialistas em proteções mágicas, vocês realizam um ritual para selar a coleção de Takeshi."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Durante o ritual, você sente brevemente a presença de Takeshi - uma mistura de raiva e resignação - antes que a conexão seja completamente cortada."
+        },
+        {
+          "speaker": "Bibliotecário Haruto",
+          "text": "Fizemos a escolha certa. Às vezes, o conhecimento vem com um preço alto demais. Talvez, no futuro, quando estivermos mais preparados..."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Concluir o capítulo",
+          "next_scene": "chapter_conclusion",
+          "rewards": {
+            "exp": 40,
+            "tusd": 75,
+            "reputation": 30,
+            "intellect": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "chapter_conclusion",
+      "title": "Mistério Resolvido",
+      "description": "O mistério da Biblioteca Proibida foi resolvido, e você ganhou reconhecimento por seu papel na investigação.",
+      "dialogue": [
+        {
+          "speaker": "Narrador",
+          "text": "Sua aventura na Biblioteca Proibida chega ao fim. Independentemente de suas escolhas, você aprendeu muito sobre os segredos ocultos da Academia Tokugawa."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Seu nome agora é conhecido entre estudantes e professores, e suas habilidades foram comprovadas em uma situação de grande pressão."
+        },
+        {
+          "speaker": "Narrador",
+          "text": "Quem sabe quais outros mistérios você desvendará no futuro?"
+        }
+      ],
+      "choices": []
+    }
+  ],
+  "rewards": {
+    "exp": 100,
+    "tusd": 200,
+    "items": [
+      {
+        "id": "ancient_tome",
+        "name": "Tomo Antigo",
+        "description": "Um livro raro da coleção de Takeshi, contendo conhecimentos arcanos.",
+        "value": 500
+      }
+    ]
+  }
+}

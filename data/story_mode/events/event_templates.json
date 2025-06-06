@@ -1,0 +1,189 @@
+{
+  "event_templates": [
+    {
+      "title": "Desafio do Professor",
+      "description_template": "O Professor {professor} desafia você a demonstrar seu conhecimento em {subject}. {outcome}",
+      "type": "academic",
+      "dynamic_elements": {
+        "professor": ["Takahashi", "Yamamoto", "Suzuki", "Nakamura", "Tanaka"],
+        "subject": ["Física Quântica", "Literatura Clássica", "História Mundial", "Matemática Avançada", "Biologia Molecular"],
+        "outcome": {
+          "success": "Você responde com confiança e impressiona a todos!",
+          "failure": "Você hesita e não consegue responder corretamente."
+        }
+      },
+      "attribute_check": "intellect",
+      "difficulty": 7,
+      "rewards": {
+        "success": {"exp": 20, "tusd": 15, "reputation": 5},
+        "failure": {"exp": 5, "tusd": 0, "reputation": -2}
+      }
+    },
+    {
+      "title": "Confronto no Corredor",
+      "description_template": "Um grupo de estudantes de {rival_club} bloqueia seu caminho no corredor. Seu líder, {rival_name}, parece querer provocar uma briga. {outcome}",
+      "type": "social",
+      "dynamic_elements": {
+        "rival_club": ["Clube das Chamas", "Ilusionistas Mentais", "Conselho Político", "Elementalistas", "Clube de Combate"],
+        "rival_name": ["Kenji", "Akira", "Haruki", "Yuki", "Sora"],
+        "outcome": {
+          "success": "Você mantém a calma e resolve a situação com diplomacia, ganhando o respeito deles.",
+          "failure": "A situação escala e você acaba em uma posição embaraçosa."
+        }
+      },
+      "attribute_check": "charisma",
+      "difficulty": 8,
+      "rewards": {
+        "success": {"exp": 15, "tusd": 10, "reputation": 8},
+        "failure": {"exp": 5, "tusd": -5, "reputation": -5}
+      }
+    },
+    {
+      "title": "Treinamento Especial",
+      "description_template": "O mestre de artes marciais {master} oferece um treinamento especial para aprimorar sua técnica de {technique}. {outcome}",
+      "type": "physical",
+      "dynamic_elements": {
+        "master": ["Hiroshi", "Takeshi", "Kenji", "Satoshi", "Ryu"],
+        "technique": ["Punho de Fogo", "Chute Giratório", "Bloqueio de Aço", "Golpe Relâmpago", "Técnica das Sombras"],
+        "outcome": {
+          "success": "Você domina a técnica com impressionante facilidade!",
+          "failure": "Você se esforça, mas ainda precisa de mais prática."
+        }
+      },
+      "attribute_check": "dexterity",
+      "difficulty": 6,
+      "rewards": {
+        "success": {"exp": 25, "tusd": 5, "power_stat": 1},
+        "failure": {"exp": 10, "tusd": 0}
+      }
+    },
+    {
+      "title": "Competição de Estratégia",
+      "description_template": "Uma competição de {game} está acontecendo na sala de recreação. {opponent} te desafia para uma partida. {outcome}",
+      "type": "strategic",
+      "dynamic_elements": {
+        "game": ["Xadrez", "Go", "Shogi", "Estratégia de Guerra", "Simulação Tática"],
+        "opponent": ["Shikamaru", "Lelouch", "Light", "Ami", "Sora"],
+        "outcome": {
+          "success": "Sua estratégia brilhante leva você à vitória!",
+          "failure": "Seu oponente prevê seus movimentos e vence a partida."
+        }
+      },
+      "attribute_check": "intellect",
+      "difficulty": 9,
+      "rewards": {
+        "success": {"exp": 20, "tusd": 20, "intellect": 1},
+        "failure": {"exp": 8, "tusd": 0}
+      }
+    },
+    {
+      "title": "Fenômeno Climático",
+      "description_template": "Um estranho {weather} começa a se formar no céu acima da academia. Os estudantes do Clube dos Elementalistas parecem estar tentando controlá-lo. {outcome}",
+      "type": "elemental",
+      "dynamic_elements": {
+        "weather": ["tornado", "tempestade elétrica", "nevasca", "chuva de meteoros", "aurora boreal"],
+        "outcome": {
+          "success": "Você ajuda a estabilizar o fenômeno, demonstrando controle impressionante!",
+          "failure": "O fenômeno se intensifica, causando um pequeno caos antes de ser controlado."
+        }
+      },
+      "attribute_check": "power_stat",
+      "difficulty": 10,
+      "rewards": {
+        "success": {"exp": 30, "tusd": 15, "reputation": 10},
+        "failure": {"exp": 10, "tusd": -10, "hp_loss": 10}
+      }
+    },
+    {
+      "title": "Duelo Mental",
+      "description_template": "Um membro dos Ilusionistas Mentais, {illusionist}, desafia você para um duelo de ilusões. {outcome}",
+      "type": "mental",
+      "dynamic_elements": {
+        "illusionist": ["Makoto", "Hikari", "Yume", "Akira", "Rei"],
+        "outcome": {
+          "success": "Você consegue ver através das ilusões e vira o jogo!",
+          "failure": "As ilusões confundem sua mente, deixando você desorientado."
+        }
+      },
+      "attribute_check": "intellect",
+      "difficulty": 8,
+      "rewards": {
+        "success": {"exp": 25, "tusd": 15, "intellect": 1},
+        "failure": {"exp": 5, "tusd": 0, "hp_loss": 15}
+      }
+    },
+    {
+      "title": "Debate Político",
+      "description_template": "O Conselho Político está realizando um debate sobre {topic}. {politician} te convida a participar. {outcome}",
+      "type": "political",
+      "dynamic_elements": {
+        "topic": ["Reforma Acadêmica", "Distribuição de Recursos", "Relações entre Clubes", "Segurança na Academia", "Eventos Escolares"],
+        "politician": ["Takumi", "Hana", "Daiki", "Mei", "Kenta"],
+        "outcome": {
+          "success": "Seus argumentos são convincentes e você ganha apoiadores!",
+          "failure": "Você tropeça em suas palavras e perde credibilidade."
+        }
+      },
+      "attribute_check": "charisma",
+      "difficulty": 7,
+      "rewards": {
+        "success": {"exp": 20, "tusd": 25, "reputation": 15},
+        "failure": {"exp": 5, "tusd": 0, "reputation": -10}
+      }
+    },
+    {
+      "title": "Torneio de Combate",
+      "description_template": "O Clube de Combate está organizando um torneio relâmpago. {fighter} é seu primeiro oponente. {outcome}",
+      "type": "combat",
+      "dynamic_elements": {
+        "fighter": ["Ryu", "Ken", "Chun-Li", "Sakura", "Akuma"],
+        "outcome": {
+          "success": "Você derrota seu oponente com um golpe preciso e avança no torneio!",
+          "failure": "Seu oponente é mais rápido e você é eliminado na primeira rodada."
+        }
+      },
+      "attribute_check": "power_stat",
+      "difficulty": 9,
+      "rewards": {
+        "success": {"exp": 30, "tusd": 30, "power_stat": 1},
+        "failure": {"exp": 10, "tusd": 0, "hp_loss": 20}
+      }
+    },
+    {
+      "title": "Mistério na Biblioteca",
+      "description_template": "Livros antigos estão desaparecendo da biblioteca. O bibliotecário {librarian} pede sua ajuda para investigar. {outcome}",
+      "type": "mystery",
+      "dynamic_elements": {
+        "librarian": ["Haruto", "Miyuki", "Takashi", "Yumiko", "Kazuki"],
+        "outcome": {
+          "success": "Você descobre o culpado e recupera os livros perdidos!",
+          "failure": "A investigação leva a becos sem saída e o mistério continua."
+        }
+      },
+      "attribute_check": "intellect",
+      "difficulty": 8,
+      "rewards": {
+        "success": {"exp": 25, "tusd": 20, "intellect": 1, "reputation": 5},
+        "failure": {"exp": 8, "tusd": 0}
+      }
+    },
+    {
+      "title": "Festival Cultural",
+      "description_template": "O festival cultural da academia está chegando e {organizer} pede sua ajuda para organizar a apresentação do seu clube. {outcome}",
+      "type": "cultural",
+      "dynamic_elements": {
+        "organizer": ["Sakura", "Hiroshi", "Aiko", "Takumi", "Yui"],
+        "outcome": {
+          "success": "Sua apresentação é um sucesso e atrai muita atenção positiva para o clube!",
+          "failure": "Problemas de organização comprometem a apresentação."
+        }
+      },
+      "attribute_check": "charisma",
+      "difficulty": 7,
+      "rewards": {
+        "success": {"exp": 20, "tusd": 15, "charisma": 1, "reputation": 10},
+        "failure": {"exp": 5, "tusd": 0, "reputation": -5}
+      }
+    }
+  ]
+}
