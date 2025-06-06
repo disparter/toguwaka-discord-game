@@ -293,6 +293,34 @@ BASE_STORY_CHAPTERS = {
             "next_chapter": 1,
             "next_year": 2
         }
+    },
+    2: {  # Year 2
+        1: {
+            "title": "Novo Começo",
+            "description": "Após os eventos do ano anterior, a Academia Tokugawa passa por mudanças significativas. Um novo semestre começa com novos desafios.",
+            "dialogues": [
+                {"npc": "Junie", "text": "Bem-vindo ao seu segundo ano na Academia Tokugawa! Muita coisa mudou desde os eventos do semestre passado."},
+                {"npc": "Junie", "text": "A administração foi reestruturada, e um novo diretor foi nomeado. A academia está tentando recuperar a confiança dos estudantes."},
+                {"npc": "Junie", "text": "Além disso, novos estudantes chegaram, trazendo habilidades impressionantes. A competição será mais acirrada este ano."},
+                {"npc": "Novo Diretor", "text": "Atenção, estudantes! Sou o Diretor Hikari, o novo responsável pela Academia Tokugawa."},
+                {"npc": "Novo Diretor", "text": "Estou ciente dos eventos perturbadores que ocorreram no ano passado. Prometo total transparência daqui para frente."},
+                {"npc": "Novo Diretor", "text": "Implementaremos novas políticas de segurança e um currículo atualizado para melhor prepará-los para o futuro."}
+            ],
+            "choices": [
+                {"text": "Expressar otimismo sobre as mudanças", "next_dialogue": 6, "affinity_change": {"Diretor Hikari": 10}},
+                {"text": "Manter-se cauteloso e observador", "next_dialogue": 6, "affinity_change": {"Diretor Hikari": 0}},
+                {"text": "Questionar abertamente as novas políticas", "next_dialogue": 6, "affinity_change": {"Diretor Hikari": -5}}
+            ],
+            "dialogues_after_choice": [
+                {"npc": "Líder do Clube", "text": "Este ano será crucial para nosso clube. Precisamos nos fortalecer após tudo que aconteceu."},
+                {"npc": "Líder do Clube", "text": "Há rumores de que uma organização externa está de olho nos estudantes mais talentosos. Precisamos ficar alertas."},
+                {"npc": "Estudante Transferido", "text": "Olá! Sou Akira, estudante transferido. Ouvi muito sobre você e os eventos do ano passado."},
+                {"npc": "Estudante Transferido", "text": "Espero que possamos trabalhar juntos. Tenho o pressentimento de que este ano será ainda mais desafiador que o anterior."}
+            ],
+            "completion_exp": 250,
+            "completion_tusd": 450,
+            "next_chapter": 2
+        }
     }
 }
 
@@ -1964,14 +1992,22 @@ class StoryMode(commands.Cog):
                 f"Novos capítulos serão adicionados em breve!"
             )
 
-async def setup(bot):
+def setup(bot):
     """Add the cog to the bot."""
     from utils.command_registrar import CommandRegistrar
 
-    # Create and add the cog
+    # Create the cog
     cog = StoryMode(bot)
-    await bot.add_cog(cog)
-    logger.info("StoryMode cog loaded")
 
-    # Register commands using the CommandRegistrar
-    await CommandRegistrar.register_commands(bot, cog)
+    # Use bot.loop.create_task for async operations
+    async def _setup():
+        await bot.add_cog(cog)
+        logger.info("StoryMode cog loaded")
+
+        # Register commands using the CommandRegistrar
+        await CommandRegistrar.register_commands(bot, cog)
+
+    # Schedule the async setup
+    bot.loop.create_task(_setup())
+
+    return cog
