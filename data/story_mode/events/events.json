@@ -1,4 +1,14 @@
 {
+  "convergencia_dimensional": {
+    "type": "climactic",
+    "name": "Convergência Dimensional",
+    "description": "Um evento extraordinário onde as energias dimensionais convergem, criando tanto perigo quanto oportunidade para aqueles com afinidade dimensional.",
+    "requirements": {"level": 15, "year": 2},
+    "rewards": {"exp": 1000, "tusd": 2000, "special_item": "Fragmento Dimensional"},
+    "frequency": "once",
+    "impact": "major",
+    "story_changes": {"unlock_chapter": "2_12_climax"}
+  },
   "torneio_anual": {
     "type": "climactic",
     "name": "Torneio Anual",

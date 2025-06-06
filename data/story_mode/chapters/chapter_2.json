@@ -1139,5 +1139,685 @@
     },
     "completion_exp": 900,
     "completion_tusd": 1000
+  },
+  "2_11_director": {
+    "type": "story",
+    "title": "Avanço Científico",
+    "description": "Como parte da equipe do Diretor, você trabalha para aperfeiçoar o controle da anomalia dimensional.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "As semanas finais do ano letivo passam rapidamente enquanto você trabalha no laboratório subterrâneo com o Diretor e sua equipe de cientistas."},
+      {"npc": "Narrador", "text": "Seus dias são preenchidos com experimentos fascinantes, analisando a energia dimensional e desenvolvendo protocolos de segurança mais robustos."},
+      {"npc": "Diretor", "text": "Seu progresso tem sido notável. Graças à sua contribuição, reduzimos a instabilidade da anomalia em 63%."},
+      {"npc": "Diretor", "text": "Estamos quase prontos para a demonstração na cerimônia de encerramento do ano. Será um momento histórico."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre os riscos remanescentes", "next_dialogue": 4},
+      {"text": "Sugerir adiar a demonstração para mais testes", "next_dialogue": 5},
+      {"text": "Expressar entusiasmo pelo projeto", "next_dialogue": 6, "affinity_change": {"Diretor": 5}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Diretor", "text": "Uma preocupação válida. Ainda há um elemento de imprevisibilidade, como em qualquer avanço científico revolucionário."},
+        {"npc": "Diretor", "text": "Mas implementamos múltiplas camadas de segurança. Os campos de contenção são redundantes, e temos protocolos de emergência bem estabelecidos."},
+        {"npc": "Diretor", "text": "Além disso, a demonstração será em escala reduzida - apenas o suficiente para provar o conceito."},
+        {"npc": "Diretor", "text": "O verdadeiro trabalho começará depois, quando pudermos operar abertamente, sem a necessidade de segredo."}
+      ],
+      "5": [
+        {"npc": "Diretor", "text": "Sua cautela é compreensível, mas já adiamos este momento por tempo demais."},
+        {"npc": "Diretor", "text": "Os Guardiões estão se mobilizando. Temos informações de que planejam uma intervenção direta contra nosso projeto."},
+        {"npc": "Diretor", "text": "Se não agirmos agora, corremos o risco de perder anos de trabalho. Além disso, meus... episódios estão piorando."},
+        {"npc": "Narrador", "text": "Como que para enfatizar seu ponto, a mão do Diretor treme visivelmente, e por um momento seus olhos perdem o foco."},
+        {"npc": "Diretor", "text": "Não temos o luxo do tempo. Precisamos avançar enquanto ainda posso liderar este projeto."}
+      ],
+      "6": [
+        {"npc": "Diretor", "text": "Seu entusiasmo é inspirador! É reconfortante ver alguém tão jovem compreender a importância histórica do que estamos fazendo."},
+        {"npc": "Diretor", "text": "Imagine um mundo onde ninguém é deixado para trás por acidente genético. Onde todos têm a oportunidade de desenvolver poderes."},
+        {"npc": "Diretor", "text": "Você será lembrado como pioneiro desta nova era. Seu nome estará nos livros de história ao lado dos maiores revolucionários científicos."},
+        {"npc": "Diretor", "text": "E isso é apenas o começo. Após a demonstração, expandiremos nossa pesquisa para aplicações ainda mais ambiciosas."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Na véspera da cerimônia de encerramento, você ajuda a equipe a transportar equipamentos para o Grande Salão, onde a demonstração ocorrerá."},
+      {"npc": "Narrador", "text": "Um dispositivo menor, mas similar ao da floresta, é instalado discretamente sob o palco principal."},
+      {"npc": "Cientista", "text": "As leituras estão estáveis. Tudo pronto para amanhã."},
+      {"npc": "Narrador", "text": "Naquela noite, enquanto retorna ao seu dormitório, você nota movimento nas sombras. Alguém o observa."},
+      {"npc": "Professora Chronos", "text": "Um momento, por favor."},
+      {"npc": "Narrador", "text": "A Professora Chronos emerge das sombras, parecendo mais velha e cansada do que você se lembra."}
+    ],
+    "choices_2": [
+      {"text": "Alertar seguranças sobre a presença dela", "next_dialogue": 7, "affinity_change": {"Professora Chronos": -10, "Diretor": 5}},
+      {"text": "Ouvir o que ela tem a dizer", "next_dialogue": 8},
+      {"text": "Tentar convencê-la sobre a segurança do projeto", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Você", "text": "Guardas! A Professora Chronos está aqui!"},
+        {"npc": "Professora Chronos", "text": "Então é assim que será. Lamento que tenha escolhido esse caminho."},
+        {"npc": "Narrador", "text": "Antes que os guardas possam chegar, ela desaparece em um flash de luz azulada, deixando apenas um pequeno dispositivo no chão."},
+        {"npc": "Narrador", "text": "O dispositivo projeta uma mensagem holográfica: 'A demonstração causará uma cascata de rupturas. Ele está repetindo o erro original. Ainda há tempo de parar.'"},
+        {"npc": "Narrador", "text": "Os guardas chegam e confiscam o dispositivo. Você relata o incidente ao Diretor, que aumenta a segurança para a cerimônia."},
+        {"npc": "Diretor", "text": "Obrigado por sua lealdade. Amanhã, provaremos que os medos dela são infundados."}
+      ],
+      "8": [
+        {"npc": "Professora Chronos", "text": "Obrigada por me ouvir. Sei que você acredita estar fazendo a coisa certa."},
+        {"npc": "Professora Chronos", "text": "Mas preciso que entenda: já vi isso acontecer antes. Eu estava lá no Evento Zero original."},
+        {"npc": "Professora Chronos", "text": "Os cientistas também acreditavam ter tudo sob controle. Também tinham protocolos de segurança e campos de contenção."},
+        {"npc": "Professora Chronos", "text": "Quando a ruptura se expandiu, ninguém estava preparado para a escala da catástrofe."},
+        {"npc": "Professora Chronos", "text": "Não estou pedindo que traia o Diretor. Apenas que insista em mais testes antes de uma demonstração pública."},
+        {"npc": "Narrador", "text": "Ela entrega a você um pequeno dispositivo."},
+        {"npc": "Professora Chronos", "text": "Este é um estabilizador de emergência. Se as coisas saírem do controle amanhã, use-o no núcleo do dispositivo. Pode ser nossa última chance."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "Professora, entendo suas preocupações, mas implementamos múltiplas camadas de segurança. O projeto é muito diferente do Evento Zero original."},
+        {"npc": "Professora Chronos", "text": "Você fala como eles falavam há 300 anos. A mesma confiança, a mesma certeza."},
+        {"npc": "Professora Chronos", "text": "O problema não é sua competência ou suas precauções. É a natureza fundamental da energia dimensional. Ela não pode ser completamente prevista ou controlada."},
+        {"npc": "Professora Chronos", "text": "Cada vez que manipulamos o tecido da realidade, criamos ondulações que se espalham de formas que não podemos antecipar."},
+        {"npc": "Narrador", "text": "Ela parece genuinamente preocupada, não hostil."},
+        {"npc": "Professora Chronos", "text": "Apenas prometa-me que ficará atento a sinais de instabilidade durante a demonstração. E se vir algo errado, não hesite em agir."},
+        {"npc": "Narrador", "text": "Ela entrega a você um pequeno dispositivo antes de desaparecer nas sombras."},
+        {"npc": "Professora Chronos", "text": "Um estabilizador de emergência. Espero que não precise dele, mas é melhor estar preparado."}
+      ]
+    },
+    "completion_exp": 1000,
+    "completion_tusd": 1200,
+    "next_chapter": "2_12_climax"
+  },
+  "2_11_guardians": {
+    "type": "story",
+    "title": "Operação Contenção",
+    "description": "Como agente dos Guardiões da Ruptura, você trabalha para impedir os planos do Diretor.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Nas semanas que antecedem a cerimônia de encerramento do ano, você se torna parte integral dos Guardiões da Ruptura."},
+      {"npc": "Narrador", "text": "Reuniões secretas, treinamento especializado e missões de reconhecimento preenchem seus dias, enquanto mantém a fachada de um estudante comum."},
+      {"npc": "Professora Chronos", "text": "Nossas fontes confirmaram: o Diretor planeja uma demonstração durante a cerimônia - uma 'prova de conceito' de seu método para transferir poderes."},
+      {"npc": "Professora Chronos", "text": "Se ele for bem-sucedido, será apenas o começo. A escala de manipulação dimensional que ele planeja poderia desestabilizar a realidade em uma escala global."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre o plano para detê-lo", "next_dialogue": 4},
+      {"text": "Sugerir tentar dialogar com o Diretor uma última vez", "next_dialogue": 5},
+      {"text": "Oferecer-se para sabotagem avançada", "next_dialogue": 6, "affinity_change": {"Professora Chronos": 5}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Professora Chronos", "text": "O plano tem três fases. Primeiro, infiltração - já temos agentes posicionados entre a equipe de suporte técnico."},
+        {"npc": "Professora Chronos", "text": "Segundo, neutralização - desativaremos discretamente os componentes-chave do dispositivo antes da demonstração."},
+        {"npc": "Professora Chronos", "text": "Terceiro, contenção - se as duas primeiras fases falharem, teremos que intervir diretamente durante a cerimônia."},
+        {"npc": "Professora Chronos", "text": "Seu papel será crucial na terceira fase. Com seu acesso como estudante e suas habilidades únicas, você pode chegar ao dispositivo quando ninguém mais conseguiria."}
+      ],
+      "5": [
+        {"npc": "Professora Chronos", "text": "Sua compaixão é admirável, mas já tentamos esse caminho muitas vezes."},
+        {"npc": "Professora Chronos", "text": "O Diretor está além da persuasão. Seus poderes estão falhando rapidamente, e ele vê isso como sua última chance."},
+        {"npc": "Professora Chronos", "text": "Além disso, ele genuinamente acredita estar fazendo o bem maior. Os idealistas convictos são os mais perigosos, pois justificam qualquer risco em nome de sua visão."},
+        {"npc": "Professora Chronos", "text": "Não, nossa única opção agora é impedir a demonstração. Depois, talvez, quando o momento de crise passar, poderemos buscar um diálogo mais produtivo."}
+      ],
+      "6": [
+        {"npc": "Professora Chronos", "text": "Sua dedicação é impressionante. Poucos estudantes teriam coragem de se oferecer para uma missão tão arriscada."},
+        {"npc": "Professora Chronos", "text": "Se está realmente disposto, temos uma oportunidade única. Precisamos de alguém para instalar um dispositivo de neutralização no núcleo principal do sistema."},
+        {"npc": "Professora Chronos", "text": "É a missão mais perigosa, mas também a mais eficaz. Se o dispositivo for instalado corretamente, a demonstração simplesmente não funcionará."},
+        {"npc": "Professora Chronos", "text": "Não haverá explosão ou catástrofe - apenas um fracasso técnico embaraçoso que dará tempo para intervenções diplomáticas mais permanentes."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Na véspera da cerimônia, os Guardiões se reúnem para os preparativos finais. O clima é tenso, mas determinado."},
+      {"npc": "Professor Quantum", "text": "Todos os agentes estão posicionados. As equipes de contenção estão em alerta máximo."},
+      {"npc": "Professora Chronos", "text": "Lembrem-se: nossa prioridade é prevenir danos colaterais. Se não pudermos impedir a demonstração discretamente, estejam preparados para evacuação de emergência."},
+      {"npc": "Narrador", "text": "Ela entrega a você um pequeno dispositivo."},
+      {"npc": "Professora Chronos", "text": "Este é um estabilizador de emergência. Se tudo mais falhar e a ruptura começar a se expandir, use-o no núcleo do dispositivo. É nossa última linha de defesa."}
+    ],
+    "choices_2": [
+      {"text": "Aceitar a missão com determinação", "next_dialogue": 7, "affinity_change": {"Professora Chronos": 5}},
+      {"text": "Expressar preocupação com Hikari e outros estudantes", "next_dialogue": 8},
+      {"text": "Perguntar o que acontecerá com o Diretor após a operação", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Você", "text": "Entendo a gravidade da situação. Não falharei."},
+        {"npc": "Professora Chronos", "text": "Sua coragem nos dá esperança. Lembre-se do treinamento e confie em seus instintos."},
+        {"npc": "Narrador", "text": "Ela coloca a mão em seu ombro, um gesto raro de afeição."},
+        {"npc": "Professora Chronos", "text": "Quando tudo isso acabar, há muito mais que preciso lhe contar sobre sua conexão com a energia dimensional. Você tem um papel maior a desempenhar no futuro."},
+        {"npc": "Narrador", "text": "Você passa o resto da noite revisando os planos do Grande Salão e memorizando a sequência de desativação."}
+      ],
+      "8": [
+        {"npc": "Você", "text": "E quanto a Hikari e os outros estudantes? Eles estarão na cerimônia, diretamente em risco."},
+        {"npc": "Professora Chronos", "text": "Uma preocupação válida. Temos agentes posicionados estrategicamente para iniciar uma evacuação se necessário."},
+        {"npc": "Professora Chronos", "text": "Além disso, preparamos uma 'emergência sanitária' como cobertura - um vazamento de gás fictício que pode ser anunciado para esvaziar o salão rapidamente."},
+        {"npc": "Professor Quantum", "text": "Também temos uma equipe médica completa em alerta, embora esperemos sinceramente não precisar dela."},
+        {"npc": "Professora Chronos", "text": "Sua preocupação com seus colegas é admirável. É por pessoas como eles que estamos fazendo isso."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "O que acontecerá com o Diretor depois? Ele será punido?"},
+        {"npc": "Professora Chronos", "text": "Não somos juízes ou carrascos. Nossa missão é proteger, não punir."},
+        {"npc": "Professora Chronos", "text": "O Diretor precisará de ajuda médica. A deterioração de seus poderes está afetando sua saúde física e mental."},
+        {"npc": "Professora Chronos", "text": "Temos instalações onde ele poderá receber tratamento adequado, longe de tecnologias dimensionais perigosas."},
+        {"npc": "Professora Chronos", "text": "Com o tempo, esperamos que ele possa entender os riscos que estava correndo. Ele não é mal - apenas desesperado e equivocado."}
+      ]
+    },
+    "completion_exp": 1000,
+    "completion_tusd": 1200,
+    "next_chapter": "2_12_climax"
+  },
+  "2_11_independent": {
+    "type": "story",
+    "title": "O Terceiro Caminho",
+    "description": "Liderando sua própria facção, você busca uma solução equilibrada para a crise dimensional.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Nas semanas finais do ano letivo, seu grupo - que passou a ser conhecido como 'Os Mediadores' - cresce em influência e respeito."},
+      {"npc": "Narrador", "text": "Estudantes de todos os anos e clubes se juntam à sua causa, atraídos pela promessa de uma abordagem equilibrada para o conflito que divide a academia."},
+      {"npc": "Hikari", "text": "Nossa última reunião teve mais de cinquenta pessoas! Até alguns professores assistentes apareceram."},
+      {"npc": "Narrador", "text": "Enquanto isso, você continua sua pesquisa, estudando tanto os documentos do Diretor quanto os métodos dos Guardiões."}
+    ],
+    "choices": [
+      {"text": "Focar em desenvolver uma solução técnica alternativa", "next_dialogue": 4},
+      {"text": "Tentar mediar uma reunião entre o Diretor e a Professora Chronos", "next_dialogue": 5},
+      {"text": "Preparar um plano de contingência para a cerimônia", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Você reúne os membros mais tecnicamente habilidosos do grupo para desenvolver uma alternativa ao dispositivo do Diretor."},
+        {"npc": "Você", "text": "O problema fundamental é que o método do Diretor força a ruptura a se expandir para extrair energia. E se pudéssemos extrair energia sem expandir a ruptura?"},
+        {"npc": "Estudante de Engenharia", "text": "Teoricamente possível... poderíamos criar um sistema que funcione mais como um filtro do que como uma bomba."},
+        {"npc": "Hikari", "text": "Meus poderes de luz poderiam ajudar a estabilizar o fluxo de energia. Tenho notado que posso interagir com a energia dimensional de formas interessantes."},
+        {"npc": "Narrador", "text": "Após dias de trabalho intenso, vocês desenvolvem um protótipo promissor - um dispositivo que poderia extrair energia dimensional de forma sustentável, sem desestabilizar a realidade."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você decide que o diálogo é essencial e tenta organizar uma reunião entre os líderes das facções opostas."},
+        {"npc": "Narrador", "text": "Surpreendentemente, após várias recusas, ambos concordam em encontrá-lo separadamente primeiro."},
+        {"npc": "Diretor", "text": "Admiro sua iniciativa, mas você precisa entender: Chronos e eu tentamos dialogar por décadas. Nossas visões são fundamentalmente incompatíveis."},
+        {"npc": "Professora Chronos", "text": "O Diretor não é mau, mas está cego por seu desespero. Ele não consegue ver que está arriscando repetir a catástrofe original."},
+        {"npc": "Narrador", "text": "Embora não consiga uni-los diretamente, você ganha insights valiosos sobre suas motivações e medos, que ajudam a informar a abordagem do seu grupo."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Antecipando que a tensão chegará ao ápice durante a cerimônia de encerramento, você reúne seu grupo para desenvolver um plano de contingência."},
+        {"npc": "Você", "text": "Precisamos estar preparados para três cenários: o dispositivo funciona como planejado, o dispositivo falha de forma controlada, ou ocorre uma falha catastrófica."},
+        {"npc": "Hikari", "text": "Para o pior cenário, poderíamos formar uma equipe de evacuação para garantir a segurança dos estudantes."},
+        {"npc": "Estudante de Ciências", "text": "E precisamos de uma equipe técnica pronta para intervir se a ruptura começar a se expandir descontroladamente."},
+        {"npc": "Narrador", "text": "Vocês desenvolvem um plano detalhado, atribuindo papéis específicos a cada membro do grupo e estabelecendo protocolos claros de comunicação."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Na véspera da cerimônia, você recebe duas mensagens quase simultâneas - uma do Diretor e outra da Professora Chronos."},
+      {"npc": "Narrador", "text": "A mensagem do Diretor é formal: 'Sua abordagem tem mérito. Gostaria de discutir possíveis colaborações após a demonstração de amanhã.'"},
+      {"npc": "Narrador", "text": "A mensagem da Professora Chronos é mais urgente: 'Precisamos conversar. A situação é mais grave do que você imagina. Encontre-me no observatório em uma hora.'"},
+      {"npc": "Narrador", "text": "Enquanto pondera estas mensagens, Hikari chega com notícias preocupantes."},
+      {"npc": "Hikari", "text": "Acabei de passar pelo Grande Salão. Estão instalando equipamentos sob o palco. Parece que a demonstração será maior do que esperávamos."}
+    ],
+    "choices_2": [
+      {"text": "Encontrar a Professora Chronos no observatório", "next_dialogue": 7},
+      {"text": "Solicitar uma reunião com o Diretor", "next_dialogue": 8},
+      {"text": "Mobilizar os Mediadores para ação imediata", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Você decide encontrar a Professora Chronos no observatório."},
+        {"npc": "Narrador", "text": "Quando chega, ela está estudando um mapa holográfico que mostra pontos de luz pulsantes espalhados pelo campus."},
+        {"npc": "Professora Chronos", "text": "Obrigada por vir. O que vou lhe mostrar poucos viram."},
+        {"npc": "Professora Chronos", "text": "Estas são micro-rupturas dimensionais - consequências dos experimentos do Diretor. Elas estão se multiplicando exponencialmente."},
+        {"npc": "Professora Chronos", "text": "A demonstração de amanhã pode ser o catalisador para uma reação em cadeia. Não estamos falando apenas de um acidente localizado, mas de um colapso dimensional em escala global."},
+        {"npc": "Narrador", "text": "Ela entrega a você um pequeno dispositivo."},
+        {"npc": "Professora Chronos", "text": "Este é um estabilizador de emergência. Se tudo mais falhar amanhã, use-o no núcleo do dispositivo do Diretor. Pode ser nossa última chance."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Você solicita uma reunião urgente com o Diretor e, para sua surpresa, é concedida imediatamente."},
+        {"npc": "Narrador", "text": "No laboratório subterrâneo, o Diretor lhe mostra os preparativos finais para a demonstração."},
+        {"npc": "Diretor", "text": "Impressionante, não? Décadas de pesquisa culminando em um único momento."},
+        {"npc": "Diretor", "text": "Seu grupo levantou pontos válidos sobre segurança. Implementamos protocolos adicionais baseados em algumas de suas sugestões."},
+        {"npc": "Narrador", "text": "Você nota que suas mãos tremem visivelmente, e ocasionalmente sua imagem parece... oscilar, como uma transmissão com interferência."},
+        {"npc": "Diretor", "text": "Amanhã mudará tudo. Finalmente provaremos que é possível democratizar os poderes sem catástrofe."},
+        {"npc": "Diretor", "text": "Gostaria que estivesse ao meu lado no palco. Seu grupo representa o futuro - uma nova geração que não teme o progresso, mas o abraça com responsabilidade."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Você convoca uma reunião de emergência dos Mediadores."},
+        {"npc": "Você", "text": "A situação é mais urgente do que pensávamos. Precisamos implementar nosso plano de contingência agora."},
+        {"npc": "Narrador", "text": "Rapidamente, você atribui tarefas: equipes de monitoramento para observar os preparativos no Grande Salão, equipes técnicas para finalizar seu dispositivo alternativo, e equipes de segurança para planejar rotas de evacuação."},
+        {"npc": "Hikari", "text": "E quanto ao nosso protótipo? Está funcional, mas não completamente testado."},
+        {"npc": "Você", "text": "Teremos que arriscar. Se o dispositivo do Diretor começar a falhar, nosso protótipo pode ser a única alternativa viável."},
+        {"npc": "Narrador", "text": "O grupo trabalha pela noite, preparando-se para todos os cenários possíveis. Há tensão no ar, mas também um senso de propósito compartilhado."},
+        {"npc": "Estudante", "text": "Seja qual for o resultado amanhã, mostramos que existe um terceiro caminho - um que busca progresso com prudência."}
+      ]
+    },
+    "completion_exp": 1000,
+    "completion_tusd": 1200,
+    "next_chapter": "2_12_climax"
+  },
+  "2_11_choice": {
+    "type": "branching",
+    "title": "Escolha Final",
+    "description": "Após a falha em formar um caminho independente, você deve escolher um lado no conflito.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Com a dissolução de seu grupo independente, você se vê em uma posição difícil. A cerimônia de encerramento se aproxima, e a tensão na academia é palpável."},
+      {"npc": "Narrador", "text": "De um lado, o Diretor continua com seus preparativos para a demonstração. Do outro, os Guardiões da Ruptura se mobilizam para impedi-lo."},
+      {"npc": "Hikari", "text": "Sinto muito que nosso grupo não tenha funcionado. Mas ainda precisamos fazer algo. Não podemos simplesmente ficar de lado."},
+      {"npc": "Narrador", "text": "Você percebe que chegou o momento da escolha final - aliar-se ao Diretor ou aos Guardiões, ou talvez encontrar um terceiro caminho, mesmo que sozinho."}
+    ],
+    "choices": [
+      {"text": "Aliar-se ao Diretor e seu programa", "next_dialogue": 4},
+      {"text": "Juntar-se aos Guardiões da Ruptura", "next_dialogue": 5},
+      {"text": "Agir independentemente na cerimônia", "next_dialogue": 6, "attribute_check": "intellect", "threshold": 15}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Após cuidadosa consideração, você decide que a visão do Diretor, apesar dos riscos, oferece a melhor esperança para o futuro."},
+        {"npc": "Narrador", "text": "Você vai ao seu escritório e oferece seu apoio para a demonstração."},
+        {"npc": "Diretor", "text": "Sabia que você veria a razão eventualmente. Sua tentativa de encontrar um caminho intermediário foi admirável, mas há momentos em que devemos escolher um lado."},
+        {"npc": "Diretor", "text": "Sua ajuda será inestimável nos preparativos finais. Bem-vindo à equipe."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você conclui que os riscos dos experimentos do Diretor são grandes demais, e que os Guardiões estão certos em sua cautela."},
+        {"npc": "Narrador", "text": "Seguindo as pistas deixadas anteriormente, você encontra o esconderijo dos Guardiões e oferece sua ajuda."},
+        {"npc": "Professora Chronos", "text": "Sua chegada é oportuna. Precisamos de todas as mãos disponíveis para impedir a catástrofe que se aproxima."},
+        {"npc": "Professora Chronos", "text": "Lamento que seu grupo tenha se dissolvido. A ideia tinha mérito, mas talvez o mundo ainda não esteja pronto para esse tipo de nuance."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você decide que, mesmo sozinho, deve tentar encontrar uma terceira alternativa."},
+        {"npc": "Narrador", "text": "Talvez não tenha conseguido manter um grupo organizado, mas ainda pode agir segundo seus princípios."}
+      ],
+      "success_6": [
+        {"npc": "Narrador", "text": "Você passa os dias seguintes estudando intensamente, revisando tudo que aprendeu sobre a anomalia dimensional e os dispositivos do Diretor."},
+        {"npc": "Narrador", "text": "Uma ideia começa a se formar - não pode impedir a demonstração, mas talvez possa modificá-la para torná-la mais segura."},
+        {"npc": "Narrador", "text": "Trabalhando sozinho em seu dormitório, você desenvolve um pequeno dispositivo que poderia ser conectado ao sistema principal para estabilizar o fluxo de energia."},
+        {"npc": "Hikari", "text": "Não desistiu, então? Sabia que você encontraria um caminho. Como posso ajudar?"},
+        {"npc": "Narrador", "text": "Com a ajuda de Hikari, você refina seu plano. Durante a demonstração, enquanto todos estão distraídos, você instalará discretamente seu dispositivo estabilizador."},
+        {"npc": "Você", "text": "Não é uma solução perfeita, mas pode evitar o pior cenário e mostrar que existe um caminho intermediário viável."}
+      ],
+      "failure_6": [
+        {"npc": "Narrador", "text": "Você tenta desenvolver um plano alternativo, mas sem recursos ou apoio, suas opções são severamente limitadas."},
+        {"npc": "Narrador", "text": "A complexidade técnica da situação supera o que você pode realizar sozinho no curto prazo."},
+        {"npc": "Hikari", "text": "Admiro sua determinação, mas precisamos ser realistas. Talvez, por ora, a melhor opção seja escolher o lado que causa menos danos."},
+        {"npc": "Narrador", "text": "Relutantemente, você percebe que Hikari está certo. Sem uma alternativa viável, você precisa escolher entre o Diretor e os Guardiões."},
+        {"npc": "Narrador", "text": "A cerimônia é amanhã, e o tempo para indecisão acabou."}
+      ]
+    },
+    "branches": {
+      "director_branch": {
+        "conditions": {
+          "choice": 0
+        },
+        "next_chapter": "2_11_director"
+      },
+      "guardians_branch": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "2_11_guardians"
+      },
+      "independent_success_branch": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "success"
+        },
+        "next_chapter": "2_11_independent_solo"
+      },
+      "forced_choice_branch": {
+        "conditions": {
+          "choice": 2,
+          "check_result": "failure"
+        },
+        "next_chapter": "2_11_forced_choice"
+      }
+    },
+    "completion_exp": 900,
+    "completion_tusd": 1000
+  },
+  "2_11_independent_solo": {
+    "type": "story",
+    "title": "O Caminho Solitário",
+    "description": "Agindo sozinho, você prepara uma intervenção para a cerimônia de encerramento.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Com apenas Hikari como aliado, você finaliza os preparativos para sua intervenção na cerimônia de encerramento."},
+      {"npc": "Narrador", "text": "Seu dispositivo estabilizador é pequeno e discreto, projetado para ser conectado ao sistema principal sem ser detectado."},
+      {"npc": "Hikari", "text": "Testei o protótipo novamente. Funciona perfeitamente em escala reduzida. Deveria ser capaz de modular o fluxo de energia dimensional sem interromper completamente o experimento."},
+      {"npc": "Você", "text": "Perfeito. Não queremos impedir a demonstração, apenas torná-la segura. Se funcionar, poderemos mostrar que existe um caminho intermediário viável."}
+    ],
+    "choices": [
+      {"text": "Revisar o plano de ação para a cerimônia", "next_dialogue": 4},
+      {"text": "Discutir contingências caso algo dê errado", "next_dialogue": 5},
+      {"text": "Compartilhar suas preocupações com Hikari", "next_dialogue": 6, "affinity_change": {"Hikari": 5}}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Você", "text": "Vamos revisar o plano mais uma vez. Durante o discurso inicial do Diretor, você criará uma pequena distração com seus poderes de luz."},
+        {"npc": "Hikari", "text": "Um 'mau funcionamento' nas luzes do palco. Nada dramático, apenas o suficiente para desviar a atenção por alguns segundos."},
+        {"npc": "Você", "text": "Exatamente. Nesse momento, eu me aproximarei discretamente do palco e instalarei o estabilizador no painel de acesso lateral."},
+        {"npc": "Você", "text": "O dispositivo se integrará automaticamente ao sistema principal e começará a modular o fluxo de energia quando a demonstração começar."},
+        {"npc": "Hikari", "text": "E eu estarei monitorando os níveis de energia com este sensor. Se algo parecer errado, darei o sinal para ativarmos o protocolo de emergência."}
+      ],
+      "5": [
+        {"npc": "Você", "text": "Precisamos estar preparados caso algo dê errado. Quais são nossas contingências?"},
+        {"npc": "Hikari", "text": "Se o estabilizador não conseguir se integrar ao sistema, temos o dispositivo de desativação de emergência como último recurso."},
+        {"npc": "Hikari", "text": "E se a ruptura começar a se expandir descontroladamente, iniciarei imediatamente a evacuação da ala leste, enquanto você tenta estabilizar manualmente o núcleo."},
+        {"npc": "Você", "text": "E se formos descobertos antes de conseguir instalar o dispositivo?"},
+        {"npc": "Hikari", "text": "Nesse caso, passamos para o 'Plano Verdade' - você se aproxima do Diretor abertamente e apresenta nossa solução, apelando para sua racionalidade científica."},
+        {"npc": "Você", "text": "Arriscado, mas pode funcionar. O Diretor valoriza a inovação, e nosso dispositivo é genuinamente inovador."}
+      ],
+      "6": [
+        {"npc": "Você", "text": "Hikari, preciso ser honesto. Estou preocupado. Estamos assumindo um risco enorme aqui."},
+        {"npc": "Hikari", "text": "Eu sei. Também estou nervoso. Mas acredito no que estamos fazendo."},
+        {"npc": "Você", "text": "E se estivermos errados? E se nosso dispositivo piorar a situação em vez de melhorá-la?"},
+        {"npc": "Hikari", "text": "Testamos exaustivamente. A teoria é sólida. E, mais importante, estamos agindo com a intenção correta - não por poder ou medo, mas por equilíbrio."},
+        {"npc": "Hikari", "text": "Além disso, não estamos sozinhos nisto. Tenho notado outros estudantes e até alguns professores que parecem compartilhar nossa visão. Eles podem não estar ativamente nos ajudando, mas estão observando, esperando."},
+        {"npc": "Hikari", "text": "Se tivermos sucesso amanhã, isso pode inspirá-los a se manifestarem também. Às vezes, tudo que um movimento precisa é de uma primeira demonstração de que o impossível é possível."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Na manhã da cerimônia, você acorda cedo e faz uma verificação final do dispositivo estabilizador."},
+      {"npc": "Narrador", "text": "O pequeno aparelho, não maior que um smartphone, representa semanas de trabalho intenso e a esperança de um caminho intermediário."},
+      {"npc": "Narrador", "text": "Enquanto se prepara, você recebe duas mensagens quase simultâneas - uma do Diretor e outra da Professora Chronos."},
+      {"npc": "Narrador", "text": "A mensagem do Diretor é formal: 'Sua presença na primeira fila da cerimônia é solicitada. Temos um lugar reservado para você.'"},
+      {"npc": "Narrador", "text": "A mensagem da Professora Chronos é mais enigmática: 'Você não está sozinho hoje. Observe as sombras.'"}
+    ],
+    "choices_2": [
+      {"text": "Seguir com o plano original", "next_dialogue": 7},
+      {"text": "Tentar contatar a Professora Chronos", "next_dialogue": 8},
+      {"text": "Aceitar o convite do Diretor como cobertura", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Você decide seguir com o plano original, confiando no trabalho que você e Hikari realizaram."},
+        {"npc": "Narrador", "text": "Guardando o dispositivo estabilizador em um bolso interno, você se dirige ao Grande Salão, onde os preparativos finais para a cerimônia estão em andamento."},
+        {"npc": "Hikari", "text": "Tudo pronto do meu lado. Os sensores estão calibrados e o sistema de comunicação está funcionando."},
+        {"npc": "Você", "text": "Perfeito. Vamos nos posicionar e aguardar o momento certo."},
+        {"npc": "Narrador", "text": "Enquanto estudantes e professores começam a encher o salão, você nota discretos movimentos nas sombras - figuras que parecem estar observando atentamente o palco."},
+        {"npc": "Narrador", "text": "A mensagem da Professora Chronos ecoa em sua mente: 'Você não está sozinho hoje.'"}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Intrigado pela mensagem da Professora Chronos, você tenta contatá-la antes da cerimônia."},
+        {"npc": "Narrador", "text": "Seguindo seu instinto, você vai ao observatório, onde a encontrou anteriormente."},
+        {"npc": "Narrador", "text": "Ela não está lá, mas você encontra um pequeno dispositivo com uma nota: 'Um complemento para sua solução. Integre-o ao seu estabilizador.'"},
+        {"npc": "Narrador", "text": "Examinando o dispositivo, você reconhece um design avançado que poderia aumentar significativamente a eficácia do seu estabilizador."},
+        {"npc": "Narrador", "text": "Rapidamente, você modifica seu dispositivo para incorporar o componente adicional, notando como eles se encaixam perfeitamente, como se tivessem sido projetados para trabalhar juntos."},
+        {"npc": "Narrador", "text": "Com o dispositivo aprimorado, você se dirige ao Grande Salão, onde Hikari espera ansiosamente."},
+        {"npc": "Hikari", "text": "Onde você estava? A cerimônia está prestes a começar!"},
+        {"npc": "Você", "text": "Fazendo um upgrade de última hora. Nossas chances acabam de melhorar significativamente."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Você decide aceitar o convite do Diretor, vendo-o como uma oportunidade perfeita de cobertura para seu plano."},
+        {"npc": "Narrador", "text": "Ao chegar ao Grande Salão, um assistente o guia para um assento reservado na primeira fila, diretamente em frente ao palco."},
+        {"npc": "Assistente", "text": "O Diretor ficará satisfeito que aceitou o convite. Ele tem grande consideração por você."},
+        {"npc": "Narrador", "text": "Sua posição oferece uma visão perfeita do dispositivo sob o palco, parcialmente visível através de painéis transparentes."},
+        {"npc": "Narrador", "text": "Você discretamente sinaliza para Hikari, que está posicionado perto do controle de iluminação, confirmando que a nova posição não compromete o plano."},
+        {"npc": "Narrador", "text": "De fato, estar tão próximo ao palco pode facilitar a instalação do estabilizador no momento certo."}
+      ]
+    },
+    "completion_exp": 1000,
+    "completion_tusd": 1200,
+    "next_chapter": "2_12_climax"
+  },
+  "2_11_forced_choice": {
+    "type": "story",
+    "title": "Decisão Inevitável",
+    "description": "Forçado a escolher um lado, você faz sua decisão final antes da cerimônia de encerramento.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Com a falha de suas tentativas de desenvolver uma solução independente, você enfrenta a dura realidade: precisa escolher um lado neste conflito."},
+      {"npc": "Hikari", "text": "Sei que não é o que queríamos, mas às vezes temos que trabalhar dentro das opções disponíveis. Qual caminho você acha que causará menos danos?"},
+      {"npc": "Narrador", "text": "A cerimônia de encerramento é amanhã, e o tempo para indecisão acabou. Você precisa fazer sua escolha final."}
+    ],
+    "choices": [
+      {"text": "Aliar-se ao Diretor e seu programa", "next_dialogue": 4},
+      {"text": "Juntar-se aos Guardiões da Ruptura", "next_dialogue": 5}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Após cuidadosa consideração, você decide que, entre as opções disponíveis, apoiar o Diretor é o caminho que oferece mais esperança para o futuro."},
+        {"npc": "Narrador", "text": "Você vai ao seu escritório e oferece seu apoio para a demonstração."},
+        {"npc": "Diretor", "text": "Sua decisão é sábia. Apesar de nossas diferenças anteriores, sempre respeitei sua inteligência e integridade."},
+        {"npc": "Diretor", "text": "Com sua ajuda nos preparativos finais, podemos garantir que a demonstração seja um sucesso e um marco na história da Academia Tokugawa."},
+        {"npc": "Narrador", "text": "Você passa o resto do dia trabalhando com a equipe do Diretor, ajudando a finalizar os sistemas de segurança para a demonstração."},
+        {"npc": "Narrador", "text": "Embora ainda tenha reservas, você encontra conforto na ideia de que pode influenciar o processo de dentro, tornando-o mais seguro do que seria sem sua participação."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Após pesar todas as opções, você conclui que os riscos dos experimentos do Diretor são simplesmente grandes demais para serem ignorados."},
+        {"npc": "Narrador", "text": "Você busca os Guardiões da Ruptura, seguindo as pistas que coletou ao longo das semanas."},
+        {"npc": "Professora Chronos", "text": "Sua chegada não é inesperada. Observamos suas tentativas de encontrar um caminho intermediário com interesse."},
+        {"npc": "Professora Chronos", "text": "Embora tenha falhado, o esforço demonstrou integridade e pensamento independente - qualidades que valorizamos."},
+        {"npc": "Professora Chronos", "text": "Agora, precisamos agir rapidamente. A demonstração de amanhã representa um risco maior do que o Diretor percebe ou admite."},
+        {"npc": "Narrador", "text": "Você passa o resto do dia sendo informado sobre o plano dos Guardiões para impedir a demonstração, contribuindo com seu conhecimento sobre os sistemas do Diretor."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Narrador", "text": "Na manhã da cerimônia, você acorda com uma sensação de finalidade. O caminho à frente está claro, mesmo que não seja o que originalmente desejava."},
+      {"npc": "Narrador", "text": "Enquanto se prepara, Hikari aparece em sua porta."},
+      {"npc": "Hikari", "text": "Vim para dizer que, independentemente do lado que escolheu, respeito sua decisão. Sei que você está fazendo o que acredita ser certo."},
+      {"npc": "Hikari", "text": "E queria que soubesse que não desisti completamente da nossa ideia original. Continuo trabalhando em nosso projeto, mesmo que em menor escala."},
+      {"npc": "Hikari", "text": "Talvez hoje não seja o dia para uma terceira via, mas isso não significa que nunca será."}
+    ],
+    "choices_2": [
+      {"text": "Agradecer a Hikari por seu apoio", "next_dialogue": 6, "affinity_change": {"Hikari": 5}},
+      {"text": "Pedir que Hikari fique seguro durante a cerimônia", "next_dialogue": 7},
+      {"text": "Sugerir que Hikari continue o trabalho independente", "next_dialogue": 8}
+    ],
+    "additional_dialogues_2": {
+      "6": [
+        {"npc": "Você", "text": "Obrigado, Hikari. Seu apoio significa muito para mim, especialmente agora."},
+        {"npc": "Hikari", "text": "Somos amigos antes de tudo. E mentores e mentorados. Isso não muda, independentemente dos lados que escolhemos."},
+        {"npc": "Você", "text": "Prometo que, quando tudo isso acabar, voltaremos a trabalhar juntos em nossa visão original. Este é apenas um desvio temporário."},
+        {"npc": "Hikari", "text": "Vou cobrar essa promessa. Agora vá, faça o que precisa ser feito. Estarei torcendo por você, mesmo que das sombras."}
+      ],
+      "7": [
+        {"npc": "Você", "text": "Hikari, preciso que me prometa algo. Fique longe do Grande Salão durante a cerimônia hoje."},
+        {"npc": "Hikari", "text": "Você está esperando problemas, não é?"},
+        {"npc": "Você", "text": "Digamos que há... incertezas significativas sobre como a demonstração vai proceder. Prefiro que você esteja seguro, longe de qualquer potencial perigo."},
+        {"npc": "Hikari", "text": "Aprecio sua preocupação, mas não posso prometer isso. Se algo der errado, posso ser necessário para ajudar na evacuação ou assistência."},
+        {"npc": "Hikari", "text": "Além disso, meus poderes de luz podem ser úteis em uma emergência. Não vou ficar de lado se outros estiverem em perigo."},
+        {"npc": "Você", "text": "Você cresceu muito desde que nos conhecemos. Tudo bem, mas pelo menos prometa que terá cuidado."},
+        {"npc": "Hikari", "text": "Isso eu posso prometer. E você também, ok?"}
+      ],
+      "8": [
+        {"npc": "Você", "text": "Hikari, quero que continue nosso trabalho independente, mesmo sem mim."},
+        {"npc": "Hikari", "text": "Sério? Mesmo depois de tudo que aconteceu?"},
+        {"npc": "Você", "text": "Especialmente depois de tudo que aconteceu. Minha escolha hoje é pragmática, baseada nas opções imediatamente disponíveis."},
+        {"npc": "Você", "text": "Mas ainda acredito que, a longo prazo, precisamos de uma abordagem mais equilibrada. Alguém precisa continuar desenvolvendo essa visão."},
+        {"npc": "Hikari", "text": "Não será fácil sem você, mas farei o meu melhor. Já recrutei alguns estudantes do primeiro ano que compartilham nossa filosofia."},
+        {"npc": "Hikari", "text": "Quem sabe? Talvez quando você retornar ao nosso caminho, encontrará um movimento florescente esperando por você."},
+        {"npc": "Você", "text": "Gosto dessa ideia. Até lá, mantenha nossa visão viva."}
+      ]
+    },
+    "branches": {
+      "director_branch": {
+        "conditions": {
+          "choice": 0
+        },
+        "next_chapter": "2_11_director"
+      },
+      "guardians_branch": {
+        "conditions": {
+          "choice": 1
+        },
+        "next_chapter": "2_11_guardians"
+      }
+    },
+    "completion_exp": 900,
+    "completion_tusd": 1000
+  },
+  "2_12_climax": {
+    "type": "story",
+    "title": "Convergência Dimensional",
+    "description": "A cerimônia de encerramento se torna o palco para o clímax do conflito sobre a anomalia dimensional.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O Grande Salão está lotado para a cerimônia de encerramento do ano. Estudantes, professores e convidados especiais ocupam cada assento disponível."},
+      {"npc": "Narrador", "text": "Sob o palco principal, discretamente visível através de painéis transparentes, está o dispositivo do Diretor - uma versão menor, mas ainda impressionante, da tecnologia que você viu na floresta."},
+      {"npc": "Narrador", "text": "O ar parece carregado de eletricidade, e não apenas metaforicamente. Você pode sentir uma sutil vibração na energia ao seu redor, como se a própria realidade estivesse tensa."},
+      {"npc": "Diretor", "text": "Bem-vindos à cerimônia de encerramento deste ano acadêmico extraordinário na Academia Tokugawa!"}
+    ],
+    "choices": [
+      {"text": "Observar atentamente o dispositivo", "next_dialogue": 4},
+      {"text": "Procurar por sinais dos Guardiões", "next_dialogue": 5},
+      {"text": "Preparar-se para intervir", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Narrador", "text": "Você foca sua atenção no dispositivo sob o palco, analisando sua estrutura e funcionamento."},
+        {"npc": "Narrador", "text": "É uma obra-prima de engenharia - campos de contenção sobrepostos, núcleos de energia pulsantes, e no centro, uma pequena distorção no ar que parece dobrar a luz ao seu redor."},
+        {"npc": "Narrador", "text": "Você nota algo preocupante: pequenas flutuações nos campos de energia, quase imperceptíveis, mas potencialmente significativas. O dispositivo não está tão estável quanto deveria estar."},
+        {"npc": "Narrador", "text": "Enquanto isso, o Diretor continua seu discurso, aproximando-se do momento da demonstração."},
+        {"npc": "Diretor", "text": "...e hoje, tenho o prazer de anunciar um avanço revolucionário que mudará fundamentalmente nossa compreensão dos poderes e seu potencial."}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Discretamente, você examina o salão, procurando por sinais dos Guardiões da Ruptura."},
+        {"npc": "Narrador", "text": "Seus olhos treinados captam movimentos sutis nas sombras - figuras posicionadas estrategicamente perto das saídas e dos pontos de acesso técnico."},
+        {"npc": "Narrador", "text": "Você reconhece o Professor Quantum perto do painel de controle principal, disfarçado como técnico. Outros professores que você suspeita serem Guardiões estão espalhados pela multidão."},
+        {"npc": "Narrador", "text": "Da Professora Chronos, no entanto, não há sinal visível. Isso é tanto intrigante quanto preocupante."},
+        {"npc": "Diretor", "text": "...após anos de pesquisa dedicada, estamos prontos para compartilhar uma descoberta que promete democratizar o acesso aos poderes para toda a humanidade."}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você verifica discretamente seu equipamento e se posiciona estrategicamente, pronto para intervir quando necessário."},
+        {"npc": "Narrador", "text": "O estabilizador está seguro em seu bolso, e você mapeou mentalmente o caminho mais rápido até o dispositivo."},
+        {"npc": "Narrador", "text": "Hikari, posicionado perto do controle de iluminação, faz um sinal discreto confirmando que está pronto para criar a distração quando você der o sinal."},
+        {"npc": "Narrador", "text": "Sua mente está clara e focada, anos de treinamento convergindo para este momento crucial."},
+        {"npc": "Diretor", "text": "...o que estamos prestes a demonstrar hoje não é apenas um avanço científico, mas um passo em direção a um mundo mais justo e igualitário."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Diretor", "text": "Senhoras e senhores, preparem-se para testemunhar história sendo feita!"},
+      {"npc": "Narrador", "text": "O Diretor faz um gesto dramático, e o dispositivo sob o palco começa a brilhar com intensidade crescente."},
+      {"npc": "Narrador", "text": "A pequena distorção no centro expande ligeiramente, emitindo um brilho azulado que ilumina todo o salão."},
+      {"npc": "Narrador", "text": "Você sente seus poderes reagindo à energia liberada - fortalecendo e depois flutuando em padrões imprevisíveis."},
+      {"npc": "Narrador", "text": "De repente, algo dá errado. O brilho azulado pulsa violentamente, e pequenas fissuras luminosas começam a aparecer no ar ao redor do dispositivo."},
+      {"npc": "Diretor", "text": "Mantenham a calma! É apenas uma flutuação temporária, os sistemas estão compensando..."},
+      {"npc": "Narrador", "text": "Mas sua expressão revela preocupação. As fissuras continuam a se expandir, e você sente a energia dimensional crescendo perigosamente."}
+    ],
+    "choices_2": [
+      {"text": "Correr para o dispositivo e tentar estabilizá-lo", "next_dialogue": 7, "attribute_check": "power_stat", "threshold": 15},
+      {"text": "Iniciar evacuação do Grande Salão", "next_dialogue": 8, "attribute_check": "charisma", "threshold": 12},
+      {"text": "Usar o estabilizador de emergência", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Narrador", "text": "Sem hesitar, você corre em direção ao dispositivo, determinado a estabilizá-lo antes que a situação se agrave."},
+        {"npc": "Narrador", "text": "A multidão ofega enquanto você salta para o palco e se dirige ao painel de controle principal."}
+      ],
+      "success_7": [
+        {"npc": "Narrador", "text": "Você alcança o dispositivo e imediatamente começa a ajustar os controles, canalizando seus próprios poderes para estabilizar o fluxo de energia."},
+        {"npc": "Narrador", "text": "Seus poderes ressoam com a energia dimensional de uma forma única, permitindo que você module as flutuações caóticas."},
+        {"npc": "Narrador", "text": "Gradualmente, as fissuras começam a se fechar, e o brilho azulado estabiliza em um padrão regular."},
+        {"npc": "Diretor", "text": "Extraordinário! Você está conseguindo estabilizar a reação!"},
+        {"npc": "Narrador", "text": "Com um último esforço de concentração, você completa o processo de estabilização. O dispositivo agora emite um zumbido constante e controlado."},
+        {"npc": "Narrador", "text": "A demonstração continua, mas de forma muito mais controlada do que o Diretor havia planejado originalmente."},
+        {"npc": "Narrador", "text": "Você percebe que, inadvertidamente, encontrou o caminho intermediário que buscava - nem interrompendo completamente o experimento, nem permitindo que prosseguisse sem controle adequado."}
+      ],
+      "failure_7": [
+        {"npc": "Narrador", "text": "Você alcança o dispositivo, mas a energia dimensional é muito intensa e caótica para ser controlada."},
+        {"npc": "Narrador", "text": "Quando tenta ajustar os controles, uma onda de energia o atinge, lançando-o para trás."},
+        {"npc": "Narrador", "text": "As fissuras continuam a se expandir, e alarmes começam a soar por todo o Grande Salão."},
+        {"npc": "Diretor", "text": "Iniciem o protocolo de contenção de emergência! Evacuem o salão imediatamente!"},
+        {"npc": "Narrador", "text": "O pânico começa a se espalhar enquanto estudantes e professores correm para as saídas."},
+        {"npc": "Narrador", "text": "Você se levanta, atordoado mas determinado, sabendo que precisa tentar outra abordagem antes que seja tarde demais."}
+      ],
+      "8": [
+        {"npc": "Narrador", "text": "Reconhecendo o perigo iminente, você decide que a prioridade deve ser a segurança de todos no salão."},
+        {"npc": "Narrador", "text": "Você se levanta e grita com autoridade:"}
+      ],
+      "success_8": [
+        {"npc": "Você", "text": "EVACUAÇÃO IMEDIATA! Todos saiam de forma ordenada pelas saídas laterais!"},
+        {"npc": "Narrador", "text": "Sua voz ressoa com uma autoridade natural que surpreende até você mesmo. A multidão, já tensa pela demonstração instável, responde imediatamente."},
+        {"npc": "Narrador", "text": "Professores e monitores rapidamente assumem posições nas saídas, guiando os estudantes para fora do salão de forma organizada."},
+        {"npc": "Narrador", "text": "Hikari e outros estudantes que você treinou anteriormente ajudam a manter a calma e assistir aqueles que precisam."},
+        {"npc": "Narrador", "text": "Em minutos, o Grande Salão está quase vazio, exceto por você, o Diretor, e alguns técnicos tentando desesperadamente estabilizar o dispositivo."},
+        {"npc": "Diretor", "text": "Obrigado pela rápida ação. Agora podemos focar em conter isso sem arriscar vidas."}
+      ],
+      "failure_8": [
+        {"npc": "Você", "text": "Precisamos evacuar! O dispositivo está instável!"},
+        {"npc": "Narrador", "text": "Sua voz é abafada pelo zumbido crescente do dispositivo e o murmúrio ansioso da multidão."},
+        {"npc": "Narrador", "text": "Algumas pessoas próximas começam a se mover em direção às saídas, mas a maioria permanece em seus lugares, confusa e incerta."},
+        {"npc": "Narrador", "text": "O Diretor tenta manter o controle da situação:"},
+        {"npc": "Diretor", "text": "Mantenham a calma! É apenas uma flutuação temporária nos sistemas!"},
+        {"npc": "Narrador", "text": "Mas quando uma das fissuras dimensionais se expande dramaticamente, o pânico finalmente se instala."},
+        {"npc": "Narrador", "text": "A evacuação agora ocorre de forma caótica, com pessoas empurrando e correndo para as saídas."},
+        {"npc": "Narrador", "text": "Você tenta ajudar a organizar o fluxo, mas percebe que precisa agir rapidamente para conter a crise na fonte."}
+      ],
+      "9": [
+        {"npc": "Narrador", "text": "Reconhecendo que a situação está saindo do controle, você decide usar o estabilizador de emergência que recebeu."},
+        {"npc": "Narrador", "text": "Movendo-se rapidamente em direção ao dispositivo, você remove o pequeno aparelho do bolso."},
+        {"npc": "Narrador", "text": "O estabilizador vibra em sua mão, como se respondesse à proximidade da ruptura dimensional."},
+        {"npc": "Narrador", "text": "Chegando ao painel de acesso lateral, você conecta o estabilizador ao sistema principal."},
+        {"npc": "Narrador", "text": "Imediatamente, o pequeno dispositivo começa a pulsar com luz azulada, criando um campo de contenção que envolve a ruptura."},
+        {"npc": "Narrador", "text": "As fissuras dimensionais param de se expandir e começam a se retrair lentamente."},
+        {"npc": "Diretor", "text": "O que você fez? Esse dispositivo... não é nosso."},
+        {"npc": "Narrador", "text": "Antes que você possa responder, uma voz familiar ecoa pelo salão:"},
+        {"npc": "Professora Chronos", "text": "É um estabilizador dimensional avançado. Ele não interrompe seu experimento, Diretor, apenas o contém dentro de parâmetros seguros."},
+        {"npc": "Narrador", "text": "A Professora Chronos emerge das sombras, aproximando-se do palco com passos calmos e determinados."}
+      ]
+    },
+    "completion_exp": 1200,
+    "completion_tusd": 1500,
+    "next_chapter": "2_13_resolution"
+  },
+  "2_13_resolution": {
+    "type": "story",
+    "title": "Ecos Dimensionais",
+    "description": "As consequências da crise dimensional moldam o futuro da Academia Tokugawa e seu papel nela.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Dias após os dramáticos eventos da cerimônia de encerramento, a Academia Tokugawa ainda vibra com as repercussões."},
+      {"npc": "Narrador", "text": "O Grande Salão foi interditado para reparos, e equipes especializadas trabalham para garantir que não haja efeitos residuais da instabilidade dimensional."},
+      {"npc": "Narrador", "text": "Você foi convocado para uma reunião especial no escritório do Diretor, onde encontra não apenas ele, mas também a Professora Chronos."},
+      {"npc": "Narrador", "text": "Surpreendentemente, eles não parecem hostis um com o outro, mas sim engajados em uma conversa séria e focada."}
+    ],
+    "choices": [
+      {"text": "Perguntar sobre o estado atual da anomalia", "next_dialogue": 4},
+      {"text": "Questionar se eles chegaram a um acordo", "next_dialogue": 5},
+      {"text": "Perguntar por que foi convocado", "next_dialogue": 6}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Diretor", "text": "A anomalia está contida, graças em grande parte à sua intervenção."},
+        {"npc": "Professora Chronos", "text": "Contida, mas não eliminada. A ruptura dimensional na floresta e o dispositivo no Grande Salão criaram um padrão de micro-rupturas por todo o campus."},
+        {"npc": "Diretor", "text": "Estamos monitorando a situação de perto. Por enquanto, não há perigo imediato, mas precisaremos de uma solução permanente."},
+        {"npc": "Professora Chronos", "text": "E é aí que você entra. Sua conexão única com a energia dimensional pode ser a chave para uma solução duradoura."}
+      ],
+      "5": [
+        {"npc": "Diretor", "text": "Digamos que chegamos a um... entendimento mútuo."},
+        {"npc": "Professora Chronos", "text": "Os eventos na cerimônia demonstraram que nenhum de nós tinha toda a razão, nem estava completamente errado."},
+        {"npc": "Diretor", "text": "Minha abordagem era perigosamente ambiciosa, como Chronos sempre alertou. Mas seu objetivo de democratizar os poderes não era equivocado."},
+        {"npc": "Professora Chronos", "text": "E minha cautela, embora justificada, talvez tenha sido excessivamente restritiva. Há mérito em explorar o potencial da energia dimensional, desde que com as salvaguardas adequadas."},
+        {"npc": "Diretor", "text": "Em resumo, estamos tentando encontrar o caminho intermediário que você e seu grupo defendiam desde o início."}
+      ],
+      "6": [
+        {"npc": "Diretor", "text": "Você foi convocado porque se provou indispensável para o futuro da Academia Tokugawa."},
+        {"npc": "Professora Chronos", "text": "Suas ações durante a crise salvaram inúmeras vidas e possivelmente impediram uma catástrofe dimensional em escala global."},
+        {"npc": "Diretor", "text": "Mais do que isso, você demonstrou uma compreensão intuitiva da energia dimensional que é extremamente rara."},
+        {"npc": "Professora Chronos", "text": "E, talvez mais importante, você consistentemente buscou equilíbrio e compreensão, mesmo quando pressionado a escolher lados."},
+        {"npc": "Diretor", "text": "Essas qualidades o tornam único e valioso para o que vem a seguir."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Diretor", "text": "Estamos reorganizando a estrutura da Academia para melhor abordar a nova realidade que enfrentamos."},
+      {"npc": "Professora Chronos", "text": "Os Guardiões da Ruptura não operarão mais nas sombras. Estamos estabelecendo um Departamento de Estudos Dimensionais oficial."},
+      {"npc": "Diretor", "text": "E a pesquisa sobre transferência de poderes continuará, mas com protocolos de segurança muito mais rigorosos e supervisão transparente."},
+      {"npc": "Professora Chronos", "text": "Quanto a você, temos uma proposta única para seu terceiro ano na Academia Tokugawa."}
+    ],
+    "choices_2": [
+      {"text": "Ouvir a proposta com interesse", "next_dialogue": 7},
+      {"text": "Perguntar sobre Hikari e outros estudantes", "next_dialogue": 8},
+      {"text": "Expressar preocupação com futuras rupturas", "next_dialogue": 9}
+    ],
+    "additional_dialogues_2": {
+      "7": [
+        {"npc": "Diretor", "text": "Gostaríamos de oferecer a você uma posição sem precedentes para um estudante: Assistente Especial de Pesquisa Dimensional."},
+        {"npc": "Professora Chronos", "text": "Você trabalharia diretamente conosco, ajudando a desenvolver métodos seguros de utilizar a energia dimensional e treinar outros estudantes com afinidades similares."},
+        {"npc": "Diretor", "text": "Além disso, você teria acesso a recursos e conhecimentos normalmente reservados apenas para professores seniores."},
+        {"npc": "Professora Chronos", "text": "Seu grupo, os Mediadores, seria oficialmente reconhecido como uma organização estudantil, com autoridade para aconselhar sobre questões dimensionais."},
+        {"npc": "Diretor", "text": "Em essência, você se tornaria uma ponte entre estudantes e administração, entre pesquisa e segurança, entre progresso e prudência."},
+        {"npc": "Narrador", "text": "A proposta é surpreendente e sem precedentes - uma oportunidade de criar o legado que você imaginou, com apoio institucional completo."}
+      ],
+      "8": [
+        {"npc": "Você", "text": "E quanto a Hikari e os outros estudantes que me ajudaram? Eles também estarão envolvidos?"},
+        {"npc": "Professora Chronos", "text": "Hikari demonstrou um talento notável e uma conexão única com a energia dimensional. Ele terá um papel importante a desempenhar."},
+        {"npc": "Diretor", "text": "Na verdade, estamos considerando um programa de mentoria avançada, onde estudantes como você e Hikari orientariam calouros com potencial similar."},
+        {"npc": "Professora Chronos", "text": "Quanto aos outros Mediadores, eles serão convidados a participar em vários níveis, dependendo de suas habilidades e interesses."},
+        {"npc": "Diretor", "text": "O que você construiu - uma abordagem colaborativa e equilibrada - será preservado e expandido."},
+        {"npc": "Narrador", "text": "Você sente uma profunda satisfação ao saber que seus esforços não apenas ajudaram a resolver a crise imediata, mas também estão moldando o futuro da academia."}
+      ],
+      "9": [
+        {"npc": "Você", "text": "Tudo isso soa promissor, mas e quanto às rupturas dimensionais? Elas ainda representam um perigo?"},
+        {"npc": "Professora Chronos", "text": "Uma preocupação válida e importante. As micro-rupturas pelo campus estão estáveis por enquanto, mas não são permanentes."},
+        {"npc": "Diretor", "text": "Parte de sua função, se aceitar nossa proposta, será ajudar a desenvolver soluções de longo prazo para essas rupturas."},
+        {"npc": "Professora Chronos", "text": "Além disso, há outras rupturas ao redor do mundo - consequências distantes do Evento Zero original que nunca foram completamente resolvidas."},
+        {"npc": "Diretor", "text": "No futuro, prevemos expedições para estudar e potencialmente estabilizar essas rupturas remotas."},
+        {"npc": "Professora Chronos", "text": "Incluindo locais como a Cidade Proibida e o Vale dos Ancestrais - lugares onde a barreira entre dimensões é naturalmente mais fina."},
+        {"npc": "Narrador", "text": "A menção desses lugares misteriosos desperta sua curiosidade e imaginação. O mundo além da academia parece cheio de possibilidades e desafios."}
+      ]
+    },
+    "completion_exp": 1500,
+    "completion_tusd": 2000,
+    "next_chapter": "3_1"
   }
 }
