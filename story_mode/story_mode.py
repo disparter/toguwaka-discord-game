@@ -282,12 +282,13 @@ class StoryMode:
                 if next_chapter:
                     result = next_chapter.start(player_data)
                 else:
-                    logger.warning(f"Next chapter not found: {next_chapter_id}")
+                    logger.warning(f"Next chapter not found: {next_chapter_id}. Using fallback chapter or ending story.")
+                    # Fallback for the chapter final or a message amigável
                     result = {
                         "player_data": player_data,
                         "chapter_complete": True,
-                        "next_chapter_id": next_chapter_id,
-                        "error": f"Next chapter not found: {next_chapter_id}"
+                        "story_complete": True,
+                        "message": "Parabéns! Você concluiu todos os capítulos disponíveis até agora."
                     }
             else:
                 # No next chapter, story complete

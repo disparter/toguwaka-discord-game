@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-import json
+from utils.json_utils import dumps as json_dumps
 import asyncio
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
@@ -36,7 +36,7 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to start or continue the story mode.
         """
-        await interaction.response.defer(ephemeral=False)
+        await interaction.response.defer(ephemeral=True)
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -53,7 +53,7 @@ class StoryModeCog(commands.Cog):
             return
 
         # Update player data in database
-        update_player(user_id, story_progress=json.dumps(result["player_data"]["story_progress"]))
+        update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
 
         # Store session data
         self.active_sessions[user_id] = {
@@ -82,7 +82,7 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to show the current status of the player's story progress.
         """
-        await interaction.response.defer(ephemeral=False)
+        await interaction.response.defer(ephemeral=True)
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -172,7 +172,7 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to show or change the player's relationship with an NPC.
         """
-        await interaction.response.defer(ephemeral=False)
+        await interaction.response.defer(ephemeral=True)
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -219,7 +219,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Update player data in database
-            update_player(user_id, story_progress=json.dumps(result["player_data"]["story_progress"]))
+            update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
 
             affinity_result = result["affinity_result"]
 
@@ -274,7 +274,7 @@ class StoryModeCog(commands.Cog):
         Slash command to participate in an available event.
         """
         try:
-            await interaction.response.defer(ephemeral=False)
+            await interaction.response.defer(ephemeral=True)
         except discord.errors.NotFound:
             logger.error("A interação expirou antes que pudesse ser processada.")
             return
@@ -349,7 +349,7 @@ class StoryModeCog(commands.Cog):
             return
 
         # Update player data in database
-        update_player(user_id, story_progress=json.dumps(result["player_data"]["story_progress"]))
+        update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
 
         event_result = result["event_result"]
 
@@ -475,7 +475,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Update player data in database
-            update_player(user_id, story_progress=json.dumps(result["player_data"]["story_progress"]))
+            update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
 
             # Send next dialogue or choices
             await self._send_dialogue_or_choices(interaction.channel, user_id, result)
@@ -530,7 +530,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Update player data in database
-            update_player(user_id, story_progress=json.dumps(result["player_data"]["story_progress"]))
+            update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
 
             # Send next dialogue or choices
             await self._send_dialogue_or_choices(interaction.channel, user_id, result)

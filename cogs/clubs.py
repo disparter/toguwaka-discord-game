@@ -34,23 +34,38 @@ class Clubs(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
                 return
 
             # Check if player is in a club
             if not player['club_id']:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não está afiliado a nenhum clube. Use !ingressar para criar um novo personagem e escolher um clube.")
+                await interaction.response.send_message(f"{interaction.user.mention}, você não está afiliado a nenhum clube. Use !ingressar para criar um novo personagem e escolher um clube.", ephemeral=True)
                 return
 
             # Get club data
             club = get_club(player['club_id'])
             if not club:
-                await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.")
+                await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.", ephemeral=True)
                 return
 
-            # Create and send club embed
+            # Get club members
+            from utils.database import get_club_members, get_relevant_npcs
+            members = get_club_members(player['club_id'])
+            npcs = get_relevant_npcs(player['club_id'])
+
+            # Create club embed
             embed = create_club_embed(club)
-            await interaction.response.send_message(embed=embed)
+
+            # Add members to embed
+            member_list = "\n".join([f"- {m['name']} (Nível {m['level']})" for m in members]) if members else "Nenhum membro encontrado."
+            embed.add_field(name="📜 Jogadores", value=member_list, inline=False)
+
+            # Add NPCs to embed
+            npc_list = "\n".join([f"- {n['name']} ({n['role']})" for n in npcs]) if npcs else "Nenhum NPC relevante identificado."
+            embed.add_field(name="🤖 NPCs Relevantes", value=npc_list, inline=False)
+
+            # Send the embed with ephemeral=True to make it visible only to the user
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /clube info")

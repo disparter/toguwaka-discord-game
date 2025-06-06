@@ -1301,5 +1301,71 @@ def clear_expired_cooldowns():
     finally:
         conn.close()
 
+def get_club_members(club_id):
+    """Get all players who are members of a specific club.
+
+    Args:
+        club_id (int): The ID of the club
+
+    Returns:
+        list: List of player dictionaries who are members of the club
+    """
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+        SELECT user_id, name, level, power 
+        FROM players 
+        WHERE club_id = ?
+        ORDER BY level DESC, name ASC
+        ''', (club_id,))
+
+        members = cursor.fetchall()
+        return [dict(member) for member in members]
+    except sqlite3.Error as e:
+        logger.error(f"Error getting club members for club {club_id}: {e}")
+        return []
+    finally:
+        conn.close()
+
+def get_relevant_npcs(club_id):
+    """Get all NPCs that are relevant to a specific club.
+    This is a placeholder implementation that returns hardcoded NPCs for each club.
+    In a real implementation, this would query a database of NPCs.
+
+    Args:
+        club_id (int): The ID of the club
+
+    Returns:
+        list: List of NPC dictionaries relevant to the club
+    """
+    # Hardcoded NPCs for each club
+    club_npcs = {
+        1: [  # Clube das Chamas
+            {"name": "Mestre Kaji", "role": "Mentor"},
+            {"name": "Akira Himura", "role": "Veterano"}
+        ],
+        2: [  # Ilusionistas Mentais
+            {"name": "Professora Yumiko", "role": "Mentora"},
+            {"name": "Hiro Nakamura", "role": "Veterano"}
+        ],
+        3: [  # Conselho Político
+            {"name": "Diretor Tanaka", "role": "Mentor"},
+            {"name": "Miyuki Sato", "role": "Veterana"}
+        ],
+        4: [  # Elementalistas
+            {"name": "Dr. Mizuki", "role": "Mentor"},
+            {"name": "Kaito Watanabe", "role": "Veterano"}
+        ],
+        5: [  # Clube de Combate
+            {"name": "Sensei Takeshi", "role": "Mentor"},
+            {"name": "Ryu Kobayashi", "role": "Veterano"}
+        ]
+    }
+
+    return club_npcs.get(club_id, [])
+
 # Initialize the database when the module is imported
 init_db()
