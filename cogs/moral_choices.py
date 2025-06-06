@@ -174,8 +174,8 @@ class MoralChoices(commands.Cog):
         return dilema_choice_callback
 
     @app_commands.command(
-        name="atividade",
-        description="Participa de atividades coletivas na Academia Tokugawa."
+        name="atividade_moral",
+        description="Participa de atividades coletivas morais na Academia Tokugawa."
     )
     @app_commands.choices(
         tipo=[
@@ -199,7 +199,7 @@ class MoralChoices(commands.Cog):
             app_commands.Choice(name="Investigar", value="investigar")
         ]
     )
-    async def slash_atividade(
+    async def slash_atividade_moral(
         self, 
         interaction: discord.Interaction, 
         tipo: str,
