@@ -42,14 +42,14 @@ class StoryModeCog(commands.Cog):
         player_data = get_player(user_id)
 
         if not player_data:
-            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar")
+            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             return
 
         # Start or continue the story
         result = self.story_mode.start_story(player_data)
 
         if "error" in result:
-            await interaction.followup.send(f"Erro ao iniciar o modo história: {result['error']}")
+            await interaction.followup.send(f"Erro ao iniciar o modo história: {result['error']}", ephemeral=True)
             return
 
         # Update player data in database
@@ -68,7 +68,7 @@ class StoryModeCog(commands.Cog):
             description=chapter_data['description'],
             color=discord.Color.blue()
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
         # Send first dialogue or choices
         await self._send_dialogue_or_choices(interaction.channel, user_id, result)
@@ -88,7 +88,7 @@ class StoryModeCog(commands.Cog):
         player_data = get_player(user_id)
 
         if not player_data:
-            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar")
+            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             return
 
         # Get story status
@@ -161,7 +161,7 @@ class StoryModeCog(commands.Cog):
                 inline=False
             )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
     @app_commands.command(name="relacionamento", description="Mostra ou altera seu relacionamento com um personagem")
     @app_commands.describe(
@@ -178,7 +178,7 @@ class StoryModeCog(commands.Cog):
         player_data = get_player(user_id)
 
         if not player_data:
-            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar")
+            await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             return
 
         # If no character specified, show all relationships
@@ -186,7 +186,7 @@ class StoryModeCog(commands.Cog):
             status = self.story_mode.get_story_status(player_data)
 
             if not status["relationships"]:
-                await interaction.followup.send("Você ainda não tem relacionamentos com personagens.")
+                await interaction.followup.send("Você ainda não tem relacionamentos com personagens.", ephemeral=True)
                 return
 
             embed = create_basic_embed(
@@ -202,20 +202,20 @@ class StoryModeCog(commands.Cog):
                     inline=True
                 )
 
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
 
         # If affinity specified, update relationship
         if afinidade is not None:
             # Only allow admins to change affinity
             if not await self._is_admin(interaction.user):
-                await interaction.followup.send("Apenas administradores podem alterar afinidade diretamente.")
+                await interaction.followup.send("Apenas administradores podem alterar afinidade diretamente.", ephemeral=True)
                 return
 
             result = self.story_mode.update_affinity(player_data, personagem, afinidade)
 
             if "error" in result:
-                await interaction.followup.send(f"Erro ao atualizar afinidade: {result['error']}")
+                await interaction.followup.send(f"Erro ao atualizar afinidade: {result['error']}", ephemeral=True)
                 return
 
             # Update player data in database
@@ -235,7 +235,7 @@ class StoryModeCog(commands.Cog):
                 inline=False
             )
 
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
 
         # If character specified but no affinity, show relationship with that character
@@ -248,7 +248,7 @@ class StoryModeCog(commands.Cog):
                 break
 
         if not relationship:
-            await interaction.followup.send(f"Você ainda não tem um relacionamento com {personagem}.")
+            await interaction.followup.send(f"Você ainda não tem um relacionamento com {personagem}.", ephemeral=True)
             return
 
         embed = create_basic_embed(
@@ -263,7 +263,7 @@ class StoryModeCog(commands.Cog):
             inline=False
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
     @app_commands.command(name="evento", description="Participa de um evento disponível")
     @app_commands.describe(
@@ -284,7 +284,7 @@ class StoryModeCog(commands.Cog):
 
         if not player_data:
             try:
-                await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar")
+                await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             except discord.errors.NotFound:
                 logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
             except Exception as e:
@@ -297,7 +297,7 @@ class StoryModeCog(commands.Cog):
 
             if "error" in result:
                 try:
-                    await interaction.followup.send(f"Erro ao verificar eventos disponíveis: {result['error']}")
+                    await interaction.followup.send(f"Erro ao verificar eventos disponíveis: {result['error']}", ephemeral=True)
                 except discord.errors.NotFound:
                     logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
                 except Exception as e:
@@ -306,7 +306,7 @@ class StoryModeCog(commands.Cog):
 
             if "available_events" not in result or not result["available_events"]:
                 try:
-                    await interaction.followup.send("Não há eventos disponíveis para você no momento.")
+                    await interaction.followup.send("Não há eventos disponíveis para você no momento.", ephemeral=True)
                 except discord.errors.NotFound:
                     logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
                 except Exception as e:
@@ -329,7 +329,7 @@ class StoryModeCog(commands.Cog):
             embed.set_footer(text="Use /evento [evento_id] para participar de um evento.")
 
             try:
-                await interaction.followup.send(embed=embed)
+                await interaction.followup.send(embed=embed, ephemeral=True)
             except discord.errors.NotFound:
                 logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
             except Exception as e:
@@ -341,7 +341,7 @@ class StoryModeCog(commands.Cog):
 
         if "error" in result:
             try:
-                await interaction.followup.send(f"Erro ao participar do evento: {result['error']}")
+                await interaction.followup.send(f"Erro ao participar do evento: {result['error']}", ephemeral=True)
             except discord.errors.NotFound:
                 logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
             except Exception as e:
@@ -362,7 +362,7 @@ class StoryModeCog(commands.Cog):
         })
 
         try:
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, ephemeral=True)
         except discord.errors.NotFound:
             logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
         except Exception as e:
@@ -464,14 +464,14 @@ class StoryModeCog(commands.Cog):
             player_data = get_player(user_id)
 
             if not player_data:
-                await interaction.followup.send("Erro: Dados do jogador não encontrados.")
+                await interaction.followup.send("Erro: Dados do jogador não encontrados.", ephemeral=True)
                 return
 
             # Process the choice
             result = self.story_mode.process_choice(player_data, choice_index)
 
             if "error" in result:
-                await interaction.followup.send(f"Erro ao processar escolha: {result['error']}")
+                await interaction.followup.send(f"Erro ao processar escolha: {result['error']}", ephemeral=True)
                 return
 
             # Update player data in database
@@ -519,14 +519,14 @@ class StoryModeCog(commands.Cog):
             player_data = get_player(user_id)
 
             if not player_data:
-                await interaction.followup.send("Erro: Dados do jogador não encontrados.")
+                await interaction.followup.send("Erro: Dados do jogador não encontrados.", ephemeral=True)
                 return
 
             # Process the choice (continue is equivalent to choice 0)
             result = self.story_mode.process_choice(player_data, 0)
 
             if "error" in result:
-                await interaction.followup.send(f"Erro ao continuar: {result['error']}")
+                await interaction.followup.send(f"Erro ao continuar: {result['error']}", ephemeral=True)
                 return
 
             # Update player data in database
