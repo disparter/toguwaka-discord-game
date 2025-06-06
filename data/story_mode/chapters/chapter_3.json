@@ -246,5 +246,74 @@
     },
     "completion_exp": 1500,
     "completion_tusd": 2000
+  },
+  "3_4_elara": {
+    "type": "story",
+    "title": "Cidade Proibida: Ecos do Tempo",
+    "description": "Você e Elara exploram a Cidade Proibida, onde suas habilidades temporais são postas à prova.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Você e Elara chegam à entrada da Cidade Proibida, uma área isolada cercada por barreiras de segurança e avisos de perigo."}
+    ],
+    "choices": [
+      {"text": "Continuar", "next_dialogue": 1}
+    ],
+    "completion_exp": 2000,
+    "completion_tusd": 2500,
+    "next_chapter": "3_5"
+  },
+  "3_4_takeshi": {
+    "type": "story",
+    "title": "Cidade Proibida: Sombras Dimensionais",
+    "description": "Você e Takeshi exploram a Cidade Proibida, enfrentando os segredos ocultos nas sombras.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Você e Takeshi chegam à entrada da Cidade Proibida, uma área isolada cercada por barreiras de segurança e avisos de perigo."}
+    ],
+    "choices": [
+      {"text": "Continuar", "next_dialogue": 1}
+    ],
+    "completion_exp": 2000,
+    "completion_tusd": 2500,
+    "next_chapter": "3_5"
+  },
+  "3_4_mina": {
+    "type": "story",
+    "title": "Cidade Proibida: Luz nas Trevas",
+    "description": "Você e Mina exploram a Cidade Proibida, onde sua luz estelar ilumina segredos há muito esquecidos.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Você e Mina chegam à entrada da Cidade Proibida, uma área isolada cercada por barreiras de segurança e avisos de perigo."}
+    ],
+    "choices": [
+      {"text": "Continuar", "next_dialogue": 1}
+    ],
+    "completion_exp": 2000,
+    "completion_tusd": 2500,
+    "next_chapter": "3_5"
+  },
+  "3_5": {
+    "type": "story",
+    "title": "Retorno à Academia",
+    "description": "Você retorna à Academia Tokugawa com as descobertas da Cidade Proibida.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Após a expedição à Cidade Proibida, você e seu mentorado retornam à Academia Tokugawa com valiosas descobertas e uma nova compreensão das anomalias dimensionais."}
+    ],
+    "choices": [
+      {"text": "Continuar", "next_dialogue": 1}
+    ],
+    "completion_exp": 2500,
+    "completion_tusd": 3000,
+    "next_chapter": "3_6"
+  },
+  "3_6": {
+    "type": "challenge",
+    "title": "Confronto Final",
+    "description": "O confronto final com as forças que ameaçam a estabilidade dimensional.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "As descobertas na Cidade Proibida levaram a um confronto inevitável com as forças que ameaçam a estabilidade dimensional."}
+    ],
+    "choices": [
+      {"text": "Continuar", "next_dialogue": 1}
+    ],
+    "completion_exp": 3000,
+    "completion_tusd": 3500
   }
 }
