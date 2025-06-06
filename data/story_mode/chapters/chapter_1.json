@@ -2067,7 +2067,7 @@
     },
     "completion_exp": 700,
     "completion_tusd": 800,
-    "next_chapter": "chapter_2_2"
+    "next_chapter": "2_2"
   },
   "chapter_2_2": {
     "type": "story",
@@ -2113,6 +2113,6 @@
     ],
     "completion_exp": 250,
     "completion_tusd": 350,
-    "next_chapter": "chapter_2_3"
+    "next_chapter": "2_3"
   }
 }
