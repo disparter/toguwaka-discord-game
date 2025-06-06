@@ -149,13 +149,28 @@ ENHANCED_STORY_CHAPTERS = {
                 {"npc": "Junie", "text": "Olá! Eu sou Junie, sua assistente virtual. Estou aqui para ajudar com qualquer dúvida que você tenha sobre a academia."},
                 {"npc": "Junie", "text": "A Academia Tokugawa não é uma escola comum. Aqui, os estudantes são classificados em uma hierarquia baseada em seus poderes."},
                 {"npc": "Junie", "text": "Os mais fortes ocupam posições de liderança, como Rei ou Rainha, Jack e Ás. Eles são responsáveis por manter a ordem."},
-                {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!"}
+                {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!"},
+                {"npc": "Junie", "text": "Entendo que você queira saber mais sobre nossa hierarquia. É um sistema fascinante que define a vida social na academia."},
+                {"npc": "Junie", "text": "No topo da hierarquia estão os Reis e Rainhas - estudantes de nível 5 com poderes extraordinários. Eles são respeitados e temidos por todos."},
+                {"npc": "Junie", "text": "Logo abaixo estão os Jack e Ás - nível 4, a elite da academia, segundos apenas para o Rei/Rainha. Eles geralmente são os braços direitos dos líderes."},
+                {"npc": "Junie", "text": "O nível 3 é composto pela Elite - estudantes com habilidades excepcionais que se destacam em suas áreas."},
+                {"npc": "Junie", "text": "No nível 2 temos os estudantes Médio-Alto, com poderes acima da média, mas não excepcionais."},
+                {"npc": "Junie", "text": "O nível 1 é formado pelos estudantes Médios, com poderes medianos que formam a maioria da população estudantil."},
+                {"npc": "Junie", "text": "Por fim, no nível 0 estão os estudantes de Baixo nível, com poderes fracos ou sem poderes. Infelizmente, eles frequentemente enfrentam dificuldades sociais."},
+                {"npc": "Junie", "text": "Sua posição na hierarquia será determinada por suas habilidades, conquistas e como você se relaciona com os outros estudantes."},
+                {"npc": "Junie", "text": "Agora que você entende melhor nosso sistema, o que gostaria de fazer a seguir?"}
             ],
             "choices": [
                 {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7},
                 {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8},
                 {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9}
             ],
+            "additional_choices": {
+                9: [
+                    {"text": "Agora vamos conhecer os clubes!", "next_dialogue": 7},
+                    {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8}
+                ]
+            },
             "completion_exp": 50,
             "completion_tusd": 100,
             "next_chapter": 2
