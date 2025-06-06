@@ -2198,40 +2198,45 @@ class ScheduledEvents(commands.Cog):
     async def trigger_villain_event(self, channel):
         """Trigger a random villain invasion event."""
         try:
+            logger.info(f"Triggering villain event in channel {channel.name} ({channel.id})")
+
             # Create villain event with expanded types and tiers
             villain_tiers = {
                 'tier1': {
                     'names': [
                         'Lorde das Sombras', 'Mestre do Caos', 'Imperador do Gelo', 
-                        'Rainha das Chamas', 'Senhor dos Pesadelos', 'Caçador de Almas'
+                        'Rainha das Chamas', 'Senhor dos Pesadelos', 'Caçador de Almas',
+                        'Espectro Noturno', 'Dama da Dor', 'Arauto do Fim'
                     ],
                     'title': 'Vilão',
                     'color': 0x800080,  # Purple
                     'emoji': '🔥',
                     'multiplier': 1.0,
-                    'duration': 60  # minutes (increased from 30)
+                    'duration': 120  # minutes (increased from 60)
                 },
                 'tier2': {
                     'names': [
                         'General Apocalipse', 'Devorador de Mentes', 'Arquimago Corrompido',
-                        'Ceifador de Almas', 'Comandante Sanguinário', 'Destruidor de Mundos'
+                        'Ceifador de Almas', 'Comandante Sanguinário', 'Destruidor de Mundos',
+                        'Mestre das Sombras', 'Senhor do Abismo', 'Tirano Dimensional'
                     ],
                     'title': 'Vilão Poderoso',
                     'color': 0xCC0000,  # Dark Red
                     'emoji': '⚡',
                     'multiplier': 1.5,
-                    'duration': 90  # minutes (increased from 45)
+                    'duration': 180  # minutes (increased from 90)
                 },
                 'tier3': {
                     'names': [
                         'Lorde Supremo Voidbringer', 'Imperatriz Eterna das Trevas', 'Titã Primordial',
-                        'Avatar da Destruição', 'Entidade Cósmica Malévola', 'Deus Antigo Desperto'
+                        'Avatar da Destruição', 'Entidade Cósmica Malévola', 'Deus Antigo Desperto',
+                        'Conquistador Interdimensional', 'Soberano do Caos Eterno', 'Aniquilador de Realidades'
                     ],
                     'title': 'Vilão Lendário',
                     'color': 0xFF0000,  # Bright Red
                     'emoji': '☠️',
                     'multiplier': 2.5,
-                    'duration': 120  # minutes (increased from 60)
+                    'duration': 240  # minutes (increased from 120)
                 }
             }
 
@@ -2333,13 +2338,19 @@ class ScheduledEvents(commands.Cog):
                 embed=embed
             )
 
-            # Store event data
-            event_id = f"villain_{datetime.now().timestamp()}"
-            ACTIVE_EVENTS[event_id] = {
+            # Store event data with a clear identifier
+            now = datetime.now()
+            event_id = f"villain_{now.timestamp()}"
+
+            # Calculate end time
+            end_time = now + timedelta(minutes=tier_data['duration'])
+
+            # Create event data
+            event_data = {
                 'channel_id': channel.id,
                 'message_id': message.id,
-                'start_time': datetime.now(),
-                'end_time': datetime.now() + timedelta(minutes=tier_data['duration']),
+                'start_time': now,
+                'end_time': end_time,
                 'participants': [],
                 'data': {
                     'type': 'villain',
@@ -2355,7 +2366,33 @@ class ScheduledEvents(commands.Cog):
                 }
             }
 
-            logger.info(f"Triggered {tier} villain event ({villain_name}) in channel {channel.name}")
+            # Store in active events
+            ACTIVE_EVENTS[event_id] = event_data
+
+            # Log detailed information about the event
+            logger.info(f"Triggered {tier} villain event ({villain_name}) in channel {channel.name} ({channel.id})")
+            logger.info(f"Event ID: {event_id}")
+            logger.info(f"Event start time: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Event end time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Event duration: {tier_data['duration']} minutes")
+            logger.info(f"Current active events: {len(ACTIVE_EVENTS)}")
+
+            # Try to store in database if available
+            try:
+                from utils.database import store_event
+                store_event(
+                    event_id=event_id,
+                    event_type='villain',
+                    channel_id=channel.id,
+                    message_id=message.id,
+                    start_time=now,
+                    end_time=end_time,
+                    data=event_data['data'],
+                    completed=False
+                )
+                logger.info(f"Stored villain event {event_id} in database")
+            except Exception as e:
+                logger.error(f"Error storing villain event in database: {e}")
         except Exception as e:
             logger.error(f"Error triggering villain event: {e}")
 
@@ -2962,16 +2999,36 @@ class ScheduledEvents(commands.Cog):
         """Clean up expired events."""
         try:
             now = datetime.now()
-            expired_events = []
+            logger.info(f"Cleaning up expired events at {now.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Number of active events before cleanup: {len(ACTIVE_EVENTS)}")
 
+            expired_events = []
+            active_villain_count = 0
+
+            # First, log all active events for debugging
             for event_id, event_data in ACTIVE_EVENTS.items():
-                if event_data['end_time'] < now:
+                end_time = event_data.get('end_time')
+                if end_time:
+                    time_remaining = (end_time - now).total_seconds() / 60 if end_time > now else 0
+                    logger.info(f"Event {event_id}: ends at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, {time_remaining:.1f} minutes remaining")
+
+                    if 'villain' in event_id:
+                        active_villain_count += 1
+                        logger.info(f"Active villain: {event_data.get('data', {}).get('name')}, defeated: {event_data.get('data', {}).get('defeated', False)}")
+
+            logger.info(f"Active villain count: {active_villain_count}")
+
+            # Now check for expired events
+            for event_id, event_data in ACTIVE_EVENTS.items():
+                if event_data.get('end_time') and event_data['end_time'] < now:
                     expired_events.append(event_id)
+                    logger.info(f"Event {event_id} has expired and will be removed")
 
                     # Handle specific event cleanup
-                    if 'villain' in event_id and not event_data['data'].get('defeated', False):
+                    if 'villain' in event_id and not event_data.get('data', {}).get('defeated', False):
                         # Villain escaped
                         try:
+                            logger.info(f"Villain {event_data.get('data', {}).get('name')} has escaped")
                             channel = self.bot.get_channel(event_data['channel_id'])
                             if channel:
                                 await channel.send(
@@ -2984,6 +3041,9 @@ class ScheduledEvents(commands.Cog):
                                         color=0x808080  # Gray
                                     )
                                 )
+                                logger.info(f"Sent escape message for villain {event_data['data']['name']} to channel {channel.name}")
+                            else:
+                                logger.error(f"Could not find channel {event_data.get('channel_id')} for villain escape message")
                         except Exception as e:
                             logger.error(f"Error sending villain escape message: {e}")
 
@@ -3011,11 +3071,23 @@ class ScheduledEvents(commands.Cog):
                 # Get event data before removing it
                 event_data = ACTIVE_EVENTS.get(event_id)
 
-                # Remove from memory
-                ACTIVE_EVENTS.pop(event_id, None)
-
-                # Update in database
                 if event_data:
+                    event_type = "unknown"
+                    if 'villain' in event_id:
+                        event_type = "villain"
+                    elif 'minion' in event_id:
+                        event_type = "minion"
+                    elif 'collectible' in event_id:
+                        event_type = "collectible"
+                    elif 'dia_de_materia' in event_id:
+                        event_type = "dia_de_materia"
+
+                    logger.info(f"Removing expired {event_type} event: {event_id}")
+
+                    # Remove from memory
+                    ACTIVE_EVENTS.pop(event_id, None)
+
+                    # Update in database
                     try:
                         from utils.database import update_event_status
 
@@ -3029,6 +3101,23 @@ class ScheduledEvents(commands.Cog):
                         logger.info(f"Marked event {event_id} as completed in database")
                     except Exception as e:
                         logger.error(f"Error updating event status in database: {e}")
+                else:
+                    logger.warning(f"Tried to remove event {event_id} but it was not found in ACTIVE_EVENTS")
+
+            # Log the number of remaining events after cleanup
+            logger.info(f"Number of active events after cleanup: {len(ACTIVE_EVENTS)}")
+
+            # Log remaining villain events for debugging
+            remaining_villains = [event_id for event_id in ACTIVE_EVENTS if 'villain' in event_id]
+            if remaining_villains:
+                logger.info(f"Remaining villain events after cleanup: {len(remaining_villains)}")
+                for event_id in remaining_villains:
+                    event_data = ACTIVE_EVENTS.get(event_id)
+                    if event_data:
+                        end_time = event_data.get('end_time')
+                        if end_time:
+                            time_remaining = (end_time - now).total_seconds() / 60
+                            logger.info(f"Villain {event_data.get('data', {}).get('name')}: {time_remaining:.1f} minutes remaining")
 
         except Exception as e:
             logger.error(f"Error cleaning up expired events: {e}")
@@ -3178,16 +3267,34 @@ class ScheduledEvents(commands.Cog):
             active_villain = None
             active_event_id = None
 
+            # Log current time and active events for debugging
+            now = datetime.now()
+            logger.info(f"Checking for active villains at {now.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Number of active events: {len(ACTIVE_EVENTS)}")
+
             for event_id, event_data in ACTIVE_EVENTS.items():
+                # Log each event for debugging
+                logger.info(f"Event ID: {event_id}, Channel ID: {event_data.get('channel_id')}, Current channel: {interaction.channel.id}")
+                logger.info(f"Event data: {event_data.get('data', {}).get('type')}, Defeated: {event_data.get('data', {}).get('defeated', False)}")
+
+                # Check if this is a villain event in the current channel that's not defeated
                 if ('villain' in event_id and 
-                    event_data['channel_id'] == interaction.channel.id and 
-                    not event_data['data'].get('defeated', False)):
+                    event_data.get('channel_id') == interaction.channel.id and 
+                    not event_data.get('data', {}).get('defeated', False)):
                     active_villain = event_data
                     active_event_id = event_id
+                    logger.info(f"Found active villain: {event_data.get('data', {}).get('name')}")
                     break
 
             if not active_villain:
-                await interaction.response.send_message("Não há vilões ativos neste canal no momento.")
+                # Check if there are any villain events at all
+                villain_events = [event_id for event_id in ACTIVE_EVENTS if 'villain' in event_id]
+                if villain_events:
+                    logger.info(f"Found villain events but none in this channel: {villain_events}")
+                    await interaction.response.send_message("Não há vilões ativos neste canal no momento, mas existem vilões em outros canais.")
+                else:
+                    logger.info("No villain events found at all")
+                    await interaction.response.send_message("Não há vilões ativos neste canal no momento.")
                 return
 
             # Check if player already participated
