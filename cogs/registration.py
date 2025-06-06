@@ -210,6 +210,15 @@ class Registration(commands.Cog):
             inline=False
         )
 
+        # Story mode commands
+        help_embed.add_field(
+            name="Comandos do Modo História",
+            value="**!historia** - Iniciar ou continuar o modo história\n"
+                  "**/historia iniciar** - Iniciar ou continuar o modo história\n"
+                  "**/historia status** - Verificar seu progresso no modo história",
+            inline=False
+        )
+
         await ctx.send(embed=help_embed)
 
 async def setup(bot):
