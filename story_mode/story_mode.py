@@ -430,6 +430,15 @@ class StoryMode:
             choice_metadata
         )
 
+        # Handle club selection if present in metadata
+        if choice_metadata and "club_id" in choice_metadata:
+            club_id = choice_metadata["club_id"]
+            logger.info(f"Player selected club: {club_id}")
+            # Update player's club_id
+            if "story_progress" not in result["player_data"]:
+                result["player_data"]["story_progress"] = {}
+            result["player_data"]["club_id"] = club_id
+
         # Check if this is a challenge chapter and if the choice indicates success or failure
         if isinstance(chapter, ChallengeChapter) and "challenge_result" in choice_metadata:
             challenge_result = choice_metadata["challenge_result"]

@@ -22,12 +22,26 @@
       "7": [
         {"npc": "Junie", "text": "Ótimo! Vamos começar pelo Clube das Chamas. Eles são conhecidos por seu treinamento intenso e foco em poderes destrutivos."},
         {"npc": "Junie", "text": "Depois podemos visitar os Ilusionistas Mentais, o Conselho Político, os Elementalistas e o Clube de Combate."},
-        {"npc": "Junie", "text": "Cada clube tem sua própria filosofia e métodos de treinamento. Escolher o clube certo é importante para seu desenvolvimento."}
+        {"npc": "Junie", "text": "Cada clube tem sua própria filosofia e métodos de treinamento. Escolher o clube certo é importante para seu desenvolvimento."},
+        {"npc": "Junie", "text": "Agora é hora de escolher um clube! Qual deles mais combina com você?", "choices": [
+          {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1}},
+          {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2}},
+          {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3}},
+          {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4}},
+          {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5}}
+        ]}
       ],
       "8": [
         {"npc": "Junie", "text": "Entendo que queira descobrir a academia por conta própria. Isso mostra independência!"},
         {"npc": "Junie", "text": "Apenas tome cuidado com as áreas restritas e respeite a hierarquia. Alguns estudantes mais poderosos podem não gostar de novatos em seus territórios."},
-        {"npc": "Junie", "text": "Se precisar de ajuda, estarei disponível a qualquer momento. Boa exploração!"}
+        {"npc": "Junie", "text": "Se precisar de ajuda, estarei disponível a qualquer momento. Boa exploração!"},
+        {"npc": "Junie", "text": "Antes de ir, você precisa se registrar em um clube. Qual deles mais combina com você?", "choices": [
+          {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1}},
+          {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2}},
+          {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3}},
+          {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4}},
+          {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5}}
+        ]}
       ],
       "9": [
         {"npc": "Junie", "text": "Claro! A hierarquia da Academia Tokugawa é baseada no poder e habilidade dos estudantes."},
@@ -115,8 +129,8 @@
     "title": "Registro no Clube",
     "description": "Escolha um clube para se juntar e conheça seu líder.",
     "dialogues": [
-      {"npc": "Junie", "text": "Agora é hora de escolher um clube! Cada clube tem seu próprio foco e atividades."},
-      {"npc": "Junie", "text": "Você já está registrado no clube {club_name}. Vamos conhecer o líder do clube!"}
+      {"npc": "Junie", "text": "Cada clube tem seu próprio foco e atividades."},
+      {"npc": "Junie", "text": "Você está registrado no clube {club_name}. Vamos conhecer o líder do clube!"}
     ],
     "choices": [
       {"text": "Continuar", "next_dialogue": 1}
