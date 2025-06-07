@@ -95,7 +95,18 @@ class TokugawaBot(commands.Bot):
 bot = TokugawaBot(command_prefix='!', intents=intents)
 
 # Make sure the bot is syncing application commands
-bot.tree.on_error = lambda interaction, error: logger.error(f"Command tree error: {error}")
+async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+    """Error handler for application commands."""
+    if isinstance(error, discord.app_commands.CommandInvokeError):
+        # If the original error is a NotFound error (interaction expired)
+        if isinstance(error.original, discord.NotFound) and error.original.code == 10062:
+            logger.warning(f"Interaction expired for user {interaction.user.id if interaction.user else 'Unknown'} when using /{interaction.command.name if interaction.command else 'Unknown'}")
+            return
+
+    # Log all other errors
+    logger.error(f"Command tree error: {error}")
+
+bot.tree.on_error = on_app_command_error
 
 # Add a simple slash command for testing
 @bot.tree.command(name="ping", description="Responde com 'Pong!' para verificar se o bot está funcionando")
