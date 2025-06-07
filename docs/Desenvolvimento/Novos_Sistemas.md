@@ -1,6 +1,6 @@
 # Documentação dos Novos Sistemas
 
-Este documento descreve os novos sistemas implementados no jogo: o Sistema de Eventos Sazonais e o Sistema de Companheiros.
+Este documento descreve os novos sistemas implementados no jogo: o Sistema de Eventos Sazonais, o Sistema de Companheiros e o Dashboard de Comparação de Decisões.
 
 ## Sistema de Eventos Sazonais
 
@@ -99,6 +99,42 @@ Os companheiros disponíveis são verificados automaticamente durante o progress
 - Ao iniciar ou continuar a história
 - Após fazer escolhas
 - Após participar de eventos
+
+### Comandos Discord para Interação com Companheiros
+
+Os jogadores podem interagir com o sistema de companheiros através dos seguintes comandos Discord:
+
+1. **`/companheiros`**: Visualiza todos os companheiros disponíveis e recrutados
+   - Mostra o companheiro ativo atual
+   - Lista companheiros recrutados com seus níveis de sincronização e progresso
+   - Exibe companheiros disponíveis para recrutamento no capítulo atual
+
+2. **`/recrutar [nome]`**: Recruta um companheiro disponível
+   - Verifica se o companheiro está disponível no capítulo atual
+   - Adiciona o companheiro à lista de companheiros recrutados do jogador
+
+3. **`/ativar_companheiro [nome]`**: Ativa um companheiro recrutado
+   - Desativa qualquer companheiro atualmente ativo
+   - Torna o companheiro especificado ativo
+   - Exibe as habilidades de sincronização disponíveis
+
+4. **`/desativar_companheiro`**: Desativa o companheiro atual
+   - Remove o status ativo do companheiro atual
+
+5. **`/status_companheiro [nome]`**: Exibe detalhes de um companheiro
+   - Mostra informações básicas (tipo de poder, especialização, etc.)
+   - Lista missões disponíveis e completadas
+   - Exibe habilidades de sincronização disponíveis
+
+6. **`/completar_missao [nome] [id_missao]`**: Completa uma missão de companheiro
+   - Marca a missão como concluída
+   - Concede recompensas (EXP, TUSD, itens especiais)
+   - Avança o progresso do arco narrativo do companheiro
+
+7. **`/sincronizar [id_habilidade]`**: Usa uma habilidade de sincronização
+   - Verifica se o companheiro está ativo
+   - Aplica os efeitos da habilidade (aumento de atributos, ações especiais)
+   - Coloca a habilidade em cooldown
 
 ### Métodos Principais
 
@@ -234,6 +270,238 @@ Os companheiros são armazenados na estrutura `story_progress` do jogador:
 }
 ```
 
+## Sistema de Eventos Aleatórios Aprimorado
+
+O Sistema de Eventos Aleatórios foi aprimorado para oferecer experiências mais envolventes e variadas aos jogadores, com opções de diálogo, verificações de atributos e recompensas/penalidades diversificadas.
+
+### Características do Sistema Aprimorado
+
+1. **Títulos Significativos**
+   - Todos os eventos agora possuem títulos descritivos e significativos
+   - Eliminação do problema "Untitled Event" que ocorria anteriormente
+   - Melhor contextualização para os jogadores
+
+2. **Opções de Diálogo**
+   - Os jogadores podem escolher entre diferentes opções de diálogo
+   - Cada opção pode conceder bônus em verificações de atributos específicos
+   - Respostas personalizadas baseadas no sucesso ou fracasso
+
+3. **Verificações de Atributos**
+   - Eventos podem exigir verificações de atributos (Intelecto, Poder, etc.)
+   - Dificuldade variável baseada no contexto do evento
+   - Resultados diferentes baseados no sucesso ou fracasso
+
+4. **Recompensas e Penalidades Variadas**
+   - Múltiplas possibilidades de recompensas para eventos bem-sucedidos
+   - Diferentes penalidades para falhas
+   - Descrições detalhadas dos resultados
+
+5. **Categorização e Raridade**
+   - Eventos organizados por categorias (social, combate, acadêmico, etc.)
+   - Sistema de raridade que determina a frequência de ocorrência
+   - Eventos lendários com recompensas excepcionais
+
+### Estrutura de um Evento Aleatório Aprimorado
+
+```json
+{
+  "title": "Título do Evento",
+  "description": "Descrição do evento",
+  "type": "positive/negative/neutral",
+  "effect": {
+    "attribute_check": "nome_do_atributo",
+    "difficulty": 7,
+    "rewards": {
+      "success": [
+        {
+          "description": "Descrição do sucesso",
+          "exp": 100,
+          "tusd": 50,
+          "atributo": 1
+        }
+      ],
+      "failure": [
+        {
+          "description": "Descrição da falha",
+          "exp": 20,
+          "tusd": -10
+        }
+      ]
+    }
+  },
+  "dialogue_options": [
+    {
+      "text": "Texto da opção de diálogo",
+      "attribute_bonus": "atributo",
+      "bonus_value": 2,
+      "success_text": "Texto exibido em caso de sucesso",
+      "failure_text": "Texto exibido em caso de falha"
+    }
+  ],
+  "category": "categoria",
+  "rarity": "raridade"
+}
+```
+
+### Integração com o Sistema de Jogo
+
+O sistema aprimorado de eventos aleatórios se integra com outros sistemas do jogo:
+
+- **Modo História**: Eventos aleatórios podem ocorrer durante a progressão da história
+- **Sistema de Clubes**: Eventos específicos para membros de determinados clubes
+- **Sistema de Atributos**: Verificações de atributos e bônus baseados nas estatísticas do jogador
+- **Sistema de Economia**: Recompensas e penalidades econômicas variadas
+
+### Métodos Principais
+
+```python
+# Obter um evento aleatório
+event = RandomEvent.create_random_event()
+
+# Disparar um evento para um jogador
+result = event.trigger(player_data)
+
+# Disparar um evento com escolha de diálogo
+result = event.trigger(player_data, dialogue_choice=1)
+
+# Verificar o resultado do evento
+if "attribute_check" in result:
+    success = result["attribute_check"]["success"]
+    # Processar resultado baseado no sucesso ou falha
+```
+
+## Dashboard de Comparação de Decisões
+
+O Dashboard de Comparação de Decisões é uma ferramenta interativa que permite aos jogadores visualizar como suas escolhas narrativas se comparam às da comunidade geral, mantendo o anonimato dos dados.
+
+### Funcionalidades Principais
+
+1. **Comparação de Escolhas Narrativas**
+   - Exibição de estatísticas sobre as escolhas feitas em pontos-chave da história
+   - Gráficos visuais mostrando a distribuição de escolhas entre todos os jogadores
+   - Comparação das escolhas do jogador com as tendências gerais
+
+2. **Análise de Caminhos Narrativos**
+   - Visualização dos caminhos narrativos mais populares através da história
+   - Identificação de caminhos raros ou pouco explorados
+   - Mapa de calor mostrando pontos de decisão com maior divergência entre jogadores
+
+3. **Estatísticas de Facções e Alianças**
+   - Distribuição de jogadores entre as diferentes facções (Elite vs. Igualitários)
+   - Tendências de alianças com NPCs específicos
+   - Comparação das escolhas de facção com base no clube escolhido
+
+4. **Métricas de Estilo de Jogo**
+   - Análise do estilo de jogo baseado em padrões de escolha (diplomático, agressivo, estratégico, etc.)
+   - Comparação do estilo de jogo do jogador com a comunidade
+   - Sugestões de conteúdo baseadas no estilo de jogo identificado
+
+### Como Funciona
+
+O dashboard coleta anonimamente as escolhas feitas por todos os jogadores durante o modo história e as agrega para criar visualizações estatísticas. Quando um jogador acessa o dashboard, suas próprias escolhas são comparadas com as estatísticas agregadas da comunidade.
+
+### Comandos Discord
+
+Os jogadores podem acessar o dashboard através dos seguintes comandos Discord:
+
+1. **`/dashboard escolhas [capítulo]`**: Mostra uma comparação das escolhas do jogador com a comunidade
+   - Exibe gráficos de barras comparando as escolhas do jogador com as tendências gerais
+   - Opcionalmente filtra por capítulo específico
+   - Fornece estatísticas sobre quantos jogadores fizeram as mesmas escolhas
+
+2. **`/dashboard caminhos`**: Analisa os caminhos narrativos através da história
+   - Mostra os caminhos mais populares e como o caminho do jogador se compara
+   - Identifica se o caminho do jogador é comum ou raro
+   - Fornece estatísticas sobre a popularidade de diferentes sequências de capítulos
+
+3. **`/dashboard faccoes`**: Exibe estatísticas sobre facções e alianças
+   - Mostra a distribuição de jogadores entre diferentes clubes
+   - Compara as reputações de facção do jogador com as médias da comunidade
+   - Identifica tendências de alianças com NPCs específicos
+
+4. **`/dashboard estilo`**: Analisa o estilo de jogo do jogador
+   - Identifica o estilo dominante do jogador (diplomático, agressivo, estratégico, etc.)
+   - Compara o estilo do jogador com as tendências da comunidade
+   - Oferece sugestões de conteúdo baseadas no estilo identificado
+
+### Métodos Principais
+
+```python
+# Obter as escolhas de um jogador
+_get_player_choices(player, chapter_id=None)
+
+# Obter escolhas agregadas da comunidade
+_get_community_choices(chapter_id=None)
+
+# Obter o caminho narrativo de um jogador
+_get_player_path(player)
+
+# Obter caminhos narrativos agregados da comunidade
+_get_community_paths()
+
+# Obter dados de facção de um jogador
+_get_player_faction_data(player)
+
+# Obter dados de facção agregados da comunidade
+_get_community_faction_data()
+
+# Analisar o estilo de jogo de um jogador
+_analyze_gameplay_style(player, player_choices)
+
+# Obter dados de estilo de jogo agregados da comunidade
+_get_community_style_data()
+
+# Criar visualização de comparação de escolhas
+_create_choice_comparison(player, player_choices, community_choices, chapter_id)
+
+# Criar visualização de análise de caminhos
+_create_path_analysis(player, player_path, community_paths)
+
+# Criar visualização de estatísticas de facção
+_create_faction_stats(player, player_faction, community_factions)
+
+# Criar visualização de análise de estilo de jogo
+_create_style_analysis(player, player_style, community_styles)
+```
+
+### Estrutura de Dados
+
+O dashboard utiliza os dados de escolhas já armazenados na estrutura `story_progress` do jogador:
+
+```json
+"story_progress": {
+  "story_choices": {
+    "1_1": {
+      "choice_0": 1,
+      "choice_1": 0
+    },
+    "1_2": {
+      "choice_0": 2
+    }
+  },
+  "completed_chapters": ["1_1", "1_2", "1_3"],
+  "faction_reputations": {
+    "elite": 25,
+    "igualitarios": -10
+  }
+}
+```
+
+### Integração com o Modo História
+
+O dashboard se integra com o modo história existente:
+- Utiliza as escolhas já registradas pelo sistema de história
+- Não requer alterações no fluxo de jogo existente
+- Fornece insights adicionais sobre a experiência narrativa
+
+### Requisitos Técnicos
+
+O dashboard utiliza as seguintes bibliotecas para criar visualizações:
+- matplotlib: Para geração de gráficos
+- numpy: Para processamento de dados estatísticos
+
+Estas dependências foram adicionadas ao arquivo requirements.txt do projeto.
+
 ## Conclusão
 
-Estes novos sistemas enriquecem significativamente a experiência narrativa do jogo, oferecendo conteúdo dinâmico baseado nas estações e companheiros com histórias próprias. A integração com o modo história existente garante uma experiência coesa e imersiva para os jogadores.
+Estes novos sistemas enriquecem significativamente a experiência narrativa do jogo, oferecendo conteúdo dinâmico baseado nas estações, companheiros com histórias próprias, eventos aleatórios mais envolventes com opções de diálogo e resultados variados, e um dashboard interativo para comparação de decisões. A integração com o modo história existente garante uma experiência coesa e imersiva para os jogadores.
