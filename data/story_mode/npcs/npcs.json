@@ -37,6 +37,12 @@
         "friendly": {"text": "Meus pais eram heróis, sabia? Quero ser como eles um dia."},
         "close": {"text": "Desde que perdi meus pais, tenho medo de perder pessoas próximas. Por isso treino tanto."},
         "trusted": {"text": "Às vezes tenho pesadelos sobre o dia em que meus pais morreram. Não contei isso para mais ninguém."}
+      },
+      "reflection": {
+        "default": {"text": "Às vezes me pergunto se estou queimando por dentro... ou apenas tentando me manter aquecido. O fogo pode ser tanto destruição quanto sobrevivência, sabia?"},
+        "friendly": {"text": "Você já se sentiu como se todo mundo esperasse que você fosse forte o tempo todo? Como se mostrar qualquer fraqueza fosse decepcionar todos ao seu redor?"},
+        "close": {"text": "Contigo, posso ser sincero. Às vezes, tenho medo do que sou capaz quando perco o controle. Já vi o que minhas chamas podem fazer quando a raiva toma conta... e isso me assusta."},
+        "trusted": {"text": "Obrigado por nunca ter me julgado. Com você, não preciso esconder as cicatrizes que o fogo deixou. Não só na minha pele, mas na minha alma. Você me ajuda a acreditar que posso ser mais que apenas destruição."}
       }
     }
   },
@@ -78,6 +84,12 @@
         "friendly": {"text": "Esta academia tem muitos segredos. Alguns deles são perigosos."},
         "close": {"text": "Encontrei documentos estranhos na sala do diretor. Algo sobre 'Projeto Ascensão'."},
         "trusted": {"text": "A academia está conduzindo experimentos com alunos poderosos. Precisamos descobrir mais sobre isso."}
+      },
+      "dreams": {
+        "default": {"text": "Sonhar é perigoso quando você vê pensamentos reais até dormindo. Às vezes acordo exausta de navegar por mentes que nem sabia que estava acessando."},
+        "friendly": {"text": "Às vezes sonho com lugares que nunca vi... e acordo com saudade deles. Serão memórias de outras pessoas que captei sem querer? Ou talvez visões de algo mais?"},
+        "close": {"text": "Já sonhei com você antes. Não se preocupe, foi... reconfortante. Sua mente tem um padrão único, como uma melodia que se destaca em uma sinfonia caótica de pensamentos."},
+        "trusted": {"text": "Meus sonhos às vezes mostram futuros possíveis. Você sempre aparece neles... como uma constante. Enquanto outras pessoas e eventos mudam, você permanece. Isso deve significar algo importante para nós dois."}
       }
     }
   },
@@ -119,6 +131,12 @@
         "friendly": {"text": "Posso te contar alguns rumores interessantes, se você me ajudar com algo depois."},
         "close": {"text": "Tenho informações sobre todos os líderes de clubes. O que gostaria de saber?"},
         "trusted": {"text": "Vou te mostrar meu arquivo secreto. Tenho informações que poderiam derrubar metade da hierarquia da academia."}
+      },
+      "influence": {
+        "default": {"text": "A influência é como um vírus: se espalha melhor quando ninguém percebe. Observe como as pessoas mudam de comportamento ao redor dos poderosos... é fascinante."},
+        "friendly": {"text": "Construa alianças antes de precisar delas. É a regra número um. Nunca se sabe quando um favor guardado pode ser a diferença entre vitória e derrota no jogo do poder."},
+        "close": {"text": "Com você ao meu lado, as possibilidades se multiplicam. Já pensou no nosso potencial juntos? Sua habilidade com minha estratégia... poderíamos remodelar esta academia à nossa imagem."},
+        "trusted": {"text": "Estou preparando algo grande. Algo que mudará as regras. E você é parte fundamental disso. Quando meu pai se tornar ministro, precisarei de alguém de confiança para gerenciar meus interesses aqui. Alguém como você."}
       }
     }
   },
@@ -160,6 +178,12 @@
         "friendly": {"text": "Venho de uma comunidade que vive em harmonia com a natureza. A vida na cidade é... desafiadora."},
         "close": {"text": "Às vezes vou ao bosque atrás da academia para meditar e me reconectar com os elementos. Você pode vir comigo um dia."},
         "trusted": {"text": "Minha aldeia acredita que estamos à beira de uma catástrofe elemental. Vim para a academia buscar conhecimento para evitá-la."}
+      },
+      "balance": {
+        "default": {"text": "O desequilíbrio da natureza sempre reflete o desequilíbrio interior. As tempestades lá fora são apenas ecos das tempestades dentro de nós."},
+        "friendly": {"text": "Hoje senti que a terra vibrou sob meus pés. Algo está mudando. Os espíritos estão inquietos, como se soubessem de algo que ainda não podemos ver."},
+        "close": {"text": "Você sente também, não sente? A conexão... a vibração das folhas... Como se a natureza tentasse nos avisar de algo importante que está por vir."},
+        "trusted": {"text": "Os espíritos dizem que um ciclo está se fechando. Você terá um papel essencial quando o próximo começar. Nossos caminhos se cruzaram por um motivo maior que nós mesmos."}
       }
     }
   },
@@ -201,6 +225,12 @@
         "friendly": {"text": "Minha família tem uma longa linhagem de guerreiros. A pressão para ser o melhor é... intensa."},
         "close": {"text": "Meu pai nunca ficou satisfeito com nada que eu fizesse. Vim para a academia para provar meu valor."},
         "trusted": {"text": "Tenho uma condição que me enfraquece após usar meus poderes ao máximo. Por favor, não conte a ninguém. Seria visto como fraqueza."}
+      },
+      "discipline": {
+        "default": {"text": "Fraqueza é uma escolha. E eu escolho superação. Cada dia que você não treina, alguém está ficando mais forte que você. Lembre-se disso."},
+        "friendly": {"text": "Você tem disciplina. É isso que separa os fortes dos imprevisíveis. Vejo como você treina mesmo quando ninguém está observando. Isso é raro e admirável."},
+        "close": {"text": "Treinar com você me desafia. E isso é raro. A maioria das pessoas desiste quando sente dor, mas você... você entende que a dor é apenas fraqueza deixando o corpo."},
+        "trusted": {"text": "Preciso te mostrar uma técnica ancestral. Mas exige mais do que força... exige controle. Meu avô me ensinou que o verdadeiro poder não está em destruir montanhas, mas em saber quando não destruí-las."}
       }
     }
   },
