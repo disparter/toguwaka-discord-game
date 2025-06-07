@@ -37,7 +37,11 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to start or continue the story mode.
         """
-        await interaction.response.defer(ephemeral=True)
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que pudesse ser processada.")
+            return
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -83,7 +87,11 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to show the current status of the player's story progress.
         """
-        await interaction.response.defer(ephemeral=True)
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que pudesse ser processada.")
+            return
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -173,7 +181,11 @@ class StoryModeCog(commands.Cog):
         """
         Slash command to show or change the player's relationship with an NPC.
         """
-        await interaction.response.defer(ephemeral=True)
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que pudesse ser processada.")
+            return
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -454,6 +466,26 @@ class StoryModeCog(commands.Cog):
                     if file_size < 8 * 1024 * 1024:  
                         embed.set_image(url=f"attachment://{gif_filename}")
                         file = discord.File(gif_path, filename=gif_filename)
+
+                        # Register the gif in the player's image registry
+                        player_data = get_player(user_id)
+                        if player_data:
+                            story_progress = player_data.get("story_progress", {})
+
+                            # Add the gif to the player's image registry
+                            if "image_registry" not in story_progress:
+                                story_progress["image_registry"] = {}
+
+                            story_progress["image_registry"][gif_filename] = {
+                                "path": gif_path,
+                                "description": f"Imagem mostrada por {npc_name}",
+                                "seen_at": discord.utils.utcnow().isoformat()
+                            }
+
+                            player_data["story_progress"] = story_progress
+
+                            # Update player data in database
+                            update_player(user_id, story_progress=player_data["story_progress"])
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -473,6 +505,26 @@ class StoryModeCog(commands.Cog):
                         embed.set_image(url="attachment://kai_intro.gif")
                         # Create file object for the GIF
                         file = discord.File(kai_gif_path, filename="kai_intro.gif")
+
+                        # Register the gif in the player's image registry
+                        player_data = get_player(user_id)
+                        if player_data:
+                            story_progress = player_data.get("story_progress", {})
+
+                            # Add the gif to the player's image registry
+                            if "image_registry" not in story_progress:
+                                story_progress["image_registry"] = {}
+
+                            story_progress["image_registry"]["kai_intro.gif"] = {
+                                "path": kai_gif_path,
+                                "description": "Introdução de Kai Flameheart",
+                                "seen_at": discord.utils.utcnow().isoformat()
+                            }
+
+                            player_data["story_progress"] = story_progress
+
+                            # Update player data in database
+                            update_player(user_id, story_progress=player_data["story_progress"])
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -491,6 +543,26 @@ class StoryModeCog(commands.Cog):
                         embed.set_image(url="attachment://junie_intro.gif")
                         # Create file object for the GIF
                         file = discord.File(junie_gif_path, filename="junie_intro.gif")
+
+                        # Register the gif in the player's image registry
+                        player_data = get_player(user_id)
+                        if player_data:
+                            story_progress = player_data.get("story_progress", {})
+
+                            # Add the gif to the player's image registry
+                            if "image_registry" not in story_progress:
+                                story_progress["image_registry"] = {}
+
+                            story_progress["image_registry"]["junie_intro.gif"] = {
+                                "path": junie_gif_path,
+                                "description": "Introdução de Junie, sua assistente virtual",
+                                "seen_at": discord.utils.utcnow().isoformat()
+                            }
+
+                            player_data["story_progress"] = story_progress
+
+                            # Update player data in database
+                            update_player(user_id, story_progress=player_data["story_progress"])
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -510,6 +582,26 @@ class StoryModeCog(commands.Cog):
                         embed.set_image(url="attachment://gaia_naturae.gif")
                         # Create file object for the GIF
                         file = discord.File(gaia_gif_path, filename="gaia_naturae.gif")
+
+                        # Register the gif in the player's image registry
+                        player_data = get_player(user_id)
+                        if player_data:
+                            story_progress = player_data.get("story_progress", {})
+
+                            # Add the gif to the player's image registry
+                            if "image_registry" not in story_progress:
+                                story_progress["image_registry"] = {}
+
+                            story_progress["image_registry"]["gaia_naturae.gif"] = {
+                                "path": gaia_gif_path,
+                                "description": "Introdução de Gaia Naturae, líder dos Elementalistas",
+                                "seen_at": discord.utils.utcnow().isoformat()
+                            }
+
+                            player_data["story_progress"] = story_progress
+
+                            # Update player data in database
+                            update_player(user_id, story_progress=player_data["story_progress"])
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -645,7 +737,11 @@ class StoryModeCog(commands.Cog):
                 await interaction.response.send_message("Esta não é a sua história!", ephemeral=True)
                 return
 
-            await interaction.response.defer(ephemeral=True)
+            try:
+                await interaction.response.defer(ephemeral=True)
+            except discord.errors.NotFound:
+                logger.error("A interação expirou antes que pudesse ser processada.")
+                return
 
             # Get player data
             player_data = get_player(user_id)
@@ -700,7 +796,11 @@ class StoryModeCog(commands.Cog):
                 await interaction.response.send_message("Esta não é a sua história!", ephemeral=True)
                 return
 
-            await interaction.response.defer(ephemeral=True)
+            try:
+                await interaction.response.defer(ephemeral=True)
+            except discord.errors.NotFound:
+                logger.error("A interação expirou antes que pudesse ser processada.")
+                return
 
             # Get player data
             player_data = get_player(user_id)
