@@ -1,0 +1,32 @@
+# GIF Specification for Kai Flameheart (Líder do Clube das Chamas)
+
+## Visual Style
+- Style should match the webtoon *Unordinary*
+- Character should have red hair and an intense, passionate expression
+- Fiery, determined eyes
+- Expression should convey intensity and pride
+
+## Setting
+- Training field with fire columns
+- Red-tinted sky
+- Embers floating in the air
+- Heat waves visible in the background
+
+## Dialogue (Lipsync)
+"A chama mais brilhante forja o espírito mais forte!"
+
+## Visual Effects
+- Fire particles surrounding the character
+- Wind agitating his cape/clothing
+- Determined gaze
+- Glowing embers in the air
+
+## Animation Notes
+- Character should react to player's presence
+- Expressions and movements should be consistent with the character's passionate personality
+- No specific duration requirement
+
+## File Requirements
+- Final file should be named "kai_flameheart.gif"
+- File size should be under 8MB for Discord compatibility
+- If compression is needed, use the project's compression scripts
