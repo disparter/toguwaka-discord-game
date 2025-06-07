@@ -84,6 +84,11 @@ Implementações da interface `Event`:
 - `BaseEvent`: Implementação base com funcionalidades comuns
 - `ClimacticEvent`: Evento climático com grande impacto na história
 - `RandomEvent`: Evento aleatório que pode ocorrer a qualquer momento
+  - Agora com títulos significativos (corrigindo o problema "Untitled Event")
+  - Suporte para opções de diálogo e escolhas do jogador
+  - Verificações de atributos com dificuldade variável
+  - Recompensas e penalidades diversificadas baseadas no sucesso ou fracasso
+  - Categorização por tipo e sistema de raridade
 - `SeasonalEvent`: Evento sazonal que ocorre em períodos específicos do ano
 
 Também inclui o `DefaultEventManager`, uma implementação da interface `EventManager`.
@@ -148,6 +153,8 @@ Os capítulos são definidos em arquivos JSON com a seguinte estrutura:
 
 Os eventos são definidos em arquivos JSON com a seguinte estrutura:
 
+#### Evento Climático
+
 ```json
 {
   "torneio_anual": {
@@ -159,6 +166,61 @@ Os eventos são definidos em arquivos JSON com a seguinte estrutura:
     "frequency": "yearly",
     "impact": "major",
     "story_changes": {"hierarchy_tier": 3}
+  }
+}
+```
+
+#### Evento Aleatório Aprimorado
+
+```json
+{
+  "encontro_mestre": {
+    "title": "Encontro com o Mestre",
+    "description": "Você encontra um mestre misterioso que oferece compartilhar sua sabedoria.",
+    "type": "positive",
+    "effect": {
+      "attribute_check": "intellect",
+      "difficulty": 7,
+      "rewards": {
+        "success": [
+          {
+            "description": "Você absorve o conhecimento avançado",
+            "exp": 100,
+            "intellect": 2
+          },
+          {
+            "description": "Você aprende uma técnica secreta",
+            "exp": 80,
+            "power_stat": 1,
+            "tusd": 50
+          }
+        ],
+        "failure": [
+          {
+            "description": "Você não consegue compreender os ensinamentos",
+            "exp": 20
+          }
+        ]
+      }
+    },
+    "dialogue_options": [
+      {
+        "text": "Pedir para aprender técnicas de combate",
+        "attribute_bonus": "power_stat",
+        "bonus_value": 2,
+        "success_text": "O mestre fica impressionado com sua aptidão para o combate!",
+        "failure_text": "O mestre nota que você precisa de mais treinamento básico."
+      },
+      {
+        "text": "Pedir para aprender conhecimentos arcanos",
+        "attribute_bonus": "intellect",
+        "bonus_value": 2,
+        "success_text": "Sua mente absorve rapidamente os conhecimentos arcanos!",
+        "failure_text": "Os conceitos são muito complexos para seu nível atual."
+      }
+    ],
+    "category": "training",
+    "rarity": "rare"
   }
 }
 ```
@@ -402,10 +464,10 @@ Para o desenvolvimento futuro do modo história, apresentamos um plano abrangent
    - Criar "Festivais da Academia" com mini-jogos e desafios exclusivos
    - Implementar eventos climáticos sazonais que afetam a jogabilidade e desbloqueiam conteúdo exclusivo
 
-4. **Implementar Sistema de Companheiros**
-   - Desenvolver NPCs recrutáveis que acompanham o jogador em certos capítulos
-   - Criar arcos de desenvolvimento para cada companheiro
-   - Implementar um sistema de "Sincronização" onde o jogador pode combinar seus poderes com companheiros
+4. **Expandir Sistema de Companheiros**
+   - Adicionar mais companheiros com histórias e habilidades únicas
+   - Desenvolver missões especiais que requerem companheiros específicos
+   - Criar eventos de grupo que envolvem múltiplos companheiros
 
 ### Aprimoramentos Técnicos
 
