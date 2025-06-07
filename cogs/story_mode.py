@@ -888,7 +888,7 @@ class StoryModeCog(commands.Cog):
         }
 
         # Send a private notification that only mentions the user
-        await channel.send(f"<@{user_id}>, você tem novas notificações! Use `/evento` para verificar.", delete_after=60, ephemeral=True)
+        await channel.send(f"<@{user_id}>, você tem novas notificações! Use `/evento` para verificar.", delete_after=60)
 
     def _get_hierarchy_name(self, tier: int) -> str:
         """

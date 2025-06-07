@@ -59,4 +59,4 @@ fi
 
 # Process all GIFs in the assets folder
 compress_gif "$ASSETS_DIR/gifs/welcome.gif"
-
+compress_gif "$ASSETS_DIR/gifs/lider_conselho_politico.gif"

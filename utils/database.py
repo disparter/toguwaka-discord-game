@@ -432,9 +432,17 @@ def update_player(user_id, **kwargs):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
+    # Process values to handle dictionaries (convert to JSON strings)
+    processed_kwargs = {}
+    for key, value in kwargs.items():
+        if isinstance(value, dict):
+            processed_kwargs[key] = json.dumps(value)
+        else:
+            processed_kwargs[key] = value
+
     # Build the SET part of the query
-    set_clause = ", ".join([f"{key} = ?" for key in kwargs.keys()])
-    values = list(kwargs.values())
+    set_clause = ", ".join([f"{key} = ?" for key in processed_kwargs.keys()])
+    values = list(processed_kwargs.values())
     values.append(user_id)
 
     try:
