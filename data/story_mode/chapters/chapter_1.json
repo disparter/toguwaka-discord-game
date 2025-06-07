@@ -479,7 +479,9 @@
       "5": [
         {"npc": "Narrador", "text": "Enquanto o Professor Quantum fala, você observa as reações ao seu redor."},
         {"npc": "Narrador", "text": "A maioria dos estudantes parece fascinada, mas você nota que alguns dos mais velhos trocam olhares céticos ou preocupados."},
-        {"npc": "Narrador", "text": "Particularmente interessante é a reação da Professora Chronos, sentada discretamente no fundo do auditório. Ela observa o Professor Quantum com uma intensidade incomum."}
+        {"npc": "Narrador", "text": "Você nota uma professora que não conhecia antes - uma mulher de meia-idade com cabelos prateados e olhos penetrantes, vestindo um traje formal azul-escuro com detalhes que lembram relógios antigos."},
+        {"npc": "Narrador", "text": "Um estudante próximo sussurra que ela é a Professora Chronos, que leciona História dos Poderes e raramente aparece em eventos públicos."},
+        {"npc": "Narrador", "text": "Particularmente interessante é a reação dela, sentada discretamente no fundo do auditório. Ela observa o Professor Quantum com uma intensidade incomum."}
       ],
       "6": [
         {"npc": "Narrador", "text": "SUCCESS_PLACEHOLDER"},
@@ -545,6 +547,8 @@
     "dialogues": [
       {"npc": "Narrador", "text": "A palestra do Professor Quantum deixou você com mais perguntas do que respostas. Nos dias seguintes, você não consegue parar de pensar nas implicações de suas teorias."},
       {"npc": "Narrador", "text": "Se realmente houve um 'evento catalisador' que deu origem aos poderes, por que a história oficial seria diferente? Quem teria interesse em ocultar a verdade?"},
+      {"npc": "Narrador", "text": "No caminho para a biblioteca, você passa pela entrada da Floresta Proibida - uma área densa e misteriosa nos fundos do campus, cercada por avisos de 'ACESSO RESTRITO'."},
+      {"npc": "Narrador", "text": "Um grupo de estudantes próximos comenta sobre o recente fechamento da floresta para um 'projeto de pesquisa oficial', embora circulem rumores sobre fenômenos estranhos ocorrendo lá dentro."},
       {"npc": "Narrador", "text": "Movido pela curiosidade, você decide investigar mais a fundo, começando pela biblioteca da academia."},
       {"npc": "Bibliotecária", "text": "Bem-vindo à Biblioteca Central da Academia Tokugawa. Como posso ajudá-lo hoje?"}
     ],
@@ -787,6 +791,11 @@
       {"npc": "Narrador", "text": "No dia seguinte, após as aulas, você se dirige ao escritório da Professora Chronos conforme combinado."},
       {"npc": "Narrador", "text": "Seu escritório é diferente de qualquer outro na academia. As paredes estão cobertas de relógios de todos os tipos, todos marcando horas diferentes. Estranhos símbolos e diagramas cobrem um quadro enorme."},
       {"npc": "Professora Chronos", "text": "Bem-vindo. Pontual, como esperado. Sente-se, temos muito a discutir."},
+      {"npc": "Professora Chronos", "text": "Antes de prosseguirmos, devo explicar por que escolhi confiar em você, um estudante do primeiro ano."},
+      {"npc": "Professora Chronos", "text": "Normalmente, eu não envolveria alguém tão novo na academia em assuntos tão sérios. Mas você tem características especiais que o tornam... único."},
+      {"npc": "Professora Chronos", "text": "Primeiro, sua aura temporal é incomum - você existe em um estado de fluxo que poucos possuem, o que o torna mais resistente a paradoxos e alterações na linha do tempo."},
+      {"npc": "Professora Chronos", "text": "Segundo, o fato de você ter encontrado e compreendido o Tomo sugere uma afinidade natural com conhecimentos ocultos que a maioria dos estudantes não possui."},
+      {"npc": "Professora Chronos", "text": "E terceiro, em todas as linhas temporais que observei, você sempre desempenha um papel crucial nos eventos que estão por vir - seja como catalisador ou como estabilizador."},
       {"npc": "Professora Chronos", "text": "Primeiro, devo confirmar: você leu sobre o Evento Zero no Tomo, correto?"}
     ],
     "choices": [
@@ -863,7 +872,9 @@
     "dialogues": [
       {"npc": "Narrador", "text": "Semanas se passaram desde sua conversa com a Professora Chronos. Você tem observado o Diretor e seus associados, notando padrões suspeitos."},
       {"npc": "Narrador", "text": "Durante esse tempo, continuou estudando o Tomo secretamente, descobrindo mais sobre o Evento Zero e suas consequências."},
-      {"npc": "Narrador", "text": "Hoje, enquanto caminhava pelo campus, notou o Diretor e vários professores seniores entrando em um prédio raramente usado nos fundos da academia."}
+      {"npc": "Narrador", "text": "Você também notou atividades estranhas perto da Floresta Proibida. Apesar dos avisos oficiais de que está fechada para um 'projeto de pesquisa', você viu professores entrando e saindo em horários incomuns, carregando equipamentos não identificados."},
+      {"npc": "Narrador", "text": "Ontem à noite, observou luzes pulsantes entre as árvores e ouviu o que pareciam ser explosões abafadas. Um estudante mais velho comentou que 'algo escapou do controle lá dentro'."},
+      {"npc": "Narrador", "text": "Hoje, enquanto caminhava pelo campus, notou o Diretor e vários professores seniores entrando em um prédio raramente usado nos fundos da academia, próximo à entrada da Floresta Proibida."}
     ],
     "choices": [
       {"text": "Seguir discretamente para investigar", "next_dialogue": 3, "attribute_check": "dexterity", "threshold": 12},
@@ -1229,6 +1240,76 @@
     },
     "completion_exp": 350,
     "completion_tusd": 450,
+    "next_chapter": "1_11"
+  },
+  "1_10_diplomatic": {
+    "type": "story",
+    "title": "Missão Diplomática",
+    "description": "Enquanto você se prepara para a missão contra o Diretor, Alexander lidera uma importante negociação diplomática.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Dois dias antes da Celebração da Fundação, você é surpreendido por um convite formal do Conselho Político."},
+      {"npc": "Narrador", "text": "Alexander Strategos, o líder do conselho, está organizando uma importante cúpula diplomática entre as principais academias de usuários de poderes do continente."},
+      {"npc": "Alexander Strategos", "text": "Ah, que bom que pôde vir. Estamos em um momento crítico nas relações entre as academias."},
+      {"npc": "Alexander Strategos", "text": "A Academia do Norte está ameaçando romper o Tratado de Compartilhamento de Conhecimento devido a suspeitas sobre pesquisas não autorizadas em nossa academia."},
+      {"npc": "Alexander Strategos", "text": "Precisamos de sua ajuda como observador independente. Sua reputação de imparcialidade pode ser crucial para estas negociações."}
+    ],
+    "choices": [
+      {"text": "Como posso ajudar nas negociações?", "next_dialogue": 5},
+      {"text": "Isso tem alguma relação com os experimentos do Diretor?", "next_dialogue": 6},
+      {"text": "Por que eu? Sou apenas um estudante do primeiro ano.", "next_dialogue": 7}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Alexander Strategos", "text": "Sua presença nas reuniões como observador neutro já será de grande ajuda. Os representantes da Academia do Norte confiam em você."},
+        {"npc": "Alexander Strategos", "text": "Além disso, precisaremos que você testemunhe que não temos nada a esconder, mostrando áreas selecionadas da academia aos visitantes."},
+        {"npc": "Alexander Strategos", "text": "Claro, algumas áreas permanecerão restritas - como a Floresta Proibida e certos laboratórios. Questões de segurança, você entende."}
+      ],
+      "6": [
+        {"npc": "Alexander Strategos", "text": "Experimentos do Diretor? Não sei do que você está falando."},
+        {"npc": "Narrador", "text": "Seu olhar, no entanto, sugere que ele sabe mais do que admite."},
+        {"npc": "Alexander Strategos", "text": "O que posso dizer é que certas... pesquisas avançadas na academia têm causado preocupação entre nossas instituições parceiras."},
+        {"npc": "Alexander Strategos", "text": "Manter essas alianças é crucial para o futuro da academia, independentemente de quaisquer avanços científicos que possamos alcançar internamente."}
+      ],
+      "7": [
+        {"npc": "Alexander Strategos", "text": "Você subestima sua posição. Apesar de ser um calouro, você já ganhou a confiança de figuras importantes na academia."},
+        {"npc": "Alexander Strategos", "text": "Além disso, sua falta de histórico político é precisamente o que precisamos - alguém que não pode ser acusado de ter agendas ocultas."},
+        {"npc": "Alexander Strategos", "text": "Considere isto uma oportunidade de aprendizado. Diplomacia é uma habilidade tão valiosa quanto qualquer poder sobrenatural."}
+      ]
+    },
+    "shared_dialogue": [
+      {"npc": "Alexander Strategos", "text": "A cúpula acontecerá amanhã, simultaneamente à preparação final para a Celebração da Fundação."},
+      {"npc": "Alexander Strategos", "text": "Sei que você tem outros... compromissos, mas peço que dedique algumas horas a esta causa. O futuro das relações entre academias pode depender disso."},
+      {"npc": "Narrador", "text": "Você percebe que Alexander está jogando seu próprio jogo político, aparentemente desconectado da crise dimensional que você e a Professora Chronos estão tentando impedir."},
+      {"npc": "Narrador", "text": "É desconcertante como duas situações tão críticas - uma diplomática, outra potencialmente apocalíptica - estão ocorrendo em paralelo, sem aparente conexão."}
+    ],
+    "choices_2": [
+      {"text": "Aceitar ajudar nas negociações diplomáticas", "next_dialogue": 8},
+      {"text": "Recusar educadamente, citando outros compromissos", "next_dialogue": 9},
+      {"text": "Sugerir que as duas crises podem estar conectadas", "next_dialogue": 10}
+    ],
+    "additional_dialogues_2": {
+      "8": [
+        {"npc": "Alexander Strategos", "text": "Excelente! Sua participação será inestimável."},
+        {"npc": "Alexander Strategos", "text": "A reunião começará às 10h amanhã na Sala do Conselho. Vista-se formalmente e prepare-se para uma longa sessão de negociações."},
+        {"npc": "Alexander Strategos", "text": "Não se preocupe, terminaremos a tempo para a Celebração da Fundação. Sei que você não gostaria de perder esse evento tão... significativo."},
+        {"npc": "Narrador", "text": "O tom de Alexander sugere que ele pode suspeitar de seus planos para a celebração."}
+      ],
+      "9": [
+        {"npc": "Alexander Strategos", "text": "Compreendo. É uma pena, realmente."},
+        {"npc": "Alexander Strategos", "text": "Espero que esses 'outros compromissos' sejam dignos de sacrificar uma oportunidade diplomática tão importante."},
+        {"npc": "Alexander Strategos", "text": "Talvez em outra ocasião. A política da academia continua, independentemente de... outras atividades que possam estar ocorrendo."},
+        {"npc": "Narrador", "text": "Seu tom sugere que ele pode ter conhecimento de seus planos com a Professora Chronos."}
+      ],
+      "10": [
+        {"npc": "Alexander Strategos", "text": "Conectadas? Como assim?"},
+        {"npc": "Você", "text": "Talvez as preocupações da Academia do Norte sobre pesquisas não autorizadas estejam relacionadas aos mesmos experimentos que estão causando... outros problemas."},
+        {"npc": "Alexander Strategos", "text": "Interessante teoria. Você parece saber mais do que deveria sobre certos assuntos internos."},
+        {"npc": "Alexander Strategos", "text": "Talvez devêssemos conversar mais sobre isso depois da cúpula. Conhecimento é poder, mas compartilhar conhecimento no momento errado pode ser... perigoso."},
+        {"npc": "Narrador", "text": "Seu olhar penetrante sugere tanto interesse quanto advertência."}
+      ]
+    },
+    "completion_exp": 400,
+    "completion_tusd": 500,
     "next_chapter": "1_11"
   },
   "1_11": {
