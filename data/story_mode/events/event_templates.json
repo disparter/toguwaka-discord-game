@@ -14,9 +14,40 @@
       },
       "attribute_check": "intellect",
       "difficulty": 7,
+      "dialogue_options": [
+        {
+          "text": "Responder com confiança",
+          "attribute_bonus": "intellect",
+          "bonus_value": 2,
+          "success_text": "Sua resposta é precisa e bem articulada, impressionando o professor e seus colegas.",
+          "failure_text": "Apesar da sua confiança, sua resposta contém erros que o professor rapidamente identifica."
+        },
+        {
+          "text": "Pedir um momento para pensar",
+          "attribute_bonus": "intellect",
+          "bonus_value": 1,
+          "success_text": "Você organiza seus pensamentos e fornece uma resposta bem estruturada.",
+          "failure_text": "Mesmo com tempo para pensar, você não consegue formular uma resposta satisfatória."
+        },
+        {
+          "text": "Tentar mudar de assunto",
+          "attribute_bonus": "charisma",
+          "bonus_value": 3,
+          "success_text": "Com charme, você desvia a pergunta e impressiona o professor com sua perspicácia social.",
+          "failure_text": "O professor percebe sua tentativa de evasão e insiste na pergunta original."
+        }
+      ],
       "rewards": {
-        "success": {"exp": 20, "tusd": 15, "reputation": 5},
-        "failure": {"exp": 5, "tusd": 0, "reputation": -2}
+        "success": [
+          {"exp": 20, "tusd": 15, "reputation": 5, "description": "Você ganha reconhecimento acadêmico!"},
+          {"exp": 25, "tusd": 10, "intellect": 1, "description": "Seu intelecto se desenvolve com o desafio!"},
+          {"exp": 15, "tusd": 20, "charisma": 1, "description": "Sua confiança ao responder impressiona a todos!"}
+        ],
+        "failure": [
+          {"exp": 5, "tusd": 0, "reputation": -2, "description": "Você perde um pouco de credibilidade acadêmica."},
+          {"exp": 8, "tusd": -5, "description": "O professor sugere aulas extras, que custam alguns TUSD."},
+          {"exp": 3, "tusd": 0, "intellect": -1, "description": "Sua confiança intelectual é abalada temporariamente."}
+        ]
       }
     },
     {

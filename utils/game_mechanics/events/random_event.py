@@ -64,7 +64,7 @@ class RandomEvent(EventBase):
     _max_history = 3  # Don't repeat the last 3 events
 
     def __init__(self, title: str, description: str, event_type: str, effect: Dict[str, Any], 
-                 category: str = "general", rarity: str = "common"):
+                 category: str = "general", rarity: str = "common", dialogue_options: List[Dict[str, Any]] = None):
         """Initialize the random event.
 
         Args:
@@ -74,10 +74,12 @@ class RandomEvent(EventBase):
             effect (Dict[str, Any]): The effect of the event
             category (str): The category of the event
             rarity (str): The rarity of the event
+            dialogue_options (List[Dict[str, Any]], optional): List of dialogue options for the event
         """
         super().__init__(title, description, event_type, effect)
         self.category = category
         self.rarity = rarity
+        self.dialogue_options = dialogue_options or []
 
     def get_category(self) -> str:
         """Get the category of the event."""
@@ -87,11 +89,12 @@ class RandomEvent(EventBase):
         """Get the rarity of the event."""
         return self.rarity
 
-    def trigger(self, player: Dict[str, Any]) -> Dict[str, Any]:
+    def trigger(self, player: Dict[str, Any], dialogue_choice: int = None) -> Dict[str, Any]:
         """Trigger the random event for a player and return the result.
 
         Args:
             player (Dict[str, Any]): The player data
+            dialogue_choice (int, optional): Index of the chosen dialogue option
 
         Returns:
             Dict[str, Any]: The result of the event
@@ -104,15 +107,133 @@ class RandomEvent(EventBase):
             "rarity": self.get_rarity()
         }
 
+        # Add dialogue options if available
+        if self.dialogue_options:
+            result["dialogue_options"] = self.dialogue_options
+
+            # If a dialogue choice was made, include it in the result
+            if dialogue_choice is not None and 0 <= dialogue_choice < len(self.dialogue_options):
+                chosen_option = self.dialogue_options[dialogue_choice]
+                result["chosen_dialogue"] = chosen_option
+
+                # Apply attribute bonus from dialogue choice if available
+                if "attribute_bonus" in chosen_option and "bonus_value" in chosen_option:
+                    attr_bonus = chosen_option["attribute_bonus"]
+                    bonus_value = chosen_option["bonus_value"]
+
+                    # Add the bonus to the player's attribute check
+                    if attr_bonus in player:
+                        player[attr_bonus] += bonus_value
+
+                    # Add information about the bonus to the result
+                    result["dialogue_bonus"] = {
+                        "attribute": attr_bonus,
+                        "value": bonus_value
+                    }
+
+                # Add success or failure text based on the outcome
+                attribute_check = self.get_effect().get("attribute_check")
+                difficulty = self.get_effect().get("difficulty", 5)
+
+                if attribute_check and attribute_check in player:
+                    success = player[attribute_check] >= difficulty
+                    if success and "success_text" in chosen_option:
+                        result["outcome_text"] = chosen_option["success_text"]
+                    elif not success and "failure_text" in chosen_option:
+                        result["outcome_text"] = chosen_option["failure_text"]
+
         # Apply effects based on the event type
         effect = self.get_effect()
 
+        # Determine success or failure based on attribute check
+        success = True  # Default to success if no attribute check
+        if "attribute_check" in effect and "difficulty" in effect:
+            attribute = effect["attribute_check"]
+            difficulty = effect["difficulty"]
+            if attribute in player:
+                success = player[attribute] >= difficulty
+                result["attribute_check"] = {
+                    "attribute": attribute,
+                    "player_value": player[attribute],
+                    "difficulty": difficulty,
+                    "success": success
+                }
+
+        # Apply rewards or penalties based on success/failure
+        if "rewards" in effect:
+            rewards = effect["rewards"]
+
+            # Handle array of reward/penalty options
+            if success and isinstance(rewards.get("success"), list):
+                # Choose a random reward from the success options
+                reward = random.choice(rewards["success"])
+                result["reward_description"] = reward.get("description", "")
+
+                # Apply the chosen reward
+                for key, value in reward.items():
+                    if key == "exp":
+                        result["exp_change"] = value
+                    elif key == "tusd":
+                        result["tusd_change"] = value
+                    elif key in ["dexterity", "intellect", "charisma", "power_stat"]:
+                        result["attribute_change"] = key
+                        result["attribute_value"] = value
+                    elif key == "reputation":
+                        result["reputation_change"] = value
+                    # Skip description key as it's already handled
+
+            elif not success and isinstance(rewards.get("failure"), list):
+                # Choose a random penalty from the failure options
+                penalty = random.choice(rewards["failure"])
+                result["penalty_description"] = penalty.get("description", "")
+
+                # Apply the chosen penalty
+                for key, value in penalty.items():
+                    if key == "exp":
+                        result["exp_change"] = value
+                    elif key == "tusd":
+                        result["tusd_change"] = value
+                    elif key in ["dexterity", "intellect", "charisma", "power_stat"]:
+                        result["attribute_change"] = key
+                        result["attribute_value"] = value
+                    elif key == "reputation":
+                        result["reputation_change"] = value
+                    # Skip description key as it's already handled
+
+            # Handle traditional reward/penalty structure
+            elif success and isinstance(rewards.get("success"), dict):
+                reward = rewards["success"]
+                for key, value in reward.items():
+                    if key == "exp":
+                        result["exp_change"] = value
+                    elif key == "tusd":
+                        result["tusd_change"] = value
+                    elif key in ["dexterity", "intellect", "charisma", "power_stat"]:
+                        result["attribute_change"] = key
+                        result["attribute_value"] = value
+                    elif key == "reputation":
+                        result["reputation_change"] = value
+
+            elif not success and isinstance(rewards.get("failure"), dict):
+                penalty = rewards["failure"]
+                for key, value in penalty.items():
+                    if key == "exp":
+                        result["exp_change"] = value
+                    elif key == "tusd":
+                        result["tusd_change"] = value
+                    elif key in ["dexterity", "intellect", "charisma", "power_stat"]:
+                        result["attribute_change"] = key
+                        result["attribute_value"] = value
+                    elif key == "reputation":
+                        result["reputation_change"] = value
+
+        # Traditional effect handling for backward compatibility
         # Experience gain/loss
-        if "exp" in effect:
+        if "exp" in effect and "exp_change" not in result:
             result["exp_change"] = effect["exp"]
 
         # TUSD gain/loss
-        if "tusd" in effect:
+        if "tusd" in effect and "tusd_change" not in result:
             result["tusd_change"] = effect["tusd"]
 
         # Attribute change
@@ -197,13 +318,18 @@ class RandomEvent(EventBase):
         Returns:
             RandomEvent: A random event created from the template
         """
+        # Extract dialogue options if available
+        dialogue_options = template.get("dialogue_options", None)
+
+        # Create the event with all available parameters
         return RandomEvent(
             template["title"],
             template["description"],
             template["type"],
             template["effect"],
             template.get("category", "general"),
-            template.get("rarity", "common")
+            template.get("rarity", "common"),
+            dialogue_options
         )
 
     @staticmethod
