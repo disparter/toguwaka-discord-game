@@ -216,8 +216,21 @@ class StoryMode:
                         event_type = event_data.get("type") if isinstance(event_data, dict) else None
                         if event_type == "random":
                             # Create a random event
+                            # Generate a meaningful title if one is not provided
+                            if "title" not in event_data:
+                                # Try to generate a title based on event type or ID
+                                event_type_name = event_data.get("type", "").capitalize()
+                                if event_type_name:
+                                    title = f"{event_type_name} Event"
+                                else:
+                                    # Use event_id as a fallback, making it more readable
+                                    readable_id = event_id.replace("_", " ").title()
+                                    title = f"Event: {readable_id}"
+                            else:
+                                title = event_data["title"]
+
                             game_event = GameRandomEvent(
-                                event_data.get("title", "Untitled Event"),
+                                title,
                                 event_data.get("description", "No description available."),
                                 event_data.get("type", "neutral"),
                                 event_data.get("effect", {})
@@ -234,8 +247,21 @@ class StoryMode:
                             # Create a game event using the new SOLID architecture
                             if event_data.get("type") == "random":
                                 # Create a random event
+                                # Generate a meaningful title if one is not provided
+                                if "title" not in event_data:
+                                    # Try to generate a title based on event type or ID
+                                    event_type_name = event_data.get("type", "").capitalize()
+                                    if event_type_name:
+                                        title = f"{event_type_name} Event"
+                                    else:
+                                        # Use event_id as a fallback, making it more readable
+                                        readable_id = event_id.replace("_", " ").title()
+                                        title = f"Event: {readable_id}"
+                                else:
+                                    title = event_data["title"]
+
                                 game_event = GameRandomEvent(
-                                    event_data.get("title", "Untitled Event"),
+                                    title,
                                     event_data.get("description", "No description available."),
                                     event_data.get("type", "neutral"),
                                     event_data.get("effect", {})
@@ -254,8 +280,21 @@ class StoryMode:
                         # Create a game event using the new SOLID architecture
                         if event_data.get("type") == "random":
                             # Create a random event
+                            # Generate a meaningful title if one is not provided
+                            if "title" not in event_data:
+                                # Try to generate a title based on event type or ID
+                                event_type_name = event_data.get("type", "").capitalize()
+                                if event_type_name:
+                                    title = f"{event_type_name} Event"
+                                else:
+                                    # Use event_id as a fallback, making it more readable
+                                    readable_id = event_id.replace("_", " ").title()
+                                    title = f"Event: {readable_id}"
+                            else:
+                                title = event_data["title"]
+
                             game_event = GameRandomEvent(
-                                event_data.get("title", "Untitled Event"),
+                                title,
                                 event_data.get("description", "No description available."),
                                 event_data.get("type", "neutral"),
                                 event_data.get("effect", {})
@@ -273,8 +312,21 @@ class StoryMode:
                             event_type = event_data.get("type")
                             if event_type == "random":
                                 # Create a random event
+                                # Generate a meaningful title if one is not provided
+                                if "title" not in event_data:
+                                    # Try to generate a title based on event type or ID
+                                    event_type_name = event_data.get("type", "").capitalize()
+                                    if event_type_name:
+                                        title = f"{event_type_name} Event"
+                                    else:
+                                        # Use event_id as a fallback, making it more readable
+                                        readable_id = event_id.replace("_", " ").title()
+                                        title = f"Event: {readable_id}"
+                                else:
+                                    title = event_data["title"]
+
                                 game_event = GameRandomEvent(
-                                    event_data.get("title", "Untitled Event"),
+                                    title,
                                     event_data.get("description", "No description available."),
                                     event_data.get("type", "neutral"),
                                     event_data.get("effect", {})
@@ -319,6 +371,25 @@ class StoryMode:
 
         # Initialize dynamic consequences system
         player_data = self.consequences_system.initialize_player(player_data)
+
+        # Check if player is starting from the first chapter (indicating a restart)
+        chapter_id = self.progress_manager.get_current_chapter(player_data)
+        if chapter_id == "1_1":
+            # Player is restarting from the beginning, remove template events
+            story_progress = player_data.get("story_progress", {})
+            triggered_events = story_progress.get("triggered_events", {})
+
+            # Remove all template events
+            template_events_to_remove = [event_id for event_id in triggered_events.keys() 
+                                        if event_id.startswith("template_event_")]
+
+            if template_events_to_remove:
+                for event_id in template_events_to_remove:
+                    triggered_events.pop(event_id, None)
+
+                story_progress["triggered_events"] = triggered_events
+                player_data["story_progress"] = story_progress
+                logger.info(f"Removed {len(template_events_to_remove)} template events for player restarting dialogue")
 
         # Get current chapter
         chapter_id = self.progress_manager.get_current_chapter(player_data)
@@ -468,6 +539,19 @@ class StoryMode:
             # Get the next chapter
             next_chapter_id = chapter.get_next_chapter(player_data)
 
+            # Check if we should skip the tour for Conselho Politico option
+            choice_metadata = None
+            if "chapter_data" in result and "choices" in result["chapter_data"]:
+                choices = result["chapter_data"]["choices"]
+                if choices and len(choices) > choice_index:
+                    choice_metadata = choices[choice_index].get("metadata", {})
+
+            # If skip_tour flag is set and we're in chapter 1_1, skip directly to 1_2
+            if choice_metadata and choice_metadata.get("skip_tour") and chapter_id == "1_1" and next_chapter_id == "1_2":
+                logger.info(f"Skipping tour for club_id: {choice_metadata.get('club_id')}")
+                # Force next_chapter_id to be 1_2 to skip 1_1_2
+                next_chapter_id = "1_2"
+
             # Check if this chapter arc is blocked due to previous failures
             story_progress = player_data.get("story_progress", {})
             blocked_chapter_arcs = story_progress.get("blocked_chapter_arcs", [])
@@ -491,8 +575,23 @@ class StoryMode:
                 # Set the next chapter as current
                 player_data = self.progress_manager.set_current_chapter(player_data, next_chapter_id)
 
-                # Start the next chapter
+                # Check if this chapter should be skipped based on club_id
                 next_chapter = self.chapter_loader.load_chapter(next_chapter_id)
+                if next_chapter and hasattr(next_chapter, 'data') and 'skip_for_clubs' in next_chapter.data:
+                    skip_for_clubs = next_chapter.data.get('skip_for_clubs', [])
+                    player_club_id = player_data.get('club_id')
+                    if player_club_id is not None and player_club_id in skip_for_clubs:
+                        logger.info(f"Skipping chapter {next_chapter_id} for club_id: {player_club_id}")
+                        # Get the next chapter after this one
+                        skip_to_chapter_id = next_chapter.data.get('next_chapter')
+                        if skip_to_chapter_id:
+                            player_data = self.progress_manager.set_current_chapter(player_data, skip_to_chapter_id)
+                            skip_to_chapter = self.chapter_loader.load_chapter(skip_to_chapter_id)
+                            if skip_to_chapter:
+                                result = skip_to_chapter.start(player_data)
+                                return result
+
+                # Start the next chapter (if not skipped)
                 if next_chapter:
                     result = next_chapter.start(player_data)
                 else:

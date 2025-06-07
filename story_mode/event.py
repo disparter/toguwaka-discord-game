@@ -22,7 +22,20 @@ class BaseEvent(Event):
         """
         self.event_id = event_id
         self.data = data
-        self.name = data.get("name", "Untitled Event")
+
+        # Generate a meaningful title if one is not provided
+        if "name" not in data:
+            # Try to generate a title based on event type or ID
+            event_type = data.get("type", "").capitalize()
+            if event_type:
+                self.name = f"{event_type} Event"
+            else:
+                # Use event_id as a fallback, making it more readable
+                readable_id = event_id.replace("_", " ").title()
+                self.name = f"Event: {readable_id}"
+        else:
+            self.name = data["name"]
+
         self.description = data.get("description", "No description available.")
         self.requirements = data.get("requirements", {})
         self.rewards = data.get("rewards", {})
@@ -31,6 +44,10 @@ class BaseEvent(Event):
     def get_name(self) -> str:
         """Returns the event name."""
         return self.name
+
+    def get_title(self) -> str:
+        """Returns the event title (alias for get_name for compatibility)."""
+        return self.get_name()
 
     def get_description(self) -> str:
         """Returns the event description."""
