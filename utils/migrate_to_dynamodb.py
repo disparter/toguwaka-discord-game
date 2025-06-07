@@ -5,7 +5,7 @@ import logging
 import boto3
 from datetime import datetime
 from pathlib import Path
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation, ConversionSyntax
 
 # Import both database modules
 from . import database as sqlite_db
@@ -15,6 +15,16 @@ logger = logging.getLogger('tokugawa_bot')
 
 # SQLite database file path
 SQLITE_DB_PATH = Path('data/tokugawa.db')
+
+# Helper function to safely convert values to Decimal
+def safe_decimal(value):
+    try:
+        if value is None:
+            return Decimal('0')
+        return Decimal(str(value))
+    except (ValueError, InvalidOperation, ConversionSyntax):
+        logger.warning(f"Invalid value for Decimal conversion: {value}, using 0 instead")
+        return Decimal('0')
 
 def migrate_players():
     """Migrate players from SQLite to DynamoDB."""
@@ -37,19 +47,19 @@ def migrate_players():
                 'GSI1SK': player['name'],
                 'nome': player['name'],
                 'superpoder': player['power'],
-                'nivel': Decimal(str(player['level'])),
-                'exp': Decimal(str(player['exp'])),
-                'tusd': Decimal(str(player['tusd'])),
+                'nivel': safe_decimal(player['level']),
+                'exp': safe_decimal(player['exp']),
+                'tusd': safe_decimal(player['tusd']),
                 'clube_id': player['club_id'],
                 'atributos': {
-                    'destreza': Decimal(str(player['dexterity'])),
-                    'intelecto': Decimal(str(player['intellect'])),
-                    'carisma': Decimal(str(player['charisma'])),
-                    'poder': Decimal(str(player['power_stat']))
+                    'destreza': safe_decimal(player['dexterity']),
+                    'intelecto': safe_decimal(player['intellect']),
+                    'carisma': safe_decimal(player['charisma']),
+                    'poder': safe_decimal(player['power_stat'])
                 },
-                'reputacao': Decimal(str(player['reputation'])),
-                'hp': Decimal(str(player['hp'])),
-                'max_hp': Decimal(str(player['max_hp'])),
+                'reputacao': safe_decimal(player['reputation']),
+                'hp': safe_decimal(player['hp']),
+                'max_hp': safe_decimal(player['max_hp']),
                 'created_at': player['created_at'],
                 'last_active': player['last_active']
             }
@@ -62,7 +72,7 @@ def migrate_players():
         for item_id, quantity in inventory.items():
             inventory_items.append({
                 'id': item_id,
-                'quantidade': Decimal(str(quantity))
+                'quantidade': safe_decimal(quantity)
             })
 
         dynamo_db.table.put_item(
@@ -81,8 +91,8 @@ def migrate_players():
             techniques_list.append({
                 'id': tech_id,
                 'nome': tech_data.get('name', 'Unknown'),
-                'nivel': Decimal(str(tech_data.get('level', 1))),
-                'dano': Decimal(str(tech_data.get('damage', 0)))
+                'nivel': safe_decimal(tech_data.get('level', 1)),
+                'dano': safe_decimal(tech_data.get('damage', 0))
             })
 
         dynamo_db.table.put_item(
@@ -121,8 +131,8 @@ def migrate_clubs():
                 'nome': club['name'],
                 'descricao': club['description'],
                 'lider_id': club['leader_id'],
-                'membros_count': Decimal(str(club['members_count'])),
-                'reputacao': Decimal(str(club['reputation'])),
+                'membros_count': safe_decimal(club['members_count']),
+                'reputacao': safe_decimal(club['reputation']),
                 'created_at': club['created_at']
             }
         )
@@ -170,13 +180,13 @@ def migrate_events():
         data = {}
         for key, value in data_json.items():
             if isinstance(value, (int, float)):
-                data[key] = Decimal(str(value))
+                data[key] = safe_decimal(value)
             elif isinstance(value, dict):
                 # Handle nested dictionaries
                 nested_dict = {}
                 for k, v in value.items():
                     if isinstance(v, (int, float)):
-                        nested_dict[k] = Decimal(str(v))
+                        nested_dict[k] = safe_decimal(v)
                     else:
                         nested_dict[k] = v
                 data[key] = nested_dict
@@ -305,7 +315,7 @@ def migrate_items():
         effects = {}
         for key, value in effects_json.items():
             if isinstance(value, (int, float)):
-                effects[key] = Decimal(str(value))
+                effects[key] = safe_decimal(value)
             else:
                 effects[key] = value
 
@@ -320,7 +330,7 @@ def migrate_items():
                 'descricao': item['description'],
                 'tipo': item['type'],
                 'raridade': item['rarity'],
-                'preco': Decimal(str(item['price'])),
+                'preco': safe_decimal(item['price']),
                 'efeitos': effects
             }
         )
