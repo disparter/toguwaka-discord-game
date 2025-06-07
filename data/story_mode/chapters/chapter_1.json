@@ -340,22 +340,22 @@
       {"npc": "Junie", "text": "Agora que você provou seu valor inicial, novas oportunidades se abrirão para você."}
     ],
     "choices": [
-      {"text": "O que acontece agora?", "next_dialogue": 4},
-      {"text": "Como isso afeta minha posição na hierarquia?", "next_dialogue": 5},
-      {"text": "Quero me concentrar em melhorar ainda mais.", "next_dialogue": 6}
+      {"text": "O que acontece agora?", "next_dialogue": 0},
+      {"text": "Como isso afeta minha posição na hierarquia?", "next_dialogue": 1},
+      {"text": "Quero me concentrar em melhorar ainda mais.", "next_dialogue": 2}
     ],
     "additional_dialogues": {
-      "4": [
+      "0": [
         {"npc": "Junie", "text": "Agora você terá acesso a treinamentos mais avançados e missões específicas do seu clube."},
         {"npc": "Junie", "text": "Além disso, outros estudantes podem procurar sua ajuda ou desafiá-lo para testar suas habilidades."},
         {"npc": "Junie", "text": "E não se esqueça das aulas regulares! A Academia Tokugawa é uma escola, afinal de contas."}
       ],
-      "5": [
+      "1": [
         {"npc": "Junie", "text": "Sua posição na hierarquia melhorou um pouco. Você agora é reconhecido como um estudante de nível Médio com potencial."},
         {"npc": "Junie", "text": "Para subir mais, você precisará completar desafios mais difíceis e demonstrar suas habilidades em situações mais complexas."},
         {"npc": "Junie", "text": "A hierarquia não é apenas sobre poder bruto, mas também sobre como você usa suas habilidades e como se relaciona com os outros."}
       ],
-      "6": [
+      "2": [
         {"npc": "Junie", "text": "Uma atitude admirável! O aprimoramento constante é valorizado na academia."},
         {"npc": "Junie", "text": "Seu líder de clube pode oferecer treinamento especializado, e há também a biblioteca com conhecimentos avançados."},
         {"npc": "Junie", "text": "Além disso, praticar com outros estudantes é uma excelente maneira de melhorar suas habilidades."}
@@ -367,22 +367,22 @@
       {"npc": "Junie", "text": "Seria uma boa oportunidade para expandir seu conhecimento teórico e conhecer outros estudantes interessados."}
     ],
     "choices_2": [
-      {"text": "Definitivamente irei à palestra.", "next_dialogue": 7},
-      {"text": "Prefiro treinamento prático a teoria.", "next_dialogue": 8},
-      {"text": "Talvez, se não interferir com meus outros compromissos.", "next_dialogue": 9}
+      {"text": "Definitivamente irei à palestra.", "next_dialogue": 3},
+      {"text": "Prefiro treinamento prático a teoria.", "next_dialogue": 4},
+      {"text": "Talvez, se não interferir com meus outros compromissos.", "next_dialogue": 5}
     ],
     "additional_dialogues_2": {
-      "7": [
+      "3": [
         {"npc": "Junie", "text": "Excelente! A palestra será no Grande Auditório, amanhã às 15h."},
         {"npc": "Junie", "text": "O Professor Quantum tem uma perspectiva única sobre os poderes. Dizem que ele pode manipular a própria estrutura da realidade."},
         {"npc": "Junie", "text": "Ah, e não se atrase. Ele tem... opiniões fortes sobre pontualidade e como ela se relaciona com o tecido do espaço-tempo."}
       ],
-      "8": [
+      "4": [
         {"npc": "Junie", "text": "Compreensível. Muitos estudantes preferem a abordagem prática."},
         {"npc": "Junie", "text": "Nesse caso, posso sugerir as sessões de treinamento avançado que acontecem no Campo de Prática todas as tardes?"},
         {"npc": "Junie", "text": "Lá você pode testar suas habilidades contra outros estudantes em um ambiente controlado."}
       ],
-      "9": [
+      "5": [
         {"npc": "Junie", "text": "Claro, entendo que você tem muitas responsabilidades agora."},
         {"npc": "Junie", "text": "A palestra será gravada e disponibilizada na biblioteca digital, caso você não possa comparecer."},
         {"npc": "Junie", "text": "Apenas lembre-se de equilibrar seus compromissos. Diversificar suas experiências é importante para um desenvolvimento completo."}

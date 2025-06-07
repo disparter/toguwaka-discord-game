@@ -1911,9 +1911,20 @@ class ScheduledEvents(commands.Cog):
     async def check_random_events(self):
         """Check if a random event should be triggered."""
         try:
-            # Only trigger random events if we have active players
+            # Only trigger random events if we have active players and fewer than 3 active events
             now = datetime.now()
             current_hour = now.hour
+
+            # Count active events (excluding special events like tournaments and turf wars)
+            active_event_count = sum(1 for event_id in ACTIVE_EVENTS 
+                                    if not event_id.startswith('wednesday_tournament') 
+                                    and not event_id.startswith('turf_wars')
+                                    and not event_id.startswith('dia_de_materia'))
+
+            # If we already have 3 or more active events, don't create a new one
+            if active_event_count >= 3:
+                logger.info(f"Not creating new event: already have {active_event_count} active events (maximum is 3)")
+                return
 
             # Update player activity for the current hour
             if current_hour not in PLAYER_ACTIVITY:
@@ -3280,6 +3291,40 @@ class ScheduledEvents(commands.Cog):
 
             # Log the number of remaining events after cleanup
             logger.info(f"Number of active events after cleanup: {len(ACTIVE_EVENTS)}")
+
+            # If there are still more than 4 active events, remove the oldest ones
+            if len(ACTIVE_EVENTS) > 4:
+                logger.info(f"Too many active events ({len(ACTIVE_EVENTS)}), removing oldest ones")
+
+                # Sort events by start_time
+                sorted_events = sorted(
+                    ACTIVE_EVENTS.items(),
+                    key=lambda x: x[1].get('start_time', datetime.now()),
+                )
+
+                # Keep only the 3 newest events (remove the rest)
+                events_to_remove = sorted_events[:-3]
+
+                for event_id, _ in events_to_remove:
+                    logger.info(f"Removing old event: {event_id}")
+                    ACTIVE_EVENTS.pop(event_id, None)
+
+                    # Update in database
+                    try:
+                        from utils.database import update_event_status
+
+                        # Mark as completed in database
+                        update_event_status(
+                            event_id=event_id,
+                            completed=True,
+                            participants=ACTIVE_EVENTS.get(event_id, {}).get('participants', []),
+                            data=ACTIVE_EVENTS.get(event_id, {}).get('data', {})
+                        )
+                        logger.info(f"Marked event {event_id} as completed in database")
+                    except Exception as e:
+                        logger.error(f"Error updating event status in database: {e}")
+
+                logger.info(f"Number of active events after removing old ones: {len(ACTIVE_EVENTS)}")
 
             # Log remaining villain events for debugging
             remaining_villains = [event_id for event_id in ACTIVE_EVENTS if 'villain' in event_id]

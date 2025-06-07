@@ -460,6 +460,29 @@ class StoryModeCog(commands.Cog):
             npc_name = dialogue.get("npc", "Narrador")
             text = dialogue.get("text", "...")
 
+            # Replace placeholders in the text with player-specific information
+            player_data = get_player(user_id)
+            if player_data:
+                # Handle club-specific content
+                if "club_id" in player_data and player_data["club_id"] is not None:
+                    club_id = player_data["club_id"]
+                    club = get_club(club_id)
+                    if club:
+                        club_name = club.get("name", "Desconhecido")
+                        club_leader = club.get("leader", "Desconhecido")
+
+                        # Replace placeholders with actual values
+                        text = text.replace("{club_name}", club_name)
+                        text = text.replace("{club_leader}", club_leader)
+
+                        # If text contains "líder de clube", make sure the club name is mentioned
+                        if "líder de clube" in text and "{club_name}" not in text and club_name not in text:
+                            text = text.replace("líder de clube", f"líder do clube {club_name}")
+
+                # Replace player name if needed
+                player_name = player_data.get("name", "Estudante")
+                text = text.replace("{player_name}", player_name)
+
             embed = create_basic_embed(
                 title=f"{npc_name}",
                 description=text,
