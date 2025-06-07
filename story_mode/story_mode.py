@@ -14,6 +14,8 @@ from .powers import PowerEvolutionSystem
 from .seasonal_events import SeasonalEventSystem
 from .companions import CompanionSystem
 from .chapter_validator import ChapterValidator
+from .narrative_logger import get_narrative_logger
+from .validation import get_story_validator
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -156,6 +158,10 @@ class StoryMode:
         os.makedirs(os.path.join(data_dir, "events"), exist_ok=True)
         os.makedirs(os.path.join(data_dir, "npcs"), exist_ok=True)
 
+        # Create logs directory
+        logs_dir = os.path.join(data_dir, "logs", "narrative")
+        os.makedirs(logs_dir, exist_ok=True)
+
         # Initialize components
         self.chapter_loader = FileChapterLoader(os.path.join(data_dir, "chapters"))
         self.event_manager = DefaultEventManager()
@@ -165,6 +171,12 @@ class StoryMode:
         self.power_system = PowerEvolutionSystem()
         self.seasonal_event_system = SeasonalEventSystem()
         self.companion_system = CompanionSystem()
+
+        # Initialize narrative logger
+        self.narrative_logger = get_narrative_logger(logs_dir)
+
+        # Initialize story validator
+        self.validator = get_story_validator()
 
         # Load events and NPCs
         self._load_events()
@@ -366,6 +378,9 @@ class StoryMode:
         Returns:
             Dict containing updated player data and current chapter data
         """
+        # Get player ID for logging
+        player_id = player_data.get('user_id', 'unknown')
+
         # Initialize story progress if needed
         player_data = self.progress_manager.initialize_story_progress(player_data)
 
@@ -391,21 +406,42 @@ class StoryMode:
                 player_data["story_progress"] = story_progress
                 logger.info(f"Removed {len(template_events_to_remove)} template events for player restarting dialogue")
 
+                # Log the story restart in the narrative logger
+                self.narrative_logger.log_path(player_id, ["story_restart"])
+
         # Get current chapter
         chapter_id = self.progress_manager.get_current_chapter(player_data)
         chapter = self.chapter_loader.load_chapter(chapter_id)
 
         if not chapter:
-            logger.warning(f"Chapter not found: {chapter_id}, using first chapter")
+            error_msg = f"Chapter not found: {chapter_id}, using first chapter"
+            logger.warning(error_msg)
+
+            # Log the error in the narrative logger
+            self.narrative_logger.log_error(player_id, chapter_id, "chapter_not_found", error_msg)
+
             # Use the first available chapter
             available_chapters = self.chapter_loader.get_available_chapters(player_data, self.progress_manager)
             if available_chapters:
                 chapter_id = available_chapters[0]
                 chapter = self.chapter_loader.load_chapter(chapter_id)
                 player_data = self.progress_manager.set_current_chapter(player_data, chapter_id)
+
+                # Log the fallback to first available chapter
+                self.narrative_logger.log_chapter_transition(
+                    player_id,
+                    "unknown",
+                    chapter_id,
+                    "fallback_to_first"
+                )
             else:
-                logger.error("No chapters available")
-                return {"error": "No chapters available"}
+                error_msg = "No chapters available"
+                logger.error(error_msg)
+
+                # Log the error in the narrative logger
+                self.narrative_logger.log_error(player_id, "unknown", "no_chapters_available", error_msg)
+
+                return {"error": error_msg}
 
         # Start the chapter
         result = chapter.start(player_data)
@@ -465,11 +501,47 @@ class StoryMode:
         """
         # Get current chapter
         chapter_id = self.progress_manager.get_current_chapter(player_data)
+
+        # Validate chapter ID
+        if not self.validator.validate_chapter_id(chapter_id):
+            error_msg = f"Invalid chapter ID format: {chapter_id}"
+            logger.error(error_msg)
+
+            # Log the error in the narrative logger
+            player_id = player_data.get('user_id', 'unknown')
+            self.narrative_logger.log_error(player_id, chapter_id, "invalid_chapter_id", error_msg)
+
+            return {"error": error_msg}
+
         chapter = self.chapter_loader.load_chapter(chapter_id)
 
         if not chapter:
-            logger.error(f"Chapter not found: {chapter_id}")
-            return {"error": f"Chapter not found: {chapter_id}"}
+            error_msg = f"Chapter not found: {chapter_id}"
+            logger.error(error_msg)
+
+            # Log the error in the narrative logger
+            player_id = player_data.get('user_id', 'unknown')
+            self.narrative_logger.log_error(player_id, chapter_id, "chapter_not_found", error_msg)
+
+            return {"error": error_msg}
+
+        # Get available choices from the chapter
+        available_choices = []
+        if hasattr(chapter, 'data') and 'choices' in chapter.data:
+            available_choices = chapter.data['choices']
+
+        # Validate the choice
+        player_id = player_data.get('user_id', 'unknown')
+        validation_result = self.validator.validate_choice(player_data, chapter_id, choice_index, available_choices)
+
+        if not validation_result["valid"]:
+            error_msg = validation_result["error"]
+            logger.error(f"Invalid choice: {error_msg}")
+
+            # Log the error in the narrative logger
+            self.narrative_logger.log_error(player_id, chapter_id, "invalid_choice", error_msg)
+
+            return {"error": error_msg}
 
         # Process the choice
         result = chapter.process_choice(player_data, choice_index)
@@ -484,6 +556,9 @@ class StoryMode:
         # Record the choice in the progress manager
         choice_key = f"choice_{choice_index}"
         self.progress_manager.record_choice(result["player_data"], chapter_id, choice_key, choice_index)
+
+        # Log the choice in the narrative logger
+        self.narrative_logger.log_choice(player_id, chapter_id, choice_key, choice_index)
 
         # Get choice metadata if available
         choice_metadata = None
@@ -506,6 +581,22 @@ class StoryMode:
             affinity_changes = choice_metadata["affinity_changes"]
             for npc_name, change in affinity_changes.items():
                 logger.info(f"Updating affinity with {npc_name} by {change} due to player choice")
+
+                # Validate affinity change
+                validation_result = self.validator.validate_affinity_change(result["player_data"], npc_name, change)
+                if not validation_result["valid"]:
+                    # Log the warning but continue with the affinity change
+                    logger.warning(f"Invalid affinity change: {validation_result['error']}, but continuing with the change")
+
+                    # Log the validation warning
+                    player_id = player_data.get('user_id', 'unknown')
+                    self.narrative_logger.log_validation_error(
+                        player_id,
+                        chapter_id,
+                        "affinity_change_warning",
+                        {"npc_name": npc_name, "change": change, "error": validation_result["error"]}
+                    )
+
                 affinity_result = self.update_affinity(result["player_data"], npc_name, change)
                 result["player_data"] = affinity_result["player_data"]
 
@@ -575,8 +666,20 @@ class StoryMode:
             blocked_chapter_arcs = story_progress.get("blocked_chapter_arcs", [])
             chapter_arc = next_chapter_id.split("_")[0] if next_chapter_id and "_" in next_chapter_id else None
 
+            # Get player ID for logging
+            player_id = player_data.get('user_id', 'unknown')
+
             if chapter_arc and chapter_arc in blocked_chapter_arcs:
-                logger.info(f"Chapter arc {chapter_arc} is blocked for player {player_data.get('user_id')} due to previous failures")
+                logger.info(f"Chapter arc {chapter_arc} is blocked for player {player_id} due to previous failures")
+
+                # Log the blocked path in the narrative logger
+                self.narrative_logger.log_error(
+                    player_id, 
+                    chapter_id, 
+                    "blocked_chapter_arc", 
+                    f"Chapter arc {chapter_arc} is blocked due to previous failures"
+                )
+
                 # Provide a message about the blocked path
                 result = {
                     "player_data": player_data,
@@ -590,8 +693,43 @@ class StoryMode:
                     }
                 }
             elif next_chapter_id:
+                # Validate the next chapter ID
+                if not self.validator.validate_chapter_id(next_chapter_id):
+                    error_msg = f"Invalid next chapter ID format: {next_chapter_id}"
+                    logger.error(error_msg)
+
+                    # Log the error in the narrative logger
+                    self.narrative_logger.log_error(
+                        player_id,
+                        chapter_id,
+                        "invalid_next_chapter_id",
+                        error_msg
+                    )
+
+                    # Fallback to a default chapter or end the story
+                    result = {
+                        "player_data": player_data,
+                        "chapter_complete": True,
+                        "error": error_msg,
+                        "chapter_data": {
+                            "title": "Erro na Progressão",
+                            "description": "Ocorreu um erro ao avançar para o próximo capítulo. Por favor, reporte este problema.",
+                            "current_dialogue": None,
+                            "choices": []
+                        }
+                    }
+                    return result
+
                 # Set the next chapter as current
                 player_data = self.progress_manager.set_current_chapter(player_data, next_chapter_id)
+
+                # Log the chapter transition in the narrative logger
+                self.narrative_logger.log_chapter_transition(
+                    player_id,
+                    chapter_id,
+                    next_chapter_id,
+                    "normal"
+                )
 
                 # Check if this chapter should be skipped based on club_id
                 next_chapter = self.chapter_loader.load_chapter(next_chapter_id)
@@ -600,9 +738,18 @@ class StoryMode:
                     player_club_id = player_data.get('club_id')
                     if player_club_id is not None and player_club_id in skip_for_clubs:
                         logger.info(f"Skipping chapter {next_chapter_id} for club_id: {player_club_id}")
+
                         # Get the next chapter after this one
                         skip_to_chapter_id = next_chapter.data.get('next_chapter')
                         if skip_to_chapter_id:
+                            # Log the chapter skip in the narrative logger
+                            self.narrative_logger.log_chapter_transition(
+                                player_id,
+                                next_chapter_id,
+                                skip_to_chapter_id,
+                                "skip_for_club"
+                            )
+
                             player_data = self.progress_manager.set_current_chapter(player_data, skip_to_chapter_id)
                             skip_to_chapter = self.chapter_loader.load_chapter(skip_to_chapter_id)
                             if skip_to_chapter:
@@ -613,7 +760,16 @@ class StoryMode:
                 if next_chapter:
                     result = next_chapter.start(player_data)
                 else:
-                    logger.warning(f"Next chapter not found: {next_chapter_id} for player {player_data.get('user_id')}. Story will be marked as complete.")
+                    logger.warning(f"Next chapter not found: {next_chapter_id} for player {player_id}. Story will be marked as complete.")
+
+                    # Log the error in the narrative logger
+                    self.narrative_logger.log_error(
+                        player_id,
+                        next_chapter_id,
+                        "chapter_not_found",
+                        f"Next chapter not found: {next_chapter_id}"
+                    )
+
                     # Fallback for the chapter final or a message amigável
                     result = {
                         "player_data": player_data,
@@ -629,6 +785,15 @@ class StoryMode:
                     }
             else:
                 # No next chapter, story complete
+
+                # Log the story completion in the narrative logger
+                self.narrative_logger.log_chapter_transition(
+                    player_id,
+                    chapter_id,
+                    "story_complete",
+                    "story_complete"
+                )
+
                 result = {
                     "player_data": player_data,
                     "chapter_complete": True,
@@ -684,6 +849,9 @@ class StoryMode:
         Returns:
             Dict containing updated player data and event result
         """
+        # Get player ID for logging
+        player_id = player_data.get('user_id', 'unknown')
+
         # Initialize dynamic consequences system if needed
         player_data = self.consequences_system.initialize_player(player_data)
 
@@ -698,8 +866,17 @@ class StoryMode:
                 break
 
         if not event:
-            logger.warning(f"Event not found: {event_id}")
-            return {"player_data": player_data, "error": f"Event not found: {event_id}"}
+            error_msg = f"Event not found: {event_id}"
+            logger.warning(error_msg)
+
+            # Log the error in the narrative logger
+            self.narrative_logger.log_error(player_id, "unknown", "event_not_found", error_msg)
+
+            return {"player_data": player_data, "error": error_msg}
+
+        # Log the event trigger in the narrative logger
+        chapter_id = self.progress_manager.get_current_chapter(player_data)
+        self.narrative_logger.log_choice(player_id, chapter_id, f"event_{event_id}", "triggered")
 
         # Apply event effects to faction reputation if specified in event data
         if hasattr(event, 'data') and 'faction_effects' in event.data:
@@ -750,14 +927,32 @@ class StoryMode:
         Returns:
             Dict containing updated player data
         """
+        # Validate affinity change
+        player_id = player_data.get('user_id', 'unknown')
+        validation_result = self.validator.validate_affinity_change(player_data, npc_name, change)
+
+        if not validation_result["valid"]:
+            error_msg = validation_result["error"]
+            logger.error(f"Invalid affinity change: {error_msg}")
+
+            # Log the error in the narrative logger
+            self.narrative_logger.log_error(player_id, "unknown", "invalid_affinity_change", error_msg)
+
+            return {"player_data": player_data, "error": error_msg}
+
         player_data = self.npc_manager.update_affinity(player_data, npc_name, change)
 
         # Get the NPC for result data
         npc = self.npc_manager.get_npc_by_name(npc_name)
 
         if not npc:
-            logger.warning(f"NPC not found: {npc_name}")
-            return {"player_data": player_data, "error": f"NPC not found: {npc_name}"}
+            error_msg = f"NPC not found: {npc_name}"
+            logger.warning(error_msg)
+
+            # Log the error in the narrative logger
+            self.narrative_logger.log_error(player_id, "unknown", "npc_not_found", error_msg)
+
+            return {"player_data": player_data, "error": error_msg}
 
         # Get the new affinity level
         affinity = npc.get_affinity(player_data)
