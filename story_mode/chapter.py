@@ -295,6 +295,43 @@ class BaseChapter(Chapter):
         """
         Returns the ID of the next chapter based on player choices and state.
         """
+        # Check for conditional next chapter based on player data
+        if hasattr(self, 'data') and 'conditional_next_chapter' in self.data:
+            conditional_next = self.data.get('conditional_next_chapter', {})
+
+            # Check for club_id based conditions
+            if 'club_id' in conditional_next:
+                club_conditions = conditional_next['club_id']
+                player_club_id = player_data.get('club_id')
+
+                if player_club_id is not None:
+                    # Convert to string for comparison since JSON keys are strings
+                    club_id_str = str(player_club_id)
+                    if club_id_str in club_conditions:
+                        next_chapter = club_conditions[club_id_str]
+                        logger.info(f"Using conditional next chapter for club_id {player_club_id}: {next_chapter}")
+
+                        # Handle chapter IDs with multiple underscores
+                        if "_" in next_chapter:
+                            return next_chapter
+                        else:
+                            parts = self.chapter_id.split("_")
+                            year = parts[0] if len(parts) >= 1 else "1"
+                            return f"{year}_{next_chapter}"
+
+                # Use default if specified and no specific condition matched
+                if 'default' in club_conditions:
+                    next_chapter = club_conditions['default']
+                    logger.info(f"Using default conditional next chapter: {next_chapter}")
+
+                    # Handle chapter IDs with multiple underscores
+                    if "_" in next_chapter:
+                        return next_chapter
+                    else:
+                        parts = self.chapter_id.split("_")
+                        year = parts[0] if len(parts) >= 1 else "1"
+                        return f"{year}_{next_chapter}"
+
         # By default, return the next chapter specified in the data
         if self.next_chapter:
             # Handle chapter IDs with multiple underscores (e.g., 1_1_2)
