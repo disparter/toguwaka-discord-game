@@ -10,6 +10,7 @@ class StoryProgress(TypedDict, total=False):
     current_year: int
     current_chapter: int
     current_challenge_chapter: Optional[str]
+    full_chapter_id: Optional[str]  # Stores the full chapter ID including suffixes like _success or _failure
     completed_chapters: List[str]
     completed_challenge_chapters: List[str]
     failed_challenge_chapters: List[str]
@@ -31,6 +32,7 @@ DEFAULT_STORY_PROGRESS: StoryProgress = {
     "current_year": 1,
     "current_chapter": 1,
     "current_challenge_chapter": None,
+    "full_chapter_id": None,  # New field to store the full chapter ID including suffixes
     "completed_chapters": [],
     "completed_challenge_chapters": [],
     "failed_challenge_chapters": [],
@@ -153,14 +155,20 @@ class DefaultStoryProgressManager(StoryProgressManager):
             The ID of the current chapter or None if no chapter is in progress
         """
         story_progress = self._get_story_progress(player_data)
-        current_year = story_progress.get("current_year", 1)
-        current_chapter = story_progress.get("current_chapter", 1)
+
+        # First check if there's a full chapter ID stored (including suffixes like _success or _failure)
+        full_chapter_id = story_progress.get("full_chapter_id")
+        if full_chapter_id:
+            return full_chapter_id
 
         # If there's a challenge chapter in progress, return that instead
         current_challenge_chapter = story_progress.get("current_challenge_chapter")
         if current_challenge_chapter:
             return current_challenge_chapter
 
+        # Fallback to constructing the chapter ID from year and chapter number
+        current_year = story_progress.get("current_year", 1)
+        current_chapter = story_progress.get("current_chapter", 1)
         return f"{current_year}_{current_chapter}"
 
     def set_current_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:
@@ -178,6 +186,9 @@ class DefaultStoryProgressManager(StoryProgressManager):
             ValueError: If the chapter ID format is invalid
         """
         story_progress = self._get_story_progress(player_data)
+
+        # Store the full chapter ID including any suffixes
+        story_progress["full_chapter_id"] = chapter_id
 
         # Parse chapter ID to get year and chapter number
         if "_" in chapter_id:
@@ -223,6 +234,11 @@ class DefaultStoryProgressManager(StoryProgressManager):
                 story_progress.get("current_chapter") == int(chapter_id.split("_")[1])):
                 # Don't clear yet, will be updated when next chapter is set
                 pass
+
+            # Clear full_chapter_id if it matches the completed one
+            if story_progress.get("full_chapter_id") == chapter_id:
+                story_progress["full_chapter_id"] = None
+                player_data = self._update_story_progress(player_data, story_progress)
         else:  # Challenge chapter
             # Add to completed challenge chapters list
             if chapter_id not in story_progress.get("completed_challenge_chapters", []):

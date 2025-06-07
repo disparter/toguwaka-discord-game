@@ -189,9 +189,20 @@ class BaseChapter(Chapter):
                 story_progress["current_dialogue_index"] = current_dialogue_index + 1
                 logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to next dialogue: {current_dialogue_index + 1}")
         else:
-            # If there are no choices, just move to the next dialogue
-            logger.warning(f"No valid choice found for index {choice_index} in chapter {self.chapter_id}, dialogue {current_dialogue_index}")
-            story_progress["current_dialogue_index"] = current_dialogue_index + 1
+            # Check if this is a special case for club-specific dialogues
+            if hasattr(self, 'data') and (
+                'club_dialogues' in self.data or 
+                'club_specific_dialogues' in self.data
+            ):
+                # This is likely a chapter with club-specific dialogues
+                # Instead of warning, we'll handle this as a special case
+                # Just move to the next dialogue index
+                story_progress["current_dialogue_index"] = current_dialogue_index + 1
+                logger.info(f"Moving to next dialogue in chapter {self.chapter_id} with club-specific content")
+            else:
+                # If there are no choices and no special case, just move to the next dialogue
+                logger.warning(f"No valid choice found for index {choice_index} in chapter {self.chapter_id}, dialogue {current_dialogue_index}")
+                story_progress["current_dialogue_index"] = current_dialogue_index + 1
 
         # Update player data
         player_data["story_progress"] = story_progress
