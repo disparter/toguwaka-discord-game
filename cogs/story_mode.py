@@ -503,7 +503,13 @@ class StoryModeCog(commands.Cog):
                             player_data["story_progress"] = story_progress
 
                             # Update player data in database
-                            update_player(user_id, story_progress=player_data["story_progress"])
+                            update_data = {"story_progress": player_data["story_progress"]}
+
+                            # Also update club_id if it's in the player data
+                            if "club_id" in player_data:
+                                update_data["club_id"] = player_data["club_id"]
+
+                            update_player(user_id, **update_data)
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -542,7 +548,13 @@ class StoryModeCog(commands.Cog):
                             player_data["story_progress"] = story_progress
 
                             # Update player data in database
-                            update_player(user_id, story_progress=player_data["story_progress"])
+                            update_data = {"story_progress": player_data["story_progress"]}
+
+                            # Also update club_id if it's in the player data
+                            if "club_id" in player_data:
+                                update_data["club_id"] = player_data["club_id"]
+
+                            update_player(user_id, **update_data)
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -580,7 +592,13 @@ class StoryModeCog(commands.Cog):
                             player_data["story_progress"] = story_progress
 
                             # Update player data in database
-                            update_player(user_id, story_progress=player_data["story_progress"])
+                            update_data = {"story_progress": player_data["story_progress"]}
+
+                            # Also update club_id if it's in the player data
+                            if "club_id" in player_data:
+                                update_data["club_id"] = player_data["club_id"]
+
+                            update_player(user_id, **update_data)
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
@@ -619,7 +637,13 @@ class StoryModeCog(commands.Cog):
                             player_data["story_progress"] = story_progress
 
                             # Update player data in database
-                            update_player(user_id, story_progress=player_data["story_progress"])
+                            update_data = {"story_progress": player_data["story_progress"]}
+
+                            # Also update club_id if it's in the player data
+                            if "club_id" in player_data:
+                                update_data["club_id"] = player_data["club_id"]
+
+                            update_player(user_id, **update_data)
                     else:
                         # File is too large, add a note to the embed
                         embed.add_field(
