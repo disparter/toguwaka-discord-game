@@ -182,6 +182,16 @@ def create_duel_embed(duel_result):
             inline=False
         )
 
+    # Add bonus rewards info if any were awarded
+    if "bonus_rewards" in duel_result and duel_result["bonus_rewards"]:
+        bonus_rewards = duel_result["bonus_rewards"]
+        if "item" in bonus_rewards:
+            embed.add_field(
+                name="🎁 Recompensa Bônus",
+                value=f"**{bonus_rewards['item_name']}**\n{bonus_rewards['item_description']}",
+                inline=False
+            )
+
     # Add footer
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
 

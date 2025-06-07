@@ -138,7 +138,9 @@ class Betting(commands.Cog):
                     activities_cog.active_duels[interaction.user.id] = opponent.id
 
                     # Use the existing duel functionality
-                    await activities_cog.slash_duel._callback(interaction, opponent, duel_type)
+                    # Instead of trying to access _callback directly, which causes errors
+                    # We'll call the method directly with the proper parameters
+                    await activities_cog.handle_duel(interaction, opponent, duel_type)
 
                     # Add a callback to handle the duel result
                     self.bot.add_listener(self.on_duel_complete, "on_duel_complete")
