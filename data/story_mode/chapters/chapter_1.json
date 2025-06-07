@@ -207,6 +207,23 @@
     "completion_tusd": 150,
     "next_chapter": "1_3"
   },
+  "1_4": {
+    "type": "story",
+    "title": "Resultado do Desafio",
+    "description": "Redirecionando para o resultado apropriado do seu desafio.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Redirecionando para o resultado do seu desafio..."}
+    ],
+    "conditional_next_chapter": {
+      "challenge_result": {
+        "success": "1_4_success",
+        "failure": "1_4_failure",
+        "default": "1_4_success"
+      }
+    },
+    "completion_exp": 0,
+    "completion_tusd": 0
+  },
   "1_3": {
     "type": "branching",
     "title": "Primeiro Desafio",
@@ -294,6 +311,23 @@
     },
     "completion_exp": 100,
     "completion_tusd": 200
+  },
+  "1_4": {
+    "type": "story",
+    "title": "Resultado do Desafio",
+    "description": "Redirecionando para o resultado apropriado do seu desafio.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Redirecionando para o resultado do seu desafio..."}
+    ],
+    "conditional_next_chapter": {
+      "challenge_result": {
+        "success": "1_4_success",
+        "failure": "1_4_failure",
+        "default": "1_4_success"
+      }
+    },
+    "completion_exp": 0,
+    "completion_tusd": 0
   },
   "1_4_success": {
     "type": "story",
