@@ -19,9 +19,9 @@
       {"npc": "Junie", "text": "A Academia Tokugawa não é uma escola comum. Aqui, os estudantes são classificados em uma hierarquia baseada em seus poderes."},
       {"npc": "Junie", "text": "Os mais fortes ocupam posições de liderança, como Rei ou Rainha, Jack e Ás. Eles são responsáveis por manter a ordem."},
       {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!", "choices": [
-        {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7},
-        {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8},
-        {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9}
+        {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7, "metadata": {"affinity_changes": {"Junie": 3}}},
+        {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8, "metadata": {"affinity_changes": {"Junie": -1}}},
+        {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9, "metadata": {"affinity_changes": {"Junie": 2}}}
       ]}
     ],
     "additional_dialogues": {
@@ -30,11 +30,11 @@
         {"npc": "Junie", "text": "Depois podemos visitar os Ilusionistas Mentais, o Conselho Político, os Elementalistas e o Clube de Combate."},
         {"npc": "Junie", "text": "Cada clube tem sua própria filosofia e métodos de treinamento. Escolher o clube certo é importante para seu desenvolvimento."},
         {"npc": "Junie", "text": "Agora é hora de escolher um clube! Qual deles mais combina com você?", "choices": [
-          {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1}},
-          {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2}},
-          {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3, "skip_tour": true}},
-          {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4}},
-          {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5}}
+          {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1, "affinity_changes": {"Kai Flameheart": 5, "Junie": 1}}},
+          {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2, "affinity_changes": {"Luna Mindweaver": 5, "Junie": 1}}},
+          {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3, "skip_tour": true, "affinity_changes": {"Alexander Strategos": 5, "Junie": 1}}},
+          {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4, "affinity_changes": {"Gaia Naturae": 5, "Junie": 1}}},
+          {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5, "affinity_changes": {"Ryuji Battleborn": 5, "Junie": 1}}}
         ]}
       ],
       "8": [
@@ -42,11 +42,11 @@
         {"npc": "Junie", "text": "Apenas tome cuidado com as áreas restritas e respeite a hierarquia. Alguns estudantes mais poderosos podem não gostar de novatos em seus territórios."},
         {"npc": "Junie", "text": "Se precisar de ajuda, estarei disponível a qualquer momento. Boa exploração!"},
         {"npc": "Junie", "text": "Antes de ir, você precisa se registrar em um clube. Qual deles mais combina com você?", "choices": [
-          {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1}},
-          {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2}},
-          {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3, "skip_tour": true}},
-          {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4}},
-          {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5}}
+          {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1, "affinity_changes": {"Kai Flameheart": 5, "Diretor": -1}}},
+          {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2, "affinity_changes": {"Luna Mindweaver": 5, "Diretor": 1}}},
+          {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3, "skip_tour": true, "affinity_changes": {"Alexander Strategos": 5, "Diretor": 3}}},
+          {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4, "affinity_changes": {"Gaia Naturae": 5, "Diretor": 0}}},
+          {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5, "affinity_changes": {"Ryuji Battleborn": 5, "Diretor": 2}}}
         ]}
       ],
       "9": [

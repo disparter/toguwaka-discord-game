@@ -501,6 +501,24 @@ class StoryMode:
             choice_metadata
         )
 
+        # Apply affinity changes if specified in choice metadata
+        if choice_metadata and "affinity_changes" in choice_metadata:
+            affinity_changes = choice_metadata["affinity_changes"]
+            for npc_name, change in affinity_changes.items():
+                logger.info(f"Updating affinity with {npc_name} by {change} due to player choice")
+                affinity_result = self.update_affinity(result["player_data"], npc_name, change)
+                result["player_data"] = affinity_result["player_data"]
+
+                # Add affinity change to result for feedback
+                if "affinity_changes" not in result:
+                    result["affinity_changes"] = []
+                result["affinity_changes"].append({
+                    "npc": npc_name,
+                    "change": change,
+                    "new_affinity": affinity_result["affinity_result"]["affinity"],
+                    "new_level": affinity_result["affinity_result"]["level"]
+                })
+
         # Handle club selection if present in metadata
         if choice_metadata and "club_id" in choice_metadata:
             club_id = choice_metadata["club_id"]
