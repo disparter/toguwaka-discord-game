@@ -53,16 +53,141 @@ class NPCInteractionCog(commands.Cog):
             await interaction.followup.send(f"Personagem '{personagem}' não encontrado.", ephemeral=True)
             return
 
+        # Initialize story progress if needed
+        if "story_progress" not in player_data:
+            player_data["story_progress"] = {}
+
+        # Initialize NPC interaction history if needed
+        if "npc_interactions" not in player_data["story_progress"]:
+            player_data["story_progress"]["npc_interactions"] = {}
+
+        # Get or initialize interaction history with this NPC
+        npc_name = npc.get_name()
+        if npc_name not in player_data["story_progress"]["npc_interactions"]:
+            player_data["story_progress"]["npc_interactions"][npc_name] = {
+                "total_interactions": 0,
+                "last_interaction": None,
+                "topics_discussed": {},
+                "repeated_greetings": 0
+            }
+
+        npc_interactions = player_data["story_progress"]["npc_interactions"][npc_name]
+
         # Get the dialogue based on the subject
         dialogue_id = assunto if assunto else "greeting"
-        dialogue = npc.get_dialogue(dialogue_id, player_data)
+
+        # Check for repetitive interactions
+        if dialogue_id == "greeting":
+            npc_interactions["repeated_greetings"] += 1
+
+            # If player has greeted the NPC too many times without discussing other topics,
+            # the NPC will suggest something more meaningful
+            if npc_interactions["repeated_greetings"] > 3 and len(npc_interactions["topics_discussed"]) < 2:
+                # Override the dialogue to suggest more meaningful interaction
+                dialogue = {
+                    "text": f"Já nos cumprimentamos várias vezes. Que tal conversarmos sobre algo mais específico? "
+                            f"Você pode me perguntar sobre '{', '.join(list(npc.dialogues.keys())[:3])}'."
+                }
+
+                # Small affinity penalty for repetitive greetings
+                result = self.story_mode.update_affinity(player_data, npc_name, -1)
+                player_data = result["player_data"]
+
+                embed = create_basic_embed(
+                    title=f"{npc.get_name()}",
+                    description=dialogue.get("text", "..."),
+                    color=discord.Color.gold()  # Different color to highlight this is a special response
+                )
+
+                # Update interaction history
+                npc_interactions["total_interactions"] += 1
+                npc_interactions["last_interaction"] = dialogue_id
+                player_data["story_progress"]["npc_interactions"][npc_name] = npc_interactions
+
+                # Update player data in database
+                update_player(user_id, story_progress=player_data["story_progress"])
+
+                await interaction.followup.send(embed=embed, ephemeral=True)
+                return
+
+        # Track topic discussion
+        if dialogue_id != "greeting":
+            if dialogue_id not in npc_interactions["topics_discussed"]:
+                npc_interactions["topics_discussed"][dialogue_id] = 0
+
+                # Small affinity bonus for discussing new topics
+                result = self.story_mode.update_affinity(player_data, npc_name, 2)
+                player_data = result["player_data"]
+
+            npc_interactions["topics_discussed"][dialogue_id] += 1
+
+            # If a topic has been discussed too many times, the NPC will provide new insights
+            if npc_interactions["topics_discussed"][dialogue_id] > 3:
+                # Get current affinity level to determine if the NPC shares more
+                affinity_level = npc.get_affinity_level(player_data)
+
+                if affinity_level in ["close", "trusted"]:
+                    # For close/trusted relationships, provide deeper insights on repeated topics
+                    dialogue = {
+                        "text": f"Já conversamos bastante sobre isso. Deixe-me compartilhar algo mais profundo... "
+                                f"Na verdade, há aspectos sobre {dialogue_id} que poucos conhecem. "
+                                f"Como somos próximos, posso te contar que..."
+                    }
+                else:
+                    # For other relationships, suggest new topics
+                    other_topics = [topic for topic in npc.dialogues.keys() 
+                                   if topic != dialogue_id and topic != "greeting" 
+                                   and topic not in npc_interactions["topics_discussed"]]
+
+                    if other_topics:
+                        dialogue = {
+                            "text": f"Já falamos bastante sobre {dialogue_id}. "
+                                    f"Talvez queira me perguntar sobre '{', '.join(other_topics[:2])}'?"
+                        }
+                    else:
+                        # Get the standard dialogue if no other topics available
+                        dialogue = npc.get_dialogue(dialogue_id, player_data)
+            else:
+                # Get the standard dialogue for this topic
+                dialogue = npc.get_dialogue(dialogue_id, player_data)
+        else:
+            # Get the standard greeting dialogue
+            dialogue = npc.get_dialogue(dialogue_id, player_data)
+
+        # Update interaction history
+        npc_interactions["total_interactions"] += 1
+        npc_interactions["last_interaction"] = dialogue_id
+        player_data["story_progress"]["npc_interactions"][npc_name] = npc_interactions
+
+        # Update player data in database
+        update_player(user_id, story_progress=player_data["story_progress"])
 
         # Create embed for the dialogue
+        # Get current affinity level for the footer
+        affinity_level = npc.get_affinity_level(player_data)
+        affinity_value = npc.get_affinity(player_data)
+
+        # Determine color based on affinity level
+        color = discord.Color.blue()
+        if affinity_level == "trusted":
+            color = discord.Color.purple()
+        elif affinity_level == "close":
+            color = discord.Color.green()
+        elif affinity_level == "friendly":
+            color = discord.Color.teal()
+        elif affinity_level == "unfriendly":
+            color = discord.Color.orange()
+        elif affinity_level == "hostile":
+            color = discord.Color.red()
+
         embed = create_basic_embed(
             title=f"{npc.get_name()}",
             description=dialogue.get("text", "..."),
-            color=discord.Color.blue()
+            color=color
         )
+
+        # Add footer with relationship status
+        embed.set_footer(text=f"Relacionamento: {affinity_level.capitalize()} (Afinidade: {affinity_value})")
 
         # Check if this is the director and if we need to show the welcome.gif
         if npc.get_name().lower() in ["diretor", "diretor sombrio"]:
@@ -102,6 +227,45 @@ class NPCInteractionCog(commands.Cog):
                     update_player(user_id, story_progress=player_data["story_progress"])
                 else:
                     logger.error(f"Welcome gif not found at {gif_path}")
+
+        # Check if this is Professor Quantum and if we need to show the professor_quantum_intro.gif
+        elif npc.get_name().lower() == "professor quantum":
+            # Check if the player has already seen the professor_quantum_intro.gif
+            story_progress = player_data.get("story_progress", {})
+            seen_gifs = story_progress.get("seen_gifs", {})
+
+            if "professor_quantum_intro" not in seen_gifs:
+                # Player hasn't seen the professor_quantum_intro.gif yet, show it
+                gif_path = "assets/gifs/professor_quantum_intro.gif"
+
+                # Check if the gif exists
+                if os.path.exists(gif_path):
+                    # Send the gif
+                    await interaction.followup.send(file=discord.File(gif_path), ephemeral=False)
+
+                    # Record that the player has seen the gif
+                    if "seen_gifs" not in story_progress:
+                        story_progress["seen_gifs"] = {}
+
+                    story_progress["seen_gifs"]["professor_quantum_intro"] = True
+                    player_data["story_progress"] = story_progress
+
+                    # Add the gif to the player's image registry
+                    if "image_registry" not in story_progress:
+                        story_progress["image_registry"] = {}
+
+                    story_progress["image_registry"]["professor_quantum_intro.gif"] = {
+                        "path": gif_path,
+                        "description": "Primeira aparição do Professor Quantum",
+                        "seen_at": discord.utils.utcnow().isoformat()
+                    }
+
+                    player_data["story_progress"] = story_progress
+
+                    # Update player data in database
+                    update_player(user_id, story_progress=player_data["story_progress"])
+                else:
+                    logger.error(f"Professor Quantum intro gif not found at {gif_path}")
 
         # Send the dialogue
         await interaction.followup.send(embed=embed, ephemeral=True)

@@ -677,6 +677,26 @@ class StoryModeCog(commands.Cog):
                         )
                         logger.warning(f"Gaia Naturae GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
 
+            # Check if there are affinity changes to display
+            if "affinity_changes" in result and result["affinity_changes"]:
+                affinity_changes = result["affinity_changes"]
+
+                # Create a field for each affinity change
+                for change_info in affinity_changes:
+                    npc_name = change_info["npc"]
+                    change = change_info["change"]
+                    new_level = change_info["new_level"].capitalize()
+
+                    # Determine icon based on change direction
+                    icon = "⬆️" if change > 0 else "⬇️" if change < 0 else "➡️"
+
+                    # Create field with affinity change information
+                    embed.add_field(
+                        name=f"Relacionamento com {npc_name}",
+                        value=f"{icon} {'+' if change > 0 else ''}{change} pontos de afinidade\nNível atual: {new_level}",
+                        inline=True
+                    )
+
             # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
                 view = discord.ui.View(timeout=300)
