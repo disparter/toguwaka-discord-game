@@ -73,6 +73,7 @@ def create_club_embed(club):
     """Create an embed displaying club information."""
     # Import club perks module
     from utils.club_perks import get_club_perk_description
+    from utils.database import get_relevant_npcs
 
     # Determine color based on club
     club_colors = {
@@ -92,12 +93,23 @@ def create_club_embed(club):
         timestamp=datetime.utcnow()
     )
 
+    # Get club leader from NPCs
+    club_leader_name = club.get('leader_name', 'Nenhum')
+    if club.get('club_id'):
+        # Get NPCs for this club
+        npcs = get_relevant_npcs(club['club_id'])
+        # Find the leader
+        for npc in npcs:
+            if npc.get('role') == 'Líder':
+                club_leader_name = npc.get('name')
+                break
+
     # Add club stats
     embed.add_field(
         name="Estatísticas",
         value=f"**Membros:** {club['members_count']} 👥\n"
               f"**Reputação:** {club['reputation']} 🏆\n"
-              f"**Líder:** {club.get('leader_name', 'Nenhum')}",
+              f"**Líder:** {club_leader_name}",
         inline=True
     )
 

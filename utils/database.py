@@ -1340,8 +1340,8 @@ def get_club_members(club_id):
 
 def get_relevant_npcs(club_id):
     """Get all NPCs that are relevant to a specific club.
-    This is a placeholder implementation that returns hardcoded NPCs for each club.
-    In a real implementation, this would query a database of NPCs.
+    Reads NPCs from the npcs.json file and returns those with matching club_id.
+    Also includes hardcoded NPCs for each club for backward compatibility.
 
     Args:
         club_id (int): The ID of the club
@@ -1349,7 +1349,7 @@ def get_relevant_npcs(club_id):
     Returns:
         list: List of NPC dictionaries relevant to the club
     """
-    # Hardcoded NPCs for each club
+    # Hardcoded NPCs for each club (for backward compatibility)
     club_npcs = {
         1: [  # Clube das Chamas
             {"name": "Mestre Kaji", "role": "Mentor"},
@@ -1373,7 +1373,36 @@ def get_relevant_npcs(club_id):
         ]
     }
 
-    return club_npcs.get(club_id, [])
+    # Get NPCs from npcs.json file
+    npcs_from_file = []
+    try:
+        import os
+        import json
+        npcs_file_path = os.path.join('data', 'story_mode', 'npcs', 'npcs.json')
+        if os.path.exists(npcs_file_path):
+            with open(npcs_file_path, 'r') as f:
+                npcs_data = json.load(f)
+
+                # Find NPCs with matching club_id
+                for npc_id, npc in npcs_data.items():
+                    if npc.get('club_id') == club_id:
+                        # Check if this NPC is a club leader
+                        if npc_id == "lider_conselho_politico" or "leader" in npc_id.lower():
+                            role = "Líder"
+                        else:
+                            role = npc.get('type', 'Membro').capitalize()
+
+                        npcs_from_file.append({
+                            "name": npc.get('name', 'Unknown'),
+                            "role": role
+                        })
+    except Exception as e:
+        logger.error(f"Error loading NPCs from file: {e}")
+
+    # Combine hardcoded NPCs with NPCs from file
+    result = club_npcs.get(club_id, []) + npcs_from_file
+
+    return result
 
 # Initialize the database when the module is imported
 init_db()
