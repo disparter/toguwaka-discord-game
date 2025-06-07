@@ -789,10 +789,11 @@ class PersonalizedNarrative:
         if "{player_origin}" in text and "origin" in player_data:
             text = text.replace("{player_origin}", player_data["origin"])
 
-        # Replace {club_name}
-        if "{club_name}" in text:
+        # Replace {club_name} and {{club_name}}
+        if "{club_name}" in text or "{{club_name}}" in text:
             if "club_name" in player_data:
                 text = text.replace("{club_name}", player_data["club_name"])
+                text = text.replace("{{club_name}}", player_data["club_name"])
             elif "club_id" in player_data and player_data["club_id"]:
                 # If club_name is not in player_data but club_id is, fetch the club name from the database
                 try:
@@ -800,13 +801,17 @@ class PersonalizedNarrative:
                     club = get_club(player_data["club_id"])
                     if club and "name" in club:
                         text = text.replace("{club_name}", club["name"])
+                        text = text.replace("{{club_name}}", club["name"])
                     else:
                         text = text.replace("{club_name}", "desconhecido")
+                        text = text.replace("{{club_name}}", "desconhecido")
                 except Exception as e:
                     logger.error(f"Error fetching club name: {e}")
                     text = text.replace("{club_name}", "desconhecido")
+                    text = text.replace("{{club_name}}", "desconhecido")
             else:
                 text = text.replace("{club_name}", "desconhecido")
+                text = text.replace("{{club_name}}", "desconhecido")
 
         # Replace {player_element} - assuming it's the same as power for elemental powers
         if "{player_element}" in text and "power" in player_data:

@@ -137,7 +137,7 @@
     "description": "Escolha um clube para se juntar e conheça seu líder.",
     "dialogues": [
       {"npc": "Junie", "text": "Cada clube tem seu próprio foco e atividades."},
-      {"npc": "Junie", "text": "Você está registrado no clube {club_name}. Vamos conhecer o líder do clube!"}
+      {"npc": "Junie", "text": "Você está registrado no clube {{club_name}}. Vamos conhecer o líder do clube!"}
     ],
     "choices": [
       {"text": "Continuar", "next_dialogue": 1}

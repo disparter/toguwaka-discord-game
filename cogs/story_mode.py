@@ -473,6 +473,7 @@ class StoryModeCog(commands.Cog):
 
                         # Replace placeholders with actual values
                         text = text.replace("{club_name}", club_name)
+                        text = text.replace("{{club_name}}", club_name)
                         text = text.replace("{club_leader}", club_leader)
 
                         # If text contains "líder de clube", make sure the club name is mentioned
