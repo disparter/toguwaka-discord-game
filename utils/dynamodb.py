@@ -167,11 +167,19 @@ def update_player(user_id, **kwargs):
 
         # Add each field to update expression
         for key, value in kwargs.items():
-            # Handle special cases for nested attributes
-            if key == 'atributos':
-                for attr_key, attr_value in value.items():
-                    update_expression += f", atributos.{attr_key} = :attr_{attr_key}"
-                    expression_values[f':attr_{attr_key}'] = attr_value
+            # Handle dictionary values
+            if isinstance(value, dict):
+                if key == 'atributos':
+                    # Special handling for atributos field
+                    for attr_key, attr_value in value.items():
+                        update_expression += f", atributos.{attr_key} = :attr_{attr_key}"
+                        expression_values[f':attr_{attr_key}'] = attr_value
+                else:
+                    # For other dictionary fields, store as a map
+                    update_expression += f", {key} = :{key}"
+                    # Convert any nested dictionaries to a format DynamoDB can handle
+                    processed_value = json.loads(json.dumps(value), parse_float=Decimal)
+                    expression_values[f':{key}'] = processed_value
             else:
                 update_expression += f", {key} = :{key}"
                 expression_values[f':{key}'] = value

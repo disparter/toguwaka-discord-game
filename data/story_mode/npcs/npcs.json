@@ -204,9 +204,9 @@
       }
     }
   },
-  "diretor_sombrio": {
+  "diretor": {
     "type": "faculty",
-    "name": "Diretor Sombrio",
+    "name": "Diretor",
     "background": {
       "background": "Antes conhecido como Prometheus, ele foi um dos primeiros usuários de poderes a se revelar ao mundo. Após testemunhar o preconceito e perseguição, decidiu criar um santuário para os jovens com habilidades especiais.",
       "motivation": "Preparar a próxima geração para um inevitável conflito entre usuários de poderes e o resto da humanidade.",
@@ -283,6 +283,47 @@
         "friendly": {"text": "Suas escolhas importam mais do que você pensa. Cada decisão cria ramificações na linha do tempo."},
         "close": {"text": "Já vi muitas versões do futuro. Algumas são brilhantes, outras... sombrias. Suas ações influenciarão qual delas se concretizará."},
         "trusted": {"text": "Preciso da sua ajuda para mudar um evento específico que ocorrerá em breve. É crucial para evitar a catástrofe que vi em minha linha do tempo original."}
+      }
+    }
+  },
+  "lider_conselho_politico": {
+    "type": "student",
+    "name": "Líder do Conselho Político",
+    "background": {
+      "background": "Comandante do Conselho Estudantil da Academia Tokugawa, este estudante elegante e estrategista construiu uma reputação de ser sempre três passos à frente de seus adversários. Sua influência se estende por toda a academia.",
+      "motivation": "Expandir sua rede de influência e controle sobre a política estudantil para preparar-se para uma carreira na política global.",
+      "secrets": "Mantém um elaborado sistema de informantes em todos os departamentos da academia, coletando informações que podem ser úteis para manipular situações a seu favor."
+    },
+    "year": 3,
+    "club_id": 3,
+    "power": "Análise Estratégica",
+    "hierarchy_tier": 3,
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Pontual como sempre, {player_name}. Excelente. A pontualidade é a cortesia dos reis... e dos futuros líderes."},
+        "friendly": {"text": "Ah, {player_name}. Sua presença é sempre... estrategicamente valiosa."},
+        "close": {"text": "Bem-vindo, meu aliado. Tenho algumas informações que podem ser de seu interesse."},
+        "trusted": {"text": "Finalmente, alguém com quem posso falar abertamente. Tenho planos que requerem alguém com suas... habilidades."}
+      },
+      "politics": {
+        "default": {"text": "A política estudantil é um microcosmo fascinante do mundo real. Cada movimento deve ser calculado."},
+        "friendly": {"text": "O Conselho Estudantil tem mais influência do que a maioria percebe. Controlamos recursos, eventos e até mesmo algumas políticas acadêmicas."},
+        "close": {"text": "Entre nós, estou implementando um sistema de influência que me permitirá controlar indiretamente todas as decisões importantes na academia."},
+        "trusted": {"text": "Meu plano vai além da academia. Estou construindo conexões com políticos e líderes empresariais que serão úteis quando eu entrar na política real."}
+      },
+      "strategy": {
+        "default": {"text": "Estratégia não é apenas sobre vencer, mas sobre fazer com que seus oponentes nem percebam que estão em um jogo."},
+        "friendly": {"text": "Observo seus movimentos com interesse. Você tem um instinto natural para estratégia que poucos possuem."},
+        "close": {"text": "A verdadeira estratégia é sobre controle de informação. Quem controla o que os outros sabem, controla como eles agem."},
+        "trusted": {"text": "Juntos, poderíamos remodelar completamente a estrutura de poder desta academia. Pense nisso como um exercício para conquistas maiores no futuro."}
       }
     }
   }
