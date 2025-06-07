@@ -58,7 +58,13 @@ class StoryModeCog(commands.Cog):
             return
 
         # Update player data in database
-        update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
+        update_data = {"story_progress": json_dumps(result["player_data"]["story_progress"])}
+
+        # Also update club_id if it's in the player data
+        if "club_id" in result["player_data"]:
+            update_data["club_id"] = result["player_data"]["club_id"]
+
+        update_player(user_id, **update_data)
 
         # Store session data
         self.active_sessions[user_id] = {
@@ -232,7 +238,13 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Update player data in database
-            update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
+            update_data = {"story_progress": json_dumps(result["player_data"]["story_progress"])}
+
+            # Also update club_id if it's in the player data
+            if "club_id" in result["player_data"]:
+                update_data["club_id"] = result["player_data"]["club_id"]
+
+            update_player(user_id, **update_data)
 
             affinity_result = result["affinity_result"]
 
@@ -362,7 +374,13 @@ class StoryModeCog(commands.Cog):
             return
 
         # Update player data in database
-        update_player(user_id, story_progress=json_dumps(result["player_data"]["story_progress"]))
+        update_data = {"story_progress": json_dumps(result["player_data"]["story_progress"])}
+
+        # Also update club_id if it's in the player data
+        if "club_id" in result["player_data"]:
+            update_data["club_id"] = result["player_data"]["club_id"]
+
+        update_player(user_id, **update_data)
 
         event_result = result["event_result"]
 
