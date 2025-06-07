@@ -40,8 +40,8 @@ class StoryModeCog(commands.Cog):
         try:
             await interaction.response.defer(ephemeral=True)
         except discord.errors.NotFound:
-            logger.error("A interação expirou antes que pudesse ser processada.")
-            return
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /historia")
+            return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -90,8 +90,8 @@ class StoryModeCog(commands.Cog):
         try:
             await interaction.response.defer(ephemeral=True)
         except discord.errors.NotFound:
-            logger.error("A interação expirou antes que pudesse ser processada.")
-            return
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /status_historia")
+            return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -184,8 +184,8 @@ class StoryModeCog(commands.Cog):
         try:
             await interaction.response.defer(ephemeral=True)
         except discord.errors.NotFound:
-            logger.error("A interação expirou antes que pudesse ser processada.")
-            return
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /relacionamento")
+            return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
@@ -289,8 +289,8 @@ class StoryModeCog(commands.Cog):
         try:
             await interaction.response.defer(ephemeral=True)
         except discord.errors.NotFound:
-            logger.error("A interação expirou antes que pudesse ser processada.")
-            return
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /evento")
+            return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
         player_data = get_player(user_id)
