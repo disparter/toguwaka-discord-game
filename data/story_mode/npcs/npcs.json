@@ -356,5 +356,52 @@
         "trusted": {"text": "Juntos, poderíamos remodelar completamente a estrutura de poder desta academia. Pense nisso como um exercício para conquistas maiores no futuro."}
       }
     }
+  },
+  "professor_quantum": {
+    "type": "faculty",
+    "name": "Professor Quantum",
+    "background": {
+      "background": "Um físico brilhante com uma compreensão única da natureza fundamental dos poderes. Suas teorias não convencionais sobre a origem dos poderes o tornaram uma figura controversa na academia.",
+      "motivation": "Descobrir a verdade sobre a origem dos poderes e compartilhar esse conhecimento com estudantes que estejam dispostos a questionar a narrativa oficial.",
+      "secrets": "Está conduzindo pesquisas não autorizadas sobre anomalias dimensionais e colabora secretamente com a Professora Chronos para investigar o passado obscuro da academia."
+    },
+    "position": "Professor",
+    "subject": "Física Avançada",
+    "years_teaching": 15,
+    "power": "Manipulação Quântica",
+    "affinity_thresholds": {
+      "hostile": -50,
+      "unfriendly": -20,
+      "neutral": 0,
+      "friendly": 20,
+      "close": 50,
+      "trusted": 80
+    },
+    "dialogues": {
+      "greeting": {
+        "default": {"text": "Ah, mais uma mente curiosa! Bem-vindo ao fascinante mundo da física quântica aplicada aos poderes."},
+        "friendly": {"text": "Excelente timing! Estava justamente pensando em um problema que talvez você possa me ajudar a resolver."},
+        "close": {"text": "Que bom vê-lo novamente! Tenho algumas descobertas recentes que gostaria de compartilhar com você."},
+        "trusted": {"text": "Precisamos conversar em particular. Descobri algo sobre as anomalias dimensionais que você precisa saber."}
+      },
+      "research": {
+        "default": {"text": "Minha pesquisa? Estou investigando a natureza fundamental dos poderes e sua relação com a física quântica."},
+        "friendly": {"text": "Estou estudando padrões nas manifestações de poderes que sugerem um evento catalisador comum. Fascinante, não?"},
+        "close": {"text": "Entre nós, estou investigando anomalias dimensionais que aparecem periodicamente nos terrenos da academia. A administração nega sua existência."},
+        "trusted": {"text": "Descobri evidências de que nossos poderes podem ser resultado de um experimento governamental que deu errado. O Diretor está tentando encobrir isso."}
+      },
+      "theory": {
+        "default": {"text": "A teoria convencional sobre os poderes tem falhas fundamentais que poucos estão dispostos a reconhecer."},
+        "friendly": {"text": "Você já se perguntou por que os registros históricos sobre a origem dos poderes são tão vagos e contraditórios?"},
+        "close": {"text": "Acredito que houve um evento catalisador há cerca de 50 anos que desencadeou o surgimento dos poderes, mas alguém está tentando esconder isso."},
+        "trusted": {"text": "A Professora Chronos e eu estamos coletando evidências. Acreditamos que o próprio Diretor esteve envolvido no incidente que originou os poderes."}
+      },
+      "quantum": {
+        "default": {"text": "A mecânica quântica nos ensina que a realidade é mais fluida do que parece. Nossos poderes são apenas a ponta do iceberg dessa fluidez."},
+        "friendly": {"text": "Sabia que em nível quântico, a observação afeta o resultado? Seus poderes funcionam de maneira similar - sua intenção molda a realidade."},
+        "close": {"text": "Tenho uma teoria de que nossos poderes são na verdade manipulações inconscientes do tecido quântico da realidade. Estamos literalmente dobrando as regras do universo."},
+        "trusted": {"text": "Descobri algo extraordinário - evidências de que existem outras dimensões onde as leis da física são diferentes. Acredito que nossos poderes são vazamentos dessas dimensões para a nossa."}
+      }
+    }
   }
 }
