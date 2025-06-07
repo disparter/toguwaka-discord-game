@@ -5,6 +5,7 @@ import logging
 import boto3
 from datetime import datetime
 from pathlib import Path
+from decimal import Decimal
 
 # Import both database modules
 from . import database as sqlite_db
@@ -27,6 +28,7 @@ def migrate_players():
         user_id = player['user_id']
 
         # Create player profile in DynamoDB
+        # Convert numeric values to Decimal to avoid float type errors
         dynamo_db.table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
@@ -35,19 +37,19 @@ def migrate_players():
                 'GSI1SK': player['name'],
                 'nome': player['name'],
                 'superpoder': player['power'],
-                'nivel': player['level'],
-                'exp': player['exp'],
-                'tusd': player['tusd'],
+                'nivel': Decimal(str(player['level'])),
+                'exp': Decimal(str(player['exp'])),
+                'tusd': Decimal(str(player['tusd'])),
                 'clube_id': player['club_id'],
                 'atributos': {
-                    'destreza': player['dexterity'],
-                    'intelecto': player['intellect'],
-                    'carisma': player['charisma'],
-                    'poder': player['power_stat']
+                    'destreza': Decimal(str(player['dexterity'])),
+                    'intelecto': Decimal(str(player['intellect'])),
+                    'carisma': Decimal(str(player['charisma'])),
+                    'poder': Decimal(str(player['power_stat']))
                 },
-                'reputacao': player['reputation'],
-                'hp': player['hp'],
-                'max_hp': player['max_hp'],
+                'reputacao': Decimal(str(player['reputation'])),
+                'hp': Decimal(str(player['hp'])),
+                'max_hp': Decimal(str(player['max_hp'])),
                 'created_at': player['created_at'],
                 'last_active': player['last_active']
             }
@@ -60,7 +62,7 @@ def migrate_players():
         for item_id, quantity in inventory.items():
             inventory_items.append({
                 'id': item_id,
-                'quantidade': quantity
+                'quantidade': Decimal(str(quantity))
             })
 
         dynamo_db.table.put_item(
@@ -79,8 +81,8 @@ def migrate_players():
             techniques_list.append({
                 'id': tech_id,
                 'nome': tech_data.get('name', 'Unknown'),
-                'nivel': tech_data.get('level', 1),
-                'dano': tech_data.get('damage', 0)
+                'nivel': Decimal(str(tech_data.get('level', 1))),
+                'dano': Decimal(str(tech_data.get('damage', 0)))
             })
 
         dynamo_db.table.put_item(
@@ -119,8 +121,8 @@ def migrate_clubs():
                 'nome': club['name'],
                 'descricao': club['description'],
                 'lider_id': club['leader_id'],
-                'membros_count': club['members_count'],
-                'reputacao': club['reputation'],
+                'membros_count': Decimal(str(club['members_count'])),
+                'reputacao': Decimal(str(club['reputation'])),
                 'created_at': club['created_at']
             }
         )
@@ -162,7 +164,24 @@ def migrate_events():
 
         # Parse JSON fields
         participants = json.loads(event['participants'])
-        data = json.loads(event['data'])
+        data_json = json.loads(event['data'])
+
+        # Convert numeric values in data to Decimal
+        data = {}
+        for key, value in data_json.items():
+            if isinstance(value, (int, float)):
+                data[key] = Decimal(str(value))
+            elif isinstance(value, dict):
+                # Handle nested dictionaries
+                nested_dict = {}
+                for k, v in value.items():
+                    if isinstance(v, (int, float)):
+                        nested_dict[k] = Decimal(str(v))
+                    else:
+                        nested_dict[k] = v
+                data[key] = nested_dict
+            else:
+                data[key] = value
 
         # Create event in DynamoDB
         dynamo_db.table.put_item(
@@ -210,11 +229,16 @@ def migrate_cooldowns():
         command = cooldown['command']
 
         # Create cooldown in DynamoDB
+        # Convert expiry_time to datetime string if it's a timestamp
+        expiry_time = cooldown['expiry_time']
+        if isinstance(expiry_time, (int, float)):
+            expiry_time = datetime.fromtimestamp(expiry_time).isoformat()
+
         dynamo_db.table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'COOLDOWN#{command}',
-                'expiry_time': cooldown['expiry_time']
+                'expiry_time': expiry_time
             }
         )
 
@@ -275,7 +299,15 @@ def migrate_items():
         item_id = item['item_id']
 
         # Parse effects JSON
-        effects = json.loads(item['effects'])
+        effects_json = json.loads(item['effects'])
+
+        # Convert numeric values in effects to Decimal
+        effects = {}
+        for key, value in effects_json.items():
+            if isinstance(value, (int, float)):
+                effects[key] = Decimal(str(value))
+            else:
+                effects[key] = value
 
         # Create item in DynamoDB
         dynamo_db.table.put_item(
@@ -288,7 +320,7 @@ def migrate_items():
                 'descricao': item['description'],
                 'tipo': item['type'],
                 'raridade': item['rarity'],
-                'preco': item['price'],
+                'preco': Decimal(str(item['price'])),
                 'efeitos': effects
             }
         )
