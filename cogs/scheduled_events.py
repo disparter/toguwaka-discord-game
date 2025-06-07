@@ -1757,6 +1757,41 @@ class ScheduledEvents(commands.Cog):
                 emoji="🔁",
                 custom_id="view_previous_rankings"
             )
+
+            # Define callback for previous rankings button
+            async def previous_rankings_callback(interaction):
+                try:
+                    # Create a message with links to previous rankings
+                    embed = create_basic_embed(
+                        title="Rankings Anteriores",
+                        description="Veja os rankings anteriores da Academia Tokugawa:",
+                        color=discord.Color.blue()
+                    )
+
+                    embed.add_field(
+                        name="Rankings Diários",
+                        value="Use `/ranking daily` para ver o ranking diário",
+                        inline=False
+                    )
+
+                    embed.add_field(
+                        name="Rankings Semanais",
+                        value="Use `/ranking weekly` para ver o ranking semanal",
+                        inline=False
+                    )
+
+                    embed.add_field(
+                        name="Rankings de Reputação",
+                        value="Use `/ranking reputation` para ver o ranking de reputação",
+                        inline=False
+                    )
+
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                except Exception as e:
+                    logger.error(f"Error in previous_rankings_callback: {e}")
+                    await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.", ephemeral=True)
+
+            previous_button.callback = previous_rankings_callback
             view.add_item(previous_button)
 
             # Add "View Rewards" button if there's a featured club
@@ -1767,6 +1802,58 @@ class ScheduledEvents(commands.Cog):
                     emoji="💎",
                     custom_id="view_club_rewards"
                 )
+
+                # Define callback for rewards button
+                async def rewards_callback(interaction):
+                    try:
+                        # Get the featured club's buff
+                        club_buff = CLUB_BUFFS.get(featured_club['club_id'])
+
+                        if not club_buff:
+                            await interaction.response.send_message("Não há recompensas disponíveis para este clube no momento.", ephemeral=True)
+                            return
+
+                        # Format the buff description
+                        buff_description = ClubEffectEngine.format_buff_description(club_buff['type'], club_buff['value'])
+
+                        # Calculate expiration time
+                        now = datetime.now()
+                        expires = club_buff['expires']
+                        time_left = expires - now
+                        hours_left = int(time_left.total_seconds() / 3600)
+                        minutes_left = int((time_left.total_seconds() % 3600) / 60)
+
+                        # Create embed with reward information
+                        embed = create_basic_embed(
+                            title=f"Recompensas do Clube: {featured_club['name']}",
+                            description=f"O clube {featured_club['name']} está em destaque hoje!",
+                            color=discord.Color.gold()
+                        )
+
+                        embed.add_field(
+                            name="Bônus Ativo",
+                            value=buff_description,
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Tempo Restante",
+                            value=f"{hours_left}h {minutes_left}min",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Como Receber",
+                            value="Este bônus é aplicado automaticamente a todos os membros do clube durante atividades como duelos, eventos e quizzes.",
+                            inline=False
+                        )
+
+                        await interaction.response.send_message(embed=embed, ephemeral=True)
+                    except Exception as e:
+                        logger.error(f"Error in rewards_callback: {e}")
+                        await interaction.response.send_message("Ocorreu um erro ao exibir as recompensas do clube.", ephemeral=True)
+
+                rewards_button.callback = rewards_callback
                 view.add_item(rewards_button)
 
             # Send the first message with greeting and daily summary
@@ -4233,6 +4320,41 @@ class ScheduledEvents(commands.Cog):
                     emoji="🔁",
                     custom_id="view_previous_rankings"
                 )
+
+                # Define callback for previous rankings button
+                async def previous_rankings_callback(interaction):
+                    try:
+                        # Create a message with links to previous rankings
+                        embed = create_basic_embed(
+                            title="Rankings Anteriores",
+                            description="Veja os rankings anteriores da Academia Tokugawa:",
+                            color=discord.Color.blue()
+                        )
+
+                        embed.add_field(
+                            name="Rankings Diários",
+                            value="Use `/ranking daily` para ver o ranking diário",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings Semanais",
+                            value="Use `/ranking weekly` para ver o ranking semanal",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings de Reputação",
+                            value="Use `/ranking reputation` para ver o ranking de reputação",
+                            inline=False
+                        )
+
+                        await interaction.response.send_message(embed=embed, ephemeral=True)
+                    except Exception as e:
+                        logger.error(f"Error in previous_rankings_callback: {e}")
+                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.", ephemeral=True)
+
+                previous_button.callback = previous_rankings_callback
                 view.add_item(previous_button)
 
                 await interaction.response.send_message(embed=embed, view=view)
@@ -4268,6 +4390,41 @@ class ScheduledEvents(commands.Cog):
                     emoji="🔁",
                     custom_id="view_previous_rankings"
                 )
+
+                # Define callback for previous rankings button
+                async def previous_rankings_callback(interaction):
+                    try:
+                        # Create a message with links to previous rankings
+                        embed = create_basic_embed(
+                            title="Rankings Anteriores",
+                            description="Veja os rankings anteriores da Academia Tokugawa:",
+                            color=discord.Color.blue()
+                        )
+
+                        embed.add_field(
+                            name="Rankings Diários",
+                            value="Use `/ranking daily` para ver o ranking diário",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings Semanais",
+                            value="Use `/ranking weekly` para ver o ranking semanal",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings de Reputação",
+                            value="Use `/ranking reputation` para ver o ranking de reputação",
+                            inline=False
+                        )
+
+                        await interaction.response.send_message(embed=embed, ephemeral=True)
+                    except Exception as e:
+                        logger.error(f"Error in previous_rankings_callback: {e}")
+                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.", ephemeral=True)
+
+                previous_button.callback = previous_rankings_callback
                 view.add_item(previous_button)
 
                 await interaction.response.send_message(embed=embed, view=view)
@@ -4309,6 +4466,47 @@ class ScheduledEvents(commands.Cog):
                     emoji="🔁",
                     custom_id="view_full_rankings"
                 )
+
+                # Define callback for full rankings button
+                async def full_rankings_callback(interaction):
+                    try:
+                        # Create a message with links to all rankings
+                        embed = create_basic_embed(
+                            title="Rankings Completos",
+                            description="Veja todos os rankings disponíveis na Academia Tokugawa:",
+                            color=discord.Color.blue()
+                        )
+
+                        embed.add_field(
+                            name="Rankings Diários",
+                            value="Use `/ranking daily` para ver o ranking diário",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings Semanais",
+                            value="Use `/ranking weekly` para ver o ranking semanal",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings de Reputação",
+                            value="Use `/ranking reputation` para ver o ranking de reputação",
+                            inline=False
+                        )
+
+                        embed.add_field(
+                            name="Rankings Gerais",
+                            value="Use `/ranking` para ver o ranking geral",
+                            inline=False
+                        )
+
+                        await interaction.response.send_message(embed=embed, ephemeral=True)
+                    except Exception as e:
+                        logger.error(f"Error in full_rankings_callback: {e}")
+                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings completos.", ephemeral=True)
+
+                previous_button.callback = full_rankings_callback
                 view.add_item(previous_button)
 
                 await interaction.response.send_message(embed=embed, view=view)
