@@ -1,0 +1,33 @@
+# GIF Specification for Junie (Assistente Virtual da Academia Tokugawa)
+
+## Visual Style
+- Style should match the webtoon *Unordinary*
+- Character should be friendly and helpful
+- Welcoming expression and light energy
+- Always smiling and confident
+- Approachable appearance
+
+## Setting
+- Academy reception interface
+- Soft natural light
+- School banner in the background
+- Clean, organized environment
+
+## Dialogue (Lipsync)
+"Olá! Estou aqui para guiar você por tudo na Tokugawa!"
+
+## Visual Effects
+- Floating icons with map, class information
+- Light aura surrounding the character
+- Interface elements that suggest virtual assistance
+- Subtle animations of digital elements
+
+## Animation Notes
+- Character should react to player's presence
+- Expressions and movements should be consistent with the character's helpful personality
+- No specific duration requirement
+
+## File Requirements
+- Final file should be named "junie.gif"
+- File size should be under 8MB for Discord compatibility
+- If compression is needed, use the project's compression scripts

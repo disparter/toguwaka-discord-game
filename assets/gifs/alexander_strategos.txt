@@ -1,0 +1,33 @@
+# GIF Specification for Alexander Strategos (Líder do Conselho Político / Comandante do Conselho Estudantil)
+
+## Visual Style
+- Style should match the webtoon *Unordinary*
+- Character should be elegant and strategic-looking
+- Dark, well-groomed hair
+- Cold, calculating eyes
+- Expression should convey silent authority
+
+## Setting
+- Sophisticated meeting room
+- Holographic table in the center
+- Tall windows in the background
+- Academic formality atmosphere
+
+## Dialogue (Lipsync)
+"Pontualidade é a cortesia dos reis... e dos futuros líderes."
+
+## Visual Effects
+- Holographic projections of graphs and influence networks
+- Soft lighting contrasting with the character's imposing presence
+- Data panels materializing
+- Subtle golden glow on insignias
+
+## Animation Notes
+- Character should react to player's presence
+- Expressions and movements should be consistent with the character's calculating personality
+- No specific duration requirement
+
+## File Requirements
+- Final file should be named "alexander_strategos.gif"
+- File size should be under 8MB for Discord compatibility
+- If compression is needed, use the project's compression scripts
