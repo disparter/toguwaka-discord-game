@@ -2998,9 +2998,19 @@ class ScheduledEvents(commands.Cog):
             difficulty_multiplier = (question_difficulty + subject_difficulty) / 2
             correct_bonus = (max_grade - base_grade) * (difficulty_multiplier / 3)
 
+            # Get player's intellect value and calculate intellect bonus
+            player_intellect = player.get('intellect', 5)  # Default to 5 if not found
+            intellect_bonus = (player_intellect - 5) * 0.2  # Each point above 5 gives 0.2 bonus
+
             final_grade = base_grade
             if is_correct:
                 final_grade += correct_bonus
+
+            # Add intellect bonus
+            final_grade += intellect_bonus
+
+            # Ensure grade doesn't exceed maximum
+            final_grade = min(final_grade, max_grade)
 
             # Round to one decimal place
             final_grade = round(final_grade, 1)

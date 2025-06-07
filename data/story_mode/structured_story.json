@@ -1,0 +1,1703 @@
+[
+  {
+    "id": "1_1_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 1 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_1_choice_1"
+  },
+  {
+    "id": "1_1_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_2"
+        },
+        "failure": {
+          "next_chapter": "1_2"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_2"
+        },
+        "failure": {
+          "next_chapter": "1_2"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_2"
+        },
+        "failure": {
+          "next_chapter": "1_2"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_2"
+        },
+        "failure": {
+          "next_chapter": "1_2"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 3,
+        "success": {
+          "next_chapter": "1_2"
+        },
+        "failure": {
+          "next_chapter": "1_2"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_2_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 2 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_2_choice_1"
+  },
+  {
+    "id": "1_2_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_3"
+        },
+        "failure": {
+          "next_chapter": "1_3"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_3"
+        },
+        "failure": {
+          "next_chapter": "1_3"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_3"
+        },
+        "failure": {
+          "next_chapter": "1_3"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_3"
+        },
+        "failure": {
+          "next_chapter": "1_3"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "1_3"
+        },
+        "failure": {
+          "next_chapter": "1_3"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_3_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 3 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_3_choice_1"
+  },
+  {
+    "id": "1_3_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_4"
+        },
+        "failure": {
+          "next_chapter": "1_4"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_4"
+        },
+        "failure": {
+          "next_chapter": "1_4"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_4"
+        },
+        "failure": {
+          "next_chapter": "1_4"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_4"
+        },
+        "failure": {
+          "next_chapter": "1_4"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 5,
+        "success": {
+          "next_chapter": "1_4"
+        },
+        "failure": {
+          "next_chapter": "1_4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_4_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 4 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_4_choice_1"
+  },
+  {
+    "id": "1_4_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_5"
+        },
+        "failure": {
+          "next_chapter": "1_5"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_5"
+        },
+        "failure": {
+          "next_chapter": "1_5"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_5"
+        },
+        "failure": {
+          "next_chapter": "1_5"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_5"
+        },
+        "failure": {
+          "next_chapter": "1_5"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 4,
+        "success": {
+          "next_chapter": "1_5"
+        },
+        "failure": {
+          "next_chapter": "1_5"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_5_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 5 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_5_choice_1"
+  },
+  {
+    "id": "1_5_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_6"
+        },
+        "failure": {
+          "next_chapter": "1_6"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_6"
+        },
+        "failure": {
+          "next_chapter": "1_6"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_6"
+        },
+        "failure": {
+          "next_chapter": "1_6"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_6"
+        },
+        "failure": {
+          "next_chapter": "1_6"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 3,
+        "success": {
+          "next_chapter": "1_6"
+        },
+        "failure": {
+          "next_chapter": "1_6"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_6_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 6 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_6_choice_1"
+  },
+  {
+    "id": "1_6_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_7"
+        },
+        "failure": {
+          "next_chapter": "1_7"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_7"
+        },
+        "failure": {
+          "next_chapter": "1_7"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_7"
+        },
+        "failure": {
+          "next_chapter": "1_7"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_7"
+        },
+        "failure": {
+          "next_chapter": "1_7"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 1,
+        "success": {
+          "next_chapter": "1_7"
+        },
+        "failure": {
+          "next_chapter": "1_7"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_7_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 7 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_7_choice_1"
+  },
+  {
+    "id": "1_7_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_8"
+        },
+        "failure": {
+          "next_chapter": "1_8"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_8"
+        },
+        "failure": {
+          "next_chapter": "1_8"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_8"
+        },
+        "failure": {
+          "next_chapter": "1_8"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_8"
+        },
+        "failure": {
+          "next_chapter": "1_8"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "1_8"
+        },
+        "failure": {
+          "next_chapter": "1_8"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_8_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 8 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_8_choice_1"
+  },
+  {
+    "id": "1_8_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "1_9"
+        },
+        "failure": {
+          "next_chapter": "1_9"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "1_9"
+        },
+        "failure": {
+          "next_chapter": "1_9"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "1_9"
+        },
+        "failure": {
+          "next_chapter": "1_9"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "1_9"
+        },
+        "failure": {
+          "next_chapter": "1_9"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 5,
+        "success": {
+          "next_chapter": "1_9"
+        },
+        "failure": {
+          "next_chapter": "1_9"
+        }
+      }
+    ]
+  },
+  {
+    "id": "1_9_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 9 do cap\u00edtulo 1. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "1_9_choice_1"
+  },
+  {
+    "id": "1_9_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_1"
+        },
+        "failure": {
+          "next_chapter": "2_1"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_1"
+        },
+        "failure": {
+          "next_chapter": "2_1"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_1"
+        },
+        "failure": {
+          "next_chapter": "2_1"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_1"
+        },
+        "failure": {
+          "next_chapter": "2_1"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 1,
+        "success": {
+          "next_chapter": "2_1"
+        },
+        "failure": {
+          "next_chapter": "2_1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_1_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 1 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_1_choice_1"
+  },
+  {
+    "id": "2_1_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_2"
+        },
+        "failure": {
+          "next_chapter": "2_2"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_2"
+        },
+        "failure": {
+          "next_chapter": "2_2"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_2"
+        },
+        "failure": {
+          "next_chapter": "2_2"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_2"
+        },
+        "failure": {
+          "next_chapter": "2_2"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 1,
+        "success": {
+          "next_chapter": "2_2"
+        },
+        "failure": {
+          "next_chapter": "2_2"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_2_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 2 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_2_choice_1"
+  },
+  {
+    "id": "2_2_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_3"
+        },
+        "failure": {
+          "next_chapter": "2_3"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_3"
+        },
+        "failure": {
+          "next_chapter": "2_3"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_3"
+        },
+        "failure": {
+          "next_chapter": "2_3"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_3"
+        },
+        "failure": {
+          "next_chapter": "2_3"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 3,
+        "success": {
+          "next_chapter": "2_3"
+        },
+        "failure": {
+          "next_chapter": "2_3"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_3_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 3 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_3_choice_1"
+  },
+  {
+    "id": "2_3_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_4"
+        },
+        "failure": {
+          "next_chapter": "2_4"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_4"
+        },
+        "failure": {
+          "next_chapter": "2_4"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_4"
+        },
+        "failure": {
+          "next_chapter": "2_4"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_4"
+        },
+        "failure": {
+          "next_chapter": "2_4"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 4,
+        "success": {
+          "next_chapter": "2_4"
+        },
+        "failure": {
+          "next_chapter": "2_4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_4_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 4 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_4_choice_1"
+  },
+  {
+    "id": "2_4_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_5"
+        },
+        "failure": {
+          "next_chapter": "2_5"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_5"
+        },
+        "failure": {
+          "next_chapter": "2_5"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_5"
+        },
+        "failure": {
+          "next_chapter": "2_5"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_5"
+        },
+        "failure": {
+          "next_chapter": "2_5"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 1,
+        "success": {
+          "next_chapter": "2_5"
+        },
+        "failure": {
+          "next_chapter": "2_5"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_5_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 5 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_5_choice_1"
+  },
+  {
+    "id": "2_5_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_6"
+        },
+        "failure": {
+          "next_chapter": "2_6"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_6"
+        },
+        "failure": {
+          "next_chapter": "2_6"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_6"
+        },
+        "failure": {
+          "next_chapter": "2_6"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_6"
+        },
+        "failure": {
+          "next_chapter": "2_6"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "2_6"
+        },
+        "failure": {
+          "next_chapter": "2_6"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_6_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 6 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_6_choice_1"
+  },
+  {
+    "id": "2_6_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_7"
+        },
+        "failure": {
+          "next_chapter": "2_7"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_7"
+        },
+        "failure": {
+          "next_chapter": "2_7"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_7"
+        },
+        "failure": {
+          "next_chapter": "2_7"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_7"
+        },
+        "failure": {
+          "next_chapter": "2_7"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 5,
+        "success": {
+          "next_chapter": "2_7"
+        },
+        "failure": {
+          "next_chapter": "2_7"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_7_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 7 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_7_choice_1"
+  },
+  {
+    "id": "2_7_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_8"
+        },
+        "failure": {
+          "next_chapter": "2_8"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_8"
+        },
+        "failure": {
+          "next_chapter": "2_8"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_8"
+        },
+        "failure": {
+          "next_chapter": "2_8"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_8"
+        },
+        "failure": {
+          "next_chapter": "2_8"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 4,
+        "success": {
+          "next_chapter": "2_8"
+        },
+        "failure": {
+          "next_chapter": "2_8"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_8_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 8 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_8_choice_1"
+  },
+  {
+    "id": "2_8_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "2_9"
+        },
+        "failure": {
+          "next_chapter": "2_9"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "2_9"
+        },
+        "failure": {
+          "next_chapter": "2_9"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "2_9"
+        },
+        "failure": {
+          "next_chapter": "2_9"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "2_9"
+        },
+        "failure": {
+          "next_chapter": "2_9"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 3,
+        "success": {
+          "next_chapter": "2_9"
+        },
+        "failure": {
+          "next_chapter": "2_9"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2_9_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 9 do cap\u00edtulo 2. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "2_9_choice_1"
+  },
+  {
+    "id": "2_9_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_1"
+        },
+        "failure": {
+          "next_chapter": "3_1"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_1"
+        },
+        "failure": {
+          "next_chapter": "3_1"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_1"
+        },
+        "failure": {
+          "next_chapter": "3_1"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_1"
+        },
+        "failure": {
+          "next_chapter": "3_1"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "3_1"
+        },
+        "failure": {
+          "next_chapter": "3_1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_1_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 1 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_1_choice_1"
+  },
+  {
+    "id": "3_1_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_2"
+        },
+        "failure": {
+          "next_chapter": "3_2"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_2"
+        },
+        "failure": {
+          "next_chapter": "3_2"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_2"
+        },
+        "failure": {
+          "next_chapter": "3_2"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_2"
+        },
+        "failure": {
+          "next_chapter": "3_2"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 1,
+        "success": {
+          "next_chapter": "3_2"
+        },
+        "failure": {
+          "next_chapter": "3_2"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_2_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 2 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_2_choice_1"
+  },
+  {
+    "id": "3_2_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_3"
+        },
+        "failure": {
+          "next_chapter": "3_3"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_3"
+        },
+        "failure": {
+          "next_chapter": "3_3"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_3"
+        },
+        "failure": {
+          "next_chapter": "3_3"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_3"
+        },
+        "failure": {
+          "next_chapter": "3_3"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "3_3"
+        },
+        "failure": {
+          "next_chapter": "3_3"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_3_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 3 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_3_choice_1"
+  },
+  {
+    "id": "3_3_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_4"
+        },
+        "failure": {
+          "next_chapter": "3_4"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_4"
+        },
+        "failure": {
+          "next_chapter": "3_4"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_4"
+        },
+        "failure": {
+          "next_chapter": "3_4"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_4"
+        },
+        "failure": {
+          "next_chapter": "3_4"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 5,
+        "success": {
+          "next_chapter": "3_4"
+        },
+        "failure": {
+          "next_chapter": "3_4"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_4_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 4 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_4_choice_1"
+  },
+  {
+    "id": "3_4_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_5"
+        },
+        "failure": {
+          "next_chapter": "3_5"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_5"
+        },
+        "failure": {
+          "next_chapter": "3_5"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_5"
+        },
+        "failure": {
+          "next_chapter": "3_5"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_5"
+        },
+        "failure": {
+          "next_chapter": "3_5"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "3_5"
+        },
+        "failure": {
+          "next_chapter": "3_5"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_5_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 5 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_5_choice_1"
+  },
+  {
+    "id": "3_5_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_6"
+        },
+        "failure": {
+          "next_chapter": "3_6"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_6"
+        },
+        "failure": {
+          "next_chapter": "3_6"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_6"
+        },
+        "failure": {
+          "next_chapter": "3_6"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_6"
+        },
+        "failure": {
+          "next_chapter": "3_6"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "3_6"
+        },
+        "failure": {
+          "next_chapter": "3_6"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_6_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 6 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_6_choice_1"
+  },
+  {
+    "id": "3_6_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_7"
+        },
+        "failure": {
+          "next_chapter": "3_7"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_7"
+        },
+        "failure": {
+          "next_chapter": "3_7"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_7"
+        },
+        "failure": {
+          "next_chapter": "3_7"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_7"
+        },
+        "failure": {
+          "next_chapter": "3_7"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "3_7"
+        },
+        "failure": {
+          "next_chapter": "3_7"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_7_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 7 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_7_choice_1"
+  },
+  {
+    "id": "3_7_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_8"
+        },
+        "failure": {
+          "next_chapter": "3_8"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_8"
+        },
+        "failure": {
+          "next_chapter": "3_8"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_8"
+        },
+        "failure": {
+          "next_chapter": "3_8"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_8"
+        },
+        "failure": {
+          "next_chapter": "3_8"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 3,
+        "success": {
+          "next_chapter": "3_8"
+        },
+        "failure": {
+          "next_chapter": "3_8"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_8_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 8 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_8_choice_1"
+  },
+  {
+    "id": "3_8_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "3_9"
+        },
+        "failure": {
+          "next_chapter": "3_9"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "3_9"
+        },
+        "failure": {
+          "next_chapter": "3_9"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "3_9"
+        },
+        "failure": {
+          "next_chapter": "3_9"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "3_9"
+        },
+        "failure": {
+          "next_chapter": "3_9"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 5,
+        "success": {
+          "next_chapter": "3_9"
+        },
+        "failure": {
+          "next_chapter": "3_9"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3_9_line_1",
+    "speaker": "npc",
+    "text": "Esta \u00e9 a linha 1 da parte 9 do cap\u00edtulo 3. Algo importante est\u00e1 acontecendo aqui.",
+    "next_chapter": "3_9_choice_1"
+  },
+  {
+    "id": "3_9_choice_1",
+    "speaker": "narrator",
+    "text": "O que voc\u00ea decide fazer?",
+    "choices": [
+      {
+        "text": "Usar Destreza",
+        "skill_check": "dexterity",
+        "success": {
+          "next_chapter": "4_1"
+        },
+        "failure": {
+          "next_chapter": "4_1"
+        }
+      },
+      {
+        "text": "Usar Intelig\u00eancia",
+        "skill_check": "intellect",
+        "success": {
+          "next_chapter": "4_1"
+        },
+        "failure": {
+          "next_chapter": "4_1"
+        }
+      },
+      {
+        "text": "Usar Carisma",
+        "skill_check": "charisma",
+        "success": {
+          "next_chapter": "4_1"
+        },
+        "failure": {
+          "next_chapter": "4_1"
+        }
+      },
+      {
+        "text": "Usar Poder Bruto",
+        "skill_check": "power_stat",
+        "success": {
+          "next_chapter": "4_1"
+        },
+        "failure": {
+          "next_chapter": "4_1"
+        }
+      },
+      {
+        "text": "Usar poder do clube",
+        "club_power": 2,
+        "success": {
+          "next_chapter": "4_1"
+        },
+        "failure": {
+          "next_chapter": "4_1"
+        }
+      }
+    ]
+  }
+]

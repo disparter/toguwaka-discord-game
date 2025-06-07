@@ -18,7 +18,7 @@ class TestStoryModeChapterSuffixes(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.progress_manager = DefaultStoryProgressManager()
-        
+
         # Create a mock player data
         self.player_data = {
             "user_id": 123456789,
@@ -49,10 +49,10 @@ class TestStoryModeChapterSuffixes(unittest.TestCase):
         """Test that get_current_chapter returns the full chapter ID when it has a suffix."""
         # Set a chapter ID with a suffix
         self.player_data["story_progress"]["full_chapter_id"] = "1_4_success"
-        
+
         # Get the current chapter
         chapter_id = self.progress_manager.get_current_chapter(self.player_data)
-        
+
         # Check that the full chapter ID is returned
         self.assertEqual(chapter_id, "1_4_success")
 
@@ -60,10 +60,10 @@ class TestStoryModeChapterSuffixes(unittest.TestCase):
         """Test that set_current_chapter correctly handles chapter IDs with suffixes."""
         # Set a chapter ID with a suffix
         updated_player_data = self.progress_manager.set_current_chapter(self.player_data, "1_4_success")
-        
+
         # Check that the full chapter ID is stored
         self.assertEqual(updated_player_data["story_progress"]["full_chapter_id"], "1_4_success")
-        
+
         # Check that the year and chapter number are correctly parsed
         self.assertEqual(updated_player_data["story_progress"]["current_year"], 1)
         self.assertEqual(updated_player_data["story_progress"]["current_chapter"], 4)
@@ -72,13 +72,13 @@ class TestStoryModeChapterSuffixes(unittest.TestCase):
         """Test that complete_chapter correctly handles chapter IDs with suffixes."""
         # Set a chapter ID with a suffix
         self.player_data["story_progress"]["full_chapter_id"] = "1_4_success"
-        
+
         # Complete the chapter
         updated_player_data = self.progress_manager.complete_chapter(self.player_data, "1_4_success")
-        
+
         # Check that the chapter is added to completed chapters
         self.assertIn("1_4_success", updated_player_data["story_progress"]["completed_chapters"])
-        
+
         # Check that the full chapter ID is cleared
         self.assertIsNone(updated_player_data["story_progress"]["full_chapter_id"])
 
@@ -109,9 +109,9 @@ class TestStoryModeClubSpecificDialogues(unittest.TestCase):
                 {"text": "Test choice 2", "next_dialogue": 2}
             ]
         }
-        
+
         self.chapter = BaseChapter("test_chapter", self.chapter_data)
-        
+
         # Create a mock player data
         self.player_data = {
             "user_id": 123456789,
@@ -142,11 +142,11 @@ class TestStoryModeClubSpecificDialogues(unittest.TestCase):
         """Test that process_choice correctly handles chapters with club-specific dialogues."""
         # Process a choice
         result = self.chapter.process_choice(self.player_data, 0)
-        
+
         # Check that the choice was processed without errors
         self.assertIn("player_data", result)
         self.assertIn("chapter_data", result)
-        
+
         # Check that the current dialogue index was incremented
         self.assertEqual(result["player_data"]["story_progress"]["current_dialogue_index"], 1)
 
@@ -158,7 +158,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
         # Create a StoryMode instance with a mock data directory
         with patch('os.makedirs'):
             self.story_mode = StoryMode(data_dir="mock_data_dir")
-        
+
         # Create a mock player data
         self.player_data = {
             "user_id": 123456789,
@@ -184,7 +184,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
                 "story_choices": {}
             }
         }
-        
+
         # Create a mock chapter 1_3 (challenge chapter)
         self.chapter_1_3 = MagicMock()
         self.chapter_1_3.chapter_id = "1_3"
@@ -199,7 +199,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
         }
         self.chapter_1_3.complete.return_value = self.player_data
         self.chapter_1_3.get_next_chapter.return_value = "1_4"
-        
+
         # Create a mock chapter 1_4 (redirect chapter)
         self.chapter_1_4 = MagicMock()
         self.chapter_1_4.chapter_id = "1_4"
@@ -222,7 +222,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
             }
         }
         self.chapter_1_4.get_next_chapter.side_effect = lambda player_data: "1_4_success" if player_data["story_progress"].get("challenge_result") == "success" else "1_4_failure"
-        
+
         # Create mock chapters 1_4_success and 1_4_failure
         self.chapter_1_4_success = MagicMock()
         self.chapter_1_4_success.chapter_id = "1_4_success"
@@ -235,7 +235,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
                 "choices": []
             }
         }
-        
+
         self.chapter_1_4_failure = MagicMock()
         self.chapter_1_4_failure.chapter_id = "1_4_failure"
         self.chapter_1_4_failure.start.return_value = {
@@ -253,7 +253,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
         """Test that the story mode correctly navigates to the success chapter when the challenge result is success."""
         # Set the challenge result to success
         self.player_data["story_progress"]["challenge_result"] = "success"
-        
+
         # Mock the load_chapter method to return the appropriate mock chapters
         mock_load_chapter.side_effect = lambda chapter_id: {
             "1_3": self.chapter_1_3,
@@ -261,16 +261,16 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
             "1_4_success": self.chapter_1_4_success,
             "1_4_failure": self.chapter_1_4_failure
         }.get(chapter_id)
-        
+
         # Process a choice to complete chapter 1_3
         result = self.story_mode.process_choice(self.player_data, 0)
-        
+
         # Check that chapter 1_3 was completed
         self.chapter_1_3.complete.assert_called_once()
-        
+
         # Check that chapter 1_4 was started
         self.chapter_1_4.start.assert_called_once()
-        
+
         # Check that the current chapter was set to 1_4
         self.assertEqual(self.player_data["story_progress"]["full_chapter_id"], "1_4")
 
@@ -279,7 +279,7 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
         """Test that the story mode correctly navigates to the failure chapter when the challenge result is failure."""
         # Set the challenge result to failure
         self.player_data["story_progress"]["challenge_result"] = "failure"
-        
+
         # Mock the load_chapter method to return the appropriate mock chapters
         mock_load_chapter.side_effect = lambda chapter_id: {
             "1_3": self.chapter_1_3,
@@ -287,18 +287,96 @@ class TestStoryModeConditionalChapterNavigation(unittest.TestCase):
             "1_4_success": self.chapter_1_4_success,
             "1_4_failure": self.chapter_1_4_failure
         }.get(chapter_id)
-        
+
         # Process a choice to complete chapter 1_3
         result = self.story_mode.process_choice(self.player_data, 0)
-        
+
         # Check that chapter 1_3 was completed
         self.chapter_1_3.complete.assert_called_once()
-        
+
         # Check that chapter 1_4 was started
         self.chapter_1_4.start.assert_called_once()
-        
+
         # Check that the current chapter was set to 1_4
         self.assertEqual(self.player_data["story_progress"]["full_chapter_id"], "1_4")
+
+class TestStoryModeChallengeChapterIDs(unittest.TestCase):
+    """Test cases for handling challenge chapter IDs with underscores."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.progress_manager = DefaultStoryProgressManager()
+
+        # Create a mock player data
+        self.player_data = {
+            "user_id": 123456789,
+            "name": "Test Player",
+            "level": 1,
+            "exp": 0,
+            "tusd": 100,
+            "story_progress": {
+                "current_year": 1,
+                "current_chapter": 4,
+                "current_challenge_chapter": None,
+                "full_chapter_id": None,
+                "completed_chapters": ["1_1", "1_2", "1_3"],
+                "completed_challenge_chapters": [],
+                "failed_challenge_chapters": [],
+                "blocked_chapter_arcs": [],
+                "available_chapters": ["1_4"],
+                "hierarchy_tier": 0,
+                "hierarchy_points": 0,
+                "discovered_secrets": [],
+                "special_items": [],
+                "character_relationships": {},
+                "story_choices": {}
+            }
+        }
+
+    def test_set_current_chapter_with_challenge_id(self):
+        """Test that set_current_chapter correctly handles challenge chapter IDs with underscores."""
+        # Set a challenge chapter ID with underscores
+        updated_player_data = self.progress_manager.set_current_chapter(self.player_data, "challenge_biblioteca_proibida")
+
+        # Check that the full chapter ID is stored
+        self.assertEqual(updated_player_data["story_progress"]["full_chapter_id"], "challenge_biblioteca_proibida")
+
+        # Check that it's stored as a challenge chapter
+        self.assertEqual(updated_player_data["story_progress"]["current_challenge_chapter"], "challenge_biblioteca_proibida")
+
+        # Check that the year and chapter number are not changed
+        self.assertEqual(updated_player_data["story_progress"]["current_year"], 1)
+        self.assertEqual(updated_player_data["story_progress"]["current_chapter"], 4)
+
+    def test_get_current_chapter_with_challenge_id(self):
+        """Test that get_current_chapter returns the correct challenge chapter ID."""
+        # Set a challenge chapter ID with underscores
+        self.player_data["story_progress"]["current_challenge_chapter"] = "challenge_biblioteca_proibida"
+        self.player_data["story_progress"]["full_chapter_id"] = "challenge_biblioteca_proibida"
+
+        # Get the current chapter
+        chapter_id = self.progress_manager.get_current_chapter(self.player_data)
+
+        # Check that the full chapter ID is returned
+        self.assertEqual(chapter_id, "challenge_biblioteca_proibida")
+
+    def test_complete_chapter_with_challenge_id(self):
+        """Test that complete_chapter correctly handles challenge chapter IDs with underscores."""
+        # Set a challenge chapter ID with underscores
+        self.player_data["story_progress"]["current_challenge_chapter"] = "challenge_biblioteca_proibida"
+        self.player_data["story_progress"]["full_chapter_id"] = "challenge_biblioteca_proibida"
+
+        # Complete the chapter
+        updated_player_data = self.progress_manager.complete_chapter(self.player_data, "challenge_biblioteca_proibida")
+
+        # Check that the chapter is added to completed challenge chapters
+        self.assertIn("challenge_biblioteca_proibida", updated_player_data["story_progress"]["completed_challenge_chapters"])
+
+        # Check that the current challenge chapter is cleared
+        self.assertIsNone(updated_player_data["story_progress"]["current_challenge_chapter"])
+
+        # Check that the full chapter ID is cleared
+        self.assertIsNone(updated_player_data["story_progress"]["full_chapter_id"])
 
 if __name__ == '__main__':
     unittest.main()

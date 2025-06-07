@@ -13,6 +13,9 @@ TABLE_NAME = os.environ.get('DYNAMODB_TABLE', 'AcademiaTokugawa')
 # AWS region
 AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 
+# Flag to indicate if we should reset the database
+RESET_DATABASE = os.environ.get('RESET_DATABASE', 'false').lower() == 'true'
+
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
 table = dynamodb.Table(TABLE_NAME)
@@ -24,6 +27,72 @@ class DecimalEncoder(json.JSONEncoder):
             return float(o) if o % 1 else int(o)
         return super(DecimalEncoder, self).default(o)
 
+def reset_dynamodb():
+    """
+    Reset the DynamoDB table by deleting all items.
+    This is a destructive operation and should be used with caution.
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        # Scan all items in the table
+        scan_response = table.scan(
+            ProjectionExpression='#pk, #sk',
+            ExpressionAttributeNames={
+                '#pk': 'PK',
+                '#sk': 'SK'
+            }
+        )
+
+        items = scan_response.get('Items', [])
+        deleted_count = 0
+
+        # Delete each item
+        for item in items:
+            table.delete_item(
+                Key={
+                    'PK': item['PK'],
+                    'SK': item['SK']
+                }
+            )
+            deleted_count += 1
+
+            # Log progress for large tables
+            if deleted_count % 100 == 0:
+                logger.info(f"Deleted {deleted_count} items from DynamoDB table")
+
+        # Handle pagination if there are more items
+        while 'LastEvaluatedKey' in scan_response:
+            scan_response = table.scan(
+                ProjectionExpression='#pk, #sk',
+                ExpressionAttributeNames={
+                    '#pk': 'PK',
+                    '#sk': 'SK'
+                },
+                ExclusiveStartKey=scan_response['LastEvaluatedKey']
+            )
+
+            items = scan_response.get('Items', [])
+
+            for item in items:
+                table.delete_item(
+                    Key={
+                        'PK': item['PK'],
+                        'SK': item['SK']
+                    }
+                )
+                deleted_count += 1
+
+                if deleted_count % 100 == 0:
+                    logger.info(f"Deleted {deleted_count} items from DynamoDB table")
+
+        logger.warning(f"Reset DynamoDB table: {TABLE_NAME}. Deleted {deleted_count} items.")
+        return True
+    except Exception as e:
+        logger.error(f"Error resetting DynamoDB table: {e}")
+        return False
+
 def init_db():
     """
     Initialize the DynamoDB connection.
@@ -33,6 +102,12 @@ def init_db():
         # Check if the table exists
         table.table_status
         logger.info(f"Connected to DynamoDB table: {TABLE_NAME}")
+
+        # Check if we should reset the database
+        if RESET_DATABASE:
+            logger.warning("RESET_DATABASE flag is set to true. Resetting DynamoDB table...")
+            reset_dynamodb()
+
         return True
     except Exception as e:
         logger.error(f"Error connecting to DynamoDB: {e}")

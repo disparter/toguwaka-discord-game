@@ -1,0 +1,354 @@
+{
+  "4_1": {
+    "type": "story",
+    "title": "Sinais de Mudança",
+    "description": "Você começa a notar mudanças sutis em seus poderes, sinais de uma evolução iminente que poucos estudantes experimentam.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "Já se passaram alguns meses desde que você ingressou na Academia Tokugawa. Suas aulas e treinamentos têm sido intensos, mas gratificantes."},
+      {"npc": "Narrador", "text": "Recentemente, no entanto, você começou a notar algo diferente. Pequenas anomalias em seus poderes - momentos de intensidade inesperada, manifestações espontâneas, sensações estranhas."},
+      {"npc": "Narrador", "text": "Inicialmente, você atribuiu isso ao cansaço ou ao treinamento intensivo. Mas esta manhã, algo aconteceu que não pode ser ignorado."},
+      {"npc": "Narrador", "text": "Durante seu exercício matinal, seu poder manifestou-se com uma intensidade que nunca havia experimentado antes, criando um efeito que você não sabia ser capaz de produzir."},
+      {"npc": "Narrador", "text": "Agora, sentado em sua cama, você contempla o que fazer a respeito.", "choices": [
+        {"text": "Procurar seu líder de clube para orientação", "next_dialogue": 5, "metadata": {"trait_changes": {"trust_authority": 1}}},
+        {"text": "Pesquisar na biblioteca sobre evolução de poderes", "next_dialogue": 6, "metadata": {"trait_changes": {"self_reliance": 1, "academic_focus": 1}}},
+        {"text": "Tentar replicar o fenômeno em um local isolado", "next_dialogue": 7, "metadata": {"trait_changes": {"risk_taking": 1, "curiosity": 1}}}
+      ]}
+    ],
+    "additional_dialogues": {
+      "5": [
+        {"npc": "Narrador", "text": "Você decide que seu líder de clube é a pessoa mais indicada para ajudar com esta situação. Afinal, eles têm anos de experiência com poderes similares aos seus."},
+        {"next_dialogue": "club_leader_guidance"}
+      ],
+      "6": [
+        {"npc": "Narrador", "text": "Você decide investigar por conta própria antes de compartilhar sua experiência com outros. Conhecimento é poder, especialmente em uma situação potencialmente delicada como esta."},
+        {"npc": "Narrador", "text": "Na biblioteca principal, você se dirige à seção de Fisiologia de Poderes e Evolução de Habilidades. Há vários livros sobre o assunto, mas um em particular chama sua atenção."},
+        {"npc": "Narrador", "text": "\"Despertar Secundário: Quando Poderes Evoluem\" - o título parece descrever exatamente o que você está experimentando."},
+        {"npc": "Narrador", "text": "Você pega o livro e encontra um lugar tranquilo para ler. As primeiras páginas já são reveladoras:"},
+        {"npc": "Narrador", "text": "\"O Despertar Secundário é um fenômeno raro que afeta aproximadamente 5% dos indivíduos com habilidades especiais. Tipicamente ocorre durante a adolescência ou início da idade adulta, frequentemente desencadeado por estresse intenso, treinamento rigoroso ou experiências emocionais significativas.\""},
+        {"npc": "Narrador", "text": "\"Os sinais incluem flutuações de poder, manifestações espontâneas, sensações incomuns e, em alguns casos, breves vislumbres de novas habilidades relacionadas ao poder original.\""},
+        {"npc": "Narrador", "text": "Enquanto você continua lendo, uma sombra cai sobre as páginas do livro. Ao olhar para cima, você vê o Professor Quantum observando você com interesse."},
+        {"npc": "Professor Quantum", "text": "Uma leitura fascinante, não é? Não é todo dia que vejo um calouro interessado em Despertar Secundário.", "gif": "professor_quantum.txt"},
+        {"npc": "Professor Quantum", "text": "Posso perguntar o que despertou seu interesse nesse tópico específico?", "choices": [
+          {"text": "Contar ao professor sobre suas experiências recentes", "next_dialogue": 8, "metadata": {"affinity_changes": {"Professor Quantum": 2}, "trait_changes": {"honesty": 1}}},
+          {"text": "Dizer que é apenas curiosidade acadêmica", "next_dialogue": 9, "metadata": {"affinity_changes": {"Professor Quantum": 0}, "trait_changes": {"caution": 1}}},
+          {"text": "Perguntar se ele tem experiência com casos de Despertar Secundário", "next_dialogue": 10, "metadata": {"affinity_changes": {"Professor Quantum": 1}, "trait_changes": {"strategic_thinking": 1}}}
+        ]}
+      ],
+      "7": [
+        {"npc": "Narrador", "text": "Você decide que precisa entender melhor o que está acontecendo antes de buscar ajuda. O melhor caminho é tentar replicar o fenômeno em um ambiente controlado."},
+        {"npc": "Narrador", "text": "Após as aulas, você se dirige a uma área isolada nos fundos do campus - uma pequena clareira na floresta que poucos estudantes frequentam."},
+        {"npc": "Narrador", "text": "Respirando fundo, você se concentra e tenta acessar aquela mesma sensação que experimentou pela manhã - uma espécie de corrente mais profunda de poder dentro de você."},
+        {"npc": "Narrador", "text": "No início, nada acontece além da manifestação normal de suas habilidades. Mas então, ao relaxar e deixar sua mente vagar, você sente algo diferente..."},
+        {"npc": "Narrador", "text": "É como se uma porta que você não sabia que existia começasse a se abrir dentro de você. Seu poder começa a fluir de uma maneira nova, mais intensa, mais... pura."},
+        {"npc": "Narrador", "text": "De repente, sua habilidade se manifesta com uma força surpreendente, muito além do que você já conseguiu antes. A energia é tão intensa que você perde momentaneamente o controle."},
+        {"npc": "Narrador", "text": "Há um clarão de poder. Quando sua visão se ajusta, você percebe que criou um efeito muito mais amplo do que pretendia, deixando marcas visíveis na clareira."},
+        {"npc": "Narrador", "text": "Enquanto você observa atônito o resultado, ouve uma voz atrás de você."},
+        {"npc": "Estudante Desconhecido", "text": "Impressionante. Não é todo dia que vemos um Despertar Secundário.", "gif": "aria_elite.gif"},
+        {"npc": "Estudante Desconhecido", "text": "Ah, perdoe minha falta de educação. Meu nome é Aria, do terceiro ano. E você acabou de se tornar muito mais interessante do que a média dos calouros.", "choices": [
+          {"text": "O que você sabe sobre esse 'Despertar Secundário'?", "next_dialogue": 11, "metadata": {"affinity_changes": {"Aria": 1}, "trait_changes": {"curiosity": 1}}},
+          {"text": "Como você sabia o que estava acontecendo comigo?", "next_dialogue": 12, "metadata": {"affinity_changes": {"Aria": 0}, "trait_changes": {"caution": 1}}},
+          {"text": "Por favor, não conte a ninguém sobre isso", "next_dialogue": 13, "metadata": {"affinity_changes": {"Aria": -1}, "trait_changes": {"privacy": 1}}}
+        ]}
+      ],
+      "8": [
+        {"npc": "Professor Quantum", "text": "Entendo. Suas experiências são consistentes com os primeiros estágios de um Despertar Secundário.", "expression": "thoughtful"},
+        {"npc": "Professor Quantum", "text": "É um fenômeno fascinante e relativamente raro. Essencialmente, é como se seu poder estivesse evoluindo para uma forma mais avançada."},
+        {"npc": "Professor Quantum", "text": "Na Academia Tokugawa, temos protocolos específicos para estudantes que passam por isso. Não é apenas uma questão de treinamento, mas também de segurança - tanto sua quanto dos outros."},
+        {"npc": "Professor Quantum", "text": "Gostaria que você viesse ao meu laboratório amanhã após as aulas. Podemos fazer alguns testes e determinar o melhor caminho a seguir."},
+        {"npc": "Professor Quantum", "text": "Enquanto isso, sugiro discrição. Infelizmente, o Despertar Secundário pode atrair... atenção indesejada de certos elementos na academia."},
+        {"npc": "Narrador", "text": "O Professor Quantum olha ao redor para garantir que ninguém está ouvindo."},
+        {"npc": "Professor Quantum", "text": "Há aqueles que veem estudantes como você como ativos valiosos ou... ameaças potenciais. Até entendermos completamente o que está acontecendo, é melhor manter isso entre nós."},
+        {"next_dialogue": 14}
+      ],
+      "9": [
+        {"npc": "Professor Quantum", "text": "Curiosidade acadêmica? Interessante escolha de leitura para mera curiosidade.", "expression": "skeptical"},
+        {"npc": "Narrador", "text": "O Professor Quantum observa você por um momento, seus olhos perspicazes parecendo enxergar além de suas palavras."},
+        {"npc": "Professor Quantum", "text": "Sabe, como professor, desenvolvi uma certa... intuição para quando os estudantes não estão sendo completamente honestos."},
+        {"npc": "Professor Quantum", "text": "Não estou aqui para julgar ou pressionar. Mas se você estiver experimentando algo incomum com seus poderes, minha porta está sempre aberta."},
+        {"npc": "Professor Quantum", "text": "O Despertar Secundário não é algo que se deva enfrentar sozinho. Pode ser... imprevisível. Às vezes perigoso, sem a orientação adequada."},
+        {"npc": "Professor Quantum", "text": "Pense nisso. E se mudar de ideia, venha me ver no Laboratório de Física Aplicada."},
+        {"next_dialogue": 14}
+      ],
+      "10": [
+        {"npc": "Professor Quantum", "text": "Uma pergunta perspicaz. Sim, tenho bastante experiência com o fenômeno.", "expression": "pleased"},
+        {"npc": "Professor Quantum", "text": "Na verdade, parte da minha pesquisa na academia envolve estudar as condições que facilitam o Despertar Secundário e como melhor orientar aqueles que passam por ele."},
+        {"npc": "Professor Quantum", "text": "É um processo fascinante, mas também potencialmente desestabilizador. O poder evolui, mas o controle precisa acompanhar essa evolução."},
+        {"npc": "Professor Quantum", "text": "Já orientei dezessete estudantes através de seus Despertares Secundários nos últimos dez anos. Cada caso é único, refletindo a personalidade e as circunstâncias do indivíduo."},
+        {"npc": "Professor Quantum", "text": "Posso perguntar se seu interesse tem alguma... base pessoal? Tenho notado um brilho peculiar em seu poder durante as aulas práticas."},
+        {"npc": "Narrador", "text": "O olhar do Professor Quantum é gentil, mas penetrante. Você sente que ele já suspeita do que está acontecendo com você."},
+        {"npc": "Você", "text": "Sim, professor. Tenho experimentado algumas... anomalias recentemente."},
+        {"npc": "Professor Quantum", "text": "Entendo. Nesse caso, gostaria de convidá-lo para alguns testes em meu laboratório. Podemos começar a entender melhor o que está acontecendo e como melhor orientá-lo nesse processo."},
+        {"next_dialogue": 14}
+      ],
+      "11": [
+        {"npc": "Aria", "text": "O Despertar Secundário é quando seu poder evolui para um novo nível. Pense nisso como uma borboleta saindo do casulo.", "expression": "confident"},
+        {"npc": "Aria", "text": "É raro, afeta menos de 5% dos estudantes. A maioria passa pela academia desenvolvendo apenas o que já tem. Mas alguns de nós... nós transcendemos os limites iniciais."},
+        {"npc": "Aria", "text": "Eu passei por isso no meu primeiro ano. Foi... intenso. Descontrolado no início. Mas com o treinamento certo, você pode dominar esse novo potencial."},
+        {"npc": "Aria", "text": "A questão é: que tipo de treinamento você vai buscar? E com quem?"},
+        {"npc": "Narrador", "text": "Aria olha para você com interesse genuíno, mas também com uma espécie de cálculo em seus olhos."},
+        {"npc": "Aria", "text": "Há diferentes... facções na academia com visões muito distintas sobre como lidar com o Despertar Secundário. Algumas mais oficiais que outras."},
+        {"next_dialogue": 15}
+      ],
+      "12": [
+        {"npc": "Aria", "text": "Digamos que eu tenho experiência em reconhecer os sinais. Passei por isso também.", "expression": "knowing"},
+        {"npc": "Aria", "text": "O brilho peculiar do poder, a forma como ele flui de maneira errática antes de se estabilizar em algo novo... é bastante distintivo para quem sabe o que procurar."},
+        {"npc": "Aria", "text": "Além disso, tenho monitorado estudantes promissores. Você chamou atenção desde o início do semestre."},
+        {"npc": "Narrador", "text": "Há algo na maneira como ela diz isso que sugere que não está agindo sozinha."},
+        {"npc": "Aria", "text": "Existem grupos na academia interessados em talentos como o seu. Especialmente aqueles passando pelo Despertar Secundário."},
+        {"next_dialogue": 15}
+      ],
+      "13": [
+        {"npc": "Aria", "text": "Privacidade? Interessante pedido.", "expression": "amused"},
+        {"npc": "Aria", "text": "Infelizmente, o que acabou de acontecer não é algo que possa ser facilmente escondido. O Despertar Secundário deixa... marcas na teia energética da academia."},
+        {"npc": "Aria", "text": "Certos professores já devem ter sentido. E outros estudantes com sensibilidade para isso também."},
+        {"npc": "Aria", "text": "A questão não é se outros saberão, mas quem chegará até você primeiro."},
+        {"npc": "Narrador", "text": "Aria cruza os braços, observando sua reação."},
+        {"npc": "Aria", "text": "Posso oferecer orientação, se quiser. Passei por isso também. Sei como é desorientador no início."},
+        {"next_dialogue": 15}
+      ],
+      "14": [
+        {"npc": "Narrador", "text": "Você agradece ao Professor Quantum pela orientação. Enquanto se prepara para sair da biblioteca, ele coloca a mão em seu ombro."},
+        {"npc": "Professor Quantum", "text": "Mais uma coisa. Se alguém mais abordar você sobre isso - especialmente estudantes mais velhos - seja cauteloso."},
+        {"npc": "Professor Quantum", "text": "Há... diferentes filosofias na academia sobre como o Despertar Secundário deve ser tratado. Nem todas têm o melhor interesse dos estudantes em mente."},
+        {"npc": "Narrador", "text": "Com essas palavras enigmáticas, o Professor Quantum se despede e você sai da biblioteca com muito a considerar."},
+        {"npc": "Narrador", "text": "No caminho de volta ao dormitório, você nota uma estudante mais velha observando você de longe. Quando seus olhares se cruzam, ela sorri e acena, como se soubesse algo sobre você."},
+        {"next_dialogue": 16}
+      ],
+      "15": [
+        {"npc": "Aria", "text": "Deixe-me ser direta. Faço parte de um grupo chamado 'Igualitários'. Acreditamos que o poder deve ser acessível a todos, não concentrado nas mãos de uma elite."},
+        {"npc": "Aria", "text": "O Despertar Secundário é visto pela administração como algo a ser controlado, regulado, às vezes até suprimido se não se encaixar em seus planos."},
+        {"npc": "Aria", "text": "Nós oferecemos uma alternativa. Treinamento sem as restrições institucionais. Desenvolvimento pleno do seu potencial, não apenas o que é considerado 'seguro' ou 'apropriado'."},
+        {"npc": "Aria", "text": "Claro, há riscos. Sempre há quando se busca verdadeira liberdade. Mas a recompensa é autonomia sobre seu próprio poder."},
+        {"npc": "Aria", "text": "Pense nisso. Se estiver interessado, encontre-me amanhã à noite no antigo anfiteatro. Temos uma... reunião informal."},
+        {"npc": "Narrador", "text": "Aria entrega a você um pequeno cartão com um símbolo estilizado de um olho dentro de um triângulo."},
+        {"npc": "Aria", "text": "Ah, e se o Professor Quantum ou qualquer outro membro da administração abordar você sobre isso, sugiro discrição. Eles têm suas próprias agendas."},
+        {"npc": "Narrador", "text": "Com um último sorriso enigmático, Aria se afasta, deixando você com o cartão e muitas perguntas."},
+        {"next_dialogue": 16}
+      ],
+      "16": [
+        {"npc": "Narrador", "text": "De volta ao seu dormitório, você reflete sobre os eventos do dia e as novas informações sobre o 'Despertar Secundário'."},
+        {"npc": "Narrador", "text": "Está claro que o que está acontecendo com você é significativo e potencialmente transformador. Também está claro que existem diferentes facções interessadas em pessoas como você."},
+        {"npc": "Narrador", "text": "Enquanto contempla suas opções, você sente novamente aquela estranha sensação - como se algo dentro de você estivesse tentando despertar, expandir-se além dos limites atuais."},
+        {"npc": "Narrador", "text": "Você tem decisões importantes a tomar sobre como proceder.", "choices": [
+          {"text": "Seguir a orientação oficial e consultar o Professor Quantum", "next_chapter": "4_2_official", "metadata": {"trait_changes": {"institutional_trust": 1}, "narrative_variables": {"awakening_path": "institutional"}}},
+          {"text": "Explorar a alternativa oferecida por Aria e os Igualitários", "next_chapter": "4_2_igualitarios", "metadata": {"trait_changes": {"independence": 1}, "narrative_variables": {"awakening_path": "revolutionary"}}},
+          {"text": "Buscar orientação do seu líder de clube antes de decidir", "next_chapter": "4_2_club", "metadata": {"trait_changes": {"loyalty": 1}, "narrative_variables": {"awakening_path": "traditional"}}}
+        ]}
+      ],
+      "club_leader_guidance": [
+        {"npc": "Narrador", "text": "Você decide procurar seu líder de clube para orientação. Se alguém pode ajudar com questões relacionadas ao seu tipo específico de poder, é ele."}
+      ]
+    },
+    "club_specific_dialogues": {
+      "1": [
+        {"npc": "Narrador", "text": "Você se dirige à sala de treinamento do Clube das Chamas, onde encontra Kai Flameheart supervisionando uma sessão de prática."},
+        {"npc": "Narrador", "text": "Quando ele nota sua presença, faz um gesto para que um dos veteranos assuma o comando e vem falar com você."},
+        {"npc": "Kai Flameheart", "text": "Olá! Não esperava vê-lo fora do horário regular de treinamento. Aconteceu algo?", "gif": "kai_flameheart.txt"},
+        {"npc": "Você", "text": "Sim, algo estranho aconteceu com meus poderes esta manhã. Houve um momento em que eles pareceram... diferentes. Mais intensos."},
+        {"npc": "Kai Flameheart", "text": "Hmm. Descreva exatamente o que sentiu.", "expression": "serious"},
+        {"npc": "Narrador", "text": "Você explica em detalhes a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
+        {"npc": "Kai Flameheart", "text": "Interessante. Muito interessante.", "expression": "excited"},
+        {"npc": "Kai Flameheart", "text": "O que você está descrevendo soa como os primeiros sinais de um Despertar Secundário. É raro, mas não inédito, especialmente em estudantes com seu potencial."},
+        {"npc": "Kai Flameheart", "text": "O fogo e a energia são particularmente propensos a evoluções dramáticas. Eu mesmo passei por isso no meu segundo ano."},
+        {"npc": "Kai Flameheart", "text": "Isso explica por que senti algo diferente em seu fogo durante os últimos treinamentos. Havia um... brilho distinto que não é típico de iniciantes.", "choices": [
+          {"text": "O que exatamente é um 'Despertar Secundário'?", "next_dialogue": "flames_explanation", "metadata": {"affinity_changes": {"Kai Flameheart": 1}, "trait_changes": {"curiosity": 1}}},
+          {"text": "Isso é perigoso? Devo me preocupar?", "next_dialogue": "flames_concern", "metadata": {"affinity_changes": {"Kai Flameheart": 0}, "trait_changes": {"caution": 1}}},
+          {"text": "Como posso desenvolver isso? Quero ficar mais forte.", "next_dialogue": "flames_ambition", "metadata": {"affinity_changes": {"Kai Flameheart": 2}, "trait_changes": {"ambition": 1}}}
+        ]}
+      ],
+      "2": [
+        {"npc": "Narrador", "text": "Você se dirige à sala de meditação dos Ilusionistas Mentais, onde Luna Mindweaver está sentada sozinha em contemplação silenciosa."},
+        {"npc": "Narrador", "text": "Mesmo antes de você falar, ela abre os olhos e sorri, como se já soubesse que você viria."},
+        {"npc": "Luna Mindweaver", "text": "Sua mente está... turbulenta hoje. Posso sentir de longe.", "gif": "luna_mindweaver.gif"},
+        {"npc": "Luna Mindweaver", "text": "Algo mudou em você. Algo fundamental.", "expression": "knowing"},
+        {"npc": "Você", "text": "Como você...? Sim, algo estranho aconteceu com meus poderes esta manhã."},
+        {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
+        {"npc": "Luna Mindweaver", "text": "Ah, o Despertar Secundário. Eu me perguntava quando começaríamos a ver sinais em você."},
+        {"npc": "Luna Mindweaver", "text": "Os poderes mentais são sutis, mas quando evoluem, a transformação pode ser profunda. Não apenas em força, mas em natureza."},
+        {"npc": "Luna Mindweaver", "text": "Sua assinatura psíquica tem mostrado... harmônicos interessantes nas últimas semanas. Padrões que sugerem potencial para evolução.", "choices": [
+          {"text": "Você sabia que isso ia acontecer comigo?", "next_dialogue": "mental_prediction", "metadata": {"affinity_changes": {"Luna Mindweaver": 1}, "trait_changes": {"curiosity": 1}}},
+          {"text": "O que devo esperar daqui para frente?", "next_dialogue": "mental_future", "metadata": {"affinity_changes": {"Luna Mindweaver": 2}, "trait_changes": {"planning": 1}}},
+          {"text": "Isso afetará minha mente? Minha personalidade?", "next_dialogue": "mental_identity", "metadata": {"affinity_changes": {"Luna Mindweaver": 0}, "trait_changes": {"self_awareness": 1}}}
+        ]}
+      ],
+      "3": [
+        {"npc": "Narrador", "text": "Você se dirige à sala do Conselho Político, onde encontra Alexander Strategos revisando alguns documentos."},
+        {"npc": "Narrador", "text": "Ele ergue os olhos quando você entra, seu olhar analítico parecendo avaliar seu estado antes mesmo que você fale."},
+        {"npc": "Alexander Strategos", "text": "Ah, que timing interessante. Eu estava prestes a enviar alguém para procurá-lo.", "gif": "alexander_strategos.txt"},
+        {"npc": "Alexander Strategos", "text": "Houve um... incidente registrado no sistema de monitoramento da academia esta manhã. Uma anomalia energética rastreada até sua localização.", "expression": "analytical"},
+        {"npc": "Você", "text": "Então vocês sabem... Sim, algo estranho aconteceu com meus poderes."},
+        {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
+        {"npc": "Alexander Strategos", "text": "Como suspeitei. Um Despertar Secundário incipiente."},
+        {"npc": "Alexander Strategos", "text": "Isso é... significativo. Tanto para você quanto para o equilíbrio de poder na academia."},
+        {"npc": "Alexander Strategos", "text": "Os poderes de influência e estratégia raramente evoluem de forma tão visível quanto os mais... físicos. Mas quando o fazem, as implicações são profundas.", "choices": [
+          {"text": "Quais são as implicações políticas disso?", "next_dialogue": "political_implications", "metadata": {"affinity_changes": {"Alexander Strategos": 2}, "trait_changes": {"political_awareness": 1}}},
+          {"text": "Isso afetará minha posição na hierarquia?", "next_dialogue": "political_hierarchy", "metadata": {"affinity_changes": {"Alexander Strategos": 1}, "trait_changes": {"ambition": 1}}},
+          {"text": "Devo manter isso em segredo?", "next_dialogue": "political_secrecy", "metadata": {"affinity_changes": {"Alexander Strategos": 0}, "trait_changes": {"caution": 1}}}
+        ]}
+      ],
+      "4": [
+        {"npc": "Narrador", "text": "Você se dirige ao jardim zen dos Elementalistas, onde Gaia Naturae está cuidando de plantas raras."},
+        {"npc": "Narrador", "text": "Assim que você se aproxima, as plantas ao redor parecem reagir sutilmente, como se sentissem algo diferente em você."},
+        {"npc": "Gaia Naturae", "text": "As plantas sentem a mudança em você. Assim como eu.", "gif": "gaia_naturae.txt"},
+        {"npc": "Gaia Naturae", "text": "Seu fluxo elemental está... evoluindo. Criando novos padrões.", "expression": "serene"},
+        {"npc": "Você", "text": "Sim, algo estranho aconteceu com meus poderes esta manhã."},
+        {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
+        {"npc": "Gaia Naturae", "text": "O Despertar Secundário. Um momento sagrado no caminho de qualquer elementalista."},
+        {"npc": "Gaia Naturae", "text": "É como quando uma semente finalmente rompe sua casca e começa a buscar o sol. Natural, mas também transformador."},
+        {"npc": "Gaia Naturae", "text": "Tenho observado os sinais em sua aura elemental há algumas semanas. Os elementos respondem a você de maneiras... incomuns para um iniciante.", "choices": [
+          {"text": "Como isso afetará minha conexão com os elementos?", "next_dialogue": "elemental_connection", "metadata": {"affinity_changes": {"Gaia Naturae": 2}, "trait_changes": {"harmony": 1}}},
+          {"text": "Isso é parte do equilíbrio natural?", "next_dialogue": "elemental_balance", "metadata": {"affinity_changes": {"Gaia Naturae": 1}, "trait_changes": {"wisdom": 1}}},
+          {"text": "Posso acelerar esse processo?", "next_dialogue": "elemental_acceleration", "metadata": {"affinity_changes": {"Gaia Naturae": -1}, "trait_changes": {"impatience": 1}}}
+        ]}
+      ],
+      "5": [
+        {"npc": "Narrador", "text": "Você se dirige à arena de treinamento do Clube de Combate, onde Ryuji Battleborn está concluindo uma sessão de sparring."},
+        {"npc": "Narrador", "text": "Quando ele o vê, interrompe o combate e se aproxima, enxugando o suor do rosto."},
+        {"npc": "Ryuji Battleborn", "text": "Seu timing é interessante. Senti uma perturbação no campo de energia da academia esta manhã.", "gif": "ryuji_battleborn.gif"},
+        {"npc": "Ryuji Battleborn", "text": "E agora você aparece com uma... aura diferente. Mais intensa.", "expression": "intrigued"},
+        {"npc": "Você", "text": "Sim, algo estranho aconteceu com meus poderes hoje."},
+        {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
+        {"npc": "Ryuji Battleborn", "text": "Hah! Um Despertar Secundário! Excelente!"},
+        {"npc": "Ryuji Battleborn", "text": "No Clube de Combate, valorizamos esse momento. É quando um lutador verdadeiramente começa a encontrar seu estilo único."},
+        {"npc": "Ryuji Battleborn", "text": "Eu notei seu potencial desde o início. Há uma... intensidade em você que a maioria dos calouros não possui.", "choices": [
+          {"text": "Como isso afetará minhas habilidades de combate?", "next_dialogue": "combat_abilities", "metadata": {"affinity_changes": {"Ryuji Battleborn": 1}, "trait_changes": {"combat_focus": 1}}},
+          {"text": "É perigoso? Posso perder o controle?", "next_dialogue": "combat_control", "metadata": {"affinity_changes": {"Ryuji Battleborn": 0}, "trait_changes": {"caution": 1}}},
+          {"text": "Quero me tornar mais forte. Como acelero isso?", "next_dialogue": "combat_strength", "metadata": {"affinity_changes": {"Ryuji Battleborn": 2}, "trait_changes": {"determination": 1}}}
+        ]}
+      ]
+    },
+    "club_specific_additional_dialogues": {
+      "flames_explanation": [
+        {"npc": "Kai Flameheart", "text": "O Despertar Secundário é quando seu poder evolui além de sua forma inicial. Como uma chama que de repente encontra um novo combustível."},
+        {"npc": "Kai Flameheart", "text": "Para usuários de fogo e energia como nós, isso geralmente significa acesso a temperaturas mais altas, maior controle sobre a forma do fogo, ou até mesmo manifestações completamente novas - como plasma ou energia pura."},
+        {"npc": "Kai Flameheart", "text": "É um processo natural, mas raro. Apenas cerca de 5% dos estudantes passam por isso durante seu tempo na academia."},
+        {"npc": "Kai Flameheart", "text": "O fato de estar acontecendo com você tão cedo em seu treinamento é... notável. Sugere um potencial excepcional."},
+        {"next_dialogue": 16}
+      ],
+      "flames_concern": [
+        {"npc": "Kai Flameheart", "text": "Há riscos, sim. Não vou mentir para você."},
+        {"npc": "Kai Flameheart", "text": "O fogo é o elemento da transformação, mas também da destruição. Durante o Despertar Secundário, seu poder pode se tornar temporariamente instável."},
+        {"npc": "Kai Flameheart", "text": "Já tivemos... incidentes no passado. Estudantes que perderam o controle durante o processo. É por isso que a orientação adequada é crucial."},
+        {"npc": "Kai Flameheart", "text": "Vou ajustar seu regime de treinamento para focar mais em controle e menos em potência por enquanto. E vamos precisar de sessões privadas para trabalhar especificamente com essas novas manifestações."},
+        {"npc": "Kai Flameheart", "text": "Com a abordagem certa, os riscos são gerenciáveis. E o potencial de crescimento é... extraordinário."},
+        {"next_dialogue": 16}
+      ],
+      "flames_ambition": [
+        {"npc": "Kai Flameheart", "text": "Essa é a atitude que gosto de ver! O fogo prospera com ambição e vontade."},
+        {"npc": "Kai Flameheart", "text": "O Despertar Secundário não pode ser forçado, mas pode ser nutrido. É como cultivar uma chama - você fornece as condições certas e permite que ela cresça naturalmente."},
+        {"npc": "Kai Flameheart", "text": "Vou criar um regime de treinamento especial para você. Exercícios que desafiarão os limites atuais do seu poder e criarão o... estresse produtivo necessário para catalisar a transformação."},
+        {"npc": "Kai Flameheart", "text": "Também vou compartilhar algumas técnicas de meditação ígnea que me ajudaram durante meu próprio Despertar."},
+        {"npc": "Kai Flameheart", "text": "Mas um aviso: há outros na academia que podem se interessar por você agora. Facções com diferentes visões sobre como o poder deve ser usado e desenvolvido."},
+        {"npc": "Kai Flameheart", "text": "Seja cauteloso com quem você confia nesse momento crucial."},
+        {"next_dialogue": 16}
+      ],
+      "mental_prediction": [
+        {"npc": "Luna Mindweaver", "text": "Suspeitava, sim. A mente é meu domínio, afinal."},
+        {"npc": "Luna Mindweaver", "text": "Cada mente tem padrões únicos, correntes de pensamento e energia que fluem de maneiras específicas. A sua sempre teve... harmônicos incomuns. Frequências que sugeriam potencial para evolução."},
+        {"npc": "Luna Mindweaver", "text": "Não é uma ciência exata, claro. Mais uma arte de interpretação. Mas quanto mais você trabalha com mentes, mais reconhece os sinais."},
+        {"npc": "Luna Mindweaver", "text": "O que me surpreende não é que esteja acontecendo, mas que tenha começado tão cedo. Geralmente, o Despertar Secundário ocorre após anos de treinamento, não meses."},
+        {"npc": "Luna Mindweaver", "text": "Isso sugere que seu potencial é... significativo."},
+        {"next_dialogue": 16}
+      ],
+      "mental_future": [
+        {"npc": "Luna Mindweaver", "text": "O caminho à frente é... fluido. Diferente para cada mente."},
+        {"npc": "Luna Mindweaver", "text": "Para alguns, o Despertar Secundário amplia habilidades existentes - ilusões mais convincentes, telepatia mais profunda, influência mais sutil."},
+        {"npc": "Luna Mindweaver", "text": "Para outros, manifesta-se como habilidades inteiramente novas - precognição, telecinese, manipulação de memórias."},
+        {"npc": "Luna Mindweaver", "text": "O processo em si pode ser desorientador. A mente se expande para acomodar novas percepções, novos potenciais. Você pode experimentar sonhos vívidos, insights repentinos, ou momentos de clareza extraordinária."},
+        {"npc": "Luna Mindweaver", "text": "Também pode haver... desafios. Sobrecarga sensorial. Dificuldade em distinguir pensamentos próprios dos alheios. Momentos de influência involuntária."},
+        {"npc": "Luna Mindweaver", "text": "Vou ajustar seu treinamento para incluir técnicas de ancoragem e centralização. Elas serão essenciais nos dias que virão."},
+        {"next_dialogue": 16}
+      ],
+      "mental_identity": [
+        {"npc": "Luna Mindweaver", "text": "Uma pergunta perspicaz. A resposta é... complexa."},
+        {"npc": "Luna Mindweaver", "text": "Sua mente e sua personalidade estão intrinsecamente ligadas, mas não são a mesma coisa. O Despertar Secundário expande suas capacidades mentais, mas seu núcleo - seus valores, memórias, essência - permanece."},
+        {"npc": "Luna Mindweaver", "text": "Dito isso, novas perspectivas inevitavelmente trazem mudanças. Quando você começa a perceber pensamentos que outros não podem, a influenciar de maneiras que antes eram impossíveis... isso muda como você vê o mundo e seu lugar nele."},
+        {"npc": "Luna Mindweaver", "text": "A questão não é se você mudará, mas como escolherá mudar. Que aspectos de si mesmo preservará e quais permitirá que evoluam."},
+        {"npc": "Luna Mindweaver", "text": "É por isso que a meditação e o autoconhecimento são tão centrais em nosso treinamento. Não apenas para controlar o poder, mas para manter a integridade do self enquanto esse poder cresce."},
+        {"next_dialogue": 16}
+      ],
+      "political_implications": [
+        {"npc": "Alexander Strategos", "text": "Perspicaz. Sempre pensando nas dimensões maiores. É por isso que você se encaixa bem no Conselho Político."},
+        {"npc": "Alexander Strategos", "text": "As implicações são... significativas. O Despertar Secundário altera o equilíbrio de poder, especialmente em uma instituição hierárquica como a nossa."},
+        {"npc": "Alexander Strategos", "text": "Historicamente, estudantes que passam por isso tendem a ascender rapidamente na hierarquia. Alguns se tornam líderes influentes. Outros são vistos como ameaças pelo establishment."},
+        {"npc": "Alexander Strategos", "text": "Há facções dentro da academia com visões muito diferentes sobre como lidar com indivíduos como você. A administração oficial prefere controle e regulamentação. Os Igualitários defendem liberdade total, às vezes à custa da estabilidade."},
+        {"npc": "Alexander Strategos", "text": "E então há aqueles de nós que buscam um caminho intermediário - desenvolvimento responsável do potencial, sem sacrificar a ordem social."},
+        {"npc": "Alexander Strategos", "text": "As escolhas que você fizer nas próximas semanas determinarão não apenas seu desenvolvimento pessoal, mas também suas alianças futuras."},
+        {"next_dialogue": 16}
+      ],
+      "political_hierarchy": [
+        {"npc": "Alexander Strategos", "text": "Sem dúvida. O Despertar Secundário é um dos poucos caminhos para mobilidade vertical significativa em nossa hierarquia."},
+        {"npc": "Alexander Strategos", "text": "Estudantes que dominam essa evolução frequentemente saltam vários níveis de uma só vez. Já vi calouros se tornarem Elite ou mesmo Jack em questão de meses após um Despertar bem-sucedido."},
+        {"npc": "Alexander Strategos", "text": "Claro, isso também atrai... atenção. Inveja de colegas. Interesse de mentores potenciais. Escrutínio da administração."},
+        {"npc": "Alexander Strategos", "text": "Gerenciar essas dinâmicas sociais será tão importante quanto gerenciar seu poder em evolução."},
+        {"npc": "Alexander Strategos", "text": "Felizmente, como membro do Conselho Político, você já está aprendendo as habilidades necessárias para navegar nessas águas complexas."},
+        {"npc": "Alexander Strategos", "text": "Com a orientação adequada, você pode transformar esse desenvolvimento em uma vantagem estratégica significativa."},
+        {"next_dialogue": 16}
+      ],
+      "political_secrecy": [
+        {"npc": "Alexander Strategos", "text": "A cautela é sábia neste momento. A informação é poder, e controlar quem sabe o quê é... estrategicamente prudente."},
+        {"npc": "Alexander Strategos", "text": "Dito isso, total sigilo é impraticável. O Despertar Secundário deixa... assinaturas energéticas que certos indivíduos podem detectar."},
+        {"npc": "Alexander Strategos", "text": "A administração provavelmente já sabe. Eles têm sistemas de monitoramento para anomalias de poder no campus."},
+        {"npc": "Alexander Strategos", "text": "E há outros grupos - tanto oficiais quanto não oficiais - que ativamente procuram por estudantes como você."},
+        {"npc": "Alexander Strategos", "text": "Minha recomendação é discrição seletiva. Compartilhe apenas com aqueles em quem confia implicitamente. Mantenha uma aparência de normalidade em público."},
+        {"npc": "Alexander Strategos", "text": "E esteja preparado para quando a notícia inevitavelmente se espalhar. Ter um plano para esse momento é melhor do que esperar que ele nunca chegue."},
+        {"next_dialogue": 16}
+      ],
+      "elemental_connection": [
+        {"npc": "Gaia Naturae", "text": "Sua conexão com os elementos se tornará simultaneamente mais profunda e mais ampla."},
+        {"npc": "Gaia Naturae", "text": "Mais profunda, porque você começará a sentir as correntes sutis que existem dentro de cada elemento - as muitas vozes da água, os diferentes temperamentos do fogo, as camadas da terra, as correntes invisíveis do ar."},
+        {"npc": "Gaia Naturae", "text": "Mais ampla, porque as barreiras entre os elementos começarão a parecer menos rígidas. Você perceberá as interconexões, como um elemento flui para o outro em ciclos eternos."},
+        {"npc": "Gaia Naturae", "text": "Para alguns Elementalistas, o Despertar Secundário também traz afinidade com elementos que antes pareciam distantes ou inacessíveis."},
+        {"npc": "Gaia Naturae", "text": "É um processo belo, mas pode ser desorientador. Como aprender uma nova linguagem enquanto ainda está dominando a primeira."},
+        {"npc": "Gaia Naturae", "text": "Vou ajustar suas práticas de meditação para ajudá-lo a navegar nessa expansão de consciência elemental."},
+        {"next_dialogue": 16}
+      ],
+      "elemental_balance": [
+        {"npc": "Gaia Naturae", "text": "Sim, absolutamente. O Despertar Secundário é tão natural quanto o crescimento de uma árvore ou o ciclo das estações."},
+        {"npc": "Gaia Naturae", "text": "Todos os seres com afinidade elemental têm esse potencial dentro de si. Para a maioria, permanece dormente. Para alguns, como você, desperta quando as condições são adequadas."},
+        {"npc": "Gaia Naturae", "text": "É parte do grande equilíbrio - a dança constante entre potencial e manifestação, entre o que é e o que pode ser."},
+        {"npc": "Gaia Naturae", "text": "Os antigos mestres elementais viam isso como um reflexo dos ciclos da própria natureza. Assim como uma semente contém todo o potencial de uma árvore, seu poder inicial contém as sementes de sua forma evoluída."},
+        {"npc": "Gaia Naturae", "text": "Nossa filosofia não é forçar ou controlar esse processo, mas criar condições harmoniosas para que ele floresça naturalmente, em seu próprio tempo."},
+        {"next_dialogue": 16}
+      ],
+      "elemental_acceleration": [
+        {"npc": "Gaia Naturae", "text": "Ah, a impaciência da juventude. Sempre buscando apressar o que deve desabrochar em seu próprio tempo.", "expression": "gentle_disapproval"},
+        {"npc": "Gaia Naturae", "text": "Tecnicamente, sim, existem métodos para acelerar o Despertar Secundário. Rituais antigos, substâncias catalisadoras, técnicas de meditação intensiva."},
+        {"npc": "Gaia Naturae", "text": "Mas esses métodos carregam riscos significativos. A natureza tem seu próprio ritmo por uma razão."},
+        {"npc": "Gaia Naturae", "text": "Imagine forçar um botão a florescer antes que esteja pronto. O resultado pode parecer uma flor, mas frequentemente é frágil, desequilibrado, incompleto."},
+        {"npc": "Gaia Naturae", "text": "Da mesma forma, um Despertar forçado pode resultar em poder instável, conexões elementais distorcidas, ou pior - dano permanente à sua capacidade de comungar com os elementos."},
+        {"npc": "Gaia Naturae", "text": "Meu conselho é cultivar paciência. O processo já começou naturalmente em você - um sinal auspicioso. Permita que se desenvolva em seu próprio ritmo perfeito."},
+        {"next_dialogue": 16}
+      ],
+      "combat_abilities": [
+        {"npc": "Ryuji Battleborn", "text": "Suas habilidades de combate? Elas vão explodir! Literalmente, em alguns casos."},
+        {"npc": "Ryuji Battleborn", "text": "O Despertar Secundário geralmente amplifica suas forças existentes - golpes mais poderosos, reflexos mais rápidos, resistência aumentada."},
+        {"npc": "Ryuji Battleborn", "text": "Mas o verdadeiro presente é a especialização. Você começará a desenvolver técnicas únicas que ninguém mais pode replicar exatamente."},
+        {"npc": "Ryuji Battleborn", "text": "Alguns desenvolvem ataques elementais focados. Outros, percepção de combate aprimorada. Outros ainda, capacidades defensivas extraordinárias."},
+        {"npc": "Ryuji Battleborn", "text": "É quando um lutador realmente encontra seu estilo pessoal - não apenas imitando formas tradicionais, mas criando algo único."},
+        {"npc": "Ryuji Battleborn", "text": "Vou ajustar seu regime de treinamento para incluir mais combates com oponentes variados. Isso ajudará a estimular adaptações e descobrir sua especialidade natural."},
+        {"next_dialogue": 16}
+      ],
+      "combat_control": [
+        {"npc": "Ryuji Battleborn", "text": "Há riscos, sim. Poder sem controle é como uma espada sem punho - perigosa para o oponente, mas fatal para quem a empunha."},
+        {"npc": "Ryuji Battleborn", "text": "Durante o Despertar Secundário, você experimentará picos de poder que podem ser... desafiadores de gerenciar. Momentos em que sua força excede sua técnica."},
+        {"npc": "Ryuji Battleborn", "text": "É por isso que no Clube de Combate enfatizamos disciplina e autocontrole tanto quanto poder bruto. A verdadeira maestria está em saber quando e como aplicar a força, não apenas em possuí-la."},
+        {"npc": "Ryuji Battleborn", "text": "Vou organizar sessões de treinamento especiais para você em nossa arena de contenção. Um ambiente onde você pode explorar seus limites com segurança."},
+        {"npc": "Ryuji Battleborn", "text": "E vou ensinar algumas técnicas de centralização que uso antes de cada combate. Elas ajudarão a manter o foco quando seu poder começar a flutuar."},
+        {"next_dialogue": 16}
+      ],
+      "combat_strength": [
+        {"npc": "Ryuji Battleborn", "text": "Essa é a atitude de um verdadeiro guerreiro! Buscar força, abraçar o desafio!", "expression": "excited"},
+        {"npc": "Ryuji Battleborn", "text": "O Despertar Secundário não pode ser forçado, mas pode ser cultivado através do desafio constante. Empurrar seus limites. Enfrentar oponentes mais fortes. Treinar até a exaustão e depois um pouco mais."},
+        {"npc": "Ryuji Battleborn", "text": "No Clube de Combate, temos um regime especial para estudantes mostrando sinais de Despertar. Chamamos de 'Forja da Vontade' - uma série de combates progressivamente mais desafiadores."},
+        {"npc": "Ryuji Battleborn", "text": "Não vou mentir - é brutal. Muitos desistem. Mas aqueles que perseveram frequentemente catalisam seu Despertar mais rapidamente."},
+        {"npc": "Ryuji Battleborn", "text": "Também há... suplementos. Fórmulas tradicionais que podem ajudar a preparar seu corpo para a transformação. Nada proibido, mas... não exatamente aprovado pela enfermaria."},
+        {"npc": "Ryuji Battleborn", "text": "O caminho rápido sempre tem seus riscos. A questão é: quão longe você está disposto a ir pela força?"},
+        {"next_dialogue": 16}
+      ]
+    },
+    "completion_exp": 100,
+    "completion_tusd": 150,
+    "next_chapter": "4_2"
+  }
+}

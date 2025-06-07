@@ -13,7 +13,7 @@ from tests.utils.game_mechanics.duel.test_duel_narrator import TestDuelNarrator
 from tests.utils.game_mechanics.events.test_random_event import TestRandomEvent
 from tests.utils.game_mechanics.events.test_training_event import TestTrainingEvent
 from tests.story_mode.test_story_mode import TestStoryMode, TestStoryModeIntegration, TestStoryModeCog
-from tests.story_mode.test_story_mode_fixes import TestStoryModeChapterSuffixes, TestStoryModeClubSpecificDialogues, TestStoryModeConditionalChapterNavigation
+from tests.story_mode.test_story_mode_fixes import TestStoryModeChapterSuffixes, TestStoryModeClubSpecificDialogues, TestStoryModeConditionalChapterNavigation, TestStoryModeChallengeChapterIDs
 from tests.test_new_systems import TestNewSystems
 
 # Import the new test modules
@@ -41,6 +41,7 @@ def create_test_suite():
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeChapterSuffixes))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeClubSpecificDialogues))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeConditionalChapterNavigation))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeChallengeChapterIDs))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestNewSystems))
 
     # Add the new test cases

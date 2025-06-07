@@ -13,16 +13,36 @@ DB_PATH = Path('data/tokugawa.db')
 # Flag to indicate if we're running in AWS
 IS_AWS = os.environ.get('AWS_EXECUTION_ENV') is not None
 
+# Flag to indicate if we should reset the database
+RESET_DATABASE = os.environ.get('RESET_DATABASE', 'false').lower() == 'true'
+
 def ensure_data_dir():
     """Ensure the data directory exists."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
+def reset_sqlite_db():
+    """Reset the SQLite database by removing the file."""
+    if os.path.exists(DB_PATH):
+        try:
+            os.remove(DB_PATH)
+            logger.warning("SQLite database file has been reset")
+            return True
+        except Exception as e:
+            logger.error(f"Error resetting SQLite database: {e}")
+            return False
+    return True  # File doesn't exist, so no need to reset
 
 def init_db():
     """Initialize the database with required tables."""
     ensure_data_dir()
 
+    # Check if we should reset the database
+    if RESET_DATABASE:
+        logger.warning("RESET_DATABASE flag is set to true. Resetting SQLite database...")
+        reset_sqlite_db()
+
     # If running in AWS, try to download the database from S3
-    if IS_AWS:
+    if IS_AWS and not RESET_DATABASE:  # Skip download if we're resetting
         try:
             from utils.s3_storage import download_db_from_s3, ensure_s3_bucket_exists
 

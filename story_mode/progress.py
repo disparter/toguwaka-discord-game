@@ -190,19 +190,24 @@ class DefaultStoryProgressManager(StoryProgressManager):
         # Store the full chapter ID including any suffixes
         story_progress["full_chapter_id"] = chapter_id
 
-        # Parse chapter ID to get year and chapter number
+        # Parse chapter ID to get year and chapter number if it's in the format "year_chapter"
         if "_" in chapter_id:
             try:
                 parts = chapter_id.split("_")
-                year = parts[0]
-                chapter = parts[1]
-                story_progress["current_year"] = int(year)
-                story_progress["current_chapter"] = int(chapter)
-            except IndexError:
-                logger.error(f"ID do capítulo inválido: {chapter_id}. Formato esperado: 'ano_capitulo'")
-                raise ValueError(f"ID inválido: {chapter_id}")
+                # Check if the first part is a number (year)
+                if parts[0].isdigit() and parts[1].isdigit():
+                    year = parts[0]
+                    chapter = parts[1]
+                    story_progress["current_year"] = int(year)
+                    story_progress["current_chapter"] = int(chapter)
+                else:
+                    # If it's not in "year_chapter" format, treat it as a challenge/special chapter
+                    story_progress["current_challenge_chapter"] = chapter_id
+            except (IndexError, ValueError):
+                # If there's any error in parsing, treat it as a challenge/special chapter
+                story_progress["current_challenge_chapter"] = chapter_id
         else:
-            # If no year specified, assume it's a challenge chapter
+            # If no underscore, assume it's a challenge chapter
             story_progress["current_challenge_chapter"] = chapter_id
 
         self._log_with_player_context(f"Set current chapter to {chapter_id}", player_data)

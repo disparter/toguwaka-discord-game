@@ -1,0 +1,240 @@
+{
+  "2_1": {
+    "type": "story",
+    "title": "Primeiro Dia de Aula",
+    "description": "Seu primeiro dia de aulas formais na Academia Tokugawa. Conheça os professores e as disciplinas.",
+    "dialogues": [
+      {"npc": "Narrador", "text": "O primeiro dia de aulas formais na Academia Tokugawa chegou. Após o período de orientação e escolha de clubes, é hora de mergulhar nos estudos."},
+      {"npc": "Narrador", "text": "Você recebeu seu cronograma de aulas pelo sistema da academia. Hoje você terá aulas de Teoria dos Poderes, História das Habilidades Especiais e uma disciplina específica do seu clube."},
+      {"npc": "Junie", "text": "Bom dia! Espero que esteja pronto para seu primeiro dia de aulas. A Academia Tokugawa tem um currículo rigoroso, mas fascinante.", "gif": "junie_smile.gif"},
+      {"npc": "Junie", "text": "Lembre-se que seu desempenho acadêmico afetará sua posição na hierarquia da escola. Os professores valorizam tanto o conhecimento quanto a aplicação prática.", "choices": [
+        {"text": "Estou ansioso para aprender!", "next_dialogue": 4, "metadata": {"affinity_changes": {"Junie": 2}, "trait_changes": {"academic_enthusiasm": 1}}},
+        {"text": "Prefiro a parte prática à teórica.", "next_dialogue": 5, "metadata": {"affinity_changes": {"Junie": 0}, "trait_changes": {"practical_focus": 1}}},
+        {"text": "O importante é manter minha posição na hierarquia.", "next_dialogue": 6, "metadata": {"affinity_changes": {"Junie": -1}, "trait_changes": {"ambition": 1}}}
+      ]}
+    ],
+    "additional_dialogues": {
+      "4": [
+        {"npc": "Junie", "text": "Essa é a atitude certa! O conhecimento teórico é a base para um controle excepcional dos seus poderes."},
+        {"npc": "Junie", "text": "Vamos para sua primeira aula: Teoria dos Poderes com o Professor Quantum."},
+        {"npc": "Narrador", "text": "Você segue para a sala de aula, onde outros estudantes já estão se acomodando."},
+        {"next_dialogue": 7}
+      ],
+      "5": [
+        {"npc": "Junie", "text": "Compreensível! Muitos estudantes preferem a aplicação prática. Mas não subestime o valor da teoria."},
+        {"npc": "Junie", "text": "A Academia Tokugawa acredita que a verdadeira maestria vem do equilíbrio entre teoria e prática."},
+        {"npc": "Junie", "text": "Sua primeira aula é Teoria dos Poderes com o Professor Quantum. Ele tem uma abordagem bastante dinâmica, acho que você vai gostar."},
+        {"next_dialogue": 7}
+      ],
+      "6": [
+        {"npc": "Junie", "text": "Hmm, entendo sua preocupação com a hierarquia. É importante aqui na academia."},
+        {"npc": "Junie", "text": "Mas lembre-se que respeito genuíno vem do conhecimento e habilidade, não apenas da posição."},
+        {"npc": "Junie", "text": "Enfim, sua primeira aula é Teoria dos Poderes com o Professor Quantum. Ele valoriza estudantes ambiciosos, mas também espera dedicação ao conteúdo."},
+        {"next_dialogue": 7}
+      ],
+      "7": [
+        {"npc": "Professor Quantum", "text": "Bom dia, classe! Bem-vindos à Teoria dos Poderes I. Meu nome é Professor Quantum, e serei seu guia no fascinante mundo da física das habilidades especiais.", "gif": "professor_quantum.txt"},
+        {"npc": "Professor Quantum", "text": "Nesta disciplina, exploraremos os princípios fundamentais que governam todas as manifestações de poderes, desde manipulação de energia até alterações da realidade."},
+        {"npc": "Professor Quantum", "text": "Antes de começarmos, gostaria de conhecer um pouco sobre vocês. Você, aluno novo, poderia compartilhar qual aspecto dos poderes mais lhe interessa?", "choices": [
+          {"text": "A origem evolutiva dos poderes", "next_dialogue": 8, "metadata": {"affinity_changes": {"Professor Quantum": 3}, "trait_changes": {"scientific_curiosity": 1}}},
+          {"text": "Como amplificar a potência dos poderes", "next_dialogue": 9, "metadata": {"affinity_changes": {"Professor Quantum": 1}, "trait_changes": {"power_focus": 1}}},
+          {"text": "Os limites éticos do uso de poderes", "next_dialogue": 10, "metadata": {"affinity_changes": {"Professor Quantum": 2}, "trait_changes": {"ethical_awareness": 1}}}
+        ]}
+      ],
+      "8": [
+        {"npc": "Professor Quantum", "text": "Excelente pergunta! A origem evolutiva dos poderes é um campo fascinante de estudo."},
+        {"npc": "Professor Quantum", "text": "A teoria mais aceita atualmente é a do 'Gene Adaptativo', que sugere que nossos ancestrais desenvolveram estas habilidades como resposta a pressões ambientais extremas."},
+        {"npc": "Professor Quantum", "text": "Dedicaremos um módulo inteiro a este tópico no final do semestre. Sua curiosidade científica é admirável."},
+        {"next_dialogue": 11}
+      ],
+      "9": [
+        {"npc": "Professor Quantum", "text": "Ah, direto ao ponto! A amplificação de poderes é certamente um tópico de grande interesse para muitos estudantes."},
+        {"npc": "Professor Quantum", "text": "Embora seja importante, devo alertar que potência sem controle é como um reator nuclear sem contenção - desastroso."},
+        {"npc": "Professor Quantum", "text": "Abordaremos técnicas de amplificação no segundo trimestre, mas sempre no contexto do controle preciso e responsabilidade."},
+        {"next_dialogue": 11}
+      ],
+      "10": [
+        {"npc": "Professor Quantum", "text": "Uma consideração profunda! Os limites éticos são frequentemente negligenciados, mas são fundamentais."},
+        {"npc": "Professor Quantum", "text": "Como dizia o grande filósofo Shen: 'O poder sem sabedoria é a raiz de toda destruição'."},
+        {"npc": "Professor Quantum", "text": "Temos um seminário interdisciplinar sobre ética dos poderes que ocorre mensalmente. Você deveria participar - vejo que tem inclinação para reflexões importantes."},
+        {"next_dialogue": 11}
+      ],
+      "11": [
+        {"npc": "Narrador", "text": "A aula continua com o Professor Quantum explicando os princípios básicos da conservação de energia em manifestações de poder."},
+        {"npc": "Narrador", "text": "Após a aula de Teoria dos Poderes, você segue para sua próxima disciplina: História das Habilidades Especiais com a Professora Chronos."},
+        {"npc": "Professora Chronos", "text": "Bem-vindos à História das Habilidades Especiais. Sou a Professora Chronos, e juntos exploraremos como os poderes moldaram civilizações ao longo dos milênios.", "gif": "professora_chronos.gif"},
+        {"npc": "Professora Chronos", "text": "Desde os antigos xamãs que controlavam o clima até os modernos heróis urbanos, as habilidades especiais sempre estiveram entrelaçadas com o desenvolvimento humano."},
+        {"npc": "Professora Chronos", "text": "Para começar, gostaria de saber: qual período histórico relacionado aos poderes mais desperta seu interesse?", "choices": [
+          {"text": "A Era das Sombras - quando os poderes eram perseguidos", "next_dialogue": 12, "metadata": {"affinity_changes": {"Professora Chronos": 2}, "trait_changes": {"historical_awareness": 1}}},
+          {"text": "A Renascença dos Poderes - quando foram aceitos publicamente", "next_dialogue": 13, "metadata": {"affinity_changes": {"Professora Chronos": 2}, "trait_changes": {"optimism": 1}}},
+          {"text": "A Era Moderna - a integração dos poderes na sociedade", "next_dialogue": 14, "metadata": {"affinity_changes": {"Professora Chronos": 1}, "trait_changes": {"pragmatism": 1}}}
+        ]}
+      ],
+      "12": [
+        {"npc": "Professora Chronos", "text": "Um período sombrio, mas crucial para entendermos nossa história. Durante a Era das Sombras, entre os séculos XIV e XVII, aqueles com poderes eram frequentemente acusados de bruxaria."},
+        {"npc": "Professora Chronos", "text": "Comunidades secretas se formaram para proteger e treinar jovens com habilidades. Muitas das técnicas que usamos hoje foram desenvolvidas nesse período de adversidade."},
+        {"npc": "Professora Chronos", "text": "Sua sensibilidade para os desafios históricos é notável. Isso nos ajuda a valorizar as liberdades que temos hoje."},
+        {"next_dialogue": 15}
+      ],
+      "13": [
+        {"npc": "Professora Chronos", "text": "Ah, a Renascença dos Poderes! Um período fascinante que começou no final do século XIX e floresceu no início do século XX."},
+        {"npc": "Professora Chronos", "text": "Foi quando cientistas como Madame Curie e Tesla começaram a estudar os poderes sob uma perspectiva científica, removendo o estigma supersticioso."},
+        {"npc": "Professora Chronos", "text": "Seu otimismo reflete o espírito daquela época - uma crença no progresso e na integração harmoniosa dos poderes na sociedade."},
+        {"next_dialogue": 15}
+      ],
+      "14": [
+        {"npc": "Professora Chronos", "text": "A Era Moderna é certamente relevante para todos nós. Nas últimas décadas, vimos uma transformação radical na forma como os poderes são percebidos e utilizados."},
+        {"npc": "Professora Chronos", "text": "Desde a formação das primeiras academias especializadas, como Tokugawa, até a criação de legislações específicas e carreiras dedicadas a pessoas com habilidades."},
+        {"npc": "Professora Chronos", "text": "Sua abordagem pragmática é valiosa - compreender o presente é essencial para navegar seu próprio caminho neste mundo."},
+        {"next_dialogue": 15}
+      ],
+      "15": [
+        {"npc": "Narrador", "text": "A aula de História das Habilidades Especiais continua com uma linha do tempo detalhada dos eventos mais importantes relacionados aos poderes."},
+        {"npc": "Narrador", "text": "Após o almoço, você se dirige à sua última aula do dia: a disciplina específica do seu clube."}
+      ]
+    },
+    "club_specific_dialogues": {
+      "1": [
+        {"npc": "Kai Flameheart", "text": "Bem-vindos à Dinâmica do Fogo e Energia! Como líder do Clube das Chamas, serei seu instrutor nesta disciplina essencial.", "gif": "kai_flameheart.txt"},
+        {"npc": "Kai Flameheart", "text": "Aqui aprenderemos não apenas a gerar e controlar fogo e outras formas de energia, mas a compreender sua natureza volátil e transformadora."},
+        {"npc": "Kai Flameheart", "text": "O fogo pode destruir ou purificar, dependendo de como é utilizado. Qual aspecto você deseja focar em seu treinamento?", "choices": [
+          {"text": "Controle preciso e refinado", "next_dialogue": "flames_control", "metadata": {"affinity_changes": {"Kai Flameheart": 1}, "trait_changes": {"precision": 1}}},
+          {"text": "Maximizar potência e intensidade", "next_dialogue": "flames_power", "metadata": {"affinity_changes": {"Kai Flameheart": 2}, "trait_changes": {"raw_power": 1}}},
+          {"text": "Versatilidade e aplicações criativas", "next_dialogue": "flames_versatility", "metadata": {"affinity_changes": {"Kai Flameheart": 3}, "trait_changes": {"creativity": 1}}}
+        ]}
+      ],
+      "2": [
+        {"npc": "Luna Mindweaver", "text": "Bem-vindos à Psicologia da Percepção. Como líder dos Ilusionistas Mentais, guiarei vocês pelos labirintos da mente.", "gif": "luna_mindweaver.gif"},
+        {"npc": "Luna Mindweaver", "text": "Para manipular a percepção, primeiro devemos entender como a mente processa a realidade. Esta disciplina é tanto ciência quanto arte."},
+        {"npc": "Luna Mindweaver", "text": "Cada mente é um universo único. Qual aspecto da manipulação mental mais lhe interessa?", "choices": [
+          {"text": "Ilusões sutis e imperceptíveis", "next_dialogue": "mental_subtlety", "metadata": {"affinity_changes": {"Luna Mindweaver": 3}, "trait_changes": {"subtlety": 1}}},
+          {"text": "Influência e persuasão", "next_dialogue": "mental_influence", "metadata": {"affinity_changes": {"Luna Mindweaver": 1}, "trait_changes": {"persuasion": 1}}},
+          {"text": "Defesas mentais e proteção", "next_dialogue": "mental_defense", "metadata": {"affinity_changes": {"Luna Mindweaver": 2}, "trait_changes": {"mental_resilience": 1}}}
+        ]}
+      ],
+      "3": [
+        {"npc": "Alexander Strategos", "text": "Bem-vindos à Estratégia e Governança. Como líder do Conselho Político, ensinarei vocês a navegar no complexo tabuleiro do poder.", "gif": "alexander_strategos.txt"},
+        {"npc": "Alexander Strategos", "text": "A política não é apenas sobre controle, mas sobre visão - a capacidade de ver além do imediato e moldar o futuro através de decisões estratégicas."},
+        {"npc": "Alexander Strategos", "text": "O poder político assume muitas formas. Qual abordagem mais ressoa com sua visão pessoal?", "choices": [
+          {"text": "Diplomacia e construção de alianças", "next_dialogue": "political_diplomacy", "metadata": {"affinity_changes": {"Alexander Strategos": 2}, "trait_changes": {"diplomacy": 1}}},
+          {"text": "Liderança inspiradora e carisma", "next_dialogue": "political_leadership", "metadata": {"affinity_changes": {"Alexander Strategos": 3}, "trait_changes": {"charisma": 1}}},
+          {"text": "Estratégia e manipulação nos bastidores", "next_dialogue": "political_strategy", "metadata": {"affinity_changes": {"Alexander Strategos": 1}, "trait_changes": {"cunning": 1}}}
+        ]}
+      ],
+      "4": [
+        {"npc": "Gaia Naturae", "text": "Bem-vindos à Harmonia Elemental. Como líder dos Elementalistas, guiarei vocês no caminho do equilíbrio e conexão com as forças naturais.", "gif": "gaia_naturae.txt"},
+        {"npc": "Gaia Naturae", "text": "Cada elemento - terra, água, ar, fogo - possui sua própria sabedoria e energia. Juntos, formam um todo maior que suas partes."},
+        {"npc": "Gaia Naturae", "text": "Para começar sua jornada, você deve escolher um caminho inicial. Qual elemento mais ressoa com seu espírito?", "choices": [
+          {"text": "Terra - estabilidade e resistência", "next_dialogue": "elemental_earth", "metadata": {"affinity_changes": {"Gaia Naturae": 2}, "trait_changes": {"stability": 1}}},
+          {"text": "Água - adaptabilidade e cura", "next_dialogue": "elemental_water", "metadata": {"affinity_changes": {"Gaia Naturae": 2}, "trait_changes": {"adaptability": 1}}},
+          {"text": "Ar - liberdade e intuição", "next_dialogue": "elemental_air", "metadata": {"affinity_changes": {"Gaia Naturae": 2}, "trait_changes": {"intuition": 1}}},
+          {"text": "Fogo - transformação e paixão", "next_dialogue": "elemental_fire", "metadata": {"affinity_changes": {"Gaia Naturae": 2}, "trait_changes": {"passion": 1}}}
+        ]}
+      ],
+      "5": [
+        {"npc": "Ryuji Battleborn", "text": "Bem-vindos à Teoria do Combate Avançado. Como líder do Clube de Combate, ensinarei vocês a transformar seus corpos e poderes em armas eficientes.", "gif": "ryuji_battleborn.gif"},
+        {"npc": "Ryuji Battleborn", "text": "O verdadeiro combate não é apenas força bruta, mas uma dança de estratégia, técnica e adaptação. Cada movimento deve ter propósito."},
+        {"npc": "Ryuji Battleborn", "text": "Diferentes lutadores têm diferentes estilos. Qual abordagem de combate mais combina com você?", "choices": [
+          {"text": "Técnica precisa e eficiência", "next_dialogue": "combat_technique", "metadata": {"affinity_changes": {"Ryuji Battleborn": 2}, "trait_changes": {"technique": 1}}},
+          {"text": "Força avassaladora e resistência", "next_dialogue": "combat_strength", "metadata": {"affinity_changes": {"Ryuji Battleborn": 1}, "trait_changes": {"strength": 1}}},
+          {"text": "Velocidade e ataques estratégicos", "next_dialogue": "combat_speed", "metadata": {"affinity_changes": {"Ryuji Battleborn": 3}, "trait_changes": {"speed": 1}}}
+        ]}
+      ]
+    },
+    "club_specific_additional_dialogues": {
+      "flames_control": [
+        {"npc": "Kai Flameheart", "text": "O controle é fundamental. Um mestre do fogo não é aquele que cria as maiores chamas, mas aquele que molda até a menor centelha com precisão absoluta."},
+        {"npc": "Kai Flameheart", "text": "Começaremos com exercícios de micro-controle - acender e manter uma única chama do tamanho de uma cabeça de alfinete."},
+        {"npc": "Kai Flameheart", "text": "Sua busca por refinamento é admirável. Lembre-se: a paciência é tão importante quanto a paixão no caminho do controle."}
+      ],
+      "flames_power": [
+        {"npc": "Kai Flameheart", "text": "Potência! Isso é o que muitos buscam primeiro. A sensação de liberar uma explosão de energia pura é inebriante."},
+        {"npc": "Kai Flameheart", "text": "Mas lembre-se: com grande poder vem grande responsabilidade. Trabalharemos não apenas em aumentar sua potência, mas em canalizá-la com propósito."},
+        {"npc": "Kai Flameheart", "text": "Prepare-se para sessões intensas. O caminho da potência exige tanto do corpo quanto do espírito."}
+      ],
+      "flames_versatility": [
+        {"npc": "Kai Flameheart", "text": "Versatilidade! Uma escolha fascinante e rara. A maioria se concentra em poder ou controle, mas poucos veem o potencial criativo do fogo."},
+        {"npc": "Kai Flameheart", "text": "O fogo pode iluminar, aquecer, transformar matéria, gerar eletricidade, criar sinais... as aplicações são limitadas apenas pela imaginação."},
+        {"npc": "Kai Flameheart", "text": "Você me lembra de mim quando era mais jovem. Vou acompanhar seu progresso com grande interesse."}
+      ],
+      "mental_subtlety": [
+        {"npc": "Luna Mindweaver", "text": "A sutileza é a marca de um verdadeiro mestre da mente. Qualquer um pode forçar uma ilusão óbvia, mas plantar uma ideia tão natural que parece própria... isso é arte."},
+        {"npc": "Luna Mindweaver", "text": "Começaremos com exercícios de percepção - alterações tão pequenas no ambiente que estão no limite da consciência."},
+        {"npc": "Luna Mindweaver", "text": "Você tem o temperamento certo para este caminho. A paciência e a observação são suas maiores aliadas."}
+      ],
+      "mental_influence": [
+        {"npc": "Luna Mindweaver", "text": "Influência e persuasão... um caminho poderoso, mas que exige grande responsabilidade ética."},
+        {"npc": "Luna Mindweaver", "text": "A linha entre influência e controle é tênue. Nesta classe, não apenas aprenderemos técnicas, mas discutiremos extensamente quando e como é apropriado usá-las."},
+        {"npc": "Luna Mindweaver", "text": "Observe atentamente suas próprias motivações enquanto avança neste caminho. O poder sobre outros pode ser corruptor."}
+      ],
+      "mental_defense": [
+        {"npc": "Luna Mindweaver", "text": "Defesas mentais são fundamentais em um mundo onde cada vez mais pessoas podem influenciar mentes alheias."},
+        {"npc": "Luna Mindweaver", "text": "Começaremos com técnicas de meditação e conscientização que permitem detectar influências externas sutis."},
+        {"npc": "Luna Mindweaver", "text": "Sua preocupação com proteção é sábia. Uma mente bem protegida é o fundamento de toda liberdade verdadeira."}
+      ],
+      "political_diplomacy": [
+        {"npc": "Alexander Strategos", "text": "A diplomacia é a arte de conseguir o que se quer sem precisar lutar por isso. É sobre criar situações onde todos acreditam ter vencido."},
+        {"npc": "Alexander Strategos", "text": "Estudaremos técnicas de negociação, linguagem corporal e a psicologia de concessões e compromissos."},
+        {"npc": "Alexander Strategos", "text": "Seu interesse em construir pontes em vez de muros é admirável. Os maiores líderes sabem quando estender a mão."}
+      ],
+      "political_leadership": [
+        {"npc": "Alexander Strategos", "text": "Liderança inspiradora - a capacidade de fazer outros seguirem não por medo ou obrigação, mas por genuína convicção."},
+        {"npc": "Alexander Strategos", "text": "Estudaremos os grandes oradores da história, técnicas de comunicação carismática e a arte de transformar visões em narrativas convincentes."},
+        {"npc": "Alexander Strategos", "text": "Você tem o espírito de um líder nato. Minha função será refinar esse dom natural em uma habilidade consciente."}
+      ],
+      "political_strategy": [
+        {"npc": "Alexander Strategos", "text": "Estratégia nos bastidores - o verdadeiro poder frequentemente opera nas sombras, movendo peças que outros nem percebem existir."},
+        {"npc": "Alexander Strategos", "text": "Estudaremos teoria dos jogos, análise de sistemas e as estruturas invisíveis que sustentam todas as organizações."},
+        {"npc": "Alexander Strategos", "text": "Sua mente calculista será um ativo valioso. Apenas lembre-se que o objetivo final deve ser maior que a simples acumulação de poder."}
+      ],
+      "elemental_earth": [
+        {"npc": "Gaia Naturae", "text": "Terra - o elemento da estabilidade, resistência e abundância. Uma escolha que reflete um espírito centrado e determinado."},
+        {"npc": "Gaia Naturae", "text": "Começaremos com exercícios de enraizamento, conectando sua energia com a força telúrica que sustenta toda a vida."},
+        {"npc": "Gaia Naturae", "text": "A terra ensina paciência e perseverança. Suas lições não vêm rapidamente, mas são profundas e duradouras."}
+      ],
+      "elemental_water": [
+        {"npc": "Gaia Naturae", "text": "Água - o elemento da adaptabilidade, intuição e cura. Sua escolha reflete um espírito fluido e compassivo."},
+        {"npc": "Gaia Naturae", "text": "Começaremos com exercícios de fluidez, aprendendo a sentir e direcionar as correntes de energia como a água encontra seu caminho."},
+        {"npc": "Gaia Naturae", "text": "A água ensina que a verdadeira força está na adaptação, não na resistência. Seja como a água, meu aluno."}
+      ],
+      "elemental_air": [
+        {"npc": "Gaia Naturae", "text": "Ar - o elemento da liberdade, comunicação e pensamento. Sua escolha reflete um espírito independente e intuitivo."},
+        {"npc": "Gaia Naturae", "text": "Começaremos com exercícios de respiração consciente, a ponte mais direta entre nosso ser e o elemento do ar."},
+        {"npc": "Gaia Naturae", "text": "O ar ensina que a liberdade vem com responsabilidade, pois tudo está conectado pelo mesmo céu que compartilhamos."}
+      ],
+      "elemental_fire": [
+        {"npc": "Gaia Naturae", "text": "Fogo - o elemento da transformação, paixão e vontade. Interessante que escolha este caminho em nossa aula, tendo já afinidade com o Clube das Chamas."},
+        {"npc": "Gaia Naturae", "text": "Nossa abordagem será diferente - focada no fogo como parte de um ciclo maior, não apenas como força isolada."},
+        {"npc": "Gaia Naturae", "text": "O fogo ensina que a transformação é necessária para o crescimento, e que toda destruição contém sementes de renovação."}
+      ],
+      "combat_technique": [
+        {"npc": "Ryuji Battleborn", "text": "Técnica precisa - o caminho do artista marcial verdadeiro. Não é sobre quão forte você golpeia, mas onde e como."},
+        {"npc": "Ryuji Battleborn", "text": "Estudaremos anatomia, pontos de pressão e a mecânica perfeita de cada movimento para maximizar eficiência."},
+        {"npc": "Ryuji Battleborn", "text": "Sua busca por precisão é admirável. Lembre-se: um golpe perfeito vale mais que cem descuidados."}
+      ],
+      "combat_strength": [
+        {"npc": "Ryuji Battleborn", "text": "Força e resistência - o caminho do guerreiro inabalável. Há situações onde a técnica refinada cede lugar à pura determinação."},
+        {"npc": "Ryuji Battleborn", "text": "Além do treinamento físico intenso, trabalharemos na força mental - a capacidade de continuar quando tudo em você quer desistir."},
+        {"npc": "Ryuji Battleborn", "text": "Seu espírito combativo é forte. Canalize essa intensidade e poucos poderão ficar em seu caminho."}
+      ],
+      "combat_speed": [
+        {"npc": "Ryuji Battleborn", "text": "Velocidade e estratégia - o caminho do relâmpago. Atingir antes de ser atingido, estar onde o oponente menos espera."},
+        {"npc": "Ryuji Battleborn", "text": "Trabalharemos em reflexos, percepção acelerada e a capacidade de identificar e explorar aberturas instantaneamente."},
+        {"npc": "Ryuji Battleborn", "text": "Sua escolha me impressiona. A velocidade é frequentemente subestimada, mas é a qualidade que separa os bons lutadores dos verdadeiros mestres."}
+      ]
+    },
+    "completion_exp": 100,
+    "completion_tusd": 150,
+    "next_chapter": "2_2",
+    "conditional_next_chapter": {
+      "club_id": {
+        "1": "2_2_flames",
+        "2": "2_2_mental",
+        "3": "2_2_political",
+        "4": "2_2_elemental",
+        "5": "2_2_combat",
+        "default": "2_2"
+      }
+    }
+  }
+}
