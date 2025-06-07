@@ -180,8 +180,72 @@ class BaseChapter(Chapter):
                     character_relationships[character] = current_affinity + change
                 story_progress["character_relationships"] = character_relationships
 
-            # Move to the next dialogue if specified
-            if "next_dialogue" in choice:
+            # Handle attribute checks if present
+            if "attribute_check" in choice:
+                attribute = choice["attribute_check"]
+                threshold = choice.get("threshold", 0)
+                player_attribute_value = player_data.get(attribute, 0)
+
+                # Check if player meets the threshold
+                check_passed = player_attribute_value >= threshold
+                logger.info(f"Attribute check for {attribute}: player value {player_attribute_value}, threshold {threshold}, passed: {check_passed}")
+
+                # Set challenge result for conditional next chapter
+                if "challenge_result" not in story_progress:
+                    story_progress["challenge_result"] = {}
+
+                if check_passed:
+                    story_progress["challenge_result"] = {"result": "success"}
+                else:
+                    story_progress["challenge_result"] = {"result": "failure"}
+
+                # Store the next dialogue index based on attribute check result
+                next_dialogue = choice.get("next_dialogue")
+                if next_dialogue is not None:
+                    # If we have additional_dialogues with success/failure placeholders
+                    if hasattr(self, 'data') and 'additional_dialogues' in self.data:
+                        next_dialogue_str = str(next_dialogue)
+                        if next_dialogue_str in self.data['additional_dialogues']:
+                            additional_dialogue = self.data['additional_dialogues'][next_dialogue_str]
+
+                            # Check if there are success/failure placeholders
+                            for i, dialogue_item in enumerate(additional_dialogue):
+                                if isinstance(dialogue_item, dict) and "text" in dialogue_item:
+                                    if dialogue_item["text"] == "SUCCESS_PLACEHOLDER":
+                                        # Replace with success dialogue
+                                        success_key = f"success_{next_dialogue}"
+                                        if success_key in self.data['additional_dialogues']:
+                                            # Use the success dialogue
+                                            if check_passed:
+                                                additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][success_key][0]["text"]}
+                                            else:
+                                                # If check failed, use the failure dialogue
+                                                failure_key = f"failure_{next_dialogue}"
+                                                if failure_key in self.data['additional_dialogues']:
+                                                    additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][failure_key][0]["text"]}
+
+                                    elif dialogue_item["text"] == "FAILURE_PLACEHOLDER":
+                                        # Replace with failure dialogue
+                                        failure_key = f"failure_{next_dialogue}"
+                                        if failure_key in self.data['additional_dialogues']:
+                                            # Use the failure dialogue
+                                            if not check_passed:
+                                                additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][failure_key][0]["text"]}
+                                            else:
+                                                # If check passed, use the success dialogue
+                                                success_key = f"success_{next_dialogue}"
+                                                if success_key in self.data['additional_dialogues']:
+                                                    additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][success_key][0]["text"]}
+
+                    story_progress["current_dialogue_index"] = next_dialogue
+                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to specified dialogue after attribute check: {next_dialogue}")
+                else:
+                    # If no next_dialogue specified, move to the next dialogue
+                    story_progress["current_dialogue_index"] = current_dialogue_index + 1
+                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to next dialogue after attribute check: {current_dialogue_index + 1}")
+
+            # If no attribute check, just move to the next dialogue if specified
+            elif "next_dialogue" in choice:
                 story_progress["current_dialogue_index"] = choice["next_dialogue"]
                 logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to specified dialogue: {choice['next_dialogue']}")
             else:
@@ -309,6 +373,41 @@ class BaseChapter(Chapter):
         # Check for conditional next chapter based on player data
         if hasattr(self, 'data') and 'conditional_next_chapter' in self.data:
             conditional_next = self.data.get('conditional_next_chapter', {})
+
+            # Check for challenge_result based conditions
+            if 'challenge_result' in conditional_next:
+                challenge_conditions = conditional_next['challenge_result']
+                story_progress = player_data.get("story_progress", {})
+                challenge_result = story_progress.get("challenge_result", {}).get("result")
+
+                logger.info(f"Checking challenge_result condition: player result is {challenge_result}")
+
+                if challenge_result is not None:
+                    # Check if there's a specific condition for this result
+                    if challenge_result in challenge_conditions:
+                        next_chapter = challenge_conditions[challenge_result]
+                        logger.info(f"Using conditional next chapter for challenge_result {challenge_result}: {next_chapter}")
+
+                        # Handle chapter IDs with multiple underscores
+                        if "_" in next_chapter:
+                            return next_chapter
+                        else:
+                            parts = self.chapter_id.split("_")
+                            year = parts[0] if len(parts) >= 1 else "1"
+                            return f"{year}_{next_chapter}"
+
+                # Use default if specified and no specific condition matched
+                if 'default' in challenge_conditions:
+                    next_chapter = challenge_conditions['default']
+                    logger.info(f"Using default conditional next chapter for challenge: {next_chapter}")
+
+                    # Handle chapter IDs with multiple underscores
+                    if "_" in next_chapter:
+                        return next_chapter
+                    else:
+                        parts = self.chapter_id.split("_")
+                        year = parts[0] if len(parts) >= 1 else "1"
+                        return f"{year}_{next_chapter}"
 
             # Check for club_id based conditions
             if 'club_id' in conditional_next:

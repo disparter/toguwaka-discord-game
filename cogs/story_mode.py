@@ -702,9 +702,14 @@ class StoryModeCog(commands.Cog):
                 view = discord.ui.View(timeout=300)
 
                 for i, choice in enumerate(dialogue["choices"]):
+                    # Ensure button label is not longer than 80 characters (Discord's limit)
+                    label = choice["text"]
+                    if len(label) > 80:
+                        label = label[:77] + "..."
+
                     button = discord.ui.Button(
                         style=discord.ButtonStyle.primary,
-                        label=choice["text"],
+                        label=label,
                         custom_id=f"choice_{i}"
                     )
                     button.callback = self._create_choice_callback(user_id, i)
@@ -723,9 +728,14 @@ class StoryModeCog(commands.Cog):
                 view = discord.ui.View(timeout=300)
 
                 for i, choice in enumerate(chapter_data["choices"]):
+                    # Ensure button label is not longer than 80 characters (Discord's limit)
+                    label = choice["text"]
+                    if len(label) > 80:
+                        label = label[:77] + "..."
+
                     button = discord.ui.Button(
                         style=discord.ButtonStyle.primary,
-                        label=choice["text"],
+                        label=label,
                         custom_id=f"choice_{i}"
                     )
                     button.callback = self._create_choice_callback(user_id, i)
@@ -740,9 +750,14 @@ class StoryModeCog(commands.Cog):
             else:
                 # If no choices, add a "Continue" button
                 view = discord.ui.View(timeout=300)
+                # "Continuar" is short enough, but adding the check for consistency
+                label = "Continuar"
+                if len(label) > 80:
+                    label = label[:77] + "..."
+
                 button = discord.ui.Button(
                     style=discord.ButtonStyle.primary,
-                    label="Continuar",
+                    label=label,
                     custom_id="continue"
                 )
                 button.callback = self._create_continue_callback(user_id)
@@ -777,9 +792,14 @@ class StoryModeCog(commands.Cog):
             view = discord.ui.View(timeout=300)
 
             for i, choice in enumerate(chapter_data["choices"]):
+                # Ensure button label is not longer than 80 characters (Discord's limit)
+                label = choice["text"]
+                if len(label) > 80:
+                    label = label[:77] + "..."
+
                 button = discord.ui.Button(
                     style=discord.ButtonStyle.primary,
-                    label=choice["text"],
+                    label=label,
                     custom_id=f"choice_{i}"
                 )
                 button.callback = self._create_choice_callback(user_id, i)

@@ -104,8 +104,46 @@ class DuelCalculator(IDuelCalculator):
 
         # Calculate rewards based on margin and level difference
         level_diff = abs(winner["level"] - loser["level"])
-        exp_reward = int(30 + (win_margin / 5) + (level_diff * 5))
-        tusd_reward = int(10 + (win_margin / 10) + (level_diff * 2))
+
+        # Base rewards
+        base_exp_reward = int(30 + (win_margin / 5) + (level_diff * 5))
+        base_tusd_reward = int(10 + (win_margin / 10) + (level_diff * 2))
+
+        # Duel type specific bonuses
+        duel_type_bonuses = {
+            "physical": {"exp": 1.0, "tusd": 1.0, "item_chance": 0.1},
+            "mental": {"exp": 1.2, "tusd": 0.9, "item_chance": 0.15},
+            "strategic": {"exp": 1.1, "tusd": 1.1, "item_chance": 0.12},
+            "social": {"exp": 0.9, "tusd": 1.3, "item_chance": 0.18}
+        }
+
+        # Apply duel type bonuses
+        bonus = duel_type_bonuses.get(duel_type, duel_type_bonuses["physical"])
+        exp_reward = int(base_exp_reward * bonus["exp"])
+        tusd_reward = int(base_tusd_reward * bonus["tusd"])
+
+        # Chance for bonus rewards (5-15% chance)
+        bonus_chance = random.random()
+        bonus_rewards = {}
+
+        if bonus_chance < bonus["item_chance"]:
+            # Determine bonus reward type based on duel type
+            if duel_type == "physical":
+                bonus_rewards["item"] = "poção_de_força"
+                bonus_rewards["item_name"] = "Poção de Força"
+                bonus_rewards["item_description"] = "Aumenta temporariamente sua força física"
+            elif duel_type == "mental":
+                bonus_rewards["item"] = "pergaminho_de_sabedoria"
+                bonus_rewards["item_name"] = "Pergaminho de Sabedoria"
+                bonus_rewards["item_description"] = "Aumenta temporariamente seu intelecto"
+            elif duel_type == "strategic":
+                bonus_rewards["item"] = "mapa_tático"
+                bonus_rewards["item_name"] = "Mapa Tático"
+                bonus_rewards["item_description"] = "Revela estratégias avançadas de combate"
+            elif duel_type == "social":
+                bonus_rewards["item"] = "amuleto_de_carisma"
+                bonus_rewards["item_name"] = "Amuleto de Carisma"
+                bonus_rewards["item_description"] = "Aumenta temporariamente seu carisma"
 
         # Calculate HP loss for the loser based on win margin
         # Higher win margins cause more HP loss
@@ -132,7 +170,8 @@ class DuelCalculator(IDuelCalculator):
             "duel_type": duel_type,
             "win_margin": win_margin,
             "hp_loss": hp_loss,
-            "club_perks_applied": {}
+            "club_perks_applied": {},
+            "bonus_rewards": bonus_rewards
         }
 
         # Record which club perks were applied

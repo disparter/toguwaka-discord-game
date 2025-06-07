@@ -1,0 +1,157 @@
+{
+  "type": "story",
+  "title": "Registro no Clube",
+  "description": "Escolha um clube para se juntar e conheça seu líder.",
+  "dialogues": [
+    {"npc": "Junie", "text": "Cada clube tem seu próprio foco e atividades."},
+    {"npc": "Junie", "text": "Você está registrado no clube {{club_name}}. Vamos conhecer o líder do clube!"}
+  ],
+  "choices": [
+    {"text": "Continuar", "next_dialogue": 1}
+  ],
+  "club_leaders": {
+    "1": {"name": "Kai Flameheart", "description": "Um jovem de cabelos vermelhos e temperamento explosivo, mas com um coração leal."},
+    "2": {"name": "Luna Mindweaver", "description": "Uma garota misteriosa de olhos violeta que parece sempre saber o que você está pensando."},
+    "3": {"name": "Alexander Strategos", "description": "Um rapaz calculista de óculos que analisa cada situação como um jogo de xadrez."},
+    "4": {"name": "Gaia Naturae", "description": "Uma estudante serena conectada com a natureza, capaz de manipular todos os elementos."},
+    "5": {"name": "Ryuji Battleborn", "description": "Um lutador disciplinado que valoriza a força e a honra acima de tudo."}
+  },
+  "club_dialogues": {
+    "1": [
+      {"npc": "Kai Flameheart", "text": "Então você é o novato? Espero que esteja pronto para suar. No Clube das Chamas, não aceitamos meio termo.", "gif": "kai_flameheart.gif"},
+      {"npc": "Kai Flameheart", "text": "Nosso lema é simples: 'Queime com paixão ou não queime'. Aqui você aprenderá a controlar seu poder e a usá-lo com precisão."},
+      {"npc": "Kai Flameheart", "text": "Não me importa se você tem poderes de fogo ou não. O que importa é sua determinação e lealdade ao clube."},
+      {"npc": "Kai Flameheart", "text": "Então, novato, o que te traz ao Clube das Chamas?", "choices": [
+        {"text": "Quero me tornar mais forte", "next_dialogue": 2, "metadata": {"affinity_changes": {"Kai Flameheart": 3}}},
+        {"text": "Estou interessado em controle de poder", "next_dialogue": 3, "metadata": {"affinity_changes": {"Kai Flameheart": 2}}},
+        {"text": "Ouvi dizer que vocês são os melhores", "next_dialogue": 4, "metadata": {"affinity_changes": {"Kai Flameheart": 4}}}
+      ]}
+    ],
+    "2": [
+      {"npc": "Luna Mindweaver", "text": "Bem-vindo aos Ilusionistas Mentais. Eu sou Luna, e já sei mais sobre você do que você imagina.", "gif": "luna_mindweaver.gif"},
+      {"npc": "Luna Mindweaver", "text": "Nosso clube se dedica ao estudo e aprimoramento de poderes psíquicos, ilusões e manipulação da percepção."},
+      {"npc": "Luna Mindweaver", "text": "Aqui não lutamos com punhos, mas com mentes. Um Ilusionista bem treinado pode vencer uma batalha sem sequer levantar um dedo."},
+      {"npc": "Luna Mindweaver", "text": "Diga-me, o que te atrai no mundo das ilusões?", "choices": [
+        {"text": "O poder de influenciar mentes", "next_dialogue": 5, "metadata": {"affinity_changes": {"Luna Mindweaver": 2}}},
+        {"text": "Quero entender como a percepção funciona", "next_dialogue": 6, "metadata": {"affinity_changes": {"Luna Mindweaver": 4}}},
+        {"text": "Prefiro estratégia à força bruta", "next_dialogue": 7, "metadata": {"affinity_changes": {"Luna Mindweaver": 3}}}
+      ]}
+    ],
+    "3": [
+      {"npc": "Alexander Strategos", "text": "Ah, um novo membro para o Conselho Político. Interessante. Sou Alexander Strategos, presidente do conselho.", "gif": "alexander_strategos.gif"},
+      {"npc": "Alexander Strategos", "text": "Nosso clube não se preocupa com demonstrações físicas de poder, mas com influência, estratégia e a arte da diplomacia."},
+      {"npc": "Alexander Strategos", "text": "Aqui você aprenderá a navegar pelas complexas relações de poder da academia e a usar sua influência para alcançar seus objetivos."},
+      {"npc": "Alexander Strategos", "text": "O que te levou a escolher o caminho da política?", "choices": [
+        {"text": "Quero ter influência na academia", "next_dialogue": 8, "metadata": {"affinity_changes": {"Alexander Strategos": 3}}},
+        {"text": "Acredito que a diplomacia é mais eficaz que a força", "next_dialogue": 9, "metadata": {"affinity_changes": {"Alexander Strategos": 4}}},
+        {"text": "Estou interessado nas dinâmicas de poder", "next_dialogue": 10, "metadata": {"affinity_changes": {"Alexander Strategos": 2}}}
+      ]}
+    ],
+    "4": [
+      {"npc": "Gaia Naturae", "text": "Bem-vindo ao círculo dos Elementalistas. Sou Gaia, e estou feliz por você ter escolhido o caminho do equilíbrio.", "gif": "gaia_naturae.gif"},
+      {"npc": "Gaia Naturae", "text": "Nosso clube estuda a harmonia entre os elementos e como eles se conectam com o mundo ao nosso redor."},
+      {"npc": "Gaia Naturae", "text": "Aqui você aprenderá não apenas a controlar elementos, mas a entender sua essência e como eles fluem através de todas as coisas."},
+      {"npc": "Gaia Naturae", "text": "O que te atraiu para o caminho dos elementos?", "choices": [
+        {"text": "Busco equilíbrio e harmonia", "next_dialogue": 11, "metadata": {"affinity_changes": {"Gaia Naturae": 4}}},
+        {"text": "Quero entender a natureza dos elementos", "next_dialogue": 12, "metadata": {"affinity_changes": {"Gaia Naturae": 3}}},
+        {"text": "Acredito que versatilidade é poder", "next_dialogue": 13, "metadata": {"affinity_changes": {"Gaia Naturae": 2}}}
+      ]}
+    ],
+    "5": [
+      {"npc": "Ryuji Battleborn", "text": "Então você quer se juntar ao Clube de Combate? Espero que tenha estômago para isso. Sou Ryuji, o líder.", "gif": "ryuji_battleborn.gif"},
+      {"npc": "Ryuji Battleborn", "text": "Nosso clube é dedicado ao aprimoramento das técnicas de luta e aplicações práticas dos poderes em combate."},
+      {"npc": "Ryuji Battleborn", "text": "Aqui não há lugar para fracos ou indecisos. Cada dia é um teste, cada treino é uma batalha."},
+      {"npc": "Ryuji Battleborn", "text": "Por que você acha que merece um lugar no Clube de Combate?", "choices": [
+        {"text": "Quero provar minha força", "next_dialogue": 14, "metadata": {"affinity_changes": {"Ryuji Battleborn": 3}}},
+        {"text": "Busco disciplina e aprimoramento", "next_dialogue": 15, "metadata": {"affinity_changes": {"Ryuji Battleborn": 4}}},
+        {"text": "Preciso aprender a me defender", "next_dialogue": 16, "metadata": {"affinity_changes": {"Ryuji Battleborn": 2}}}
+      ]}
+    ]
+  },
+  "additional_dialogues": {
+    "2": [
+      {"npc": "Kai Flameheart", "text": "Força, hein? Isso eu respeito. Mas lembre-se: força sem controle é apenas destruição sem propósito."},
+      {"npc": "Kai Flameheart", "text": "No Clube das Chamas, você aprenderá a canalizar sua força, a focá-la como um laser e a usá-la com precisão."},
+      {"npc": "Kai Flameheart", "text": "Esteja pronto para treinos intensos. Não vou pegar leve só porque você é novato."}
+    ],
+    "3": [
+      {"npc": "Kai Flameheart", "text": "Controle é fundamental. Muitos pensam que nosso clube é só sobre explosões e destruição, mas estão enganados."},
+      {"npc": "Kai Flameheart", "text": "O verdadeiro domínio vem do controle preciso. Uma pequena chama controlada pode ser mais útil que um incêndio descontrolado."},
+      {"npc": "Kai Flameheart", "text": "Vamos trabalhar nisso. Com dedicação, você aprenderá a controlar seu poder como nunca imaginou."}
+    ],
+    "4": [
+      {"npc": "Kai Flameheart", "text": "Ha! Gosto da sua confiança! E sim, somos os melhores, sem dúvida."},
+      {"npc": "Kai Flameheart", "text": "Mas não se engane, essa reputação foi conquistada com muito suor e dedicação. Espero o mesmo de você."},
+      {"npc": "Kai Flameheart", "text": "Mostre que merece estar aqui, e você terá meu respeito. Falhe, e... bem, vamos apenas dizer que não toleramos fracassos."}
+    ],
+    "5": [
+      {"npc": "Luna Mindweaver", "text": "Influenciar mentes... um objetivo ambicioso. E potencialmente perigoso."},
+      {"npc": "Luna Mindweaver", "text": "Lembre-se que com grande poder vem grande responsabilidade. A mente é um território sagrado."},
+      {"npc": "Luna Mindweaver", "text": "Ensinarei você a navegar por esse território, mas espero que use esse conhecimento com sabedoria."}
+    ],
+    "6": [
+      {"npc": "Luna Mindweaver", "text": "Uma busca por conhecimento. Isso é admirável e raro nos dias de hoje."},
+      {"npc": "Luna Mindweaver", "text": "A percepção é a base de toda realidade. Entendê-la é o primeiro passo para transcendê-la."},
+      {"npc": "Luna Mindweaver", "text": "Você encontrará muitas respostas aqui, mas também muitas perguntas novas. Esteja preparado para questionar tudo o que acha que sabe."}
+    ],
+    "7": [
+      {"npc": "Luna Mindweaver", "text": "Estratégia sobre força... você já pensa como um de nós."},
+      {"npc": "Luna Mindweaver", "text": "Por que quebrar uma porta quando você pode convencer alguém a abri-la para você?"},
+      {"npc": "Luna Mindweaver", "text": "Você se adaptará bem ao nosso clube. Tenho grandes expectativas para você."}
+    ],
+    "8": [
+      {"npc": "Alexander Strategos", "text": "Influência... o verdadeiro poder por trás de todo poder aparente."},
+      {"npc": "Alexander Strategos", "text": "Mas lembre-se: influência não é sobre manipulação, mas sobre persuasão e liderança."},
+      {"npc": "Alexander Strategos", "text": "No Conselho Político, você aprenderá a construir alianças, a negociar e a liderar com integridade."}
+    ],
+    "9": [
+      {"npc": "Alexander Strategos", "text": "Uma observação astuta. A diplomacia é a arte de resolver conflitos sem criar novos."},
+      {"npc": "Alexander Strategos", "text": "Enquanto outros clubes treinam para batalhas, nós treinamos para evitá-las - ou para vencê-las antes mesmo que comecem."},
+      {"npc": "Alexander Strategos", "text": "Você tem potencial para se tornar um excelente diplomata. Estou ansioso para ver seu progresso."}
+    ],
+    "10": [
+      {"npc": "Alexander Strategos", "text": "As dinâmicas de poder são fascinantes, não? Como elas moldam cada interação, cada decisão."},
+      {"npc": "Alexander Strategos", "text": "Aqui você aprenderá a identificar essas dinâmicas e a navegar por elas com habilidade."},
+      {"npc": "Alexander Strategos", "text": "Conhecimento é poder, e no Conselho Político, buscamos ambos com igual fervor."}
+    ],
+    "11": [
+      {"npc": "Gaia Naturae", "text": "Equilíbrio e harmonia... a essência de nossa filosofia."},
+      {"npc": "Gaia Naturae", "text": "O mundo não é feito de opostos, mas de complementos. Fogo e água, terra e ar - todos são parte de um todo maior."},
+      {"npc": "Gaia Naturae", "text": "Você encontrará esse equilíbrio não apenas nos elementos, mas dentro de si mesmo. Essa é a verdadeira jornada de um Elementalista."}
+    ],
+    "12": [
+      {"npc": "Gaia Naturae", "text": "A natureza dos elementos é um estudo para toda a vida. Cada elemento tem sua própria personalidade, seu próprio espírito."},
+      {"npc": "Gaia Naturae", "text": "Aqui você aprenderá a ouvir os elementos, a sentir suas energias e a trabalhar com eles, não contra eles."},
+      {"npc": "Gaia Naturae", "text": "É uma jornada de descoberta que nunca termina. Estou feliz por poder guiá-lo nesse caminho."}
+    ],
+    "13": [
+      {"npc": "Gaia Naturae", "text": "Versatilidade... sim, há sabedoria nisso."},
+      {"npc": "Gaia Naturae", "text": "Um Elementalista não se limita a um único elemento ou abordagem. Como a natureza, adaptamos e evoluímos."},
+      {"npc": "Gaia Naturae", "text": "Mas lembre-se: versatilidade sem profundidade é apenas superficialidade. Busque conhecer cada elemento em sua essência."}
+    ],
+    "14": [
+      {"npc": "Ryuji Battleborn", "text": "Provar sua força? Todos os novatos dizem isso. Mas força não se prova com palavras, e sim com ações."},
+      {"npc": "Ryuji Battleborn", "text": "No Clube de Combate, você terá muitas oportunidades para mostrar do que é capaz. E para falhar também."},
+      {"npc": "Ryuji Battleborn", "text": "Veremos se você tem o que é preciso. Não tenho paciência para fanfarrões."}
+    ],
+    "15": [
+      {"npc": "Ryuji Battleborn", "text": "Disciplina e aprimoramento... agora isso é algo que respeito."},
+      {"npc": "Ryuji Battleborn", "text": "O verdadeiro guerreiro não busca apenas vencer os outros, mas superar a si mesmo a cada dia."},
+      {"npc": "Ryuji Battleborn", "text": "Com essa mentalidade, você irá longe no Clube de Combate. Estou ansioso para ver seu progresso."}
+    ],
+    "16": [
+      {"npc": "Ryuji Battleborn", "text": "Aprender a se defender... um motivo honesto, pelo menos."},
+      {"npc": "Ryuji Battleborn", "text": "Mas saiba que no Clube de Combate, você aprenderá mais do que apenas defesa. Aprenderá a enfrentar seus medos e a lutar por aquilo em que acredita."},
+      {"npc": "Ryuji Battleborn", "text": "A melhor defesa é uma boa ofensiva. Lembre-se disso nos treinos."}
+    ]
+  },
+  "shared_dialogue": [
+    {"npc": "Junie", "text": "Bem, parece que você e {{club_leader}} se entenderam. Isso é ótimo!"},
+    {"npc": "Junie", "text": "Agora você é oficialmente um membro do clube {{club_name}}. Parabéns!"},
+    {"npc": "Junie", "text": "Lembre-se que você pode participar das atividades do clube usando o comando /clube. Isso lhe dará acesso a treinamentos especiais e eventos exclusivos."},
+    {"npc": "Junie", "text": "Agora, que tal conhecermos o resto da academia? Há muito mais para ver!"}
+  ],
+  "completion_exp": 100,
+  "completion_tusd": 150,
+  "next_chapter": "1_3"
+}

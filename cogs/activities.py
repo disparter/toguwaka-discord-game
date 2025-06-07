@@ -4,6 +4,7 @@ from discord import app_commands
 import logging
 import random
 import asyncio
+import json
 from datetime import datetime, timedelta
 from utils.database import get_player, update_player, get_club
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed
@@ -253,42 +254,30 @@ class Activities(commands.Cog):
         except Exception as e:
             logger.error(f"Error in slash_explore: {e}", exc_info=True)
 
-    @activity_group.command(name="duelar", description="Desafiar outro jogador para um duelo")
-    async def slash_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
-        """Slash command version of the duel command."""
+    async def handle_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
+        """Handle duel logic for both slash_duel and slash_bet_duel commands."""
         try:
             # Check if opponent is specified
             if not opponent:
                 await interaction.response.send_message(f"{interaction.user.mention}, você precisa mencionar um oponente para duelar.")
-                return
+                return False
 
             # Check if player is trying to duel themselves
             if opponent.id == interaction.user.id:
                 await interaction.response.send_message(f"{interaction.user.mention}, você não pode duelar consigo mesmo!")
-                return
+                return False
 
             # Check if player exists
             challenger = get_player(interaction.user.id)
             if not challenger:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
-                return
+                return False
 
             # Check if opponent exists
             opponent_player = get_player(opponent.id)
             if not opponent_player:
                 await interaction.response.send_message(f"{opponent.mention} não está registrado na Academia Tokugawa.")
-                return
-
-            # Check cooldown
-            cooldown = self._check_cooldown(interaction.user.id, "duelar")
-            if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
-                return
-
-            # Check if player is already in a duel
-            if interaction.user.id in self.active_duels or opponent.id in self.active_duels.values():
-                await interaction.response.send_message(f"{interaction.user.mention}, você ou seu oponente já está em um duelo!")
-                return
+                return False
 
             # Validate duel type
             valid_types = ["physical", "mental", "strategic", "social"]
@@ -304,9 +293,6 @@ class Activities(commands.Cog):
                 "strategic": "Estratégico",
                 "social": "Social"
             }
-
-            # Send initial response
-            await interaction.response.send_message(f"Desafio enviado para {opponent.mention}!")
 
             # Create challenge embed
             challenge_embed = create_basic_embed(
@@ -356,6 +342,37 @@ class Activities(commands.Cog):
                     # Add level up bonus
                     winner_update["tusd"] += new_level * 50
 
+                # Check for bonus rewards
+                if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result["bonus_rewards"]:
+                    # Get winner's inventory
+                    winner_player = get_player(winner_id)
+                    if winner_player and "inventory" in winner_player:
+                        inventory = winner_player["inventory"]
+
+                        # Get bonus item details
+                        bonus_item = duel_result["bonus_rewards"]
+                        item_id = bonus_item["item"]
+
+                        # Check if item already exists in inventory
+                        if str(item_id) in inventory:
+                            # Increment quantity
+                            inventory[str(item_id)]["quantity"] += 1
+                        else:
+                            # Add new item to inventory
+                            inventory_item = {
+                                "id": item_id,
+                                "name": bonus_item["item_name"],
+                                "description": bonus_item["item_description"],
+                                "quantity": 1,
+                                "type": "consumable",
+                                "rarity": "uncommon",
+                                "category": "duel_reward"
+                            }
+                            inventory[str(item_id)] = inventory_item
+
+                        # Add inventory to winner update
+                        winner_update["inventory"] = json.dumps(inventory)
+
                 # Update loser (half exp, no TUSD, and HP loss)
                 loser_update = {
                     "exp": duel_result["loser"]["exp"] + (duel_result["exp_reward"] // 2)
@@ -400,6 +417,9 @@ class Activities(commands.Cog):
                         )
 
                     await button_interaction.response.send_message(embed=embed)
+
+                    # Dispatch an event for the duel completion
+                    self.bot.dispatch("duel_complete", duel_result)
                 else:
                     await button_interaction.response.send_message("Ocorreu um erro durante o duelo. Por favor, tente novamente mais tarde.")
 
@@ -443,6 +463,42 @@ class Activities(commands.Cog):
                     pass
 
             view.on_timeout = on_timeout
+            return True
+
+        except discord.errors.NotFound:
+            # If the interaction has expired, log it but don't try to respond
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using duel")
+            return False
+        except Exception as e:
+            logger.error(f"Error in handle_duel: {e}")
+            return False
+
+    @activity_group.command(name="duelar", description="Desafiar outro jogador para um duelo")
+    @app_commands.choices(duel_type=[
+        app_commands.Choice(name="Físico", value="physical"),
+        app_commands.Choice(name="Mental", value="mental"),
+        app_commands.Choice(name="Estratégico", value="strategic"),
+        app_commands.Choice(name="Social", value="social")
+    ])
+    async def slash_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
+        """Slash command version of the duel command."""
+        try:
+            # Check cooldown
+            cooldown = self._check_cooldown(interaction.user.id, "duelar")
+            if cooldown:
+                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
+                return
+
+            # Check if player is already in a duel
+            if interaction.user.id in self.active_duels or opponent.id in self.active_duels.values():
+                await interaction.response.send_message(f"{interaction.user.mention}, você ou seu oponente já está em um duelo!")
+                return
+
+            # Send initial response
+            await interaction.response.send_message(f"Desafio enviado para {opponent.mention}!")
+
+            # Handle the duel logic
+            await self.handle_duel(interaction, opponent, duel_type)
 
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
@@ -902,6 +958,37 @@ class Activities(commands.Cog):
                     winner_update["level"] = new_level
                     # Add level up bonus
                     winner_update["tusd"] += new_level * 50
+
+                # Check for bonus rewards
+                if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result["bonus_rewards"]:
+                    # Get winner's inventory
+                    winner_player = get_player(winner_id)
+                    if winner_player and "inventory" in winner_player:
+                        inventory = winner_player["inventory"]
+
+                        # Get bonus item details
+                        bonus_item = duel_result["bonus_rewards"]
+                        item_id = bonus_item["item"]
+
+                        # Check if item already exists in inventory
+                        if str(item_id) in inventory:
+                            # Increment quantity
+                            inventory[str(item_id)]["quantity"] += 1
+                        else:
+                            # Add new item to inventory
+                            inventory_item = {
+                                "id": item_id,
+                                "name": bonus_item["item_name"],
+                                "description": bonus_item["item_description"],
+                                "quantity": 1,
+                                "type": "consumable",
+                                "rarity": "uncommon",
+                                "category": "duel_reward"
+                            }
+                            inventory[str(item_id)] = inventory_item
+
+                        # Add inventory to winner update
+                        winner_update["inventory"] = json.dumps(inventory)
 
                 # Update loser (half exp, no TUSD)
                 loser_update = {

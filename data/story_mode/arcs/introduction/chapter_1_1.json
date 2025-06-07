@@ -1,0 +1,87 @@
+{
+  "type": "story",
+  "title": "Meu Primeiro Dia de Aula",
+  "description": "Seu primeiro dia na Academia Tokugawa. Conheça a escola e seus colegas.",
+  "conditional_next_chapter": {
+    "club_id": {
+      "3": "1_2",
+      "default": "1_1_2"
+    }
+  },
+  "dialogues": [
+    {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa! Estamos felizes em receber mais um estudante com habilidades especiais.", "gif": "welcome.gif"},
+    {"npc": "Diretor", "text": "Aqui você aprenderá a controlar e aprimorar seus poderes, além de receber uma educação de primeira classe."},
+    {"npc": "Diretor", "text": "Nossa academia tem uma história de mais de 150 anos formando os melhores usuários de poderes do país. Muitos de nossos ex-alunos ocupam posições de destaque na sociedade."},
+    {"npc": "Diretor", "text": "Lembre-se: com grandes poderes, vêm grandes responsabilidades. Esperamos que você honre o nome da nossa academia."},
+    {"npc": "Narrador", "text": "Você nota que o Diretor parece querer conversar mais. Você pode usar o comando /falar com ele a qualquer momento."},
+    {"npc": "Narrador", "text": "Quando o Diretor compartilhar imagens ou gifs com você, eles serão salvos em seus registros. Use o comando /registros para vê-los novamente."},
+    {"npc": "Narrador", "text": "Ao seu redor, outros estudantes novos também estão sendo recepcionados. Alguns parecem ansiosos, outros confiantes. Todos possuem algum tipo de habilidade especial."},
+    {"npc": "Junie", "text": "Olá! Eu sou Junie, sua assistente virtual. Estou aqui para ajudar com qualquer dúvida que você tenha sobre a academia.", "gif": "junie_intro.gif"},
+    {"npc": "Junie", "text": "A Academia Tokugawa não é uma escola comum. Aqui, os estudantes são classificados em uma hierarquia baseada em seus poderes."},
+    {"npc": "Junie", "text": "Os mais fortes ocupam posições de liderança, como Rei ou Rainha, Jack e Ás. Eles são responsáveis por manter a ordem."},
+    {"npc": "Junie", "text": "Nosso campus é dividido em várias áreas: o Prédio Principal para aulas teóricas, os Campos de Treinamento para prática de poderes, os Dormitórios, e as sedes dos diversos Clubes."},
+    {"npc": "Junie", "text": "Vamos começar com um tour pela escola? Temos vários clubes que você pode conhecer!", "choices": [
+      {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7, "metadata": {"affinity_changes": {"Junie": 3}}},
+      {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8, "metadata": {"affinity_changes": {"Junie": -1}}},
+      {"text": "Conte-me mais sobre essa hierarquia.", "next_dialogue": 9, "metadata": {"affinity_changes": {"Junie": 2}}},
+      {"text": "Qual é a história da Academia Tokugawa?", "next_dialogue": 10, "metadata": {"affinity_changes": {"Junie": 2, "Diretor": 1}}}
+    ]}
+  ],
+  "additional_dialogues": {
+    "7": [
+      {"npc": "Junie", "text": "Ótimo! Vamos começar pelo Clube das Chamas. Eles são conhecidos por seu treinamento intenso e foco em poderes destrutivos."},
+      {"npc": "Junie", "text": "Depois podemos visitar os Ilusionistas Mentais, o Conselho Político, os Elementalistas e o Clube de Combate."},
+      {"npc": "Junie", "text": "Cada clube tem sua própria filosofia e métodos de treinamento. Escolher o clube certo é importante para seu desenvolvimento."},
+      {"npc": "Junie", "text": "Agora é hora de escolher um clube! Qual deles mais combina com você?", "choices": [
+        {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1, "affinity_changes": {"Kai Flameheart": 5, "Junie": 1}}},
+        {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2, "affinity_changes": {"Luna Mindweaver": 5, "Junie": 1}}},
+        {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3, "skip_tour": true, "affinity_changes": {"Alexander Strategos": 5, "Junie": 1}}},
+        {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4, "affinity_changes": {"Gaia Naturae": 5, "Junie": 1}}},
+        {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5, "affinity_changes": {"Ryuji Battleborn": 5, "Junie": 1}}}
+      ]}
+    ],
+    "10": [
+      {"npc": "Junie", "text": "A Academia Tokugawa foi fundada em 1873 pelo lendário mestre de poderes Hideo Tokugawa, que acreditava que pessoas com habilidades especiais precisavam de um lugar seguro para aprender e crescer."},
+      {"npc": "Junie", "text": "Inicialmente, era uma pequena escola com apenas 12 estudantes. Ao longo dos anos, cresceu e se tornou a instituição mais prestigiada para usuários de poderes no país."},
+      {"npc": "Junie", "text": "Durante a Segunda Guerra Mundial, a academia foi temporariamente fechada, mas reabriu em 1950 com uma nova filosofia: poderes deveriam ser usados para proteger e servir, não para destruir."},
+      {"npc": "Junie", "text": "Um evento marcante na história da academia foi o 'Incidente Zero' de 1998, quando uma anomalia dimensional ocorreu durante um experimento. Os detalhes são mantidos em sigilo, mas dizem que foi quando o sistema de hierarquia atual foi implementado."},
+      {"npc": "Junie", "text": "Hoje, a Academia Tokugawa é reconhecida mundialmente e atrai estudantes de todos os continentes. Nossos ex-alunos incluem líderes políticos, cientistas renomados e até mesmo alguns heróis anônimos que trabalham nas sombras."},
+      {"npc": "Junie", "text": "Você agora faz parte dessa história rica e complexa. O que você fará com essa oportunidade depende inteiramente de você."},
+      {"npc": "Junie", "text": "Bem, chega de história por enquanto. Vamos continuar com nosso tour?", "choices": [
+        {"text": "Sim, vamos conhecer os clubes!", "next_dialogue": 7},
+        {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8},
+        {"text": "Conte-me mais sobre essa hierarquia primeiro.", "next_dialogue": 9}
+      ]}
+    ],
+    "8": [
+      {"npc": "Junie", "text": "Entendo que queira descobrir a academia por conta própria. Isso mostra independência!"},
+      {"npc": "Junie", "text": "Apenas tome cuidado com as áreas restritas e respeite a hierarquia. Alguns estudantes mais poderosos podem não gostar de novatos em seus territórios."},
+      {"npc": "Junie", "text": "Se precisar de ajuda, estarei disponível a qualquer momento. Boa exploração!"},
+      {"npc": "Junie", "text": "Antes de ir, você precisa se registrar em um clube. Qual deles mais combina com você?", "choices": [
+        {"text": "Clube das Chamas", "next_chapter": "1_2", "metadata": {"club_id": 1, "affinity_changes": {"Kai Flameheart": 5, "Diretor": -1}}},
+        {"text": "Ilusionistas Mentais", "next_chapter": "1_2", "metadata": {"club_id": 2, "affinity_changes": {"Luna Mindweaver": 5, "Diretor": 1}}},
+        {"text": "Conselho Político", "next_chapter": "1_2", "metadata": {"club_id": 3, "skip_tour": true, "affinity_changes": {"Alexander Strategos": 5, "Diretor": 3}}},
+        {"text": "Elementalistas", "next_chapter": "1_2", "metadata": {"club_id": 4, "affinity_changes": {"Gaia Naturae": 5, "Diretor": 0}}},
+        {"text": "Clube de Combate", "next_chapter": "1_2", "metadata": {"club_id": 5, "affinity_changes": {"Ryuji Battleborn": 5, "Diretor": 2}}}
+      ]}
+    ],
+    "9": [
+      {"npc": "Junie", "text": "Claro! A hierarquia da Academia Tokugawa é baseada no poder e habilidade dos estudantes."},
+      {"npc": "Junie", "text": "No topo estão os Reis e Rainhas - estudantes de nível 5 com poderes extraordinários. Eles são respeitados e temidos por todos."},
+      {"npc": "Junie", "text": "Logo abaixo estão os Jack e Ás - nível 4, a elite da academia, segundos apenas para o Rei/Rainha."},
+      {"npc": "Junie", "text": "O nível 3 é composto pela Elite - estudantes com habilidades excepcionais que se destacam em suas áreas."},
+      {"npc": "Junie", "text": "No nível 2 temos os estudantes Médio-Alto, com poderes acima da média, mas não excepcionais."},
+      {"npc": "Junie", "text": "O nível 1 é formado pelos estudantes Médios, com poderes medianos que formam a maioria da população estudantil."},
+      {"npc": "Junie", "text": "Por fim, no nível 0 estão os estudantes de Baixo nível, com poderes fracos ou sem poderes. Infelizmente, eles frequentemente enfrentam dificuldades sociais."},
+      {"npc": "Junie", "text": "Sua posição na hierarquia será determinada por suas habilidades, conquistas e como você se relaciona com os outros estudantes."},
+      {"npc": "Junie", "text": "Agora que você entende melhor nosso sistema, o que gostaria de fazer a seguir?"},
+      {"choices": [
+        {"text": "Vamos conhecer os clubes!", "next_dialogue": 7},
+        {"text": "Prefiro explorar por conta própria.", "next_dialogue": 8}
+      ]}
+    ]
+  },
+  "completion_exp": 50,
+  "completion_tusd": 100,
+  "next_chapter": "1_2"
+}

@@ -6,12 +6,18 @@ Este diretório contém a implementação do sistema de modo história para o jo
 
 ```
 story_mode/
-├── interfaces.py     # Interfaces para os componentes do sistema
-├── chapter.py        # Implementações de capítulos
-├── event.py          # Implementações de eventos
-├── npc.py            # Implementações de NPCs
-├── progress.py       # Gerenciamento de progresso do jogador
-└── story_mode.py     # Classe principal que coordena os componentes
+├── interfaces.py          # Interfaces para os componentes do sistema
+├── chapter.py             # Implementações de capítulos
+├── chapter_validator.py   # Validação básica de estrutura de capítulos
+├── club_system.py         # Sistema expandido de clubes
+├── consequences.py        # Sistema de consequências dinâmicas
+├── decision_dashboard.py  # Dashboard de comparação de decisões
+├── event.py               # Implementações de eventos
+├── narrative_validator.py # Validação de caminhos narrativos
+├── npc.py                 # Implementações de NPCs
+├── progress.py            # Gerenciamento de progresso do jogador
+├── validation.py          # Validação em tempo de execução
+└── story_mode.py          # Classe principal que coordena os componentes
 ```
 
 ## Arquivos de Dados
@@ -183,3 +189,175 @@ O sistema de modo história é integrado ao bot do Discord através do cog `Stor
 ## Documentação Adicional
 
 Para uma documentação mais detalhada sobre o sistema de modo história, consulte o arquivo `STORY_MODE_DOCUMENTATION.md` na raiz do projeto.
+
+## Novas Funcionalidades
+
+### 1. Sistema de Validação Automatizada de Caminhos Narrativos
+
+O sistema de validação automatizada verifica a integridade e correção dos caminhos narrativos no modo história.
+
+#### Funcionalidades
+
+- **Verificação de Integridade de Caminhos**: Garante que todos os caminhos narrativos levem a destinos válidos.
+- **Detecção de Referências Quebradas**: Identifica referências a capítulos inexistentes.
+- **Validação de Uso de Variáveis**: Verifica se as variáveis usadas em condições são definidas corretamente.
+- **Relatórios de Cobertura**: Gera estatísticas sobre a cobertura dos caminhos narrativos.
+
+#### Como Usar
+
+```python
+from story_mode.narrative_validator import NarrativePathValidator
+
+# Inicializar o validador com o diretório de capítulos
+validator = NarrativePathValidator("data/story_mode/chapters")
+
+# Carregar os capítulos
+validator.load_chapters()
+
+# Validar os caminhos narrativos
+result = validator.validate_narrative_paths()
+
+# Simular cobertura de caminhos
+validator.simulate_path_coverage()
+
+# Gerar relatório de cobertura
+report = validator.generate_coverage_report()
+print(f"Total de capítulos: {report['total_chapters']}")
+print(f"Total de caminhos: {report['total_paths']}")
+print(f"Caminhos cobertos: {report['covered_paths']}")
+print(f"Porcentagem de cobertura: {report['coverage_percentage']:.2f}%")
+```
+
+#### Linha de Comando
+
+Você também pode executar o validador pela linha de comando:
+
+```bash
+python -m story_mode.narrative_validator data/story_mode/chapters
+```
+
+### 2. Sistema de Clubes Expandido
+
+O sistema de clubes expandido adiciona rivalidades, alianças, competições e progressão de rank aos clubes.
+
+#### Funcionalidades
+
+- **Rivalidades e Alianças**: Os clubes podem formar alianças ou declarar rivalidades com outros clubes.
+- **Competições entre Clubes**: Os clubes podem organizar e participar de competições.
+- **Progressão de Rank**: Os jogadores podem subir de rank dentro de seus clubes.
+- **Missões Específicas de Clubes**: Cada clube tem missões específicas para seus membros.
+
+#### Como Usar
+
+```python
+from story_mode.club_system import get_club_system
+from story_mode.consequences import DynamicConsequencesSystem
+
+# Obter o sistema de consequências (opcional)
+consequences_system = DynamicConsequencesSystem()
+
+# Obter o sistema de clubes
+club_system = get_club_system(consequences_system)
+
+# Inicializar dados de clube para um jogador
+club_system.initialize_player_club_data(player_data)
+
+# Entrar em um clube
+club_system.join_club(player_data, club_id=1)  # 1 = Clube das Chamas
+
+# Obter informações do clube
+club_info = club_system.get_club_info(player_data)
+print(f"Clube: {club_info['name']}")
+print(f"Rank: {club_info['rank_name']}")
+
+# Adicionar experiência e subir de rank
+result = club_system.add_club_experience(player_data, 100)
+if result.get("rank_up"):
+    print(f"Parabéns! Você subiu para o rank {result['rank_name']}!")
+
+# Completar uma missão
+mission_id = player_data["club"]["pending_missions"][0]["id"]
+result = club_system.complete_mission(player_data, mission_id)
+print(f"Missão completada: {result['mission_completed']['title']}")
+print(f"Nova missão: {result['new_mission']['title']}")
+
+# Criar uma competição (requer rank 3+)
+if player_data["club"]["rank"] >= 3:
+    competition = club_system.create_club_competition(player_data, opponent_club_id=2)
+    print(f"Competição criada: {competition['title']}")
+
+    # Resolver a competição
+    result = club_system.resolve_competition(player_data, competition["id"])
+    print(result["message"])
+
+# Formar uma aliança (requer rank 4+)
+if player_data["club"]["rank"] >= 4:
+    alliance = club_system.form_alliance(player_data, ally_club_id=4)
+    print(alliance["message"])
+
+# Declarar uma rivalidade (requer rank 4+)
+if player_data["club"]["rank"] >= 4:
+    rivalry = club_system.declare_rivalry(player_data, rival_club_id=2)
+    print(rivalry["message"])
+```
+
+### 3. Dashboard de Comparação de Decisões
+
+O dashboard de comparação de decisões permite aos jogadores comparar suas escolhas com as da comunidade e refletir sobre as implicações éticas de suas decisões.
+
+#### Funcionalidades
+
+- **Rastreamento de Escolhas**: Registra as escolhas dos jogadores e agrega estatísticas da comunidade.
+- **Comparação com a Comunidade**: Permite aos jogadores comparar suas escolhas com as da comunidade.
+- **Reflexões Éticas**: Oferece prompts de reflexão ética baseados nas escolhas do jogador.
+- **Caminhos Alternativos**: Mostra caminhos alternativos que o jogador poderia ter seguido.
+- **Análise de Padrões**: Analisa os padrões de escolha do jogador para identificar traços de personalidade.
+
+#### Como Usar
+
+```python
+from story_mode.decision_dashboard import get_decision_tracker
+
+# Obter o rastreador de decisões
+decision_tracker = get_decision_tracker()
+
+# Registrar uma escolha do jogador
+decision_tracker.record_player_choice(
+    player_data,
+    chapter_id="1_1",
+    choice_key="choice_1",
+    choice_text="Eu quero aprender mais sobre esse poder."
+)
+
+# Obter comparação com a comunidade
+comparison = decision_tracker.get_community_comparison(
+    player_data,
+    chapter_id="1_1",
+    choice_key="choice_1"
+)
+print(comparison["message"])
+print(f"Sua escolha: {comparison['player_choice']}")
+print(f"Porcentagem da comunidade: {comparison['player_percentage']:.1f}%")
+
+# Obter reflexão ética
+reflection = decision_tracker.get_ethical_reflection(
+    player_data,
+    category="power"  # Ou "loyalty", "justice", "truth", "freedom"
+)
+print(reflection["message"])
+for prompt in reflection["reflections"]:
+    print(f"- {prompt}")
+
+# Gerar dashboard completo
+dashboard = decision_tracker.generate_dashboard(player_data)
+print(f"Total de escolhas feitas: {dashboard['total_choices_made']}")
+print(f"Capítulos completados: {dashboard['chapters_completed']}")
+```
+
+### Testes
+
+Testes unitários para todas as funcionalidades estão disponíveis em `tests/story_mode/test_new_features.py`. Execute-os para verificar se tudo está funcionando corretamente:
+
+```bash
+python -m unittest tests/story_mode/test_new_features.py
+```
