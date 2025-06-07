@@ -12,7 +12,7 @@ class PersonalizedNarrative:
     Generates personalized narrative content based on player attributes.
     This class is responsible for creating choices, dialogues, and outcomes
     that are tailored to the player's origin, power, club, and other attributes.
-    
+
     Following the Single Responsibility Principle, this class only handles
     the personalization of narrative content.
     """
@@ -24,21 +24,21 @@ class PersonalizedNarrative:
         self.choice_templates = {}
         self.dialogue_templates = {}
         self.outcome_templates = {}
-        
+
         # Try to load templates from files
         self._load_templates()
-        
+
         logger.info("PersonalizedNarrative initialized")
-    
+
     def _load_templates(self):
         """
         Loads narrative templates from files.
         """
         templates_dir = os.path.join("data", "story_mode", "narrative_templates")
-        
+
         # Create directory if it doesn't exist
         os.makedirs(templates_dir, exist_ok=True)
-        
+
         # Try to load choice templates
         choices_path = os.path.join(templates_dir, "choices.json")
         if os.path.exists(choices_path):
@@ -55,7 +55,7 @@ class PersonalizedNarrative:
             self._initialize_default_choice_templates()
             # Save default templates to file
             self._save_templates()
-        
+
         # Try to load dialogue templates
         dialogues_path = os.path.join(templates_dir, "dialogues.json")
         if os.path.exists(dialogues_path):
@@ -72,7 +72,7 @@ class PersonalizedNarrative:
             self._initialize_default_dialogue_templates()
             # Save default templates to file
             self._save_templates()
-        
+
         # Try to load outcome templates
         outcomes_path = os.path.join(templates_dir, "outcomes.json")
         if os.path.exists(outcomes_path):
@@ -89,16 +89,16 @@ class PersonalizedNarrative:
             self._initialize_default_outcome_templates()
             # Save default templates to file
             self._save_templates()
-    
+
     def _save_templates(self):
         """
         Saves narrative templates to files.
         """
         templates_dir = os.path.join("data", "story_mode", "narrative_templates")
-        
+
         # Create directory if it doesn't exist
         os.makedirs(templates_dir, exist_ok=True)
-        
+
         # Save choice templates
         choices_path = os.path.join(templates_dir, "choices.json")
         try:
@@ -107,7 +107,7 @@ class PersonalizedNarrative:
             logger.info(f"Saved {len(self.choice_templates)} choice templates")
         except Exception as e:
             logger.error(f"Error saving choice templates: {e}")
-        
+
         # Save dialogue templates
         dialogues_path = os.path.join(templates_dir, "dialogues.json")
         try:
@@ -116,7 +116,7 @@ class PersonalizedNarrative:
             logger.info(f"Saved {len(self.dialogue_templates)} dialogue templates")
         except Exception as e:
             logger.error(f"Error saving dialogue templates: {e}")
-        
+
         # Save outcome templates
         outcomes_path = os.path.join(templates_dir, "outcomes.json")
         try:
@@ -125,7 +125,7 @@ class PersonalizedNarrative:
             logger.info(f"Saved {len(self.outcome_templates)} outcome templates")
         except Exception as e:
             logger.error(f"Error saving outcome templates: {e}")
-    
+
     def _initialize_default_choice_templates(self):
         """
         Initializes default choice templates.
@@ -223,9 +223,9 @@ class PersonalizedNarrative:
                 ]
             }
         }
-        
+
         logger.info("Initialized default choice templates")
-    
+
     def _initialize_default_dialogue_templates(self):
         """
         Initializes default dialogue templates.
@@ -476,9 +476,9 @@ class PersonalizedNarrative:
                 }
             }
         }
-        
+
         logger.info("Initialized default dialogue templates")
-    
+
     def _initialize_default_outcome_templates(self):
         """
         Initializes default outcome templates.
@@ -576,45 +576,45 @@ class PersonalizedNarrative:
                 ]
             }
         }
-        
+
         logger.info("Initialized default outcome templates")
-    
+
     def generate_choices(self, player_data: Dict[str, Any], context: str = "general") -> List[Dict[str, Any]]:
         """
         Generates personalized choices based on player attributes.
-        
+
         Args:
             player_data: Player data containing attributes like origin, power, and club
             context: Context for the choices (e.g., "combat", "social", "academic")
-        
+
         Returns:
             List of choice objects with text and potential attribute bonuses
         """
         choices = []
-        
+
         # Get player attributes
         origin = player_data.get("origin", "")
         power = player_data.get("power", "")
         club_id = str(player_data.get("club_id", ""))
-        
+
         # Add origin-based choice
         if origin and origin in self.choice_templates.get("origin", {}):
             origin_choices = self.choice_templates["origin"][origin]
             if origin_choices:
                 choices.append(random.choice(origin_choices))
-        
+
         # Add power-based choice
         if power and power in self.choice_templates.get("power", {}):
             power_choices = self.choice_templates["power"][power]
             if power_choices:
                 choices.append(random.choice(power_choices))
-        
+
         # Add club-based choice
         if club_id and club_id in self.choice_templates.get("club", {}):
             club_choices = self.choice_templates["club"][club_id]
             if club_choices:
                 choices.append(random.choice(club_choices))
-        
+
         # If we couldn't generate personalized choices, add some generic ones
         if not choices:
             choices = [
@@ -622,7 +622,7 @@ class PersonalizedNarrative:
                 {"text": "Analisar cuidadosamente antes de agir.", "attribute_bonus": {"intellect": 1}},
                 {"text": "Tentar uma abordagem diplomática.", "attribute_bonus": {"charisma": 1}}
             ]
-        
+
         # Ensure we have at least 3 choices
         while len(choices) < 3:
             # Add generic choices if needed
@@ -630,17 +630,17 @@ class PersonalizedNarrative:
                 "text": "Confiar em seu instinto e habilidades.",
                 "attribute_bonus": {"power_stat": 1}
             })
-        
+
         return choices
-    
+
     def generate_dialogue(self, player_data: Dict[str, Any], npc_type: str) -> Dict[str, Any]:
         """
         Generates personalized dialogue based on player attributes.
-        
+
         Args:
             player_data: Player data containing attributes like origin, power, and club
             npc_type: Type of NPC (e.g., "professor", "student", "mentor")
-        
+
         Returns:
             Dialogue object with NPC name and text
         """
@@ -648,36 +648,36 @@ class PersonalizedNarrative:
         origin = player_data.get("origin", "")
         power = player_data.get("power", "")
         club_id = str(player_data.get("club_id", ""))
-        
+
         # Try to get origin-based dialogue
         if origin and origin in self.dialogue_templates.get("origin", {}):
             origin_dialogues = self.dialogue_templates["origin"][origin]
             if npc_type in origin_dialogues and origin_dialogues[npc_type]:
                 return random.choice(origin_dialogues[npc_type])
-        
+
         # Try to get power-based dialogue
         if power and power in self.dialogue_templates.get("power", {}):
             power_dialogues = self.dialogue_templates["power"][power]
             if npc_type in power_dialogues and power_dialogues[npc_type]:
                 return random.choice(power_dialogues[npc_type])
-        
+
         # Try to get club-based dialogue
         if club_id and club_id in self.dialogue_templates.get("club", {}):
             club_dialogues = self.dialogue_templates["club"][club_id]
             if npc_type in club_dialogues and club_dialogues[npc_type]:
                 return random.choice(club_dialogues[npc_type])
-        
+
         # If no personalized dialogue found, return a generic one
         return {"npc": "NPC", "text": "Interessante... Vamos ver como você lida com isso."}
-    
+
     def generate_outcome(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
         """
         Generates a personalized outcome based on player attributes and choice.
-        
+
         Args:
             player_data: Player data containing attributes like origin, power, and club
             choice_index: Index of the chosen option
-        
+
         Returns:
             Outcome object with text and potential attribute bonuses or affinity changes
         """
@@ -685,7 +685,7 @@ class PersonalizedNarrative:
         origin = player_data.get("origin", "")
         power = player_data.get("power", "")
         club_id = str(player_data.get("club_id", ""))
-        
+
         # Determine which attribute to use for the outcome based on choice index
         # This is a simple way to vary outcomes based on choices
         if choice_index == 0 and origin and origin in self.outcome_templates.get("origin", {}):
@@ -700,35 +700,35 @@ class PersonalizedNarrative:
             outcomes = self.outcome_templates["club"][club_id]
             if outcomes:
                 return random.choice(outcomes)
-        
+
         # If no personalized outcome found, return a generic one
         return {
             "text": "Você lidou com a situação adequadamente.",
             "attribute_bonus": {"exp": 10}
         }
-    
+
     def personalize_chapter(self, chapter_data: Dict[str, Any], player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Personalizes a chapter based on player attributes.
-        
+
         Args:
             chapter_data: Original chapter data
             player_data: Player data containing attributes
-        
+
         Returns:
             Personalized chapter data
         """
         # Create a copy of the chapter data to modify
         personalized_chapter = chapter_data.copy()
-        
+
         # Add personalized choices if the chapter has choices
         if "choices" in personalized_chapter and personalized_chapter["choices"]:
             # Keep the original choices
             original_choices = personalized_chapter["choices"].copy()
-            
+
             # Generate personalized choices
             personalized_choices = self.generate_choices(player_data)
-            
+
             # Add personalized choices to the original ones
             # We'll keep the original choices' next_dialogue values
             for i, p_choice in enumerate(personalized_choices):
@@ -744,16 +744,16 @@ class PersonalizedNarrative:
                     # add them with a default next_dialogue
                     p_choice["next_dialogue"] = 0
                     original_choices.append(p_choice)
-            
+
             personalized_chapter["choices"] = original_choices
-        
+
         # Personalize dialogues if the chapter has dialogues
         if "dialogues" in personalized_chapter and personalized_chapter["dialogues"]:
             for i, dialogue in enumerate(personalized_chapter["dialogues"]):
                 # Replace placeholders in dialogue text
                 if "text" in dialogue:
                     dialogue["text"] = self._replace_placeholders(dialogue["text"], player_data)
-                
+
                 # If this is an NPC dialogue, consider personalizing it
                 if "npc" in dialogue and dialogue["npc"] != "Narrador" and random.random() < 0.3:
                     # 30% chance to replace with a personalized dialogue
@@ -763,36 +763,51 @@ class PersonalizedNarrative:
                         # Keep the original NPC name
                         personalized_dialogue["npc"] = dialogue["npc"]
                         personalized_chapter["dialogues"][i] = personalized_dialogue
-        
+
         return personalized_chapter
-    
+
     def _replace_placeholders(self, text: str, player_data: Dict[str, Any]) -> str:
         """
         Replaces placeholders in text with player data.
-        
+
         Args:
             text: Text with placeholders
             player_data: Player data
-        
+
         Returns:
             Text with placeholders replaced
         """
         # Replace {player_name}
         if "{player_name}" in text and "name" in player_data:
             text = text.replace("{player_name}", player_data["name"])
-        
+
         # Replace {player_power}
         if "{player_power}" in text and "power" in player_data:
             text = text.replace("{player_power}", player_data["power"])
-        
+
         # Replace {player_origin}
         if "{player_origin}" in text and "origin" in player_data:
             text = text.replace("{player_origin}", player_data["origin"])
-        
+
         # Replace {club_name}
-        if "{club_name}" in text and "club_name" in player_data:
-            text = text.replace("{club_name}", player_data["club_name"])
-        
+        if "{club_name}" in text:
+            if "club_name" in player_data:
+                text = text.replace("{club_name}", player_data["club_name"])
+            elif "club_id" in player_data and player_data["club_id"]:
+                # If club_name is not in player_data but club_id is, fetch the club name from the database
+                try:
+                    from utils.database import get_club
+                    club = get_club(player_data["club_id"])
+                    if club and "name" in club:
+                        text = text.replace("{club_name}", club["name"])
+                    else:
+                        text = text.replace("{club_name}", "desconhecido")
+                except Exception as e:
+                    logger.error(f"Error fetching club name: {e}")
+                    text = text.replace("{club_name}", "desconhecido")
+            else:
+                text = text.replace("{club_name}", "desconhecido")
+
         # Replace {player_element} - assuming it's the same as power for elemental powers
         if "{player_element}" in text and "power" in player_data:
             power = player_data["power"]
@@ -800,16 +815,16 @@ class PersonalizedNarrative:
                 text = text.replace("{player_element}", power)
             else:
                 text = text.replace("{player_element}", "desconhecido")
-        
+
         return text
-    
+
     def _get_npc_type(self, npc_name: str) -> str:
         """
         Determines the type of an NPC based on their name.
-        
+
         Args:
             npc_name: Name of the NPC
-        
+
         Returns:
             Type of the NPC
         """
@@ -826,11 +841,11 @@ class PersonalizedNarrative:
             "Estudante": "student",
             "Colega": "friendly_student"
         }
-        
+
         # Check if the NPC name contains any of the keys
         for key, npc_type in npc_types.items():
             if key in npc_name:
                 return npc_type
-        
+
         # Default to generic NPC
         return "npc"
