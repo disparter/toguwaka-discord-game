@@ -69,7 +69,7 @@ class Betting(commands.Cog):
                 return
 
             # Validate duel type
-            valid_types = ["physical", "mental", "strategic", "social"]
+            valid_types = ["physical", "mental", "strategic", "social", "elemental"]
             if duel_type.lower() not in valid_types:
                 duel_type = "physical"  # Default to physical
             else:
@@ -80,7 +80,8 @@ class Betting(commands.Cog):
                 "physical": "Físico",
                 "mental": "Mental",
                 "strategic": "Estratégico",
-                "social": "Social"
+                "social": "Social",
+                "elemental": "Elemental"
             }
 
             # Send initial response

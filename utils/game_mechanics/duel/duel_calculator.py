@@ -23,7 +23,8 @@ class DuelCalculator(IDuelCalculator):
         "physical": {"dexterity": 0.6, "power_stat": 0.3, "intellect": 0.05, "charisma": 0.05},
         "mental": {"intellect": 0.6, "charisma": 0.2, "dexterity": 0.1, "power_stat": 0.1},
         "strategic": {"intellect": 0.4, "dexterity": 0.3, "power_stat": 0.2, "charisma": 0.1},
-        "social": {"charisma": 0.7, "intellect": 0.2, "dexterity": 0.05, "power_stat": 0.05}
+        "social": {"charisma": 0.7, "intellect": 0.2, "dexterity": 0.05, "power_stat": 0.05},
+        "elemental": {"power_stat": 0.5, "intellect": 0.3, "dexterity": 0.1, "charisma": 0.1}
     }
 
     @staticmethod
@@ -114,7 +115,8 @@ class DuelCalculator(IDuelCalculator):
             "physical": {"exp": 1.0, "tusd": 1.0, "item_chance": 0.1},
             "mental": {"exp": 1.2, "tusd": 0.9, "item_chance": 0.15},
             "strategic": {"exp": 1.1, "tusd": 1.1, "item_chance": 0.12},
-            "social": {"exp": 0.9, "tusd": 1.3, "item_chance": 0.18}
+            "social": {"exp": 0.9, "tusd": 1.3, "item_chance": 0.18},
+            "elemental": {"exp": 1.3, "tusd": 1.2, "item_chance": 0.2}
         }
 
         # Apply duel type bonuses
@@ -144,6 +146,10 @@ class DuelCalculator(IDuelCalculator):
                 bonus_rewards["item"] = "amuleto_de_carisma"
                 bonus_rewards["item_name"] = "Amuleto de Carisma"
                 bonus_rewards["item_description"] = "Aumenta temporariamente seu carisma"
+            elif duel_type == "elemental":
+                bonus_rewards["item"] = "cristal_elemental"
+                bonus_rewards["item_name"] = "Cristal Elemental"
+                bonus_rewards["item_description"] = "Aumenta temporariamente seu poder elemental"
 
         # Calculate HP loss for the loser based on win margin
         # Higher win margins cause more HP loss

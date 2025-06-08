@@ -138,7 +138,8 @@ def create_duel_embed(duel_result):
         "physical": 0xFF0000,  # Red
         "mental": 0x800080,    # Purple
         "strategic": 0x008000, # Green
-        "social": 0xFFD700     # Gold
+        "social": 0xFFD700,    # Gold
+        "elemental": 0x00FFFF  # Cyan
     }
     color = duel_colors.get(duel_result["duel_type"], 0x1E90FF)
 

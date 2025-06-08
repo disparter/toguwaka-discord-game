@@ -26,6 +26,10 @@ class DuelNarrator(IDuelNarrator):
         "social": [
             "O debate entre {winner_name} e {loser_name} atraiu uma multidão de espectadores!",
             "A influência social estava em jogo enquanto {winner_name} e {loser_name} mediam forças!"
+        ],
+        "elemental": [
+            "Os elementos da natureza se agitaram quando {winner_name} e {loser_name} iniciaram seu duelo elemental!",
+            "O ar carregado de energia elemental enquanto {winner_name} e {loser_name} se preparavam para o confronto!"
         ]
     }
     

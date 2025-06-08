@@ -280,7 +280,7 @@ class Activities(commands.Cog):
                 return False
 
             # Validate duel type
-            valid_types = ["physical", "mental", "strategic", "social"]
+            valid_types = ["physical", "mental", "strategic", "social", "elemental"]
             if duel_type.lower() not in valid_types:
                 duel_type = "physical"  # Default to physical
             else:
@@ -291,7 +291,8 @@ class Activities(commands.Cog):
                 "physical": "Físico",
                 "mental": "Mental",
                 "strategic": "Estratégico",
-                "social": "Social"
+                "social": "Social",
+                "elemental": "Elemental"
             }
 
             # Create challenge embed
@@ -478,7 +479,8 @@ class Activities(commands.Cog):
         app_commands.Choice(name="Físico", value="physical"),
         app_commands.Choice(name="Mental", value="mental"),
         app_commands.Choice(name="Estratégico", value="strategic"),
-        app_commands.Choice(name="Social", value="social")
+        app_commands.Choice(name="Social", value="social"),
+        app_commands.Choice(name="Elemental", value="elemental")
     ])
     async def slash_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
         """Slash command version of the duel command."""
@@ -901,7 +903,7 @@ class Activities(commands.Cog):
             return
 
         # Validate duel type
-        valid_types = ["physical", "mental", "strategic", "social"]
+        valid_types = ["physical", "mental", "strategic", "social", "elemental"]
         if duel_type.lower() not in valid_types:
             duel_type = "physical"  # Default to physical
         else:
@@ -912,7 +914,8 @@ class Activities(commands.Cog):
             "physical": "Físico",
             "mental": "Mental",
             "strategic": "Estratégico",
-            "social": "Social"
+            "social": "Social",
+            "elemental": "Elemental"
         }
 
         challenge_embed = create_basic_embed(
