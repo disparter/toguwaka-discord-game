@@ -82,6 +82,8 @@ def init_db():
     """
     Initialize the DynamoDB connection and create tables if they don't exist.
     """
+    global table
+    
     try:
         dynamodb = get_dynamodb_client()
         
@@ -89,15 +91,21 @@ def init_db():
         for table_name in TABLES.values():
             try:
                 table = dynamodb.Table(table_name)
-                table.table_status
-                logger.info(f"Table {table_name} exists")
+                # Wait for table to be active if it exists
+                table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
+                logger.info(f"Table {table_name} exists and is active")
             except ClientError as e:
                 if e.response['Error']['Code'] == 'ResourceNotFoundException':
                     logger.info(f"Creating table {table_name}")
                     create_table(dynamodb, table_name)
+                    # Wait for table to be active after creation
+                    dynamodb.meta.client.get_waiter('table_exists').wait(TableName=table_name)
                 else:
                     raise
 
+        # Initialize the table variable for global use
+        table = get_table(TABLES['main'])
+        
         return True
     except Exception as e:
         logger.error(f"Error initializing DynamoDB: {e}")

@@ -84,6 +84,11 @@ class DatabaseProvider:
             from utils import database as sqlite_db
             from utils.migrate_to_dynamodb import migrate_all
 
+            # Ensure DynamoDB is properly initialized first
+            if not dynamo_db.init_db():
+                logger.error("Failed to initialize DynamoDB before sync")
+                return False
+
             # Check if DynamoDB is empty by querying a key table
             try:
                 # Try to get a system flag as a test
@@ -97,6 +102,13 @@ class DatabaseProvider:
 
             # If we get here, DynamoDB is empty or the test failed
             logger.info("DynamoDB appears to be empty, starting sync from SQLite")
+            
+            # Ensure SQLite is initialized
+            if not sqlite_db.init_db():
+                logger.error("Failed to initialize SQLite before sync")
+                return False
+
+            # Perform the migration
             return migrate_all()
 
         except Exception as e:
