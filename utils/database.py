@@ -175,21 +175,40 @@ def get_player(user_id):
 # Apply the error handler to all other database functions
 @handle_db_error
 def create_player(user_id, name, **kwargs):
-    """Create a new player in the database."""
+    """Create a new player in the database, supporting all fields."""
+    if not user_id or not name:
+        return False
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     try:
-        # Process inventory to JSON string
-        inventory = kwargs.get('inventory', {})
-        if isinstance(inventory, dict):
-            inventory = json.dumps(inventory)
-
-        cursor.execute('''
-        INSERT INTO players (user_id, name, inventory)
-        VALUES (?, ?, ?)
-        ''', (user_id, name, inventory))
-
+        # Check for duplicate
+        cursor.execute('SELECT 1 FROM players WHERE user_id = ?', (str(user_id),))
+        if cursor.fetchone():
+            return False
+        # Remove user_id and name from kwargs if present
+        kwargs.pop('user_id', None)
+        kwargs.pop('name', None)
+        # Prepare columns and values
+        columns = ['user_id', 'name']
+        values = [str(user_id), str(name)]
+        # List of all possible columns in the players table
+        player_columns = [
+            'power', 'level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma',
+            'power_stat', 'reputation', 'hp', 'max_hp', 'inventory', 'created_at', 'last_active'
+        ]
+        for col in player_columns:
+            if col in kwargs:
+                columns.append(col)
+                if col == 'inventory' and isinstance(kwargs[col], dict):
+                    values.append(json.dumps(kwargs[col]))
+                else:
+                    values.append(kwargs[col])
+        # Fill missing columns with defaults if not provided
+        if 'inventory' not in columns:
+            columns.append('inventory')
+            values.append(json.dumps({}))
+        sql = f"INSERT INTO players ({', '.join(columns)}) VALUES ({', '.join(['?'] * len(values))})"
+        cursor.execute(sql, values)
         conn.commit()
         return True
     finally:
@@ -739,99 +758,45 @@ def set_system_flag(flag_name, flag_value):
     finally:
         conn.close()
 
-def update_club_reputation_weekly():
-    """Update club reputation based on weekly activities."""
+@handle_db_error
+def update_club_reputation_weekly(club_id, reputation):
+    """Update club reputation for the week."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     try:
-        # Get current week and year
-        now = datetime.now()
-        year, week, _ = now.isocalendar()
-
-        # Get previous week
-        prev_week = week - 1
-        prev_year = year
-        if prev_week <= 0:
-            prev_week = 52  # Last week of previous year
-            prev_year -= 1
-
-        # Get club activity totals for the previous week
-        cursor.execute('''
-        SELECT club_id, SUM(points) as total_points
-        FROM club_activities
-        WHERE week = ? AND year = ?
-        GROUP BY club_id
-        ''', (prev_week, prev_year))
-
-        club_points = cursor.fetchall()
-
-        # Update club reputation based on activity points
-        for club_id, points in club_points:
-            reputation_change = points // 2  # Convert points to reputation (adjust ratio as needed)
-
-            cursor.execute('''
-            UPDATE clubs
-            SET reputation = reputation + ?
-            WHERE club_id = ?
-            ''', (reputation_change, club_id))
-
-            logger.info(f"Updated club {club_id} reputation by {reputation_change} based on {points} activity points")
-
+        cursor.execute('UPDATE clubs SET reputation = ? WHERE club_id = ?', (int(reputation), str(club_id)))
         conn.commit()
-        return True
-    except sqlite3.Error as e:
-        conn.rollback()
-        logger.error(f"Error updating club reputation: {e}")
-        return False
+        return cursor.rowcount > 0
     finally:
         conn.close()
 
 def store_event(event_id, name, description, event_type, channel_id, message_id, start_time, end_time, participants=None, data=None, completed=False):
-    """Store an event in the database.
-
-    Args:
-        event_id (str): Unique identifier for the event
-        name (str): Name of the event
-        description (str): Description of the event
-        event_type (str): Type of event (e.g., 'tournament', 'quiz', 'duel')
-        channel_id (int): Discord channel ID where the event is taking place
-        message_id (int): Discord message ID announcing the event
-        start_time (datetime): When the event starts
-        end_time (datetime): When the event ends
-        participants (list, optional): List of participant user IDs. Defaults to None.
-        data (dict, optional): Additional event data. Defaults to None.
-        completed (bool, optional): Whether the event is completed. Defaults to False.
-
-    Returns:
-        bool: True if successful, False otherwise
-    """
+    """Store an event in the database."""
+    if not event_id or not name or not event_type or not channel_id or not start_time or not end_time:
+        return False
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     # Convert datetime objects to strings if needed
     if isinstance(start_time, datetime):
         start_time = start_time.isoformat()
     if isinstance(end_time, datetime):
         end_time = end_time.isoformat()
-
     # Convert participants list to JSON string
     if participants is None:
         participants = []
     participants_json = json.dumps(participants)
-
     # Convert data dict to JSON string
     if data is None:
         data = {}
     data_json = json.dumps(data)
-
     try:
+        # Check for duplicate
+        cursor.execute('SELECT 1 FROM events WHERE event_id = ?', (event_id,))
+        if cursor.fetchone():
+            return False
         cursor.execute('''
-        INSERT OR REPLACE INTO events 
-        (event_id, name, description, type, channel_id, message_id, start_time, end_time, completed, participants, data)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (event_id, name, description, event_type, channel_id, message_id, start_time, end_time, completed, participants_json, data_json))
-
+        INSERT INTO events (event_id, name, description, type, channel_id, message_id, start_time, end_time, completed, participants, data)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (event_id, name, description, event_type, channel_id, message_id, start_time, end_time, completed, participants_json, data_json))
         conn.commit()
         logger.info(f"Stored event {event_id} in database")
         return True
@@ -842,36 +807,21 @@ def store_event(event_id, name, description, event_type, channel_id, message_id,
     finally:
         conn.close()
 
+@handle_db_error
 def get_event(event_id):
-    """Get an event from the database by ID.
-
-    Args:
-        event_id (str): The ID of the event to retrieve
-
-    Returns:
-        dict: Event data or None if not found
-    """
+    """Get event data from the database."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-
     try:
-        cursor.execute('''
-        SELECT * FROM events WHERE event_id = ?
-        ''', (event_id,))
-
+        cursor.execute('SELECT * FROM events WHERE event_id = ?', (str(event_id),))
         event = cursor.fetchone()
-        if not event:
-            return None
-
-        # Convert to dict and parse JSON fields
-        event_dict = dict(event)
-        event_dict['participants'] = json.loads(event_dict['participants'])
-        event_dict['data'] = json.loads(event_dict['data'])
-
-        return event_dict
-    except sqlite3.Error as e:
-        logger.error(f"Error getting event {event_id}: {e}")
+        if event:
+            event_dict = dict(event)
+            # Convert completed from int to bool
+            if 'completed' in event_dict:
+                event_dict['completed'] = bool(event_dict['completed'])
+            return event_dict
         return None
     finally:
         conn.close()
@@ -1227,6 +1177,227 @@ def get_relevant_npcs(club_id):
     result = club_npcs.get(club_id, []) + npcs_from_file
 
     return result
+
+@handle_db_error
+def create_club(club_id, name, description, leader_id, **kwargs):
+    """Create a new club in the database."""
+    if not club_id or not name or not leader_id:
+        return False
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Check for duplicate
+        cursor.execute('SELECT 1 FROM clubs WHERE club_id = ?', (str(club_id),))
+        if cursor.fetchone():
+            return False
+        cursor.execute('''
+        INSERT INTO clubs (club_id, name, description, leader_id)
+        VALUES (?, ?, ?, ?)''', (str(club_id), str(name), str(description), str(leader_id)))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+@handle_db_error
+def create_item(item_id, name, description, type, rarity, price, effects, **kwargs):
+    """Create a new item in the database."""
+    if not item_id or not name or not type or not rarity or price is None:
+        return False
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Check for duplicate
+        cursor.execute('SELECT 1 FROM items WHERE item_id = ?', (str(item_id),))
+        if cursor.fetchone():
+            return False
+        effects_json = json.dumps(effects) if isinstance(effects, dict) else effects
+        cursor.execute('''
+        INSERT INTO items (item_id, name, description, type, rarity, price, effects)
+        VALUES (?, ?, ?, ?, ?, ?, ?)''', (str(item_id), str(name), str(description), str(type), str(rarity), int(price), effects_json))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+@handle_db_error
+def add_item_to_inventory(user_id, item_id, quantity, **kwargs):
+    """Add an item to a player's inventory in the database."""
+    if not user_id or not item_id or quantity is None:
+        return False
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Check player exists
+        cursor.execute('SELECT inventory FROM players WHERE user_id = ?', (str(user_id),))
+        row = cursor.fetchone()
+        if not row:
+            return False
+        # Check item exists
+        cursor.execute('SELECT 1 FROM items WHERE item_id = ?', (str(item_id),))
+        if not cursor.fetchone():
+            return False
+        inventory = json.loads(row[0]) if row[0] else {}
+        inventory[str(item_id)] = inventory.get(str(item_id), 0) + int(quantity)
+        cursor.execute('UPDATE players SET inventory = ? WHERE user_id = ?', (json.dumps(inventory), str(user_id)))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+@handle_db_error
+def list_item_for_sale(item_id, seller_id, price, **kwargs):
+    """List an item for sale in the market."""
+    if not item_id or not seller_id or price is None:
+        return False
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Check item exists
+        cursor.execute('SELECT 1 FROM items WHERE item_id = ?', (str(item_id),))
+        if not cursor.fetchone():
+            return False
+        # Check seller exists
+        cursor.execute('SELECT 1 FROM players WHERE user_id = ?', (str(seller_id),))
+        if not cursor.fetchone():
+            return False
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS market (
+            item_id TEXT,
+            seller_id TEXT,
+            price INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (item_id, seller_id)
+        )''')
+        # Check for duplicate
+        cursor.execute('SELECT 1 FROM market WHERE item_id = ? AND seller_id = ?', (str(item_id), str(seller_id)))
+        if cursor.fetchone():
+            return False
+        cursor.execute('''
+        INSERT INTO market (item_id, seller_id, price)
+        VALUES (?, ?, ?)''', (str(item_id), str(seller_id), int(price)))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+@handle_db_error
+def get_item(item_id, **kwargs):
+    """Get item data from the database."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    try:
+        cursor.execute('SELECT * FROM items WHERE item_id = ?', (str(item_id),))
+        item = cursor.fetchone()
+        if item:
+            item_dict = dict(item)
+            item_dict['effects'] = json.loads(item_dict['effects']) if item_dict['effects'] else {}
+            return item_dict
+        return None
+    finally:
+        conn.close()
+
+@handle_db_error
+def get_market_listing(item_id, seller_id, **kwargs):
+    """Get a market listing from the SQLite market table."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+        SELECT * FROM market WHERE item_id = ? AND seller_id = ?
+        ''', (str(item_id), str(seller_id)))
+        listing = cursor.fetchone()
+        if listing:
+            return dict(listing)
+        return None
+    finally:
+        conn.close()
+
+@handle_db_error
+def update_item(item_id, **kwargs):
+    """Update item fields in the database."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        fields = []
+        values = []
+        for k, v in kwargs.items():
+            fields.append(f"{k} = ?")
+            values.append(v)
+        values.append(str(item_id))
+        sql = f'UPDATE items SET {", ".join(fields)} WHERE item_id = ?'
+        cursor.execute(sql, values)
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+@handle_db_error
+def get_player_inventory(user_id, **kwargs):
+    """Get player's inventory as a dict."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute('SELECT inventory FROM players WHERE user_id = ?', (str(user_id),))
+        row = cursor.fetchone()
+        if row and row[0]:
+            return json.loads(row[0])
+        return {}
+    finally:
+        conn.close()
+
+@handle_db_error
+def update_market_listing(item_id, seller_id, **kwargs):
+    """Update a market listing (e.g., price) in the SQLite market table."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        fields = []
+        values = []
+        for k, v in kwargs.items():
+            fields.append(f"{k} = ?")
+            values.append(v)
+        values.extend([str(item_id), str(seller_id)])
+        sql = f'UPDATE market SET {', '.join(fields)} WHERE item_id = ? AND seller_id = ?'
+        cursor.execute(sql, values)
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+@handle_db_error
+def update_inventory_item_quantity(user_id, item_id, quantity, **kwargs):
+    """Update the quantity of an item in a player's inventory."""
+    if not user_id or not item_id or quantity is None:
+        return False
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Check player exists
+        cursor.execute('SELECT inventory FROM players WHERE user_id = ?', (str(user_id),))
+        row = cursor.fetchone()
+        if not row:
+            return False
+        # Check item exists
+        cursor.execute('SELECT 1 FROM items WHERE item_id = ?', (str(item_id),))
+        if not cursor.fetchone():
+            return False
+        inventory = json.loads(row[0]) if row[0] else {}
+        if str(item_id) not in inventory:
+            return False
+        inventory[str(item_id)] = int(quantity)
+        cursor.execute('UPDATE players SET inventory = ? WHERE user_id = ?', (json.dumps(inventory), str(user_id)))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+# Helper to reset SQLite DB (for schema updates)
+def reset_sqlite_db():
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+    init_db()
 
 # Initialize the database when the module is imported
 init_db()
