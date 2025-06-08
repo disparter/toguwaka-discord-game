@@ -104,7 +104,9 @@ class RandomEvent(EventBase):
             "description": self.get_description(),
             "type": self.get_type(),
             "category": self.get_category(),
-            "rarity": self.get_rarity()
+            "rarity": self.get_rarity(),
+            "message": f"Event triggered: {self.get_title()}",
+            "effects": self.get_effect()
         }
 
         # Add dialogue options if available
@@ -371,6 +373,7 @@ class RandomEvent(EventBase):
             RandomEvent._last_events.pop(0)
 
         logger.info(f"Selected random event: {selected_event['title']}")
+        selected_event['effects'] = selected_event.get('effect', {})  # Ensure 'effects' key is present
         return selected_event
 
     @staticmethod
