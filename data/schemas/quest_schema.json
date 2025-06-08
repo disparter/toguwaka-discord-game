@@ -5,8 +5,13 @@
   "type": "object",
   "additionalProperties": {
     "type": "object",
-    "required": ["title", "description", "quest_giver", "quest_type"],
+    "required": ["id", "title", "description", "quest_giver", "quest_type", "stages"],
     "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+        "description": "Unique identifier for the quest"
+      },
       "title": {
         "type": "string",
         "minLength": 1
@@ -17,11 +22,12 @@
       },
       "quest_giver": {
         "type": "string",
-        "minLength": 1
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+        "description": "ID of the NPC giving the quest"
       },
       "quest_type": {
         "type": "string",
-        "enum": ["main", "side", "daily", "challenge", "event"]
+        "enum": ["main", "side", "daily", "challenge", "event", "romance", "club"]
       },
       "difficulty": {
         "type": "string",
@@ -38,14 +44,14 @@
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1
+              "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
             }
           },
           "quests_completed": {
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1
+              "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
             }
           },
           "attributes": {
@@ -68,6 +74,39 @@
                 "minimum": 1
               }
             }
+          },
+          "club_affinity": {
+            "type": "object",
+            "properties": {
+              "chamas": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "combate": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "politico": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "elementalistas": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "ilusionistas": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "romance_route": {
+            "type": "string",
+            "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"]
+          },
+          "min_romance_affinity": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -80,7 +119,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "minLength": 1
+              "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
             },
             "title": {
               "type": "string",
@@ -99,11 +138,11 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["talk_to", "collect", "deliver", "defeat", "explore", "return"]
+                    "enum": ["talk_to", "collect", "deliver", "defeat", "explore", "return", "romance", "club_activity"]
                   },
                   "target": {
                     "type": "string",
-                    "minLength": 1
+                    "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                   },
                   "quantity": {
                     "type": "integer",
@@ -119,7 +158,21 @@
                   },
                   "time_limit": {
                     "type": "string",
-                    "minLength": 1
+                    "pattern": "^[0-9]{2}:[0-9]{2}$"
+                  },
+                  "skill_check": {
+                    "type": "object",
+                    "required": ["attribute", "difficulty"],
+                    "properties": {
+                      "attribute": {
+                        "type": "string",
+                        "enum": ["power_stat", "intellect", "charisma", "dexterity"]
+                      },
+                      "difficulty": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    }
                   }
                 }
               }
@@ -130,7 +183,7 @@
               "properties": {
                 "npc": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                 },
                 "text": {
                   "type": "string",
@@ -178,215 +231,87 @@
                   "additionalProperties": {
                     "type": "integer"
                   }
-                }
-              }
-            }
-          }
-        }
-      },
-      "objectives": {
-        "type": "array",
-        "minItems": 1,
-        "items": {
-          "type": "object",
-          "required": ["type", "description"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["talk_to", "collect", "deliver", "defeat", "explore", "return"]
-            },
-            "target": {
-              "type": "string",
-              "minLength": 1
-            },
-            "quantity": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "item": {
-              "type": "string",
-              "minLength": 1
-            },
-            "description": {
-              "type": "string",
-              "minLength": 1
-            },
-            "time_limit": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        }
-      },
-      "completion_dialogue": {
-        "type": "object",
-        "required": ["npc", "text"],
-        "properties": {
-          "npc": {
-            "type": "string",
-            "minLength": 1
-          },
-          "text": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
-      },
-      "rewards": {
-        "type": "object",
-        "properties": {
-          "exp": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "tusd": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "random_items": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["item_id", "chance"],
-              "properties": {
-                "item_id": {
-                  "type": "string",
-                  "minLength": 1
                 },
-                "chance": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 1
+                "club_affinity": {
+                  "type": "object",
+                  "properties": {
+                    "chamas": {
+                      "type": "integer"
+                    },
+                    "combate": {
+                      "type": "integer"
+                    },
+                    "politico": {
+                      "type": "integer"
+                    },
+                    "elementalistas": {
+                      "type": "integer"
+                    },
+                    "ilusionistas": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "romance_affinity": {
+                  "type": "object",
+                  "properties": {
+                    "akane": {
+                      "type": "integer"
+                    },
+                    "yuki": {
+                      "type": "integer"
+                    },
+                    "sakura": {
+                      "type": "integer"
+                    },
+                    "mitsuki": {
+                      "type": "integer"
+                    },
+                    "ayame": {
+                      "type": "integer"
+                    },
+                    "rei": {
+                      "type": "integer"
+                    },
+                    "kaede": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "unlock_chapters": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                  }
+                },
+                "unlock_events": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                  }
                 }
               }
             }
-          },
-          "attribute_bonuses": {
-            "type": "object",
-            "properties": {
-              "power_stat": {
-                "type": "integer"
-              },
-              "intellect": {
-                "type": "integer"
-              },
-              "charisma": {
-                "type": "integer"
-              },
-              "dexterity": {
-                "type": "integer"
-              }
-            }
-          },
-          "affinity_changes": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer"
-            }
-          },
-          "title": {
-            "type": "string",
-            "minLength": 1
           }
         }
       },
-      "failure_conditions": {
-        "type": "object",
-        "properties": {
-          "time_limit": {
-            "type": "string",
-            "minLength": 1
-          },
-          "special_conditions": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        }
-      },
-      "failure_consequences": {
-        "type": "object",
-        "properties": {
-          "exp_penalty": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "tusd_penalty": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "affinity_changes": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer"
-            }
-          },
-          "cooldown": {
-            "type": "string",
-            "minLength": 1
-          },
-          "failure_dialogue": {
-            "type": "object",
-            "required": ["npc", "text"],
-            "properties": {
-              "npc": {
-                "type": "string",
-                "minLength": 1
-              },
-              "text": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          }
-        }
-      },
-      "time_limit": {
-        "type": "string",
-        "minLength": 1
-      },
-      "repeatable": {
-        "type": "boolean"
-      },
-      "cooldown": {
-        "type": "string",
-        "minLength": 1
-      }
-    },
-    "allOf": [
-      {
-        "if": {
-          "properties": { "quest_type": { "enum": ["main"] } }
-        },
-        "then": {
-          "required": ["stages", "difficulty", "min_level"]
-        }
-      },
-      {
-        "if": {
-          "properties": { "quest_type": { "enum": ["side", "daily", "challenge"] } }
-        },
-        "then": {
-          "required": ["objectives", "completion_dialogue", "rewards"]
-        }
-      },
-      {
-        "if": {
-          "properties": { "repeatable": { "enum": [true] } }
-        },
-        "then": {
-          "required": ["cooldown"]
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "romance",
+            "club",
+            "combat",
+            "social",
+            "academic",
+            "special",
+            "story"
+          ]
         }
       }
-    ]
+    }
   }
 }

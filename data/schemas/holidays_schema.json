@@ -5,8 +5,13 @@
   "type": "array",
   "items": {
     "type": "object",
-    "required": ["date", "name", "description"],
+    "required": ["id", "date", "name", "description", "type"],
     "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+        "description": "Unique identifier for the holiday"
+      },
       "date": {
         "type": "string",
         "format": "date",
@@ -14,20 +19,130 @@
       },
       "name": {
         "type": "string",
+        "minLength": 1,
         "description": "Name of the holiday"
       },
       "description": {
         "type": "string",
+        "minLength": 1,
         "description": "Description of the holiday"
+      },
+      "type": {
+        "type": "string",
+        "enum": ["school", "cultural", "seasonal", "special"],
+        "description": "Type of holiday"
       },
       "is_school_holiday": {
         "type": "boolean",
         "description": "Whether the holiday is a school holiday (no classes)",
         "default": true
       },
+      "duration": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Number of days the holiday lasts"
+      },
+      "special_activities": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "name", "description"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "requirements": {
+              "type": "object",
+              "properties": {
+                "min_level": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "required_club": {
+                  "type": "string",
+                  "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
+                },
+                "required_club_level": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "required_affinities": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "rewards": {
+              "type": "object",
+              "properties": {
+                "exp": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "tusd": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "affinity_changes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                },
+                "attribute_changes": {
+                  "type": "object",
+                  "properties": {
+                    "power_stat": {
+                      "type": "integer"
+                    },
+                    "intellect": {
+                      "type": "integer"
+                    },
+                    "charisma": {
+                      "type": "integer"
+                    },
+                    "dexterity": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "event_id": {
         "type": "string",
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
         "description": "ID of an associated event, if any"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "romance",
+            "club",
+            "combat",
+            "social",
+            "academic",
+            "special",
+            "seasonal"
+          ]
+        }
       }
     }
   }

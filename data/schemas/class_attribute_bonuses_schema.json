@@ -3,110 +3,383 @@
   "title": "Class Attribute Bonuses Schema",
   "description": "Schema for validating class attribute bonuses data",
   "type": "object",
-  "additionalProperties": {
-    "type": "object",
-    "description": "Attribute bonuses for a specific class",
-    "additionalProperties": {
-      "type": "integer"
-    }
-  },
   "properties": {
     "Power Control": {
       "type": "object",
       "description": "Attribute bonuses for Power Control class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "intellect"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "History of Powers": {
       "type": "object",
       "description": "Attribute bonuses for History of Powers class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["intellect", "charisma"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Combat Training": {
       "type": "object",
       "description": "Attribute bonuses for Combat Training class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "dexterity"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Ethics": {
       "type": "object",
       "description": "Attribute bonuses for Ethics class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["intellect", "charisma"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Science": {
       "type": "object",
       "description": "Attribute bonuses for Science class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["intellect"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Club Activities": {
       "type": "object",
       "description": "Attribute bonuses for Club Activities",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "charisma"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Power Theory": {
       "type": "object",
       "description": "Attribute bonuses for Power Theory class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "intellect"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Mathematics": {
       "type": "object",
       "description": "Attribute bonuses for Mathematics class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["intellect"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Physical Education": {
       "type": "object",
       "description": "Attribute bonuses for Physical Education class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "dexterity"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Literature": {
       "type": "object",
       "description": "Attribute bonuses for Literature class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["intellect", "charisma"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Power Applications": {
       "type": "object",
       "description": "Attribute bonuses for Power Applications class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "dexterity"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Social Studies": {
       "type": "object",
       "description": "Attribute bonuses for Social Studies class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["intellect", "charisma"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Elective": {
       "type": "object",
       "description": "Attribute bonuses for Elective class",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "intellect", "charisma", "dexterity"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     },
     "Free Study": {
       "type": "object",
       "description": "Attribute bonuses for Free Study",
-      "additionalProperties": {
-        "type": "integer"
+      "required": ["power_stat", "intellect", "charisma", "dexterity"],
+      "properties": {
+        "power_stat": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to power_stat attribute"
+        },
+        "intellect": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to intellect attribute"
+        },
+        "charisma": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to charisma attribute"
+        },
+        "dexterity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bonus to dexterity attribute"
+        }
       }
     }
   }

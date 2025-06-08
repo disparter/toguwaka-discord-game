@@ -5,8 +5,13 @@
   "type": "object",
   "additionalProperties": {
     "type": "object",
-    "required": ["title", "description"],
+    "required": ["id", "title", "description", "scenes"],
     "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+        "description": "Unique identifier for the sequence"
+      },
       "title": {
         "type": "string",
         "minLength": 1
@@ -25,147 +30,15 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                 },
-                "type": {
-                  "type": "string",
-                  "enum": ["dialogue", "narration", "choice_point", "conclusion"]
-                },
-                "npc": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "text": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "next_scene": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "choices": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": ["text"],
-                    "properties": {
-                      "text": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "next_scene": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "affinity_change": {
-                        "type": "object",
-                        "additionalProperties": {
-                          "type": "integer"
-                        }
-                      },
-                      "attribute_check": {
-                        "type": "string",
-                        "enum": ["power_stat", "intellect", "charisma", "dexterity"]
-                      },
-                      "threshold": {
-                        "type": "integer",
-                        "minimum": 1
-                      }
-                    }
-                  }
-                },
-                "rewards": {
-                  "type": "object",
-                  "properties": {
-                    "exp": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "tusd": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "affinity_changes": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "integer"
-                      }
-                    },
-                    "attribute_bonuses": {
-                      "type": "object",
-                      "properties": {
-                        "power_stat": {
-                          "type": "integer"
-                        },
-                        "intellect": {
-                          "type": "integer"
-                        },
-                        "charisma": {
-                          "type": "integer"
-                        },
-                        "dexterity": {
-                          "type": "integer"
-                        }
-                      }
-                    },
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              },
-              "allOf": [
-                {
-                  "if": {
-                    "properties": { "type": { "enum": ["dialogue"] } }
-                  },
-                  "then": {
-                    "required": ["npc", "text"]
-                  }
-                },
-                {
-                  "if": {
-                    "properties": { "type": { "enum": ["narration"] } }
-                  },
-                  "then": {
-                    "required": ["text"]
-                  }
-                },
-                {
-                  "if": {
-                    "properties": { "type": { "enum": ["choice_point"] } }
-                  },
-                  "then": {
-                    "required": ["text", "choices"]
-                  }
-                },
-                {
-                  "if": {
-                    "properties": { "type": { "enum": ["conclusion"] } }
-                  },
-                  "then": {
-                    "required": ["text", "rewards"]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object",
-              "required": ["type"],
-              "properties": {
                 "type": {
                   "type": "string",
                   "enum": ["dialogue", "narration", "choice_point", "conclusion", "conditional"]
                 },
                 "npc": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                 },
                 "text": {
                   "type": "string",
@@ -173,7 +46,7 @@
                 },
                 "next_scene": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                 },
                 "choices": {
                   "type": "array",
@@ -187,12 +60,42 @@
                       },
                       "next_scene": {
                         "type": "string",
-                        "minLength": 1
+                        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                       },
                       "affinity_change": {
                         "type": "object",
-                        "additionalProperties": {
-                          "type": "integer"
+                        "properties": {
+                          "npc": {
+                            "type": "string",
+                            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "club_affinity": {
+                        "type": "object",
+                        "properties": {
+                          "club": {
+                            "type": "string",
+                            "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "romance_affinity": {
+                        "type": "object",
+                        "properties": {
+                          "route": {
+                            "type": "string",
+                            "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"]
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
                         }
                       },
                       "attribute_check": {
@@ -202,6 +105,14 @@
                       "threshold": {
                         "type": "integer",
                         "minimum": 1
+                      },
+                      "club_power": {
+                        "type": "string",
+                        "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
+                      },
+                      "romance_route": {
+                        "type": "string",
+                        "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"]
                       }
                     }
                   }
@@ -210,6 +121,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
+                    "required": ["attribute", "operator", "value", "next_scene"],
                     "properties": {
                       "attribute": {
                         "type": "string",
@@ -224,10 +136,42 @@
                       },
                       "next_scene": {
                         "type": "string",
-                        "minLength": 1
+                        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                       },
                       "default": {
                         "type": "boolean"
+                      },
+                      "club_affinity": {
+                        "type": "object",
+                        "properties": {
+                          "club": {
+                            "type": "string",
+                            "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
+                          },
+                          "operator": {
+                            "type": "string",
+                            "enum": ["==", "!=", ">", "<", ">=", "<="]
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "romance_affinity": {
+                        "type": "object",
+                        "properties": {
+                          "route": {
+                            "type": "string",
+                            "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"]
+                          },
+                          "operator": {
+                            "type": "string",
+                            "enum": ["==", "!=", ">", "<", ">=", "<="]
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        }
                       }
                     }
                   }
@@ -245,8 +189,38 @@
                     },
                     "affinity_changes": {
                       "type": "object",
-                      "additionalProperties": {
-                        "type": "integer"
+                      "properties": {
+                        "npc": {
+                          "type": "string",
+                          "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                        },
+                        "value": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "club_affinity": {
+                      "type": "object",
+                      "properties": {
+                        "club": {
+                          "type": "string",
+                          "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
+                        },
+                        "value": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "romance_affinity": {
+                      "type": "object",
+                      "properties": {
+                        "route": {
+                          "type": "string",
+                          "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"]
+                        },
+                        "value": {
+                          "type": "integer"
+                        }
                       }
                     },
                     "attribute_bonuses": {
@@ -269,7 +243,22 @@
                     "items": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "unlock_chapters": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                      }
+                    },
+                    "unlock_events": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                       }
                     }
                   }
@@ -321,28 +310,21 @@
           }
         ]
       },
-      "start_scene": {
-        "type": "string",
-        "minLength": 1
-      }
-    },
-    "allOf": [
-      {
-        "if": {
-          "properties": { "scenes": { "type": "array" } }
-        },
-        "then": {
-          "required": ["scenes"]
-        }
-      },
-      {
-        "if": {
-          "properties": { "scenes": { "type": "object" } }
-        },
-        "then": {
-          "required": ["scenes", "start_scene"]
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "romance",
+            "club",
+            "combat",
+            "social",
+            "academic",
+            "special",
+            "story"
+          ]
         }
       }
-    ]
+    }
   }
 }

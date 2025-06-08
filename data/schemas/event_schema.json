@@ -3,15 +3,17 @@
   "title": "Event Schema",
   "description": "Schema for validating event data in the story mode",
   "type": "object",
-  "required": ["id", "type", "title", "description"],
+  "required": ["id", "type", "title", "description", "content"],
   "properties": {
     "id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+      "description": "Unique identifier for the event"
     },
     "type": {
       "type": "string",
-      "enum": ["story", "random", "seasonal", "climactic"]
+      "enum": ["story", "random", "seasonal", "climactic", "romance", "club"],
+      "description": "Type of event"
     },
     "title": {
       "type": "string",
@@ -20,6 +22,95 @@
     "description": {
       "type": "string",
       "minLength": 1
+    },
+    "content": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "speaker": {
+          "type": "string",
+          "enum": ["narrator", "npc", "player"],
+          "description": "Who is speaking in this event"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The actual content of the event"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text"],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "skill_check": {
+                "type": "string",
+                "enum": ["charisma", "dexterity", "intellect", "power_stat"]
+              },
+              "club_power": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5,
+                "description": "Required club power level for this choice"
+              },
+              "romance_route": {
+                "type": "string",
+                "enum": [
+                  "akane",
+                  "yuki",
+                  "sakura",
+                  "mitsuki",
+                  "ayame",
+                  "rei",
+                  "kaede"
+                ]
+              },
+              "success": {
+                "type": "object",
+                "required": ["next_event"],
+                "properties": {
+                  "next_event": {
+                    "type": "string",
+                    "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                  },
+                  "affinity_change": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "integer"
+                    }
+                  },
+                  "attribute_bonus": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "failure": {
+                "type": "object",
+                "required": ["next_event"],
+                "properties": {
+                  "next_event": {
+                    "type": "string",
+                    "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                  },
+                  "affinity_change": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "requirements": {
       "type": "object",
@@ -35,19 +126,22 @@
         "required_chapters": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
           }
         },
         "required_events": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
           }
         },
         "required_affinities": {
           "type": "object",
           "additionalProperties": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           }
         },
         "required_attributes": {
@@ -55,30 +149,30 @@
           "properties": {
             "power_stat": {
               "type": "integer",
-              "minimum": 1
+              "minimum": 0
             },
             "intellect": {
               "type": "integer",
-              "minimum": 1
+              "minimum": 0
             },
             "charisma": {
               "type": "integer",
-              "minimum": 1
+              "minimum": 0
             },
             "dexterity": {
               "type": "integer",
-              "minimum": 1
+              "minimum": 0
             }
           }
         },
         "required_club": {
+          "type": "string",
+          "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
+        },
+        "required_club_level": {
           "type": "integer",
           "minimum": 1,
           "maximum": 5
-        },
-        "required_specialization": {
-          "type": "string",
-          "minLength": 1
         },
         "season": {
           "type": "string",
@@ -99,127 +193,58 @@
         }
       }
     },
-    "dialogues": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["npc", "text"],
-        "properties": {
-          "npc": {
-            "type": "string",
-            "minLength": 1
-          },
-          "text": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
-      }
-    },
-    "choices": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["text"],
-        "properties": {
-          "text": {
-            "type": "string",
-            "minLength": 1
-          },
-          "next_dialogue": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "affinity_change": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer"
-            }
-          },
-          "attribute_check": {
-            "type": "string",
-            "enum": ["power_stat", "intellect", "charisma", "dexterity"]
-          },
-          "threshold": {
-            "type": "integer",
-            "minimum": 1
-          }
-        }
-      }
-    },
-    "additional_dialogues": {
+    "rewards": {
       "type": "object",
-      "additionalProperties": {
-        "type": "array",
+      "properties": {
+        "exp": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tusd": {
+          "type": "integer",
+          "minimum": 0
+        },
         "items": {
-          "type": "object",
-          "required": ["npc", "text"],
-          "properties": {
-            "npc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "text": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        }
-      }
-    },
-    "outcomes": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "exp": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "tusd": {
-            "type": "integer",
-            "minimum": 0
-          },
+          "type": "array",
           "items": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "affinity_changes": {
-            "type": "object",
-            "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "affinity_changes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "attribute_changes": {
+          "type": "object",
+          "properties": {
+            "power_stat": {
+              "type": "integer"
+            },
+            "intellect": {
+              "type": "integer"
+            },
+            "charisma": {
+              "type": "integer"
+            },
+            "dexterity": {
               "type": "integer"
             }
-          },
-          "attribute_changes": {
-            "type": "object",
-            "properties": {
-              "power_stat": {
-                "type": "integer"
-              },
-              "intellect": {
-                "type": "integer"
-              },
-              "charisma": {
-                "type": "integer"
-              },
-              "dexterity": {
-                "type": "integer"
-              }
-            }
-          },
-          "unlock_chapters": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "unlock_events": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          }
+        },
+        "unlock_chapters": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
           }
         }
       }
@@ -248,9 +273,18 @@
     "tags": {
       "type": "array",
       "items": {
-        "type": "string"
-      },
-      "description": "Tags for categorizing and filtering events"
+        "type": "string",
+        "enum": [
+          "romance",
+          "club",
+          "combat",
+          "social",
+          "academic",
+          "special",
+          "seasonal",
+          "story"
+        ]
+      }
     }
   },
   "allOf": [

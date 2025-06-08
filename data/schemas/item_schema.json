@@ -1,0 +1,226 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Item Schema",
+  "description": "Schema for validating item data in the economy system",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["id", "name", "description", "type", "category", "rarity", "value"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+        "description": "Unique identifier for the item"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1
+      },
+      "type": {
+        "type": "string",
+        "enum": ["consumable", "equipment", "material", "currency", "quest", "special"]
+      },
+      "category": {
+        "type": "string",
+        "enum": ["weapon", "armor", "accessory", "potion", "scroll", "book", "material", "currency", "quest", "special"]
+      },
+      "rarity": {
+        "type": "string",
+        "enum": ["common", "uncommon", "rare", "epic", "legendary", "mythic"]
+      },
+      "value": {
+        "type": "object",
+        "required": ["tusd"],
+        "properties": {
+          "tusd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "alternative_currencies": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "effects": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["attribute_boost", "skill_boost", "status_effect", "special_ability"]
+            },
+            "attribute": {
+              "type": "string",
+              "enum": ["power_stat", "intellect", "charisma", "dexterity"]
+            },
+            "value": {
+              "type": "integer"
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "requirements": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "power_stat": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "intellect": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "charisma": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "dexterity": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "club_affinity": {
+            "type": "object",
+            "properties": {
+              "chamas": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "combate": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "politico": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "elementalistas": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "ilusionistas": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "romance_affinity": {
+            "type": "object",
+            "properties": {
+              "akane": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "yuki": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sakura": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "mitsuki": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "ayame": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rei": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "kaede": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      },
+      "availability": {
+        "type": "object",
+        "properties": {
+          "shop": {
+            "type": "boolean",
+            "default": false
+          },
+          "quest_reward": {
+            "type": "boolean",
+            "default": false
+          },
+          "event_reward": {
+            "type": "boolean",
+            "default": false
+          },
+          "club_reward": {
+            "type": "boolean",
+            "default": false
+          },
+          "romance_reward": {
+            "type": "boolean",
+            "default": false
+          },
+          "seasonal": {
+            "type": "boolean",
+            "default": false
+          },
+          "limited_time": {
+            "type": "boolean",
+            "default": false
+          },
+          "start_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "end_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "romance",
+            "club",
+            "combat",
+            "social",
+            "academic",
+            "special",
+            "story"
+          ]
+        }
+      }
+    }
+  }
+} 

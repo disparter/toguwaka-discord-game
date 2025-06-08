@@ -22,6 +22,84 @@ from pathlib import Path
 
 logger = logging.getLogger('tokugawa_bot')
 
+class FileChapterLoader(ChapterLoader):
+    """
+    Implementation of ChapterLoader that loads chapters from JSON files.
+    """
+    def __init__(self, data_dir: str):
+        self.data_dir = Path(data_dir)
+        self.chapters: Dict[str, Chapter] = {}
+        self._load_chapters()
+
+    def _load_chapters(self) -> None:
+        """Load all chapter files from the data directory."""
+        chapter_dir = self.data_dir / "chapters"
+        if not chapter_dir.exists():
+            logger.warning(f"Chapter directory not found: {chapter_dir}")
+            return
+
+        for filename in os.listdir(chapter_dir):
+            if filename.endswith(".json"):
+                try:
+                    chapter_id = filename.replace(".json", "")
+                    with open(chapter_dir / filename, 'r') as f:
+                        chapter_data = json.load(f)
+                        self.chapters[chapter_id] = self._create_chapter(chapter_data)
+                except Exception as e:
+                    logger.error(f"Error loading chapter {filename}: {e}")
+
+    def _create_chapter(self, chapter_data: Dict[str, Any]) -> Chapter:
+        """Create a chapter instance based on the chapter type."""
+        chapter_type = chapter_data.get("type", "story")
+        if chapter_type == "story":
+            return StoryChapter(chapter_data)
+        elif chapter_type == "challenge":
+            return ChallengeChapter(chapter_data)
+        elif chapter_type == "branching":
+            return BranchingChapter(chapter_data)
+        else:
+            logger.warning(f"Unknown chapter type: {chapter_type}, defaulting to StoryChapter")
+            return StoryChapter(chapter_data)
+
+    def load_chapter(self, chapter_id: str) -> Chapter:
+        """Load a chapter by its ID."""
+        if chapter_id not in self.chapters:
+            raise ValueError(f"Chapter not found: {chapter_id}")
+        return self.chapters[chapter_id]
+
+    def get_available_chapters(self, player_data: Dict[str, Any]) -> List[str]:
+        """Get a list of chapter IDs available to the player."""
+        available_chapters = []
+        for chapter_id, chapter in self.chapters.items():
+            if self._is_chapter_available(chapter, player_data):
+                available_chapters.append(chapter_id)
+        return available_chapters
+
+    def _is_chapter_available(self, chapter: Chapter, player_data: Dict[str, Any]) -> bool:
+        """Check if a chapter is available to the player."""
+        # Check if the chapter is already completed
+        completed_chapters = player_data.get("story_progress", {}).get("completed_chapters", [])
+        if chapter.get_id() in completed_chapters:
+            return False
+
+        # Check chapter requirements
+        requirements = chapter.get_requirements()
+        if not requirements:
+            return True
+
+        # Check player stats
+        player_stats = player_data.get("attributes", {})
+        for stat, value in requirements.get("stats", {}).items():
+            if player_stats.get(stat, 0) < value:
+                return False
+
+        # Check completed chapters
+        for required_chapter in requirements.get("chapters", []):
+            if required_chapter not in completed_chapters:
+                return False
+
+        return True
+
 class StoryMode:
     """
     Main class for the story mode system.

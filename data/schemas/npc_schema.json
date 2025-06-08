@@ -3,11 +3,12 @@
   "title": "NPC Schema",
   "description": "Schema for validating NPC data in the story mode",
   "type": "object",
-  "required": ["id", "name", "type", "description"],
+  "required": ["id", "name", "type", "description", "personality", "appearance", "abilities", "role"],
   "properties": {
     "id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$",
+      "description": "Unique identifier for the NPC"
     },
     "name": {
       "type": "string",
@@ -15,7 +16,8 @@
     },
     "type": {
       "type": "string",
-      "enum": ["student", "faculty", "staff", "visitor", "antagonist", "ally", "neutral"]
+      "enum": ["student", "faculty", "staff", "visitor", "antagonist", "ally", "neutral"],
+      "description": "Type of NPC"
     },
     "description": {
       "type": "string",
@@ -27,80 +29,97 @@
     },
     "personality": {
       "type": "object",
+      "required": ["traits", "likes", "dislikes", "goals", "fears"],
       "properties": {
         "traits": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "likes": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "dislikes": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "goals": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "fears": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         }
       }
     },
     "appearance": {
       "type": "object",
+      "required": ["gender", "age", "height", "build", "hair", "eyes"],
       "properties": {
         "gender": {
-          "type": "string"
+          "type": "string",
+          "enum": ["male", "female", "non_binary"]
         },
         "age": {
           "type": "integer",
           "minimum": 0
         },
         "height": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "build": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "hair": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "eyes": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "distinctive_features": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "clothing_style": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       }
     },
     "abilities": {
       "type": "object",
+      "required": ["power_type", "power_description", "power_level"],
       "properties": {
         "power_type": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "power_description": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "power_level": {
           "type": "integer",
@@ -110,13 +129,15 @@
         "special_skills": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "weaknesses": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         }
       }
@@ -125,57 +146,66 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
+        "required": ["type", "description", "initial_affinity"],
         "properties": {
           "type": {
             "type": "string",
             "enum": ["friend", "rival", "enemy", "family", "mentor", "student", "romantic", "neutral"]
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "initial_affinity": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           }
         }
       }
     },
     "role": {
       "type": "object",
+      "required": ["importance", "story_arc"],
       "properties": {
         "club": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 5
+          "type": "string",
+          "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"]
         },
         "position": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "importance": {
           "type": "string",
           "enum": ["main", "supporting", "minor", "background"]
         },
         "story_arc": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
         }
       }
     },
     "dialogue_style": {
       "type": "object",
+      "required": ["speech_patterns", "tone", "formality"],
       "properties": {
         "speech_patterns": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "catchphrases": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "tone": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "formality": {
           "type": "string",
@@ -184,28 +214,35 @@
       }
     },
     "quest_giver": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "available_in_chapters": {
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
       }
     },
     "affinity_thresholds": {
       "type": "object",
+      "required": ["friendship", "romance", "alliance", "respect"],
       "properties": {
         "friendship": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "romance": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "alliance": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "respect": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
@@ -213,9 +250,11 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
+        "required": ["threshold", "rewards"],
         "properties": {
           "threshold": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "rewards": {
             "type": "object",
@@ -231,7 +270,8 @@
               "items": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1
                 }
               },
               "attribute_bonuses": {
@@ -251,17 +291,63 @@
                   }
                 }
               },
+              "unlock_chapters": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+                }
+              },
               "unlock_events": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
                 }
-              },
-              "unlock_dialogues": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "romance_route": {
+      "type": "object",
+      "properties": {
+        "available": {
+          "type": "boolean",
+          "default": false
+        },
+        "route_id": {
+          "type": "string",
+          "enum": [
+            "akane",
+            "yuki",
+            "sakura",
+            "mitsuki",
+            "ayame",
+            "rei",
+            "kaede"
+          ]
+        },
+        "requirements": {
+          "type": "object",
+          "properties": {
+            "min_affinity": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "required_chapters": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+              }
+            },
+            "required_events": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
               }
             }
           }
@@ -271,45 +357,17 @@
     "tags": {
       "type": "array",
       "items": {
-        "type": "string"
-      },
-      "description": "Tags for categorizing and filtering NPCs"
-    }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": { "type": { "enum": ["student"] } }
-      },
-      "then": {
-        "required": ["role"],
-        "properties": {
-          "role": {
-            "required": ["club"]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": { "type": { "enum": ["faculty"] } }
-      },
-      "then": {
-        "required": ["abilities"],
-        "properties": {
-          "abilities": {
-            "required": ["power_type", "power_level"]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": { "quest_giver": { "enum": [true] } }
-      },
-      "then": {
-        "required": ["affinity_thresholds"]
+        "type": "string",
+        "enum": [
+          "romance",
+          "club",
+          "combat",
+          "social",
+          "academic",
+          "special",
+          "story"
+        ]
       }
     }
-  ]
+  }
 }

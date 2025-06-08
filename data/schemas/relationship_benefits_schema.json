@@ -3,149 +3,476 @@
   "title": "Relationship Benefits Schema",
   "description": "Schema for validating relationship benefits data",
   "type": "object",
-  "required": ["friendly", "close", "trusted", "romantic_interest", "dating", "committed"],
+  "required": ["friendly", "close", "trusted", "romantic_interest", "dating", "committed", "club_member", "club_officer", "club_leader"],
   "properties": {
     "friendly": {
       "type": "object",
-      "required": ["description", "attribute_bonus", "special_abilities"],
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events"],
       "properties": {
         "description": {
           "type": "string",
+          "minLength": 1,
           "description": "Description of the benefits at this relationship level"
         },
         "attribute_bonus": {
           "type": "object",
           "description": "Attribute bonuses provided by this relationship level",
-          "additionalProperties": {
-            "type": "integer"
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "special_abilities": {
           "type": "array",
           "description": "Special abilities provided by this relationship level",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
           }
         }
       }
     },
     "close": {
       "type": "object",
-      "required": ["description", "attribute_bonus", "special_abilities"],
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events"],
       "properties": {
         "description": {
           "type": "string",
+          "minLength": 1,
           "description": "Description of the benefits at this relationship level"
         },
         "attribute_bonus": {
           "type": "object",
           "description": "Attribute bonuses provided by this relationship level",
-          "additionalProperties": {
-            "type": "integer"
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "special_abilities": {
           "type": "array",
           "description": "Special abilities provided by this relationship level",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
           }
         }
       }
     },
     "trusted": {
       "type": "object",
-      "required": ["description", "attribute_bonus", "special_abilities"],
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events"],
       "properties": {
         "description": {
           "type": "string",
+          "minLength": 1,
           "description": "Description of the benefits at this relationship level"
         },
         "attribute_bonus": {
           "type": "object",
           "description": "Attribute bonuses provided by this relationship level",
-          "additionalProperties": {
-            "type": "integer"
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "special_abilities": {
           "type": "array",
           "description": "Special abilities provided by this relationship level",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
           }
         }
       }
     },
     "romantic_interest": {
       "type": "object",
-      "required": ["description", "attribute_bonus", "special_abilities"],
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events", "romance_route"],
       "properties": {
         "description": {
           "type": "string",
+          "minLength": 1,
           "description": "Description of the benefits at this relationship level"
         },
         "attribute_bonus": {
           "type": "object",
           "description": "Attribute bonuses provided by this relationship level",
-          "additionalProperties": {
-            "type": "integer"
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "special_abilities": {
           "type": "array",
           "description": "Special abilities provided by this relationship level",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "romance_route": {
+          "type": "string",
+          "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"],
+          "description": "The romance route this relationship level unlocks"
         }
       }
     },
     "dating": {
       "type": "object",
-      "required": ["description", "attribute_bonus", "special_abilities"],
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events", "romance_route"],
       "properties": {
         "description": {
           "type": "string",
+          "minLength": 1,
           "description": "Description of the benefits at this relationship level"
         },
         "attribute_bonus": {
           "type": "object",
           "description": "Attribute bonuses provided by this relationship level",
-          "additionalProperties": {
-            "type": "integer"
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "special_abilities": {
           "type": "array",
           "description": "Special abilities provided by this relationship level",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "romance_route": {
+          "type": "string",
+          "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"],
+          "description": "The romance route this relationship level unlocks"
         }
       }
     },
     "committed": {
       "type": "object",
-      "required": ["description", "attribute_bonus", "special_abilities"],
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events", "romance_route"],
       "properties": {
         "description": {
           "type": "string",
+          "minLength": 1,
           "description": "Description of the benefits at this relationship level"
         },
         "attribute_bonus": {
           "type": "object",
           "description": "Attribute bonuses provided by this relationship level",
-          "additionalProperties": {
-            "type": "integer"
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "special_abilities": {
           "type": "array",
           "description": "Special abilities provided by this relationship level",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "romance_route": {
+          "type": "string",
+          "enum": ["akane", "yuki", "sakura", "mitsuki", "ayame", "rei", "kaede"],
+          "description": "The romance route this relationship level unlocks"
+        }
+      }
+    },
+    "club_member": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events", "club"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "club": {
+          "type": "string",
+          "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"],
+          "description": "The club this relationship level is associated with"
+        }
+      }
+    },
+    "club_officer": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events", "club"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "club": {
+          "type": "string",
+          "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"],
+          "description": "The club this relationship level is associated with"
+        }
+      }
+    },
+    "club_leader": {
+      "type": "object",
+      "required": ["description", "attribute_bonus", "special_abilities", "unlock_events", "club"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Description of the benefits at this relationship level"
+        },
+        "attribute_bonus": {
+          "type": "object",
+          "description": "Attribute bonuses provided by this relationship level",
+          "properties": {
+            "power_stat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "intellect": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "charisma": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "special_abilities": {
+          "type": "array",
+          "description": "Special abilities provided by this relationship level",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unlock_events": {
+          "type": "array",
+          "description": "Events unlocked at this relationship level",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(_[0-9]+)*(_[a-z_]+)?$"
+          }
+        },
+        "club": {
+          "type": "string",
+          "enum": ["chamas", "combate", "politico", "elementalistas", "ilusionistas"],
+          "description": "The club this relationship level is associated with"
         }
       }
     }

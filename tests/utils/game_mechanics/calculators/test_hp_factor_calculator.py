@@ -11,6 +11,9 @@ from utils.game_mechanics.constants import HP_FACTOR_THRESHOLD, HP_FACTOR_MIN
 class TestHPFactorCalculator(unittest.TestCase):
     """Test cases for the HPFactorCalculator class."""
 
+    def setUp(self):
+        self.calculator = HPFactorCalculator()
+
     def test_calculate_factor_full_hp(self):
         """Test that the calculator returns 1.0 for full HP."""
         self.assertEqual(HPFactorCalculator.calculate_factor(100, 100), 1.0)
