@@ -12,6 +12,22 @@ from utils.game_mechanics.constants import TRAINING_OUTCOMES
 class TestTrainingEvent(unittest.TestCase):
     """Test cases for the TrainingEvent class."""
 
+    def setUp(self):
+        """Set up test data."""
+        self.mock_player = {
+            "user_id": 123,
+            "name": "Test Player",
+            "level": 5,
+            "exp": 1000,
+            "tusd": 500,
+            "dexterity": 10,
+            "intellect": 8,
+            "charisma": 6,
+            "power_stat": 12,
+            "hp": 100,
+            "max_hp": 100
+        }
+
     def test_init(self):
         """Test that the event is initialized correctly."""
         title = "Test Training"
@@ -27,33 +43,20 @@ class TestTrainingEvent(unittest.TestCase):
         self.assertEqual(event.get_effect(), {"exp": exp_gain, "attribute": attribute_gain})
 
     def test_trigger(self):
-        """Test that the event correctly triggers and returns a result."""
+        """Test that the event correctly triggers and returns the result."""
         title = "Test Training"
         description = "Test description"
         exp_gain = 20
         attribute_gain = "dexterity"
 
         event = TrainingEvent(title, description, exp_gain, attribute_gain)
+        result = event.trigger(self.mock_player)
 
-        # Create a mock player
-        player = {
-            "name": "Test Player",
-            "level": 1,
-            "exp": 0,
-            "dexterity": 5,
-            "intellect": 5,
-            "charisma": 5,
-            "power_stat": 5
-        }
-
-        # Trigger the event
-        result = event.trigger(player)
-
-        # Check the result
         self.assertEqual(result["title"], title)
         self.assertEqual(result["description"], description)
         self.assertEqual(result["exp_gain"], exp_gain)
         self.assertEqual(result["attribute_gain"], attribute_gain)
+        self.assertEqual(result["attribute_value"], 1)
 
     @patch('random.choice')
     @patch('random.randint')
