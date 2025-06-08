@@ -7,7 +7,14 @@
   "properties": {
     "type": {
       "type": "string",
-      "enum": ["story", "branching", "challenge"]
+      "enum": [
+        "story",
+        "branching",
+        "challenge",
+        "romance_route",
+        "club_route",
+        "symbolic"
+      ]
     },
     "title": {
       "type": "string",

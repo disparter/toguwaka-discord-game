@@ -9,8 +9,8 @@
       {"npc": "NPC_Nome", "text": "Continuação do diálogo do NPC."}
     ],
     "choices": [
-      {"text": "Primeira opção de escolha", "next_dialogue": 4, "affinity_change": {"NPC_Nome": 3}},
-      {"text": "Segunda opção de escolha", "next_dialogue": 5},
+      {"text": "Primeira opção de escolha", "next_dialogue": 4, "affinity_change": {"NPC_Nome": 3, "increase": true}},
+      {"text": "Segunda opção de escolha", "next_dialogue": 5, "affinity_change": {"NPC_Nome": 3, "increase": false}},
       {"text": "Terceira opção de escolha", "next_dialogue": 6}
     ],
     "additional_dialogues": {
@@ -129,5 +129,29 @@
       }
     },
     "next_chapter": "próximo_capítulo_id"
+  },
+  "romance_route": {
+    "type": "romance_route",
+    "title": "Silêncio entre Livros",
+    "description": "Um momento compartilhado entre olhares e páginas marcadas.",
+    "romance_route": "romance_2",
+    "image_reference": "romantic_library_soft_encounter",
+    "challenge_type": "romance",
+    "dialogues": [
+      { "npc": "love_interest_1", "text": "Eu sempre gostei do som da sua voz quando lê em voz alta..." },
+      { "npc": "love_interest_1", "text": "Eu sempre gostei do som da sua voz quando lê em voz alta..." },
+      { "npc": "love_interest_1", "text": "Eu sempre gostei do som da sua voz quando lê em voz alta..." }
+    ],
+    "challenge_description": "Descrição detalhada do desafio que o jogador enfrentará.",
+    "success_dialogues": [
+      {"npc": "Narrador", "text": "Descrição do sucesso no desafio."},
+      {"npc": "NPC_Nome", "text": "O romance aumenta e habilita rota de romance 2"}
+    ],
+    "failure_dialogues": [
+      {"npc": "Narrador", "text": "Descrição da falha no desafio."},
+      {"npc": "NPC_Nome", "text": "O romance falha e não vai continuar"}
+    ],
+    "completion_exp": 20,
+    "completion_tusd": 10
   }
 }

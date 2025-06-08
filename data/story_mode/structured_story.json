@@ -5749,5 +5749,49 @@
     "speaker": "narrator",
     "text": "Com novas emoções em jogo, você retorna às suas atividades com um brilho diferente nos olhos.",
     "next_chapter": "4_1"
+  },
+  {
+    "club_routes": {
+      "club_1": [
+        {"id": "club_1_intro", "text": "Cerimônia das Brasas: A elite do Clube das Chamas se reúne sob tochas acesas em um ritual iniciático.", "image": "clube_das_chamas_intro.png", "next_chapter": "club_1_trouble_1"},
+        {"id": "club_1_trouble_1", "text": "Rebelião Emergente: Um herdeiro desafia ordens durante um treino simbólico.", "image": "clube_das_chamas_trouble_1.png", "next_chapter": "club_1_trouble_2"},
+        {"id": "club_1_trouble_2", "text": "Conflito Incandescente: Dúvidas surgem sobre a liderança enquanto membros se dividem.", "image": "clube_das_chamas_trouble_2.png", "next_chapter": "club_1_trouble_3"},
+        {"id": "club_1_trouble_3", "text": "Rebelião Incandescente: Um duelo de sucessores explode em meio ao brasão do clube.", "image": "clube_das_chamas_trouble_3.png", "next_chapter": "club_1_resolution"},
+        {"id": "club_1_resolution", "text": "A Última Vigília Ardente: Membros se unem em cerimônia solene.", "image": "clube_das_chamas_resolution.png", "next_chapter": "club_1_final"},
+        {"id": "club_1_final", "text": "Graduação: O brasão eterno do clube é passado adiante.", "image": "clube_das_chamas_final.png"}
+      ],
+      "club_2": [
+        {"id": "club_2_intro", "text": "Manipulação Silenciosa: Ilusionistas iniciam treinos psíquicos em salão espelhado.", "image": "clube_dos_ilusionistas_intro.png", "next_chapter": "club_2_trouble_1"},
+        {"id": "club_2_trouble_1", "text": "Suspeita Mental: Um membro distorce lembranças durante sessão coletiva.", "image": "clube_dos_ilusionistas_trouble_1.png", "next_chapter": "club_2_trouble_2"},
+        {"id": "club_2_trouble_2", "text": "Traição Psíquica: Um plano do líder é exposto por uma aluna diante da sala inteira.", "image": "clube_dos_ilusionistas_trouble_2.png", "next_chapter": "club_2_trouble_3"},
+        {"id": "club_2_trouble_3", "text": "Quebra da Mente Coletiva: A sala espelhada entra em colapso emocional.", "image": "clube_dos_ilusionistas_trouble_3.png", "next_chapter": "club_2_resolution"},
+        {"id": "club_2_resolution", "text": "Consenso do Véu: Membros se reconectam através de um elo psíquico.", "image": "clube_dos_ilusionistas_resolution.png", "next_chapter": "club_2_final"},
+        {"id": "club_2_final", "text": "Graduação: Reflexos harmoniosos indicam o novo caminho coletivo.", "image": "clube_dos_ilusionistas_final.png"}
+      ],
+      "club_3": [
+        {"id": "club_3_intro", "text": "Conspiração Formal: O conselho planeja estratégias do alto da torre.", "image": "clube_politico_intro.png", "next_chapter": "club_3_trouble_1"},
+        {"id": "club_3_trouble_1", "text": "Disputa por Liderança: Rumores dividem as intenções dos membros.", "image": "clube_politico_trouble_1.png", "next_chapter": "club_3_trouble_2"},
+        {"id": "club_3_trouble_2", "text": "Golpe Velado: Um decreto secreto rompe a aliança dos três círculos.", "image": "clube_politico_trouble_2.png", "next_chapter": "club_3_trouble_3"},
+        {"id": "club_3_trouble_3", "text": "A Votação Final: A mesa do conselho está dividida; uma decisão precisa ser tomada.", "image": "clube_politico_trouble_3.png", "next_chapter": "club_3_resolution"},
+        {"id": "club_3_resolution", "text": "O Acordo dos Três Círculos: Novos líderes selam a reconciliação.", "image": "clube_politico_trouble_resolution.png", "next_chapter": "club_3_final"},
+        {"id": "club_3_final", "text": "Graduação: Último discurso nas escadarias da torre.", "image": "clube_politico_final.png"}
+      ],
+      "club_4": [
+        {"id": "club_4_intro", "text": "Sinais de Desequilíbrio: O cristal elemental pulsa enquanto ruínas vibram.", "image": "clube_elementalistas_intro.png", "next_chapter": "club_4_trouble_1"},
+        {"id": "club_4_trouble_1", "text": "Desequilíbrio Crescente: Plantas reagem a emoções dos estudantes.", "image": "clube_elementalistas_trouble_1.png", "next_chapter": "club_4_trouble_2"},
+        {"id": "club_4_trouble_2", "text": "Ritual Proibido: Energia instável gera entidade viva que assusta um mentor.", "image": "clube_elementalistas_trouble_2.png", "next_chapter": "club_4_trouble_3"},
+        {"id": "club_4_trouble_3", "text": "O Desequilíbrio da Harmonia: Tentativa falha de conter o ritual impacta a flora.", "image": "clube_elementalistas_trouble_3.png", "next_chapter": "club_4_resolution"},
+        {"id": "club_4_resolution", "text": "Restauração no Coração Verde: Cristal estabilizado, alunos replantam o santuário.", "image": "clube_elementalistas_resolution.png", "next_chapter": "club_4_final"},
+        {"id": "club_4_final", "text": "Graduação: Os elementos retornam ao equilíbrio eterno.", "image": "clube_elementalistas_final.png"}
+      ],
+      "club_5": [
+        {"id": "club_5_intro", "text": "Rebelião Emergente: Primeira faísca de tensão durante o treino ritualístico.", "image": "clube_de_combate_intro.png", "next_chapter": "club_5_trouble_1"},
+        {"id": "club_5_trouble_1", "text": "Conflito Silencioso: Duas facções internas se formam. Um estudante recusa-se a lutar.", "image": "clube_de_combate_trouble_1.png", "next_chapter": "club_5_trouble_2"},
+        {"id": "club_5_trouble_2", "text": "Confronto Imminente: Estudantes se encaram no dojô vazio. O líder falta pela primeira vez.", "image": "clube_de_combate_trouble_2.png", "next_chapter": "club_5_trouble_3"},
+        {"id": "club_5_trouble_3", "text": "Confronto por Honra: Decisão silenciosa é tomada com olhares — dois vão duelar.", "image": "clube_de_combate_trouble_3.png", "next_chapter": "club_5_resolution"},
+        {"id": "club_5_resolution", "text": "O Torneio da Honra: Os finalistas se cumprimentam antes do combate final.", "image": "clube_de_combate_resolution.png", "next_chapter": "club_5_final"},
+        {"id": "club_5_final", "text": "Graduação: Último duelo cerimonial no mural dos campeões.", "image": "clube_de_combate_final.png"}
+      ]
+    }
   }
 ]
