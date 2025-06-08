@@ -41,357 +41,161 @@ def init_db():
         logger.warning("RESET_DATABASE flag is set to true. Resetting SQLite database...")
         reset_sqlite_db()
 
-    # If running in AWS, try to download the database from S3
-    if IS_AWS and not RESET_DATABASE:  # Skip download if we're resetting
-        try:
-            from utils.s3_storage import download_db_from_s3, ensure_s3_bucket_exists
-
-            # Ensure the S3 bucket exists
-            if ensure_s3_bucket_exists():
-                # Try to download the database from S3
-                if download_db_from_s3():
-                    logger.info("Downloaded database from S3")
-                else:
-                    logger.warning("Failed to download database from S3, will create a new one")
-            else:
-                logger.warning("Failed to ensure S3 bucket exists, will create a local database")
-        except ImportError:
-            logger.warning("s3_storage module not available, skipping S3 download")
-        except Exception as e:
-            logger.error(f"Error downloading database from S3: {e}")
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    # Check if we need to add HP columns to existing players
     try:
-        cursor.execute("PRAGMA table_info(players)")
-        columns = cursor.fetchall()
-        has_hp_column = any(col[1] == 'hp' for col in columns)
-        has_max_hp_column = any(col[1] == 'max_hp' for col in columns)
-        has_story_progress_column = any(col[1] == 'story_progress' for col in columns)
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-        if not has_hp_column:
-            logger.info("Adding 'hp' column to players table")
-            cursor.execute("ALTER TABLE players ADD COLUMN hp INTEGER DEFAULT 100")
-            conn.commit()
+        # Create tables if they don't exist
+        cursor.executescript('''
+            CREATE TABLE IF NOT EXISTS players (
+                user_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                power INTEGER DEFAULT 0,
+                level INTEGER DEFAULT 1,
+                exp INTEGER DEFAULT 0,
+                tusd INTEGER DEFAULT 0,
+                club_id TEXT,
+                dexterity INTEGER DEFAULT 0,
+                intellect INTEGER DEFAULT 0,
+                charisma INTEGER DEFAULT 0,
+                power_stat INTEGER DEFAULT 0,
+                reputation INTEGER DEFAULT 0,
+                hp INTEGER DEFAULT 100,
+                max_hp INTEGER DEFAULT 100,
+                inventory TEXT DEFAULT '{}',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
 
-        if not has_max_hp_column:
-            logger.info("Adding 'max_hp' column to players table")
-            cursor.execute("ALTER TABLE players ADD COLUMN max_hp INTEGER DEFAULT 100")
-            conn.commit()
+            CREATE TABLE IF NOT EXISTS clubs (
+                club_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                leader_id TEXT NOT NULL,
+                reputation INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
 
-        if not has_story_progress_column:
-            logger.info("Adding 'story_progress' column to players table")
-            cursor.execute("ALTER TABLE players ADD COLUMN story_progress TEXT DEFAULT NULL")
-            conn.commit()
+            CREATE TABLE IF NOT EXISTS events (
+                event_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                type TEXT NOT NULL,
+                channel_id TEXT NOT NULL,
+                message_id TEXT,
+                start_time TIMESTAMP NOT NULL,
+                end_time TIMESTAMP NOT NULL,
+                completed BOOLEAN DEFAULT FALSE,
+                participants TEXT DEFAULT '[]',
+                data TEXT DEFAULT '{}',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
 
-        # Update existing players to have default HP values if they don't already
-        cursor.execute("UPDATE players SET hp = 100 WHERE hp IS NULL")
-        cursor.execute("UPDATE players SET max_hp = 100 WHERE max_hp IS NULL")
+            CREATE TABLE IF NOT EXISTS cooldowns (
+                user_id TEXT NOT NULL,
+                command TEXT NOT NULL,
+                expiry_time TIMESTAMP NOT NULL,
+                PRIMARY KEY (user_id, command)
+            );
+
+            CREATE TABLE IF NOT EXISTS system_flags (
+                flag_name TEXT PRIMARY KEY,
+                flag_value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS items (
+                item_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                type TEXT NOT NULL,
+                rarity TEXT NOT NULL,
+                price INTEGER DEFAULT 0,
+                effects TEXT DEFAULT '{}',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ''')
+
         conn.commit()
-
-        rows_updated = cursor.rowcount
-        if rows_updated > 0:
-            logger.info(f"Updated {rows_updated} players with default HP values")
+        logger.info("SQLite database initialized successfully")
+        return True
     except sqlite3.Error as e:
-        logger.info(f"Checking players table for HP columns: {e}")
-        # If there's an error, it will be handled by the CREATE TABLE statement below
+        logger.error(f"Error initializing SQLite database: {e}")
+        return False
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
-    # Check if events table exists and if it has the completed column
-    try:
-        cursor.execute("PRAGMA table_info(events)")
-        columns = cursor.fetchall()
-        has_completed_column = any(col[1] == 'completed' for col in columns)
+def handle_db_error(func):
+    """Decorator to handle database errors and attempt fallback to SQLite if needed."""
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Database error in {func.__name__}: {e}")
+            
+            # Try to fallback to SQLite if we're not already using it
+            try:
+                from utils.db_provider import db_provider
+                if db_provider.current_db_type != DatabaseType.SQLITE:
+                    if db_provider.fallback_to_sqlite():
+                        # Retry the operation with SQLite
+                        return func(*args, **kwargs)
+            except Exception as fallback_error:
+                logger.error(f"Error during fallback to SQLite: {fallback_error}")
+            
+            # If we get here, either fallback failed or we're already using SQLite
+            raise
+    return wrapper
 
-        if not has_completed_column:
-            logger.info("Adding 'completed' column to events table")
-            cursor.execute("ALTER TABLE events ADD COLUMN completed BOOLEAN DEFAULT 0")
-            conn.commit()
-    except sqlite3.Error as e:
-        # If the table doesn't exist yet, this will be handled by the CREATE TABLE statement below
-        logger.info(f"Checking events table: {e}")
-
-    # Create players table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS players (
-        user_id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        power TEXT NOT NULL,
-        strength_level INTEGER NOT NULL,
-        club_id INTEGER,
-        level INTEGER DEFAULT 1,
-        exp INTEGER DEFAULT 0,
-        tusd INTEGER DEFAULT 100,
-        dexterity INTEGER DEFAULT 5,
-        intellect INTEGER DEFAULT 5,
-        charisma INTEGER DEFAULT 5,
-        power_stat INTEGER DEFAULT 5,
-        inventory TEXT DEFAULT '{}',
-        techniques TEXT DEFAULT '{}',
-        reputation INTEGER DEFAULT 0,
-        hp INTEGER DEFAULT 100,
-        max_hp INTEGER DEFAULT 100,
-        story_progress TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (club_id) REFERENCES clubs(club_id)
-    )
-    ''')
-
-    # Create clubs table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS clubs (
-        club_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        description TEXT,
-        leader_id INTEGER,
-        members_count INTEGER DEFAULT 0,
-        reputation INTEGER DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (leader_id) REFERENCES players(user_id)
-    )
-    ''')
-
-    # Create duels table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS duels (
-        duel_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        challenger_id INTEGER NOT NULL,
-        opponent_id INTEGER NOT NULL,
-        winner_id INTEGER,
-        loser_id INTEGER,
-        duel_type TEXT NOT NULL,
-        duel_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (challenger_id) REFERENCES players(user_id),
-        FOREIGN KEY (opponent_id) REFERENCES players(user_id),
-        FOREIGN KEY (winner_id) REFERENCES players(user_id),
-        FOREIGN KEY (loser_id) REFERENCES players(user_id)
-    )
-    ''')
-
-    # Create items table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS items (
-        item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        description TEXT,
-        type TEXT NOT NULL,
-        rarity TEXT NOT NULL,
-        price INTEGER NOT NULL,
-        effects TEXT DEFAULT '{}'
-    )
-    ''')
-
-    # Create enhanced events table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS events (
-        event_id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        description TEXT,
-        type TEXT NOT NULL,
-        channel_id INTEGER,
-        message_id INTEGER,
-        start_time TIMESTAMP,
-        end_time TIMESTAMP,
-        completed BOOLEAN DEFAULT 0,
-        participants TEXT DEFAULT '[]',
-        data TEXT DEFAULT '{}',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    ''')
-
-    # Create cooldowns table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS cooldowns (
-        user_id INTEGER NOT NULL,
-        command TEXT NOT NULL,
-        expiry_time TIMESTAMP NOT NULL,
-        PRIMARY KEY (user_id, command),
-        FOREIGN KEY (user_id) REFERENCES players(user_id)
-    )
-    ''')
-
-    # Create subjects_grades table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS subjects_grades (
-        grade_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        subject TEXT NOT NULL,
-        grade REAL DEFAULT 0,
-        month INTEGER NOT NULL,
-        year INTEGER NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES players(user_id),
-        UNIQUE(user_id, subject, month, year)
-    )
-    ''')
-
-    # Create voting table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS voting (
-        vote_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category TEXT NOT NULL,
-        voter_id INTEGER NOT NULL,
-        candidate_id INTEGER NOT NULL,
-        week INTEGER NOT NULL,
-        year INTEGER NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (voter_id) REFERENCES players(user_id),
-        FOREIGN KEY (candidate_id) REFERENCES players(user_id),
-        UNIQUE(voter_id, category, week, year)
-    )
-    ''')
-
-    # Create quiz_questions table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS quiz_questions (
-        question_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        question TEXT NOT NULL,
-        options TEXT NOT NULL,  -- JSON array of options
-        correct_option INTEGER NOT NULL,
-        difficulty INTEGER NOT NULL DEFAULT 1,
-        category TEXT NOT NULL,  -- Subject or theme
-        attribute TEXT,  -- Related player attribute (intellect, charisma, dexterity, power)
-        min_level INTEGER DEFAULT 1,  -- Minimum player level for this question
-        tusd_reward INTEGER DEFAULT 10,  -- TUSD reward for correct answer
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    ''')
-
-    # Create club_activities table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS club_activities (
-        activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        club_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        activity_type TEXT NOT NULL,  -- 'duel_win', 'exploration', etc.
-        points INTEGER NOT NULL,  -- Contribution points
-        week INTEGER NOT NULL,
-        year INTEGER NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (club_id) REFERENCES clubs(club_id),
-        FOREIGN KEY (user_id) REFERENCES players(user_id)
-    )
-    ''')
-
-    # Insert default clubs
-    default_clubs = [
-        (1, "Clube das Chamas", "Mestres do fogo e das artes marciais explosivas.", None, 0, 100),
-        (2, "Ilusionistas Mentais", "Especialistas em poderes psíquicos e manipulação mental.", None, 0, 100),
-        (3, "Conselho Político", "Líderes estrategistas que controlam a política estudantil.", None, 0, 100),
-        (4, "Elementalistas", "Dominam os elementos da natureza com precisão científica.", None, 0, 100),
-        (5, "Clube de Combate", "Focados em aperfeiçoar técnicas de luta e duelos táticos.", None, 0, 100)
-    ]
-
-    cursor.executemany('''
-    INSERT OR IGNORE INTO clubs (club_id, name, description, leader_id, members_count, reputation)
-    VALUES (?, ?, ?, ?, ?, ?)
-    ''', default_clubs)
-
-    # Create system_flags table for storing system-wide flags
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS system_flags (
-        flag_name TEXT PRIMARY KEY,
-        flag_value TEXT NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    ''')
-
-    # Insert default quiz questions
-    default_questions = [
-        # Intellect questions
-        ("Qual é o símbolo químico do ouro?", json.dumps(["Au", "Ag", "Fe", "Cu"]), 0, 2, "Ciências", "intellect", 1, 15),
-        ("Quem escreveu 'Dom Quixote'?", json.dumps(["Shakespeare", "Cervantes", "Machado de Assis", "Dante Alighieri"]), 1, 2, "Literatura", "intellect", 1, 15),
-        ("Qual é a capital da Austrália?", json.dumps(["Sydney", "Melbourne", "Canberra", "Brisbane"]), 2, 2, "Geografia", "intellect", 1, 15),
-
-        # Charisma questions
-        ("Qual destas é uma técnica eficaz de comunicação?", json.dumps(["Interromper frequentemente", "Evitar contato visual", "Escuta ativa", "Falar muito rápido"]), 2, 2, "Comunicação", "charisma", 1, 15),
-        ("O que significa empatia?", json.dumps(["Manipular emoções", "Capacidade de entender sentimentos alheios", "Esconder seus sentimentos", "Expressar raiva"]), 1, 2, "Psicologia", "charisma", 1, 15),
-
-        # Dexterity questions
-        ("Qual esporte utiliza mais a coordenação motora fina?", json.dumps(["Futebol", "Tiro com arco", "Natação", "Corrida"]), 1, 2, "Esportes", "dexterity", 1, 15),
-        ("Qual instrumento musical requer maior destreza manual?", json.dumps(["Bateria", "Violino", "Flauta", "Piano"]), 1, 2, "Música", "dexterity", 1, 15),
-
-        # Power questions
-        ("Qual exercício é melhor para desenvolver força?", json.dumps(["Yoga", "Pilates", "Agachamento", "Alongamento"]), 2, 2, "Educação Física", "power_stat", 1, 15),
-        ("Qual personagem de Unordinary possui a habilidade mais poderosa?", json.dumps(["John", "Seraphina", "Arlo", "Remi"]), 1, 3, "Unordinary", "power_stat", 3, 25),
-
-        # High-level questions
-        ("Qual é o teorema fundamental do cálculo?", json.dumps(["Relaciona a derivada com a integral", "Define números complexos", "Explica a teoria dos conjuntos", "Prova a existência de números primos infinitos"]), 0, 3, "Matemática Avançada", "intellect", 5, 30),
-        ("Na série Unordinary, qual é a classificação de poder de John?", json.dumps(["7.0", "7.5", "8.0", "Desconhecido"]), 1, 3, "Unordinary", "intellect", 5, 30)
-    ]
-
-    cursor.executemany('''
-    INSERT OR IGNORE INTO quiz_questions (question, options, correct_option, difficulty, category, attribute, min_level, tusd_reward)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', default_questions)
-
-    conn.commit()
-    conn.close()
-
-    logger.info("Database initialized successfully")
-
+# Apply the error handler to all database functions
+@handle_db_error
 def get_player(user_id):
-    """Get player data from database."""
+    """Get player data from the database."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM players WHERE user_id = ?", (user_id,))
-    player = cursor.fetchone()
+    try:
+        cursor.execute('''
+        SELECT * FROM players WHERE user_id = ?
+        ''', (user_id,))
 
-    conn.close()
+        player = cursor.fetchone()
+        if player:
+            # Convert row to dict and parse JSON fields
+            player_dict = dict(player)
+            player_dict['inventory'] = json.loads(player_dict['inventory'])
+            return player_dict
+        return None
+    finally:
+        conn.close()
 
-    if player:
-        # Convert JSON strings to dictionaries
-        player_dict = dict(player)
-        player_dict['inventory'] = json.loads(player_dict['inventory'])
-        player_dict['techniques'] = json.loads(player_dict['techniques'])
-
-        # Parse story_progress if it exists and is not None
-        if 'story_progress' in player_dict and player_dict['story_progress']:
-            try:
-                player_dict['story_progress'] = json.loads(player_dict['story_progress'])
-            except json.JSONDecodeError:
-                logger.error(f"Error parsing story_progress for player {player_dict['user_id']}")
-
-        return player_dict
-
-    return None
-
-def create_player(user_id, name, power, strength_level, club_id):
+# Apply the error handler to all other database functions
+@handle_db_error
+def create_player(user_id, name, **kwargs):
     """Create a new player in the database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     try:
-        cursor.execute('''
-        INSERT INTO players (user_id, name, power, strength_level, club_id)
-        VALUES (?, ?, ?, ?, ?)
-        ''', (user_id, name, power, strength_level, club_id))
+        # Process inventory to JSON string
+        inventory = kwargs.get('inventory', {})
+        if isinstance(inventory, dict):
+            inventory = json.dumps(inventory)
 
-        # Update club members count
         cursor.execute('''
-        UPDATE clubs SET members_count = members_count + 1
-        WHERE club_id = ?
-        ''', (club_id,))
+        INSERT INTO players (user_id, name, inventory)
+        VALUES (?, ?, ?)
+        ''', (user_id, name, inventory))
 
         conn.commit()
-        logger.info(f"Created new player: {name} (ID: {user_id})")
-        result = True
-
-        # Sync to S3 if running in AWS
-        if IS_AWS and result:
-            sync_db_to_s3()
-
-        return result
-    except sqlite3.Error as e:
-        conn.rollback()
-        logger.error(f"Error creating player: {e}")
-        return False
+        return True
     finally:
         conn.close()
+
+# Continue applying @handle_db_error to all other database functions...
 
 def sync_db_to_s3():
     """Sync the local database to S3 if running in AWS.
