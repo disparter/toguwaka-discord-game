@@ -1,0 +1,131 @@
+{
+    "chapter_id": "club_2_1_intro",
+    "title": "Introdução ao Clube de Combate",
+    "description": "O primeiro encontro com o Clube de Combate e seu líder",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "1_1_arrival",
+        "reputation": {
+            "ryuji": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "club_entrance",
+            "background": "clube_de_combate_intro.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "welcoming"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Bem-vindo ao Clube de Combate. Aqui, você aprenderá técnicas de combate e estratégia."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Obrigado por me receber. Estou pronto para treinar."
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "O combate é mais que força - é disciplina, estratégia e espírito de luta."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Expressar interesse no treinamento",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 5
+                        },
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Perguntar sobre as técnicas ensinadas",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 3
+                        },
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "first_training",
+            "background": "clube_de_combate_trouble_1.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "teaching"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Vamos começar com o básico. O combate começa com postura e equilíbrio."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como devo me posicionar?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Mantenha o centro de gravidade baixo e a mente alerta."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Tentar a postura básica",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 4
+                        },
+                        "power": 8
+                    }
+                },
+                {
+                    "text": "Observar primeiro os outros membros",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 2
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "skills": [
+            "combat_basics",
+            "battle_stance"
+        ],
+        "unlocks": [
+            "combat_club_training",
+            "club_events"
+        ]
+    },
+    "metadata": {
+        "location": "combat_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

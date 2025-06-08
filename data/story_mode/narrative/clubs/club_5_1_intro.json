@@ -1,0 +1,131 @@
+{
+    "chapter_id": "club_5_1_intro",
+    "title": "Introdução ao Clube Político",
+    "description": "O primeiro encontro com o Clube Político e seu líder",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "1_1_arrival",
+        "reputation": {
+            "professor_quantum": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "club_entrance",
+            "background": "clube_politico_intro.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "curious"
+                },
+                {
+                    "id": "professor_quantum",
+                    "image": "professor_quantum_intro.png",
+                    "expression": "welcoming"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Bem-vindo ao Clube Político. Aqui, você aprenderá sobre liderança, diplomacia e tomada de decisões."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Obrigado por me receber. Estou interessado em aprender sobre política."
+                },
+                {
+                    "speaker": "professor_quantum",
+                    "text": "A política é mais que poder - é a arte de unir pessoas e criar mudanças positivas."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Expressar interesse na liderança",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 5
+                        },
+                        "leadership": 5
+                    }
+                },
+                {
+                    "text": "Perguntar sobre a história do clube",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 3
+                        },
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "first_training",
+            "background": "clube_politico_trouble_1.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "professor_quantum",
+                    "image": "professor_quantum_intro.png",
+                    "expression": "teaching"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Vamos começar com o básico. A política começa com a compreensão das pessoas e suas necessidades."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como devo começar?"
+                },
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Primeiro, você deve aprender a ouvir e entender diferentes perspectivas."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Participar de um debate simulado",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 4
+                        },
+                        "leadership": 8
+                    }
+                },
+                {
+                    "text": "Observar primeiro os outros membros",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 2
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "skills": [
+            "leadership_basics",
+            "diplomacy"
+        ],
+        "unlocks": [
+            "political_club_training",
+            "club_events"
+        ]
+    },
+    "metadata": {
+        "location": "political_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

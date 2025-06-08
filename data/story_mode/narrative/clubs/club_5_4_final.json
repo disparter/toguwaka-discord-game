@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_5_4_final",
+    "title": "O Legado do Clube Político",
+    "description": "O clube realiza seu maior debate e prepara a próxima geração de líderes",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_5_3_resolution",
+        "reputation": {
+            "alexander": 20
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "final_debate",
+            "background": "clube_politico_trouble_5.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "confident"
+                },
+                {
+                    "id": "alexander",
+                    "image": "alexander_strategos_intro.png",
+                    "expression": "serious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "alexander",
+                    "text": "Este é o debate final. Vamos testar sua capacidade de liderança e diplomacia."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Qual será o tema do debate?"
+                },
+                {
+                    "speaker": "alexander",
+                    "text": "O futuro da academia. Como podemos unir todos os clubes em uma visão comum?"
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Propor uma aliança entre os clubes",
+                    "effects": {
+                        "reputation": {
+                            "alexander": 8
+                        },
+                        "leadership": 15,
+                        "diplomacy": 10
+                    }
+                },
+                {
+                    "text": "Sugerir uma competição amigável",
+                    "effects": {
+                        "reputation": {
+                            "alexander": 6
+                        },
+                        "leadership": 12,
+                        "strategy": 8
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "passing_leadership",
+            "background": "clube_politico_trouble_6.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "reflective"
+                },
+                {
+                    "id": "alexander",
+                    "image": "alexander_strategos_intro.png",
+                    "expression": "proud"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "alexander",
+                    "text": "Você demonstrou uma visão clara e estratégica. O clube está pronto para uma nova era de liderança."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que isso significa para o futuro?"
+                },
+                {
+                    "speaker": "alexander",
+                    "text": "Significa que você está pronto para guiar outros. Para mostrar que a verdadeira liderança vem da união e da visão estratégica."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar a responsabilidade",
+                    "effects": {
+                        "reputation": {
+                            "alexander": 10
+                        },
+                        "leadership": 15,
+                        "wisdom": 10
+                    }
+                },
+                {
+                    "text": "Propor uma nova direção",
+                    "effects": {
+                        "reputation": {
+                            "alexander": 8
+                        },
+                        "leadership": 12,
+                        "innovation": 10
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 150,
+        "skills": [
+            "political_mastery_advanced",
+            "strategic_leadership"
+        ],
+        "unlocks": [
+            "political_club_legacy",
+            "special_events"
+        ]
+    },
+    "metadata": {
+        "location": "political_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

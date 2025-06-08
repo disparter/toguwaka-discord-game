@@ -155,110 +155,23 @@ commands_synced = False
 async def on_ready():
     """Event triggered when the bot is ready and connected to Discord."""
     global commands_synced
-    logger.info(f'{bot.user.name} has connected to Discord!')
-    logger.info(f'Bot is in {len(bot.guilds)} guilds')
 
-    # Set bot status
-    await bot.change_presence(activity=discord.Game(name="Academia Tokugawa"))
+    logger.info(f'Bot is ready! Logged in as {bot.user.name}')
 
-    # Check if DynamoDB is enabled and run migration if needed
+    # Initialize database provider and handle migration
     try:
-        import os
-        import boto3
+        from utils.db_provider import db_provider
 
-        # Check if DynamoDB is enabled
-        use_dynamodb = os.environ.get('USE_DYNAMODB', 'false').lower() == 'true'
-
-        if use_dynamodb:
-            # Import DynamoDB functions
-            from utils.dynamodb import get_system_flag, set_system_flag, init_db
-
-            # Initialize DynamoDB connection
-            if not init_db():
-                logger.error("Failed to initialize DynamoDB connection. Attempting to create table...")
-
-                # Create DynamoDB table if it doesn't exist
-                try:
-                    # Get table name and region from environment
-                    table_name = os.environ.get('DYNAMODB_TABLE', 'AcademiaTokugawa')
-                    region = os.environ.get('AWS_REGION', 'us-east-1')
-
-                    # Create DynamoDB client
-                    dynamodb = boto3.resource('dynamodb', region_name=region)
-
-                    # Check if table exists
-                    existing_tables = [table.name for table in dynamodb.tables.all()]
-
-                    if table_name not in existing_tables:
-                        logger.info(f"Creating DynamoDB table: {table_name}")
-
-                        # Create table with single-table design
-                        table = dynamodb.create_table(
-                            TableName=table_name,
-                            KeySchema=[
-                                {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                                {'AttributeName': 'SK', 'KeyType': 'RANGE'}
-                            ],
-                            AttributeDefinitions=[
-                                {'AttributeName': 'PK', 'AttributeType': 'S'},
-                                {'AttributeName': 'SK', 'AttributeType': 'S'},
-                                {'AttributeName': 'GSI1PK', 'AttributeType': 'S'},
-                                {'AttributeName': 'GSI1SK', 'AttributeType': 'S'}
-                            ],
-                            GlobalSecondaryIndexes=[
-                                {
-                                    'IndexName': 'GSI1',
-                                    'KeySchema': [
-                                        {'AttributeName': 'GSI1PK', 'KeyType': 'HASH'},
-                                        {'AttributeName': 'GSI1SK', 'KeyType': 'RANGE'}
-                                    ],
-                                    'Projection': {'ProjectionType': 'ALL'}
-                                }
-                            ],
-                            BillingMode='PAY_PER_REQUEST'
-                        )
-
-                        # Wait for table to be created
-                        logger.info(f"Waiting for table {table_name} to be created...")
-                        table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-                        logger.info(f"Table {table_name} created successfully!")
-
-                        # Try to initialize DynamoDB connection again
-                        if not init_db():
-                            logger.error("Failed to initialize DynamoDB connection after creating table. Migration will not be performed.")
-                            return
-                    else:
-                        logger.info(f"Table {table_name} already exists but connection failed. Check AWS credentials.")
-                        return
-                except Exception as e:
-                    logger.error(f"Error creating DynamoDB table: {e}")
-                    return
-
-            # Check if migration has been executed before
-            migration_flag = get_system_flag('migration_executed')
-
-            if not migration_flag:
-                logger.info("First time running with DynamoDB enabled. Starting migration...")
-
-                # Import and run migration script
-                from utils.migrate_to_dynamodb import migrate_all
-
-                # Run migration
-                success = migrate_all()
-
-                if success:
-                    # Set flag to indicate migration has been executed
-                    set_system_flag('migration_executed', 'true')
-                    logger.info("Migration completed successfully")
-                else:
-                    logger.error("Migration failed")
-            else:
-                logger.info("Migration already executed, skipping")
+        # Try to ensure DynamoDB is available
+        if db_provider.ensure_dynamo_available():
+            # If DynamoDB is available, try to sync data if needed
+            db_provider.sync_to_dynamo_if_empty()
         else:
-            # Import SQLite functions if DynamoDB is not enabled
-            from utils.database import get_system_flag, set_system_flag
+            # If DynamoDB is not available, fallback to SQLite
+            if not db_provider.fallback_to_sqlite():
+                logger.error("Failed to initialize any database. Bot may not function correctly.")
     except Exception as e:
-        logger.error(f"Error checking/running migration: {e}")
+        logger.error(f"Error during database initialization: {e}")
 
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:

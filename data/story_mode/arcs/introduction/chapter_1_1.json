@@ -9,14 +9,14 @@
     }
   },
   "dialogues": [
-    {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa, {player_name}! É uma honra receber alguém com seu potencial único.", "gif": "welcome.gif"},
+    {"npc": "Diretor", "text": "Bem-vindo à Academia Tokugawa, {player_name}! É uma honra receber alguém com seu potencial único.", "image": "welcome.png"},
     {"npc": "Diretor", "text": "Por mais de um século e meio, nossa instituição tem sido o berço dos maiores talentos em habilidades especiais. Aqui, você não apenas dominará seus poderes, mas descobrirá seu verdadeiro propósito."},
     {"npc": "Diretor", "text": "Nossos ex-alunos lideram os mais diversos setores da sociedade - desde governos e corporações até organizações que operam nas sombras, mantendo o equilíbrio do mundo."},
     {"npc": "Diretor", "text": "Lembre-se sempre: seu poder é um reflexo de quem você é. As escolhas que fizer aqui definirão não apenas seu futuro, mas potencialmente o destino de muitos."},
     {"npc": "Narrador", "text": "O olhar penetrante do Diretor sugere que ele sabe mais sobre você do que aparenta. Você sente que pode aprofundar essa conversa usando o comando /falar."},
     {"npc": "Narrador", "text": "As imagens e registros compartilhados ficarão disponíveis em seu arquivo pessoal. Acesse-os a qualquer momento com o comando /registros."},
     {"npc": "Narrador", "text": "O saguão principal fervilha com novos estudantes. Alguns demonstram abertamente seus poderes, criando pequenos espetáculos de luz, manipulando objetos ou lendo pensamentos. Outros observam discretamente, avaliando a competição."},
-    {"npc": "Junie", "text": "Olá, {player_name}! Sou Junie, sua assistente e guia na Academia Tokugawa. Estou aqui para orientá-lo neste novo mundo de possibilidades.", "gif": "junie_intro.gif"},
+    {"npc": "Junie", "text": "Olá, {player_name}! Sou Junie, sua assistente e guia na Academia Tokugawa. Estou aqui para orientá-lo neste novo mundo de possibilidades.", "image": "junie_intro.png"},
     {"npc": "Junie", "text": "Esta academia opera sob um sistema único de hierarquia baseado em poder e habilidade. Não é apenas sobre força bruta, mas também sobre como você utiliza seu potencial."},
     {"npc": "Junie", "text": "No topo da pirâmide estão os Reis e Rainhas - estudantes excepcionais cujas habilidades transcendem o comum. Abaixo deles, os Jack e Ás formam a elite que mantém a ordem e protege as tradições da academia."},
     {"npc": "Junie", "text": "Nosso campus é um ecossistema complexo: o Prédio Principal abriga as salas de aula e laboratórios; os Campos de Treinamento são áreas especialmente reforçadas para o desenvolvimento seguro de poderes; os Dormitórios são divididos por níveis; e cada Clube representa uma filosofia distinta de poder."},
@@ -35,7 +35,7 @@
       {"npc": "Junie", "text": "O Conselho Político, comandado pelo carismático Alexander Strategos, domina a arte da influência. Seus membros aprendem a amplificar carisma, persuasão e a sutilmente dobrar vontades."},
       {"npc": "Junie", "text": "Os Elementalistas, guiados pela sábia Gaia Naturae, buscam harmonia com as forças naturais. Eles manipulam elementos e criam simbioses com o ambiente natural."},
       {"npc": "Junie", "text": "O Clube de Combate, sob a liderança do disciplinado Ryuji Battleborn, foca na perfeição física e tática. Eles amplificam reflexos, força e resistência além dos limites humanos."},
-      {"npc": "Junie", "text": "Cada clube não é apenas um grupo de treinamento, mas uma família e uma filosofia de vida. Sua escolha definirá seu caminho na academia e possivelmente seu futuro.", "gif": "clubs_overview.gif"},
+      {"npc": "Junie", "text": "Cada clube não é apenas um grupo de treinamento, mas uma família e uma filosofia de vida. Sua escolha definirá seu caminho na academia e possivelmente seu futuro.", "image": "clubs_overview.png"},
       {"npc": "Junie", "text": "Qual dessas filosofias ressoa com sua essência? Qual caminho deseja seguir?", "choices": [
         {"text": "Clube das Chamas - Quero transformar minha paixão em poder", "next_chapter": "1_2", "metadata": {"club_id": 1, "affinity_changes": {"Kai Flameheart": 5, "Junie": 1}, "passion": 2, "control": -1}},
         {"text": "Ilusionistas Mentais - A mente é o verdadeiro campo de batalha", "next_chapter": "1_2", "metadata": {"club_id": 2, "affinity_changes": {"Luna Mindweaver": 5, "Junie": 1}, "intellect": 2, "empathy": 1}},
@@ -45,14 +45,14 @@
       ]}
     ],
     "10": [
-      {"npc": "Junie", "text": "Interessante que você pergunte sobre nossa história... especialmente sobre o Incidente Zero.", "gif": "academy_history.gif"},
+      {"npc": "Junie", "text": "Interessante que você pergunte sobre nossa história... especialmente sobre o Incidente Zero.", "image": "academy_history.png"},
       {"npc": "Junie", "text": "A Academia Tokugawa nasceu da visão de Hideo Tokugawa, um mestre de poderes extraordinário que viveu durante o período Meiji. Em 1873, ele reuniu doze indivíduos excepcionais - conhecidos como os Doze Fundadores - cada um dominando um aspecto único das habilidades especiais."},
       {"npc": "Junie", "text": "Os primeiros anos foram marcados por experimentação e descoberta. A academia funcionava em segredo, protegida por ilusões e barreiras mentais, enquanto os Fundadores desenvolviam métodos para treinar e aprimorar habilidades que o mundo exterior consideraria impossíveis."},
       {"npc": "Junie", "text": "Durante a Segunda Guerra Mundial, a academia enfrentou uma crise existencial. Alguns membros queriam usar seus poderes no conflito, enquanto outros defendiam neutralidade. Após intensos debates, a academia foi temporariamente fechada."},
       {"npc": "Narrador", "text": "Você nota que Junie hesita ligeiramente antes de continuar, como se estivesse decidindo quanto revelar."},
       {"npc": "Junie", "text": "Em 1950, a academia reabriu sob a liderança de Takeshi Tokugawa, neto do fundador, com um novo código de conduta: 'Poder sem sabedoria é o caminho para a destruição'. A academia começou a ensinar ética e responsabilidade junto com o desenvolvimento de habilidades."},
       {"npc": "Junie", "text": "Por décadas, a academia prosperou em relativa paz, expandindo sua influência e refinando suas técnicas. Até 1998..."},
-      {"npc": "Junie", "text": "O Incidente Zero...", "gif": "incident_zero_classified.gif"},
+      {"npc": "Junie", "text": "O Incidente Zero...", "image": "incident_zero_classified.png"},
       {"npc": "Junie", "text": "Os registros oficiais dizem que foi uma 'anomalia dimensional durante um experimento controlado'. A realidade é mais complexa. Um grupo de estudantes e professores tentou acessar o que chamavam de 'Fonte Primordial' - a origem teórica de todos os poderes."},
       {"npc": "Junie", "text": "O experimento... falhou. Ou talvez tenha sido bem-sucedido demais. As testemunhas relatam distorções na realidade, manifestações espontâneas de poderes nunca antes vistos, e... algo que atravessou brevemente o véu entre dimensões."},
       {"npc": "Junie", "text": "Três estudantes desapareceram completamente. Sete outros emergiram transformados, com poderes amplificados além da compreensão. Foi após este evento que o atual sistema de hierarquia foi implementado - não apenas como estrutura social, mas como medida de segurança."},
@@ -69,7 +69,7 @@
     ],
     "8": [
       {"npc": "Junie", "text": "Um espírito independente! Isso é admirável, {player_name}. Os maiores descobrimentos frequentemente vêm daqueles que traçam seus próprios caminhos."},
-      {"npc": "Junie", "text": "Permita-me oferecer algumas orientações para sua exploração. O campus é vasto e nem todas as áreas são... digamos, acolhedoras para novos estudantes.", "gif": "campus_map.gif"},
+      {"npc": "Junie", "text": "Permita-me oferecer algumas orientações para sua exploração. O campus é vasto e nem todas as áreas são... digamos, acolhedoras para novos estudantes.", "image": "campus_map.png"},
       {"npc": "Junie", "text": "O Prédio Principal é aberto a todos e contém a Biblioteca Central - um tesouro de conhecimentos tanto mundanos quanto arcanos. O subsolo, no entanto, requer autorização especial."},
       {"npc": "Junie", "text": "Os Campos de Treinamento são divididos por níveis de poder. Recomendo começar pelos campos básicos até compreender melhor suas próprias capacidades. Acidentes... acontecem."},
       {"npc": "Narrador", "text": "Você nota um brilho de preocupação genuína nos olhos de Junie quando ela menciona 'acidentes'."},
@@ -87,7 +87,7 @@
       ]}
     ],
     "9": [
-      {"npc": "Junie", "text": "O sistema hierárquico da Academia Tokugawa é mais do que uma simples classificação social - é um reflexo da realidade fundamental dos poderes.", "gif": "hierarchy_system.gif"},
+      {"npc": "Junie", "text": "O sistema hierárquico da Academia Tokugawa é mais do que uma simples classificação social - é um reflexo da realidade fundamental dos poderes.", "image": "hierarchy_system.png"},
       {"npc": "Junie", "text": "No ápice da pirâmide estão os Reis e Rainhas - estudantes de nível 5, cujos poderes transcendem o ordinário. Eles não apenas possuem habilidades devastadoras, mas também uma compreensão profunda da natureza de seus dons."},
       {"npc": "Junie", "text": "Atualmente, apenas três estudantes alcançaram este nível: Seraphina Frost, a Rainha de Gelo; Dante Infernus, o Rei das Chamas; e Orion Nexus, o Rei do Vazio. Cada um deles controla um aspecto diferente da academia."},
       {"npc": "Narrador", "text": "Você percebe que vários estudantes ao redor demonstram uma mistura de admiração e temor ao ouvir esses nomes."},
@@ -108,7 +108,7 @@
       ]}
     ],
     "11": [
-      {"npc": "Junie", "text": "O Incidente Zero...", "gif": "junie_concerned.gif"},
+      {"npc": "Junie", "text": "O Incidente Zero...", "image": "junie_concerned.png"},
       {"npc": "Junie", "text": "Devo alertá-lo, {player_name}, que investigar esse assunto não é... encorajado pela administração. Os registros oficiais são fortemente restritos."},
       {"npc": "Narrador", "text": "Junie olha ao redor nervosamente, como se verificando se alguém está ouvindo."},
       {"npc": "Junie", "text": "No entanto, se você está realmente determinado, existem algumas fontes que poderia consultar. A Biblioteca Central possui uma seção de Eventos Históricos no terceiro andar. Os arquivos públicos contêm apenas informações básicas, mas é um começo."},
@@ -125,7 +125,7 @@
       ]}
     ],
     "12": [
-      {"npc": "Junie", "text": "Ambição! Admiro isso em um novo estudante.", "gif": "ambition_path.gif"},
+      {"npc": "Junie", "text": "Ambição! Admiro isso em um novo estudante.", "image": "ambition_path.png"},
       {"npc": "Junie", "text": "Ascender na hierarquia da Academia Tokugawa requer uma combinação de talento natural, treinamento disciplinado e, não menos importante, inteligência estratégica."},
       {"npc": "Junie", "text": "Primeiro, você deve compreender completamente a natureza de seu próprio poder. Cada habilidade, não importa quão modesta pareça inicialmente, tem potencial para crescimento extraordinário quando propriamente cultivada."},
       {"npc": "Junie", "text": "Os estudantes que alcançam os níveis mais altos geralmente seguem um destes três caminhos: Especialização Profunda, Versatilidade Adaptativa, ou Inovação Revolucionária."},

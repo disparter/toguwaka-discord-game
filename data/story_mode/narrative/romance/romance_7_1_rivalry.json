@@ -1,0 +1,131 @@
+{
+    "chapter_id": "romance_7_1_rivalry",
+    "title": "O Desafio",
+    "description": "Uma rivalidade acadêmica que pode se transformar em algo mais",
+    "route": "route_7",
+    "character": "rival_girl",
+    "requirements": {
+        "reputation": {
+            "rival_girl": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "classroom_confrontation",
+            "background": "tokugawa_academy_5.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "rival_girl",
+                    "image": "rival_girl_intro.png",
+                    "expression": "challenging"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "rival_girl",
+                    "text": "Então, você é o novo aluno que todos estão falando? Vamos ver se você merece toda essa atenção."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Estou aqui para aprender, não para competir."
+                },
+                {
+                    "speaker": "rival_girl",
+                    "text": "Tudo é uma competição, quer você queira ou não. E eu não perco."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar o desafio",
+                    "effects": {
+                        "reputation": {
+                            "rival_girl": 5
+                        },
+                        "determination": 5
+                    }
+                },
+                {
+                    "text": "Manter a calma",
+                    "effects": {
+                        "reputation": {
+                            "rival_girl": 3
+                        },
+                        "wisdom": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "after_class",
+            "background": "tokugawa_academy_4.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "rival_girl",
+                    "image": "rival_girl_intro.png",
+                    "expression": "impressed"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "rival_girl",
+                    "text": "Hmm... Você é melhor do que eu esperava."
+                },
+                {
+                    "speaker": "player",
+                    "text": "E você é mais complexa do que parece à primeira vista."
+                },
+                {
+                    "speaker": "rival_girl",
+                    "text": "Talvez... talvez possamos aprender algo um com o outro."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Sugerir um estudo conjunto",
+                    "effects": {
+                        "reputation": {
+                            "rival_girl": 6
+                        },
+                        "wisdom": 8,
+                        "diplomacy": 5
+                    }
+                },
+                {
+                    "text": "Manter a rivalidade amigável",
+                    "effects": {
+                        "reputation": {
+                            "rival_girl": 4
+                        },
+                        "competitiveness": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "rival_girl": 10
+        },
+        "unlocks": [
+            "romantic_classroom_confrontation",
+            "romantic_after_class_discussion"
+        ]
+    },
+    "metadata": {
+        "location": "academy_classroom",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

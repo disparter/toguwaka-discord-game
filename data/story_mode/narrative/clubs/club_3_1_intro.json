@@ -1,0 +1,131 @@
+{
+    "chapter_id": "club_3_1_intro",
+    "title": "Introdução ao Clube dos Ilusionistas",
+    "description": "O primeiro encontro com o Clube dos Ilusionistas e seu líder",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "1_1_arrival",
+        "reputation": {
+            "mina": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "club_entrance",
+            "background": "clube_dos_ilusionistas_intro.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "curious"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "mysterious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "Bem-vindo ao Clube dos Ilusionistas. Aqui, você aprenderá a arte da ilusão e da manipulação da realidade."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Obrigado por me receber. Estou curioso sobre suas técnicas."
+                },
+                {
+                    "speaker": "mina",
+                    "text": "A ilusão é mais que truques - é a arte de fazer o impossível parecer real."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Expressar interesse nas técnicas",
+                    "effects": {
+                        "reputation": {
+                            "mina": 5
+                        },
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Perguntar sobre a história do clube",
+                    "effects": {
+                        "reputation": {
+                            "mina": 3
+                        },
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "first_training",
+            "background": "clube_dos_ilusionistas_trouble_1.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "teaching"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "Vamos começar com o básico. A ilusão começa com a concentração e a imaginação."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como devo me concentrar?"
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Visualize o que deseja criar. Deixe sua imaginação fluir."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Tentar criar uma ilusão simples",
+                    "effects": {
+                        "reputation": {
+                            "mina": 4
+                        },
+                        "power": 8
+                    }
+                },
+                {
+                    "text": "Observar primeiro os outros membros",
+                    "effects": {
+                        "reputation": {
+                            "mina": 2
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "skills": [
+            "illusion_basics",
+            "reality_manipulation"
+        ],
+        "unlocks": [
+            "illusion_club_training",
+            "club_events"
+        ]
+    },
+    "metadata": {
+        "location": "illusion_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

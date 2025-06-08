@@ -1,0 +1,144 @@
+{
+  "chapter_id": "romance_1_1_first_meet",
+  "title": "Primeiro Encontro",
+  "description": "O início de uma possível conexão especial com Mina",
+  "route": "mina_route",
+  "character": "mina",
+  "requirements": {
+    "reputation": {
+      "mina": 0
+    },
+    "test_passed": true
+  },
+  "scenes": [
+    {
+      "scene_id": "library_meeting",
+      "title": "Encontro na Biblioteca",
+      "description": "Um encontro casual na biblioteca leva a uma conversa interessante",
+      "background": "tokugawa_academy_6.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "curious",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "mina",
+          "position": "right",
+          "expression": "friendly",
+          "image": "mina_starlight_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "mina",
+          "text": "Ah, você também está procurando por livros sobre magia elemental?",
+          "expression": "friendly"
+        },
+        {
+          "speaker": "player",
+          "text": "Sim, estou tentando entender melhor meus poderes.",
+          "expression": "thoughtful"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Perguntar sobre sua experiência com magia",
+          "next_scene": "magic_discussion",
+          "effects": {
+            "reputation": {
+              "mina": 5
+            },
+            "relationship": {
+              "mina": 3
+            }
+          }
+        },
+        {
+          "text": "Sugerir estudarem juntos",
+          "next_scene": "study_session",
+          "effects": {
+            "reputation": {
+              "mina": 3
+            },
+            "relationship": {
+              "mina": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "magic_discussion",
+      "title": "Conversa sobre Magia",
+      "description": "Uma conversa profunda sobre magia e poderes",
+      "background": "romantic_library_study_close.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "interested",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "mina",
+          "position": "right",
+          "expression": "passionate",
+          "image": "mina_starlight_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "mina",
+          "text": "A magia é mais do que apenas poder. É sobre conexão e compreensão.",
+          "expression": "passionate"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Concordar e compartilhar sua visão",
+          "next_scene": "connection_deepens",
+          "effects": {
+            "reputation": {
+              "mina": 7
+            },
+            "relationship": {
+              "mina": 5
+            }
+          }
+        },
+        {
+          "text": "Manter a conversa mais casual",
+          "next_scene": "casual_ending",
+          "effects": {
+            "reputation": {
+              "mina": 3
+            },
+            "relationship": {
+              "mina": 2
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 150,
+    "relationship": {
+      "mina": 5
+    },
+    "unlocks": ["mina_route_2", "library_study_dates"]
+  },
+  "next_chapter": "romance_1_2_library_dates",
+  "flags": {
+    "mina_route_started": true,
+    "library_meeting_completed": true
+  },
+  "metadata": {
+    "location": "library",
+    "time_of_day": "afternoon",
+    "weather": "clear",
+    "season": "spring"
+  }
+} 

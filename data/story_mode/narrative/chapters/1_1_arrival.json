@@ -1,0 +1,181 @@
+{
+  "chapter_id": "1_1_arrival",
+  "title": "Chegada à Academia",
+  "description": "O primeiro dia na Academia Tokugawa",
+  "phase": "year_1_intro",
+  "scenes": [
+    {
+      "scene_id": "academy_gate",
+      "title": "Portão da Academia",
+      "description": "A chegada à Academia Tokugawa",
+      "background": "tokugawa_academy_1.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "nervous",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "welcoming",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "Bem-vindo à Academia Tokugawa. Aqui você descobrirá seus poderes e encontrará seu caminho.",
+          "expression": "welcoming"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Expressar interesse em magia elemental",
+          "next_scene": "elemental_interest",
+          "effects": {
+            "reputation": {
+              "professor_elementus": 5
+            },
+            "elemental_affinity": 2
+          }
+        },
+        {
+          "text": "Perguntar sobre os clubes disponíveis",
+          "next_scene": "club_introduction",
+          "effects": {
+            "knowledge": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "club_introduction",
+      "title": "Introdução aos Clubes",
+      "description": "Conhecendo as opções de clubes disponíveis",
+      "background": "tokugawa_academy_2.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "interested",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "explaining",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "Temos cinco clubes principais: Clube das Chamas, Clube de Combate, Clube dos Elementalistas, Clube Político e Clube dos Ilusionistas. Cada um tem seu foco e tradição.",
+          "expression": "explaining"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Conhecer o Clube das Chamas",
+          "next_scene": "fire_club_intro",
+          "effects": {
+            "club_interest": "fire"
+          }
+        },
+        {
+          "text": "Conhecer o Clube de Combate",
+          "next_scene": "combat_club_intro",
+          "effects": {
+            "club_interest": "combat"
+          }
+        },
+        {
+          "text": "Conhecer o Clube dos Elementalistas",
+          "next_scene": "elementalist_club_intro",
+          "effects": {
+            "club_interest": "elementalist"
+          }
+        },
+        {
+          "text": "Conhecer o Clube Político",
+          "next_scene": "political_club_intro",
+          "effects": {
+            "club_interest": "political"
+          }
+        },
+        {
+          "text": "Conhecer o Clube dos Ilusionistas",
+          "next_scene": "illusionist_club_intro",
+          "effects": {
+            "club_interest": "illusionist"
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "fire_club_intro",
+      "title": "Clube das Chamas",
+      "description": "Conhecendo o Clube das Chamas",
+      "background": "clube_das_chamas_intro.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "curious",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "ryuji",
+          "position": "right",
+          "expression": "welcoming",
+          "image": "ryuji_battleborn_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "ryuji",
+          "text": "Bem-vindo ao Clube das Chamas. Aqui você aprenderá a controlar o fogo e a força interior.",
+          "expression": "welcoming"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Juntar-se ao Clube das Chamas",
+          "next_scene": "club_join_confirmation",
+          "effects": {
+            "club": "fire",
+            "reputation": {
+              "ryuji": 5
+            }
+          }
+        },
+        {
+          "text": "Voltar para conhecer outros clubes",
+          "next_scene": "club_introduction"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 100,
+    "skills": {
+      "academic": 1,
+      "social": 1
+    },
+    "unlocks": ["club_selection", "romance_routes", "power_awakening"]
+  },
+  "next_chapter": "1_2_power_awakening",
+  "flags": {
+    "first_day_completed": true,
+    "club_selection_available": true,
+    "romance_routes_available": true
+  },
+  "metadata": {
+    "location": "academy_entrance",
+    "time_of_day": "morning",
+    "weather": "clear",
+    "season": "spring"
+  }
+} 

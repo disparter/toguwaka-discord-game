@@ -1,0 +1,131 @@
+{
+    "chapter_id": "romance_1_1_garden",
+    "title": "Jardim Compartilhado",
+    "description": "Um encontro casual no jardim dos elementalistas leva a uma conexão especial",
+    "route": "route_1",
+    "character": "elementalist_girl",
+    "requirements": {
+        "reputation": {
+            "elementalist_girl": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "garden_meeting",
+            "background": "romantic_greenhouse_shared_garden.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "curious"
+                },
+                {
+                    "id": "elementalist_girl",
+                    "image": "elementalist_girl_intro.png",
+                    "expression": "gentle"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "elementalist_girl",
+                    "text": "Ah, você também gosta de plantas? Este é meu lugar favorito na academia."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, há algo especial neste jardim. As plantas parecem... mais vivas aqui."
+                },
+                {
+                    "speaker": "elementalist_girl",
+                    "text": "É porque elas sentem a energia elemental. Cada uma tem sua própria personalidade."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Perguntar sobre as plantas",
+                    "effects": {
+                        "reputation": {
+                            "elementalist_girl": 5
+                        },
+                        "knowledge": 5
+                    }
+                },
+                {
+                    "text": "Oferecer ajuda com o jardim",
+                    "effects": {
+                        "reputation": {
+                            "elementalist_girl": 3
+                        },
+                        "power": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "plant_care",
+            "background": "romantic_greenhouse_summer_shower.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "elementalist_girl",
+                    "image": "elementalist_girl_intro.png",
+                    "expression": "happy"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "elementalist_girl",
+                    "text": "Veja como elas respondem à sua energia. Você tem um dom natural."
+                },
+                {
+                    "speaker": "player",
+                    "text": "É... diferente de qualquer coisa que eu já tenha sentido antes."
+                },
+                {
+                    "speaker": "elementalist_girl",
+                    "text": "Isso é o que torna este lugar especial. É onde a magia acontece naturalmente."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Expressar interesse em aprender mais",
+                    "effects": {
+                        "reputation": {
+                            "elementalist_girl": 6
+                        },
+                        "power": 8,
+                        "knowledge": 5
+                    }
+                },
+                {
+                    "text": "Agradecer pela experiência",
+                    "effects": {
+                        "reputation": {
+                            "elementalist_girl": 4
+                        },
+                        "wisdom": 5
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "elementalist_girl": 10
+        },
+        "unlocks": [
+            "romantic_greenhouse_confession",
+            "romantic_date_hidden_tea_garden"
+        ]
+    },
+    "metadata": {
+        "location": "elementalist_garden",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

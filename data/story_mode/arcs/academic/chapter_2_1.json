@@ -6,7 +6,7 @@
     "dialogues": [
       {"npc": "Narrador", "text": "O primeiro dia de aulas formais na Academia Tokugawa chegou. Após o período de orientação e escolha de clubes, é hora de mergulhar nos estudos."},
       {"npc": "Narrador", "text": "Você recebeu seu cronograma de aulas pelo sistema da academia. Hoje você terá aulas de Teoria dos Poderes, História das Habilidades Especiais e uma disciplina específica do seu clube."},
-      {"npc": "Junie", "text": "Bom dia! Espero que esteja pronto para seu primeiro dia de aulas. A Academia Tokugawa tem um currículo rigoroso, mas fascinante.", "gif": "junie_smile.gif"},
+      {"npc": "Junie", "text": "Bom dia! Espero que esteja pronto para seu primeiro dia de aulas. A Academia Tokugawa tem um currículo rigoroso, mas fascinante.", "image": "junie_smile.png"},
       {"npc": "Junie", "text": "Lembre-se que seu desempenho acadêmico afetará sua posição na hierarquia da escola. Os professores valorizam tanto o conhecimento quanto a aplicação prática.", "choices": [
         {"text": "Estou ansioso para aprender!", "next_dialogue": 4, "metadata": {"affinity_changes": {"Junie": 2}, "trait_changes": {"academic_enthusiasm": 1}}},
         {"text": "Prefiro a parte prática à teórica.", "next_dialogue": 5, "metadata": {"affinity_changes": {"Junie": 0}, "trait_changes": {"practical_focus": 1}}},
@@ -33,7 +33,7 @@
         {"next_dialogue": 7}
       ],
       "7": [
-        {"npc": "Professor Quantum", "text": "Bom dia, classe! Bem-vindos à Teoria dos Poderes I. Meu nome é Professor Quantum, e serei seu guia no fascinante mundo da física das habilidades especiais.", "gif": "professor_quantum.txt"},
+        {"npc": "Professor Quantum", "text": "Bom dia, classe! Bem-vindos à Teoria dos Poderes I. Meu nome é Professor Quantum, e serei seu guia no fascinante mundo da física das habilidades especiais."},
         {"npc": "Professor Quantum", "text": "Nesta disciplina, exploraremos os princípios fundamentais que governam todas as manifestações de poderes, desde manipulação de energia até alterações da realidade."},
         {"npc": "Professor Quantum", "text": "Antes de começarmos, gostaria de conhecer um pouco sobre vocês. Você, aluno novo, poderia compartilhar qual aspecto dos poderes mais lhe interessa?", "choices": [
           {"text": "A origem evolutiva dos poderes", "next_dialogue": 8, "metadata": {"affinity_changes": {"Professor Quantum": 3}, "trait_changes": {"scientific_curiosity": 1}}},
@@ -62,7 +62,7 @@
       "11": [
         {"npc": "Narrador", "text": "A aula continua com o Professor Quantum explicando os princípios básicos da conservação de energia em manifestações de poder."},
         {"npc": "Narrador", "text": "Após a aula de Teoria dos Poderes, você segue para sua próxima disciplina: História das Habilidades Especiais com a Professora Chronos."},
-        {"npc": "Professora Chronos", "text": "Bem-vindos à História das Habilidades Especiais. Sou a Professora Chronos, e juntos exploraremos como os poderes moldaram civilizações ao longo dos milênios.", "gif": "professora_chronos.gif"},
+        {"npc": "Professora Chronos", "text": "Bem-vindos à História das Habilidades Especiais. Sou a Professora Chronos, e juntos exploraremos como os poderes moldaram civilizações ao longo dos milênios."},
         {"npc": "Professora Chronos", "text": "Desde os antigos xamãs que controlavam o clima até os modernos heróis urbanos, as habilidades especiais sempre estiveram entrelaçadas com o desenvolvimento humano."},
         {"npc": "Professora Chronos", "text": "Para começar, gostaria de saber: qual período histórico relacionado aos poderes mais desperta seu interesse?", "choices": [
           {"text": "A Era das Sombras - quando os poderes eram perseguidos", "next_dialogue": 12, "metadata": {"affinity_changes": {"Professora Chronos": 2}, "trait_changes": {"historical_awareness": 1}}},
@@ -95,7 +95,7 @@
     },
     "club_specific_dialogues": {
       "1": [
-        {"npc": "Kai Flameheart", "text": "Bem-vindos à Dinâmica do Fogo e Energia! Como líder do Clube das Chamas, serei seu instrutor nesta disciplina essencial.", "gif": "kai_flameheart.txt"},
+        {"npc": "Kai Flameheart", "text": "Bem-vindos à Dinâmica do Fogo e Energia! Como líder do Clube das Chamas, serei seu instrutor nesta disciplina essencial."},
         {"npc": "Kai Flameheart", "text": "Aqui aprenderemos não apenas a gerar e controlar fogo e outras formas de energia, mas a compreender sua natureza volátil e transformadora."},
         {"npc": "Kai Flameheart", "text": "O fogo pode destruir ou purificar, dependendo de como é utilizado. Qual aspecto você deseja focar em seu treinamento?", "choices": [
           {"text": "Controle preciso e refinado", "next_dialogue": "flames_control", "metadata": {"affinity_changes": {"Kai Flameheart": 1}, "trait_changes": {"precision": 1}}},
@@ -104,7 +104,7 @@
         ]}
       ],
       "2": [
-        {"npc": "Luna Mindweaver", "text": "Bem-vindos à Psicologia da Percepção. Como líder dos Ilusionistas Mentais, guiarei vocês pelos labirintos da mente.", "gif": "luna_mindweaver.gif"},
+        {"npc": "Luna Mindweaver", "text": "Bem-vindos à Psicologia da Percepção. Como líder dos Ilusionistas Mentais, guiarei vocês pelos labirintos da mente."},
         {"npc": "Luna Mindweaver", "text": "Para manipular a percepção, primeiro devemos entender como a mente processa a realidade. Esta disciplina é tanto ciência quanto arte."},
         {"npc": "Luna Mindweaver", "text": "Cada mente é um universo único. Qual aspecto da manipulação mental mais lhe interessa?", "choices": [
           {"text": "Ilusões sutis e imperceptíveis", "next_dialogue": "mental_subtlety", "metadata": {"affinity_changes": {"Luna Mindweaver": 3}, "trait_changes": {"subtlety": 1}}},
@@ -113,7 +113,7 @@
         ]}
       ],
       "3": [
-        {"npc": "Alexander Strategos", "text": "Bem-vindos à Estratégia e Governança. Como líder do Conselho Político, ensinarei vocês a navegar no complexo tabuleiro do poder.", "gif": "alexander_strategos.txt"},
+        {"npc": "Alexander Strategos", "text": "Bem-vindos à Estratégia e Governança. Como líder do Conselho Político, ensinarei vocês a navegar no complexo tabuleiro do poder."},
         {"npc": "Alexander Strategos", "text": "A política não é apenas sobre controle, mas sobre visão - a capacidade de ver além do imediato e moldar o futuro através de decisões estratégicas."},
         {"npc": "Alexander Strategos", "text": "O poder político assume muitas formas. Qual abordagem mais ressoa com sua visão pessoal?", "choices": [
           {"text": "Diplomacia e construção de alianças", "next_dialogue": "political_diplomacy", "metadata": {"affinity_changes": {"Alexander Strategos": 2}, "trait_changes": {"diplomacy": 1}}},
@@ -122,7 +122,7 @@
         ]}
       ],
       "4": [
-        {"npc": "Gaia Naturae", "text": "Bem-vindos à Harmonia Elemental. Como líder dos Elementalistas, guiarei vocês no caminho do equilíbrio e conexão com as forças naturais.", "gif": "gaia_naturae.txt"},
+        {"npc": "Gaia Naturae", "text": "Bem-vindos à Harmonia Elemental. Como líder dos Elementalistas, guiarei vocês no caminho do equilíbrio e conexão com as forças naturais."},
         {"npc": "Gaia Naturae", "text": "Cada elemento - terra, água, ar, fogo - possui sua própria sabedoria e energia. Juntos, formam um todo maior que suas partes."},
         {"npc": "Gaia Naturae", "text": "Para começar sua jornada, você deve escolher um caminho inicial. Qual elemento mais ressoa com seu espírito?", "choices": [
           {"text": "Terra - estabilidade e resistência", "next_dialogue": "elemental_earth", "metadata": {"affinity_changes": {"Gaia Naturae": 2}, "trait_changes": {"stability": 1}}},
@@ -132,7 +132,7 @@
         ]}
       ],
       "5": [
-        {"npc": "Ryuji Battleborn", "text": "Bem-vindos à Teoria do Combate Avançado. Como líder do Clube de Combate, ensinarei vocês a transformar seus corpos e poderes em armas eficientes.", "gif": "ryuji_battleborn.gif"},
+        {"npc": "Ryuji Battleborn", "text": "Bem-vindos à Teoria do Combate Avançado. Como líder do Clube de Combate, ensinarei vocês a transformar seus corpos e poderes em armas eficientes."},
         {"npc": "Ryuji Battleborn", "text": "O verdadeiro combate não é apenas força bruta, mas uma dança de estratégia, técnica e adaptação. Cada movimento deve ter propósito."},
         {"npc": "Ryuji Battleborn", "text": "Diferentes lutadores têm diferentes estilos. Qual abordagem de combate mais combina com você?", "choices": [
           {"text": "Técnica precisa e eficiência", "next_dialogue": "combat_technique", "metadata": {"affinity_changes": {"Ryuji Battleborn": 2}, "trait_changes": {"technique": 1}}},

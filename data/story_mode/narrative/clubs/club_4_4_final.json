@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_4_4_final",
+    "title": "O Legado do Clube Elementalistas",
+    "description": "O clube realiza seu maior ritual e prepara a próxima geração",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_4_3_resolution",
+        "reputation": {
+            "gaia": 20
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "elemental_ritual",
+            "background": "clube_elementalistas_trouble_5.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "gaia",
+                    "image": "gaia_naturae_intro.png",
+                    "expression": "serious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "gaia",
+                    "text": "Este é o ritual final. Vamos harmonizar todos os elementos em um único fluxo de energia."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como devo me preparar?"
+                },
+                {
+                    "speaker": "gaia",
+                    "text": "Sinta a conexão com cada elemento. Deixe sua energia fluir naturalmente."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Tentar harmonizar os elementos",
+                    "effects": {
+                        "reputation": {
+                            "gaia": 8
+                        },
+                        "power": 15,
+                        "energy": -10
+                    }
+                },
+                {
+                    "text": "Focar em um elemento por vez",
+                    "effects": {
+                        "reputation": {
+                            "gaia": 6
+                        },
+                        "power": 12,
+                        "wisdom": 8
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "passing_wisdom",
+            "background": "clube_elementalistas_trouble_6.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "reflective"
+                },
+                {
+                    "id": "gaia",
+                    "image": "gaia_naturae_intro.png",
+                    "expression": "content"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "gaia",
+                    "text": "Você alcançou um equilíbrio perfeito com os elementos. O clube está pronto para uma nova era."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que isso significa para o futuro?"
+                },
+                {
+                    "speaker": "gaia",
+                    "text": "Significa que você está pronto para guiar outros. Para mostrar que a verdadeira maestria elemental vem do equilíbrio e harmonia."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar a responsabilidade",
+                    "effects": {
+                        "reputation": {
+                            "gaia": 10
+                        },
+                        "leadership": 15,
+                        "wisdom": 10
+                    }
+                },
+                {
+                    "text": "Propor uma nova abordagem",
+                    "effects": {
+                        "reputation": {
+                            "gaia": 8
+                        },
+                        "leadership": 12,
+                        "innovation": 10
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 150,
+        "skills": [
+            "elemental_mastery_advanced",
+            "nature_harmony"
+        ],
+        "unlocks": [
+            "elemental_club_legacy",
+            "special_rituals"
+        ]
+    },
+    "metadata": {
+        "location": "elemental_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

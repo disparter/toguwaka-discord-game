@@ -189,83 +189,77 @@ class NPCInteractionCog(commands.Cog):
         # Add footer with relationship status
         embed.set_footer(text=f"Relacionamento: {affinity_level.capitalize()} (Afinidade: {affinity_value})")
 
-        # Check if this is the director and if we need to show the welcome.gif
-        if npc.get_name().lower() in ["diretor", "diretor sombrio"]:
-            # Check if the player has already seen the welcome.gif
+        # Check if this is the director and if we need to show the welcome image
+        if npc_name == "Diretor":
+            # Check if the player has already seen the welcome image
             story_progress = player_data.get("story_progress", {})
-            seen_gifs = story_progress.get("seen_gifs", {})
-
-            if "welcome" not in seen_gifs:
-                # Player hasn't seen the welcome.gif yet, show it
-                gif_path = "assets/gifs/welcome.gif"
-
-                # Check if the gif exists
-                if os.path.exists(gif_path):
-                    # Send the gif
-                    await interaction.followup.send(file=discord.File(gif_path), ephemeral=False)
-
-                    # Record that the player has seen the gif
-                    if "seen_gifs" not in story_progress:
-                        story_progress["seen_gifs"] = {}
-
-                    story_progress["seen_gifs"]["welcome"] = True
-                    player_data["story_progress"] = story_progress
-
-                    # Add the gif to the player's image registry
+            seen_images = story_progress.get("seen_images", {})
+            
+            if "welcome" not in seen_images:
+                # Player hasn't seen the welcome image yet, show it
+                image_path = "assets/images/welcome.png"
+                
+                # Check if the image exists
+                if os.path.exists(image_path):
+                    # Send the image
+                    await interaction.followup.send(file=discord.File(image_path), ephemeral=False)
+                    
+                    # Record that the player has seen the image
+                    if "seen_images" not in story_progress:
+                        story_progress["seen_images"] = {}
+                    
+                    story_progress["seen_images"]["welcome"] = True
+                    
+                    # Add the image to the player's image registry
                     if "image_registry" not in story_progress:
                         story_progress["image_registry"] = {}
-
-                    story_progress["image_registry"]["welcome.gif"] = {
-                        "path": gif_path,
-                        "description": "Mensagem de boas-vindas do Diretor",
+                    
+                    story_progress["image_registry"]["welcome.png"] = {
+                        "path": image_path,
+                        "description": "Imagem de boas-vindas do Diretor",
                         "seen_at": discord.utils.utcnow().isoformat()
                     }
-
-                    player_data["story_progress"] = story_progress
-
-                    # Update player data in database
-                    update_player(user_id, story_progress=player_data["story_progress"])
+                    
+                    # Update player data
+                    update_player(user_id, story_progress=story_progress)
                 else:
-                    logger.error(f"Welcome gif not found at {gif_path}")
+                    logger.error(f"Welcome image not found at {image_path}")
 
-        # Check if this is Professor Quantum and if we need to show the professor_quantum_intro.gif
-        elif npc.get_name().lower() == "professor quantum":
-            # Check if the player has already seen the professor_quantum_intro.gif
+        # Check if this is Professor Quantum and if we need to show the professor_quantum_intro image
+        elif npc_name == "Professor Quantum":
+            # Check if the player has already seen the professor_quantum_intro image
             story_progress = player_data.get("story_progress", {})
-            seen_gifs = story_progress.get("seen_gifs", {})
-
-            if "professor_quantum_intro" not in seen_gifs:
-                # Player hasn't seen the professor_quantum_intro.gif yet, show it
-                gif_path = "assets/gifs/professor_quantum_intro.gif"
-
-                # Check if the gif exists
-                if os.path.exists(gif_path):
-                    # Send the gif
-                    await interaction.followup.send(file=discord.File(gif_path), ephemeral=False)
-
-                    # Record that the player has seen the gif
-                    if "seen_gifs" not in story_progress:
-                        story_progress["seen_gifs"] = {}
-
-                    story_progress["seen_gifs"]["professor_quantum_intro"] = True
-                    player_data["story_progress"] = story_progress
-
-                    # Add the gif to the player's image registry
+            seen_images = story_progress.get("seen_images", {})
+            
+            if "professor_quantum_intro" not in seen_images:
+                # Player hasn't seen the professor_quantum_intro image yet, show it
+                image_path = "assets/images/professor_quantum_intro.png"
+                
+                # Check if the image exists
+                if os.path.exists(image_path):
+                    # Send the image
+                    await interaction.followup.send(file=discord.File(image_path), ephemeral=False)
+                    
+                    # Record that the player has seen the image
+                    if "seen_images" not in story_progress:
+                        story_progress["seen_images"] = {}
+                    
+                    story_progress["seen_images"]["professor_quantum_intro"] = True
+                    
+                    # Add the image to the player's image registry
                     if "image_registry" not in story_progress:
                         story_progress["image_registry"] = {}
-
-                    story_progress["image_registry"]["professor_quantum_intro.gif"] = {
-                        "path": gif_path,
-                        "description": "Primeira aparição do Professor Quantum",
+                    
+                    story_progress["image_registry"]["professor_quantum_intro.png"] = {
+                        "path": image_path,
+                        "description": "Introdução do Professor Quantum",
                         "seen_at": discord.utils.utcnow().isoformat()
                     }
-
-                    player_data["story_progress"] = story_progress
-
-                    # Update player data in database
-                    update_player(user_id, story_progress=player_data["story_progress"])
+                    
+                    # Update player data
+                    update_player(user_id, story_progress=story_progress)
                 else:
-                    logger.error(f"Professor Quantum intro gif not found at {gif_path}")
+                    logger.error(f"Professor Quantum intro image not found at {image_path}")
 
         # Send the dialogue
         await interaction.followup.send(embed=embed, ephemeral=True)

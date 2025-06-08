@@ -1,0 +1,131 @@
+{
+    "chapter_id": "romance_2_1_library",
+    "title": "Encontro na Biblioteca",
+    "description": "Um encontro silencioso na biblioteca leva a uma conexão profunda",
+    "route": "route_2",
+    "character": "library_girl",
+    "requirements": {
+        "reputation": {
+            "library_girl": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "library_meeting",
+            "background": "romantic_library_study_close.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "library_girl",
+                    "image": "library_girl_intro.png",
+                    "expression": "serene"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "library_girl",
+                    "text": "Você sempre vem neste horário. É o momento mais tranquilo da biblioteca."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, gosto do silêncio. É mais fácil se concentrar."
+                },
+                {
+                    "speaker": "library_girl",
+                    "text": "O silêncio tem sua própria música. Você consegue ouvi-la?"
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Concordar sobre o silêncio",
+                    "effects": {
+                        "reputation": {
+                            "library_girl": 5
+                        },
+                        "wisdom": 5
+                    }
+                },
+                {
+                    "text": "Perguntar sobre seus livros",
+                    "effects": {
+                        "reputation": {
+                            "library_girl": 3
+                        },
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "shared_moment",
+            "background": "romantic_library_soft_encounter.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "thoughtful"
+                },
+                {
+                    "id": "library_girl",
+                    "image": "library_girl_intro.png",
+                    "expression": "gentle"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "library_girl",
+                    "text": "Às vezes, as palavras mais importantes são as que não precisamos dizer."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como assim?"
+                },
+                {
+                    "speaker": "library_girl",
+                    "text": "Quando duas pessoas compartilham o mesmo silêncio, elas já estão se entendendo."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Compartilhar um momento de silêncio",
+                    "effects": {
+                        "reputation": {
+                            "library_girl": 6
+                        },
+                        "wisdom": 8,
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Tentar entender melhor",
+                    "effects": {
+                        "reputation": {
+                            "library_girl": 4
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "library_girl": 10
+        },
+        "unlocks": [
+            "romantic_library_whispers_between_pages",
+            "romantic_first_kiss_library_rain_window"
+        ]
+    },
+    "metadata": {
+        "location": "academy_library",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

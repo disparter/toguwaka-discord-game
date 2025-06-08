@@ -1,0 +1,83 @@
+{
+    "chapter_id": "club_1_4_final",
+    "title": "O Legado do Clube das Chamas",
+    "description": "O clube celebra suas conquistas e prepara o futuro",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_1_3_resolution",
+        "reputation": {
+            "ryuji": 30
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "final_celebration",
+            "background": "clube_das_chamas_final.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "proud"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "proud"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Você se tornou um verdadeiro mestre do fogo. O clube nunca esteve tão forte."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Foi uma jornada incrível. O que vem a seguir?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "O futuro do clube está em suas mãos. Você está pronto para liderar."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar a responsabilidade de liderança",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 8
+                        },
+                        "power": 10,
+                        "leadership": 10
+                    }
+                },
+                {
+                    "text": "Propor uma nova direção para o clube",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 6
+                        },
+                        "power": 8,
+                        "innovation": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 150,
+        "skills": [
+            "fire_mastery_advanced",
+            "club_leadership"
+        ],
+        "unlocks": [
+            "year_2_club_events",
+            "master_techniques"
+        ]
+    },
+    "metadata": {
+        "location": "fire_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

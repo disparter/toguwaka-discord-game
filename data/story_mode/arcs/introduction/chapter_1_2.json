@@ -18,7 +18,7 @@
   },
   "club_dialogues": {
     "1": [
-      {"npc": "Kai Flameheart", "text": "Então você é o novato? Espero que esteja pronto para suar. No Clube das Chamas, não aceitamos meio termo.", "gif": "kai_flameheart.gif"},
+      {"npc": "Kai Flameheart", "text": "Então você é o novato? Espero que esteja pronto para suar. No Clube das Chamas, não aceitamos meio termo.", "image": "kai_flameheart.png"},
       {"npc": "Kai Flameheart", "text": "Nosso lema é simples: 'Queime com paixão ou não queime'. Aqui você aprenderá a controlar seu poder e a usá-lo com precisão."},
       {"npc": "Kai Flameheart", "text": "Não me importa se você tem poderes de fogo ou não. O que importa é sua determinação e lealdade ao clube."},
       {"npc": "Kai Flameheart", "text": "Então, novato, o que te traz ao Clube das Chamas?", "choices": [
@@ -28,7 +28,7 @@
       ]}
     ],
     "2": [
-      {"npc": "Luna Mindweaver", "text": "Bem-vindo aos Ilusionistas Mentais. Eu sou Luna, e já sei mais sobre você do que você imagina.", "gif": "luna_mindweaver.gif"},
+      {"npc": "Luna Mindweaver", "text": "Bem-vindo aos Ilusionistas Mentais. Eu sou Luna, e já sei mais sobre você do que você imagina.", "image": "luna_mindweaver.png"},
       {"npc": "Luna Mindweaver", "text": "Nosso clube se dedica ao estudo e aprimoramento de poderes psíquicos, ilusões e manipulação da percepção."},
       {"npc": "Luna Mindweaver", "text": "Aqui não lutamos com punhos, mas com mentes. Um Ilusionista bem treinado pode vencer uma batalha sem sequer levantar um dedo."},
       {"npc": "Luna Mindweaver", "text": "Diga-me, o que te atrai no mundo das ilusões?", "choices": [
@@ -38,7 +38,7 @@
       ]}
     ],
     "3": [
-      {"npc": "Alexander Strategos", "text": "Ah, um novo membro para o Conselho Político. Interessante. Sou Alexander Strategos, presidente do conselho.", "gif": "alexander_strategos.gif"},
+      {"npc": "Alexander Strategos", "text": "Ah, um novo membro para o Conselho Político. Interessante. Sou Alexander Strategos, presidente do conselho.", "image": "alexander_strategos.png"},
       {"npc": "Alexander Strategos", "text": "Nosso clube não se preocupa com demonstrações físicas de poder, mas com influência, estratégia e a arte da diplomacia."},
       {"npc": "Alexander Strategos", "text": "Aqui você aprenderá a navegar pelas complexas relações de poder da academia e a usar sua influência para alcançar seus objetivos."},
       {"npc": "Alexander Strategos", "text": "O que te levou a escolher o caminho da política?", "choices": [
@@ -48,7 +48,7 @@
       ]}
     ],
     "4": [
-      {"npc": "Gaia Naturae", "text": "Bem-vindo ao círculo dos Elementalistas. Sou Gaia, e estou feliz por você ter escolhido o caminho do equilíbrio.", "gif": "gaia_naturae.gif"},
+      {"npc": "Gaia Naturae", "text": "Bem-vindo ao círculo dos Elementalistas. Sou Gaia, e estou feliz por você ter escolhido o caminho do equilíbrio.", "image": "gaia_naturae.png"},
       {"npc": "Gaia Naturae", "text": "Nosso clube estuda a harmonia entre os elementos e como eles se conectam com o mundo ao nosso redor."},
       {"npc": "Gaia Naturae", "text": "Aqui você aprenderá não apenas a controlar elementos, mas a entender sua essência e como eles fluem através de todas as coisas."},
       {"npc": "Gaia Naturae", "text": "O que te atraiu para o caminho dos elementos?", "choices": [
@@ -58,7 +58,7 @@
       ]}
     ],
     "5": [
-      {"npc": "Ryuji Battleborn", "text": "Então você quer se juntar ao Clube de Combate? Espero que tenha estômago para isso. Sou Ryuji, o líder.", "gif": "ryuji_battleborn.gif"},
+      {"npc": "Ryuji Battleborn", "text": "Então você quer se juntar ao Clube de Combate? Espero que tenha estômago para isso. Sou Ryuji, o líder.", "image": "ryuji_battleborn.png"},
       {"npc": "Ryuji Battleborn", "text": "Nosso clube é dedicado ao aprimoramento das técnicas de luta e aplicações práticas dos poderes em combate."},
       {"npc": "Ryuji Battleborn", "text": "Aqui não há lugar para fracos ou indecisos. Cada dia é um teste, cada treino é uma batalha."},
       {"npc": "Ryuji Battleborn", "text": "Por que você acha que merece um lugar no Clube de Combate?", "choices": [

@@ -1,0 +1,83 @@
+{
+    "chapter_id": "club_2_3_resolution",
+    "title": "Resolução no Clube de Combate",
+    "description": "O clube supera seus desafios e se fortalece",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_2_2_trouble",
+        "reputation": {
+            "ryuji": 20
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "combat_victory",
+            "background": "clube_de_combate_resolution.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "proud"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "proud"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Você mostrou verdadeiro espírito de guerreiro. O clube está mais forte graças a você."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Foi um trabalho em equipe. Todos crescemos com esse desafio."
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Exatamente. O verdadeiro combate é sobre união e respeito mútuo."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Propor treinamento conjunto com outras academias",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 5
+                        },
+                        "power": 8,
+                        "diplomacy": 4
+                    }
+                },
+                {
+                    "text": "Sugerir um sistema de mentoria",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 4
+                        },
+                        "knowledge": 8,
+                        "leadership": 4
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 100,
+        "skills": [
+            "combat_mastery",
+            "team_leadership"
+        ],
+        "unlocks": [
+            "combat_club_final",
+            "advanced_techniques"
+        ]
+    },
+    "metadata": {
+        "location": "combat_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

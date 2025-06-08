@@ -1,0 +1,142 @@
+{
+  "chapter_id": "club_1_1_intro",
+  "title": "Introdução ao Clube das Chamas",
+  "description": "O primeiro encontro com o Clube das Chamas e seu líder",
+  "phase": "year_1_clubs",
+  "requirements": {
+    "previous_chapter": "1_1_arrival",
+    "reputation": {
+      "ryuji": 0
+    }
+  },
+  "scenes": [
+    {
+      "scene_id": "club_entrance",
+      "title": "Sala do Clube das Chamas",
+      "description": "A sala de treinamento do clube, decorada com símbolos de fogo",
+      "background": "clube_das_chamas_intro.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "curious",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "ryuji",
+          "position": "right",
+          "expression": "welcoming",
+          "image": "ryuji_battleborn_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "ryuji",
+          "text": "Bem-vindo ao Clube das Chamas. Aqui, você aprenderá a controlar o fogo e a força interior."
+        },
+        {
+          "speaker": "player",
+          "text": "Obrigado por me receber. Estou ansioso para aprender."
+        },
+        {
+          "speaker": "ryuji",
+          "text": "O fogo é mais que poder - é paixão, determinação e força de vontade."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Expressar interesse no treinamento",
+          "effects": {
+            "reputation": {
+              "ryuji": 5
+            },
+            "power": 5
+          }
+        },
+        {
+          "text": "Perguntar sobre a história do clube",
+          "effects": {
+            "reputation": {
+              "ryuji": 3
+            },
+            "knowledge": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "first_training",
+      "title": "Primeiro Treino",
+      "description": "Uma demonstração básica de controle de fogo",
+      "background": "clube_das_chamas_trouble_1.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "focused",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "ryuji",
+          "position": "center",
+          "expression": "teaching",
+          "image": "ryuji_battleborn_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "ryuji",
+          "text": "Vamos começar com o básico. O fogo responde às suas emoções."
+        },
+        {
+          "speaker": "player",
+          "text": "Como devo me concentrar?"
+        },
+        {
+          "speaker": "ryuji",
+          "text": "Encontre sua paixão interior. Deixe-a guiar suas chamas."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Tentar acender uma pequena chama",
+          "effects": {
+            "reputation": {
+              "ryuji": 4
+            },
+            "power": 8
+          }
+        },
+        {
+          "text": "Observar primeiro os outros membros",
+          "effects": {
+            "reputation": {
+              "ryuji": 2
+            },
+            "knowledge": 8
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 50,
+    "skills": [
+      "fire_control_basic",
+      "inner_focus"
+    ],
+    "items": ["fire_club_member_card"],
+    "unlocks": ["fire_club_training", "club_events"]
+  },
+  "next_chapter": "club_1_2_training",
+  "flags": {
+    "club_joined": true,
+    "first_training": true
+  },
+  "metadata": {
+    "location": "fire_club_room",
+    "time_of_day": "afternoon",
+    "weather": "clear",
+    "season": "spring"
+  }
+} 

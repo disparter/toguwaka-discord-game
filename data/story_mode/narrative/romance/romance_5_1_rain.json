@@ -1,0 +1,131 @@
+{
+    "chapter_id": "romance_5_1_rain",
+    "title": "Encontro na Chuva",
+    "description": "Um encontro inesperado no telhado durante a chuva leva a uma conexão emocional",
+    "route": "route_5",
+    "character": "rain_girl",
+    "requirements": {
+        "reputation": {
+            "rain_girl": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "rooftop_meeting",
+            "background": "romantic_rooftop_rain_touch.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "surprised"
+                },
+                {
+                    "id": "rain_girl",
+                    "image": "rain_girl_intro.png",
+                    "expression": "melancholic"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "rain_girl",
+                    "text": "Ah... você também veio se abrigar da chuva?"
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, não esperava que chovesse tanto hoje."
+                },
+                {
+                    "speaker": "rain_girl",
+                    "text": "A chuva tem uma maneira de trazer as pessoas juntas... ou separá-las."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Concordar sobre a chuva",
+                    "effects": {
+                        "reputation": {
+                            "rain_girl": 5
+                        },
+                        "wisdom": 5
+                    }
+                },
+                {
+                    "text": "Oferecer abrigo",
+                    "effects": {
+                        "reputation": {
+                            "rain_girl": 3
+                        },
+                        "kindness": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "shelter_moment",
+            "background": "romantic_rain_under_rooftop_shelter.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "concerned"
+                },
+                {
+                    "id": "rain_girl",
+                    "image": "rain_girl_intro.png",
+                    "expression": "vulnerable"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "rain_girl",
+                    "text": "Às vezes, a chuva parece limpar mais que apenas o ar..."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como assim?"
+                },
+                {
+                    "speaker": "rain_girl",
+                    "text": "Ela pode limpar o coração também. Trazer um novo começo."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Compartilhar um momento de silêncio",
+                    "effects": {
+                        "reputation": {
+                            "rain_girl": 6
+                        },
+                        "wisdom": 8,
+                        "empathy": 5
+                    }
+                },
+                {
+                    "text": "Tentar entender melhor",
+                    "effects": {
+                        "reputation": {
+                            "rain_girl": 4
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "rain_girl": 10
+        },
+        "unlocks": [
+            "romantic_first_kiss_rooftop_after_confession",
+            "romantic_rain_under_rooftop_shelter"
+        ]
+    },
+    "metadata": {
+        "location": "academy_rooftop",
+        "time_of_day": "evening",
+        "weather": "rainy",
+        "season": "spring"
+    }
+} 

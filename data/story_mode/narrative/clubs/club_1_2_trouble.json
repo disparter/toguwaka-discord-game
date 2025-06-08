@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_1_2_trouble",
+    "title": "Problemas no Clube das Chamas",
+    "description": "Um desafio inesperado testa o controle do fogo dos membros",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_1_1_intro",
+        "reputation": {
+            "ryuji": 10
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "fire_outbreak",
+            "background": "clube_das_chamas_trouble_2.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "concerned"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "serious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Um dos membros perdeu o controle de seu fogo. Precisamos contê-lo antes que se espalhe."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que podemos fazer?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Use seu treinamento. O fogo responde à sua vontade - controle-o."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Tentar absorver o fogo",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 5
+                        },
+                        "power": 10,
+                        "energy": -5
+                    }
+                },
+                {
+                    "text": "Criar uma barreira de controle",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 3
+                        },
+                        "power": 5,
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "fire_containment",
+            "background": "clube_das_chamas_trouble_3.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "focused"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "O fogo está se espalhando. Precisamos trabalhar juntos para contê-lo."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como podemos coordenar nossos esforços?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Siga minha liderança. Juntos, somos mais fortes."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Sincronizar poder com Ryuji",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 6
+                        },
+                        "power": 12,
+                        "energy": -8
+                    }
+                },
+                {
+                    "text": "Proteger os outros membros",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 4
+                        },
+                        "power": 8,
+                        "leadership": 4
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 75,
+        "skills": [
+            "fire_control_advanced",
+            "team_coordination"
+        ],
+        "unlocks": [
+            "fire_club_resolution",
+            "advanced_training"
+        ]
+    },
+    "metadata": {
+        "location": "fire_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

@@ -1,0 +1,175 @@
+{
+  "narrative_structure": {
+    "year_1": {
+      "intro": {
+        "title": "Primeiro Ano - Introdução",
+        "description": "A chegada à Academia Tokugawa e a descoberta dos poderes",
+        "chapters": [
+          "1_1_arrival",
+          "1_2_orientation",
+          "1_3_power_discovery",
+          "1_4_first_class"
+        ],
+        "requirements": {},
+        "next_arc": "year_1_clubs"
+      },
+      "clubs": {
+        "title": "Primeiro Ano - Clubes",
+        "description": "Escolha de clube e início das intrigas",
+        "chapters": [
+          "1_5_club_intro",
+          "1_6_club_choice",
+          "1_7_first_meeting",
+          "1_8_club_training"
+        ],
+        "requirements": {
+          "previous_arc": "year_1_intro"
+        },
+        "next_arc": "year_1_conflict"
+      },
+      "conflict": {
+        "title": "Primeiro Ano - Conflito",
+        "description": "Primeiros desafios e rivalidades",
+        "chapters": [
+          "1_9_first_rival",
+          "1_10_club_conflict",
+          "1_11_tournament_prep",
+          "1_12_first_tournament"
+        ],
+        "requirements": {
+          "previous_arc": "year_1_clubs"
+        },
+        "next_arc": "year_2_intro"
+      }
+    },
+    "year_2": {
+      "intro": {
+        "title": "Segundo Ano - Introdução",
+        "description": "Retorno à academia e novos desafios",
+        "chapters": [
+          "2_1_return",
+          "2_2_new_students",
+          "2_3_advanced_training",
+          "2_4_club_responsibility"
+        ],
+        "requirements": {
+          "previous_arc": "year_1_conflict"
+        },
+        "next_arc": "year_2_conflict"
+      },
+      "conflict": {
+        "title": "Segundo Ano - Conflito",
+        "description": "Clímax de rivalidades e traições",
+        "chapters": [
+          "2_5_rival_escalation",
+          "2_6_club_crisis",
+          "2_7_betrayal",
+          "2_8_tournament_climax"
+        ],
+        "requirements": {
+          "previous_arc": "year_2_intro"
+        },
+        "next_arc": "year_3_intro"
+      }
+    },
+    "year_3": {
+      "intro": {
+        "title": "Terceiro Ano - Introdução",
+        "description": "Último ano e preparação para o futuro",
+        "chapters": [
+          "3_1_final_year",
+          "3_2_leadership",
+          "3_3_mentorship",
+          "3_4_graduation_prep"
+        ],
+        "requirements": {
+          "previous_arc": "year_2_conflict"
+        },
+        "next_arc": "year_3_resolution"
+      },
+      "resolution": {
+        "title": "Terceiro Ano - Resolução",
+        "description": "Conclusões dramáticas e amadurecimento",
+        "chapters": [
+          "3_5_final_conflict",
+          "3_6_club_legacy",
+          "3_7_relationship_resolution",
+          "3_8_graduation_ceremony"
+        ],
+        "requirements": {
+          "previous_arc": "year_3_intro"
+        },
+        "next_arc": "graduation_paths"
+      }
+    },
+    "graduation_paths": {
+      "title": "Caminhos de Graduação",
+      "description": "Destinos finais baseados nas escolhas do jogador",
+      "chapters": [
+        "4_1_future_choice",
+        "4_2_romance_ending",
+        "4_3_club_legacy",
+        "4_4_final_goodbye"
+      ],
+      "requirements": {
+        "previous_arc": "year_3_resolution"
+      }
+    }
+  },
+  "romance_routes": {
+    "route_1": {
+      "character": "npc_1",
+      "name": "Rota do Protetor",
+      "chapters": [
+        "romance_1_1_first_meet",
+        "romance_1_2_bonding",
+        "romance_1_3_confession",
+        "romance_1_4_commitment"
+      ]
+    },
+    "route_2": {
+      "character": "npc_2",
+      "name": "Rota do Rival",
+      "chapters": [
+        "romance_2_1_rivalry",
+        "romance_2_2_respect",
+        "romance_2_3_understanding",
+        "romance_2_4_partnership"
+      ]
+    }
+  },
+  "club_arcs": {
+    "clube_das_chamas": {
+      "name": "Clube das Chamas",
+      "chapters": [
+        "club_1_1_intro",
+        "club_1_2_training",
+        "club_1_3_conflict",
+        "club_1_4_resolution"
+      ]
+    },
+    "clube_elementalistas": {
+      "name": "Clube Elementalistas",
+      "chapters": [
+        "club_2_1_intro",
+        "club_2_2_training",
+        "club_2_3_conflict",
+        "club_2_4_resolution"
+      ]
+    }
+  },
+  "image_references": {
+    "backgrounds": {
+      "base_path": "images/story/backgrounds/",
+      "fallback": "default_background.jpg"
+    },
+    "characters": {
+      "base_path": "images/story/characters/",
+      "fallback": "default_character.jpg"
+    },
+    "locations": {
+      "base_path": "images/story/locations/",
+      "fallback": "default_location.jpg"
+    }
+  }
+} 

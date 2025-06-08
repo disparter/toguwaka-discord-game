@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_3_3_resolution",
+    "title": "Resolução do Clube dos Ilusionistas",
+    "description": "O clube supera seus desafios e emerge mais forte",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_3_2_trouble",
+        "reputation": {
+            "mina": 15
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "club_celebration",
+            "background": "clube_dos_ilusionistas_trouble_1.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "happy"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "proud"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "Superamos o desafio juntos. O clube está mais forte agora."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que aprendemos com isso?"
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Que a verdadeira ilusão é acreditar que podemos fazer tudo sozinhos. Juntos, somos mais fortes."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Propor um novo projeto",
+                    "effects": {
+                        "reputation": {
+                            "mina": 5
+                        },
+                        "leadership": 8,
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Refletir sobre o aprendizado",
+                    "effects": {
+                        "reputation": {
+                            "mina": 4
+                        },
+                        "knowledge": 8,
+                        "wisdom": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "future_plans",
+            "background": "clube_dos_ilusionistas_trouble_4.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "hopeful"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "O futuro do clube está em nossas mãos. O que você imagina para nós?"
+                },
+                {
+                    "speaker": "player",
+                    "text": "Podemos ir além do que já alcançamos."
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Exatamente. Com sua dedicação, podemos alcançar grandes coisas."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Planejar um grande evento",
+                    "effects": {
+                        "reputation": {
+                            "mina": 6
+                        },
+                        "leadership": 10,
+                        "energy": -5
+                    }
+                },
+                {
+                    "text": "Focar no treinamento avançado",
+                    "effects": {
+                        "reputation": {
+                            "mina": 5
+                        },
+                        "power": 10,
+                        "knowledge": 5
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 100,
+        "skills": [
+            "illusion_mastery",
+            "club_leadership"
+        ],
+        "unlocks": [
+            "illusion_club_advanced",
+            "special_events"
+        ]
+    },
+    "metadata": {
+        "location": "illusion_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

@@ -27,7 +27,7 @@
         {"npc": "Narrador", "text": "\"O Despertar Secundário é um fenômeno raro que afeta aproximadamente 5% dos indivíduos com habilidades especiais. Tipicamente ocorre durante a adolescência ou início da idade adulta, frequentemente desencadeado por estresse intenso, treinamento rigoroso ou experiências emocionais significativas.\""},
         {"npc": "Narrador", "text": "\"Os sinais incluem flutuações de poder, manifestações espontâneas, sensações incomuns e, em alguns casos, breves vislumbres de novas habilidades relacionadas ao poder original.\""},
         {"npc": "Narrador", "text": "Enquanto você continua lendo, uma sombra cai sobre as páginas do livro. Ao olhar para cima, você vê o Professor Quantum observando você com interesse."},
-        {"npc": "Professor Quantum", "text": "Uma leitura fascinante, não é? Não é todo dia que vejo um calouro interessado em Despertar Secundário.", "gif": "professor_quantum.txt"},
+        {"npc": "Professor Quantum", "text": "Uma leitura fascinante, não é? Não é todo dia que vejo um calouro interessado em Despertar Secundário.", "image": "professor_quantum.png"},
         {"npc": "Professor Quantum", "text": "Posso perguntar o que despertou seu interesse nesse tópico específico?", "choices": [
           {"text": "Contar ao professor sobre suas experiências recentes", "next_dialogue": 8, "metadata": {"affinity_changes": {"Professor Quantum": 2}, "trait_changes": {"honesty": 1}}},
           {"text": "Dizer que é apenas curiosidade acadêmica", "next_dialogue": 9, "metadata": {"affinity_changes": {"Professor Quantum": 0}, "trait_changes": {"caution": 1}}},
@@ -43,7 +43,7 @@
         {"npc": "Narrador", "text": "De repente, sua habilidade se manifesta com uma força surpreendente, muito além do que você já conseguiu antes. A energia é tão intensa que você perde momentaneamente o controle."},
         {"npc": "Narrador", "text": "Há um clarão de poder. Quando sua visão se ajusta, você percebe que criou um efeito muito mais amplo do que pretendia, deixando marcas visíveis na clareira."},
         {"npc": "Narrador", "text": "Enquanto você observa atônito o resultado, ouve uma voz atrás de você."},
-        {"npc": "Estudante Desconhecido", "text": "Impressionante. Não é todo dia que vemos um Despertar Secundário.", "gif": "aria_elite.gif"},
+        {"npc": "Estudante Desconhecido", "text": "Impressionante. Não é todo dia que vemos um Despertar Secundário.", "image": "aria_elite.png"},
         {"npc": "Estudante Desconhecido", "text": "Ah, perdoe minha falta de educação. Meu nome é Aria, do terceiro ano. E você acabou de se tornar muito mais interessante do que a média dos calouros.", "choices": [
           {"text": "O que você sabe sobre esse 'Despertar Secundário'?", "next_dialogue": 11, "metadata": {"affinity_changes": {"Aria": 1}, "trait_changes": {"curiosity": 1}}},
           {"text": "Como você sabia o que estava acontecendo comigo?", "next_dialogue": 12, "metadata": {"affinity_changes": {"Aria": 0}, "trait_changes": {"caution": 1}}},
@@ -143,7 +143,7 @@
       "1": [
         {"npc": "Narrador", "text": "Você se dirige à sala de treinamento do Clube das Chamas, onde encontra Kai Flameheart supervisionando uma sessão de prática."},
         {"npc": "Narrador", "text": "Quando ele nota sua presença, faz um gesto para que um dos veteranos assuma o comando e vem falar com você."},
-        {"npc": "Kai Flameheart", "text": "Olá! Não esperava vê-lo fora do horário regular de treinamento. Aconteceu algo?", "gif": "kai_flameheart.txt"},
+        {"npc": "Kai Flameheart", "text": "Olá! Não esperava vê-lo fora do horário regular de treinamento. Aconteceu algo?", "image": "kai_flameheart.png"},
         {"npc": "Você", "text": "Sim, algo estranho aconteceu com meus poderes esta manhã. Houve um momento em que eles pareceram... diferentes. Mais intensos."},
         {"npc": "Kai Flameheart", "text": "Hmm. Descreva exatamente o que sentiu.", "expression": "serious"},
         {"npc": "Narrador", "text": "Você explica em detalhes a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
@@ -159,7 +159,7 @@
       "2": [
         {"npc": "Narrador", "text": "Você se dirige à sala de meditação dos Ilusionistas Mentais, onde Luna Mindweaver está sentada sozinha em contemplação silenciosa."},
         {"npc": "Narrador", "text": "Mesmo antes de você falar, ela abre os olhos e sorri, como se já soubesse que você viria."},
-        {"npc": "Luna Mindweaver", "text": "Sua mente está... turbulenta hoje. Posso sentir de longe.", "gif": "luna_mindweaver.gif"},
+        {"npc": "Luna Mindweaver", "text": "Sua mente está... turbulenta hoje. Posso sentir de longe.", "image": "luna_mindweaver.png"},
         {"npc": "Luna Mindweaver", "text": "Algo mudou em você. Algo fundamental.", "expression": "knowing"},
         {"npc": "Você", "text": "Como você...? Sim, algo estranho aconteceu com meus poderes esta manhã."},
         {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
@@ -174,7 +174,7 @@
       "3": [
         {"npc": "Narrador", "text": "Você se dirige à sala do Conselho Político, onde encontra Alexander Strategos revisando alguns documentos."},
         {"npc": "Narrador", "text": "Ele ergue os olhos quando você entra, seu olhar analítico parecendo avaliar seu estado antes mesmo que você fale."},
-        {"npc": "Alexander Strategos", "text": "Ah, que timing interessante. Eu estava prestes a enviar alguém para procurá-lo.", "gif": "alexander_strategos.txt"},
+        {"npc": "Alexander Strategos", "text": "Ah, que timing interessante. Eu estava prestes a enviar alguém para procurá-lo.", "image": "alexander_strategos.png"},
         {"npc": "Alexander Strategos", "text": "Houve um... incidente registrado no sistema de monitoramento da academia esta manhã. Uma anomalia energética rastreada até sua localização.", "expression": "analytical"},
         {"npc": "Você", "text": "Então vocês sabem... Sim, algo estranho aconteceu com meus poderes."},
         {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
@@ -189,7 +189,7 @@
       "4": [
         {"npc": "Narrador", "text": "Você se dirige ao jardim zen dos Elementalistas, onde Gaia Naturae está cuidando de plantas raras."},
         {"npc": "Narrador", "text": "Assim que você se aproxima, as plantas ao redor parecem reagir sutilmente, como se sentissem algo diferente em você."},
-        {"npc": "Gaia Naturae", "text": "As plantas sentem a mudança em você. Assim como eu.", "gif": "gaia_naturae.txt"},
+        {"npc": "Gaia Naturae", "text": "As plantas sentem a mudança em você. Assim como eu.", "image": "gaia_naturae.png"},
         {"npc": "Gaia Naturae", "text": "Seu fluxo elemental está... evoluindo. Criando novos padrões.", "expression": "serene"},
         {"npc": "Você", "text": "Sim, algo estranho aconteceu com meus poderes esta manhã."},
         {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},
@@ -204,7 +204,7 @@
       "5": [
         {"npc": "Narrador", "text": "Você se dirige à arena de treinamento do Clube de Combate, onde Ryuji Battleborn está concluindo uma sessão de sparring."},
         {"npc": "Narrador", "text": "Quando ele o vê, interrompe o combate e se aproxima, enxugando o suor do rosto."},
-        {"npc": "Ryuji Battleborn", "text": "Seu timing é interessante. Senti uma perturbação no campo de energia da academia esta manhã.", "gif": "ryuji_battleborn.gif"},
+        {"npc": "Ryuji Battleborn", "text": "Seu timing é interessante. Senti uma perturbação no campo de energia da academia esta manhã.", "image": "ryuji_battleborn.png"},
         {"npc": "Ryuji Battleborn", "text": "E agora você aparece com uma... aura diferente. Mais intensa.", "expression": "intrigued"},
         {"npc": "Você", "text": "Sim, algo estranho aconteceu com meus poderes hoje."},
         {"npc": "Narrador", "text": "Você explica a experiência incomum que teve, incluindo a sensação de acessar uma camada mais profunda de seu poder."},

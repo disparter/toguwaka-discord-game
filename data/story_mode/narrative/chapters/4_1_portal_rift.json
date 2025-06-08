@@ -1,0 +1,141 @@
+{
+  "chapter_id": "4_1_portal_rift",
+  "title": "O Portal Dimensional",
+  "description": "A descoberta e investigação do portal dimensional",
+  "phase": "portal_rift",
+  "requirements": {
+    "previous_chapter": "3_8_graduation_ceremony",
+    "flags": {
+      "year_3_completed": true,
+      "portal_rift_available": true
+    }
+  },
+  "scenes": [
+    {
+      "scene_id": "rift_discovery",
+      "title": "Descoberta do Portal",
+      "description": "O momento em que o portal dimensional é descoberto",
+      "background": "hidden_chamber.jpg",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "shocked",
+          "image": "player_shocked.jpg"
+        },
+        {
+          "id": "headmaster",
+          "position": "right",
+          "expression": "serious",
+          "image": "headmaster_serious.jpg"
+        },
+        {
+          "id": "mysterious_figure",
+          "position": "left",
+          "expression": "mysterious",
+          "image": "mysterious_figure.jpg"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "mysterious_figure",
+          "text": "O portal dimensional... finalmente foi encontrado. O destino da academia está em suas mãos.",
+          "expression": "mysterious"
+        },
+        {
+          "speaker": "headmaster",
+          "text": "Este é o segredo mais bem guardado da academia. Agora que você se formou, está pronto para conhecê-lo.",
+          "expression": "serious"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Investigar o portal",
+          "next_scene": "portal_investigation",
+          "effects": {
+            "curiosity": 3,
+            "reputation": {
+              "headmaster": 5
+            }
+          }
+        },
+        {
+          "text": "Perguntar sobre os riscos",
+          "next_scene": "risk_assessment",
+          "effects": {
+            "caution": 3,
+            "knowledge": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "portal_investigation",
+      "title": "Investigações Iniciais",
+      "description": "O início das investigações sobre o portal",
+      "background": "portal_chamber.jpg",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "focused",
+          "image": "player_focused.jpg"
+        },
+        {
+          "id": "headmaster",
+          "position": "right",
+          "expression": "concerned",
+          "image": "headmaster_concerned.jpg"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "headmaster",
+          "text": "O portal conecta nossa dimensão a outras. Algumas amigáveis, outras... não tanto. Sua tarefa é investigar e proteger.",
+          "expression": "concerned"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar a missão",
+          "next_scene": "mission_accepted",
+          "effects": {
+            "responsibility": 3,
+            "reputation": {
+              "headmaster": 7
+            }
+          }
+        },
+        {
+          "text": "Pedir mais informações",
+          "next_scene": "detailed_briefing",
+          "effects": {
+            "knowledge": 4,
+            "preparation": 2
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 500,
+    "skills": {
+      "dimensional_awareness": 2,
+      "portal_control": 1
+    },
+    "items": ["portal_key", "dimensional_compass"],
+    "unlocks": ["dimensional_travel", "portal_guardian"]
+  },
+  "next_chapter": null,
+  "flags": {
+    "portal_discovered": true,
+    "dimensional_travel_unlocked": true,
+    "story_completed": true
+  },
+  "metadata": {
+    "location": "hidden_chamber",
+    "time_of_day": "night",
+    "weather": "mysterious",
+    "season": "special"
+  }
+} 

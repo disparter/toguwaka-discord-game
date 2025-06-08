@@ -490,192 +490,76 @@ class StoryModeCog(commands.Cog):
                 color=discord.Color.blue()
             )
 
-            # Add character intro GIFs for first interactions
-            kai_first_interaction = npc_name == "Kai Flameheart" and "Então você é o novato?" in text
-            junie_first_interaction = npc_name == "Junie" and "Olá! Eu sou Junie, sua assistente virtual." in text
-
-            # Set file to None initially
-            file = None
-
-            # Check if the dialogue has a gif field
-            if "gif" in dialogue and dialogue["gif"]:
-                gif_filename = dialogue["gif"]
-                gif_path = f"assets/gifs/{gif_filename}"
-                if os.path.exists(gif_path):
-                    # Check file size before attaching
-                    file_size = os.path.getsize(gif_path)
-                    # Discord's file size limit (8MB)
-                    if file_size < 8 * 1024 * 1024:  
-                        embed.set_image(url=f"attachment://{gif_filename}")
-                        file = discord.File(gif_path, filename=gif_filename)
-
-                        # Register the gif in the player's image registry
-                        player_data = get_player(user_id)
-                        if player_data:
-                            story_progress = player_data.get("story_progress", {})
-
-                            # Add the gif to the player's image registry
-                            if "image_registry" not in story_progress:
-                                story_progress["image_registry"] = {}
-
-                            story_progress["image_registry"][gif_filename] = {
-                                "path": gif_path,
-                                "description": f"Imagem mostrada por {npc_name}",
-                                "seen_at": discord.utils.utcnow().isoformat()
-                            }
-
-                            player_data["story_progress"] = story_progress
-
-                            # Update player data in database
-                            update_data = {"story_progress": player_data["story_progress"]}
-
-                            # Also update club_id if it's in the player data
-                            if "club_id" in player_data:
-                                update_data["club_id"] = player_data["club_id"]
-
-                            update_player(user_id, **update_data)
-                    else:
-                        # File is too large, add a note to the embed
-                        embed.add_field(
-                            name="Nota",
-                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
-                            inline=False
-                        )
-                        logger.warning(f"GIF file {gif_filename} is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-            # If no gif field, check for specific character interactions
-            elif kai_first_interaction:
-                kai_gif_path = "assets/gifs/kai_intro.gif"
-                if os.path.exists(kai_gif_path):
-                    # Check file size before attaching
-                    file_size = os.path.getsize(kai_gif_path)
-                    # Discord's file size limit (8MB)
-                    if file_size < 8 * 1024 * 1024:
-                        embed.set_image(url="attachment://kai_intro.gif")
-                        # Create file object for the GIF
-                        file = discord.File(kai_gif_path, filename="kai_intro.gif")
-
-                        # Register the gif in the player's image registry
-                        player_data = get_player(user_id)
-                        if player_data:
-                            story_progress = player_data.get("story_progress", {})
-
-                            # Add the gif to the player's image registry
-                            if "image_registry" not in story_progress:
-                                story_progress["image_registry"] = {}
-
-                            story_progress["image_registry"]["kai_intro.gif"] = {
-                                "path": kai_gif_path,
-                                "description": "Introdução de Kai Flameheart",
-                                "seen_at": discord.utils.utcnow().isoformat()
-                            }
-
-                            player_data["story_progress"] = story_progress
-
-                            # Update player data in database
-                            update_data = {"story_progress": player_data["story_progress"]}
-
-                            # Also update club_id if it's in the player data
-                            if "club_id" in player_data:
-                                update_data["club_id"] = player_data["club_id"]
-
-                            update_player(user_id, **update_data)
-                    else:
-                        # File is too large, add a note to the embed
-                        embed.add_field(
-                            name="Nota",
-                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
-                            inline=False
-                        )
-                        logger.warning(f"Kai intro GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-            elif junie_first_interaction:
-                junie_gif_path = "assets/gifs/junie_intro.gif"
-                if os.path.exists(junie_gif_path):
-                    # Check file size before attaching
-                    file_size = os.path.getsize(junie_gif_path)
-                    # Discord's file size limit (8MB)
-                    if file_size < 8 * 1024 * 1024:
-                        embed.set_image(url="attachment://junie_intro.gif")
-                        # Create file object for the GIF
-                        file = discord.File(junie_gif_path, filename="junie_intro.gif")
-
-                        # Register the gif in the player's image registry
-                        player_data = get_player(user_id)
-                        if player_data:
-                            story_progress = player_data.get("story_progress", {})
-
-                            # Add the gif to the player's image registry
-                            if "image_registry" not in story_progress:
-                                story_progress["image_registry"] = {}
-
-                            story_progress["image_registry"]["junie_intro.gif"] = {
-                                "path": junie_gif_path,
-                                "description": "Introdução de Junie, sua assistente virtual",
-                                "seen_at": discord.utils.utcnow().isoformat()
-                            }
-
-                            player_data["story_progress"] = story_progress
-
-                            # Update player data in database
-                            update_data = {"story_progress": player_data["story_progress"]}
-
-                            # Also update club_id if it's in the player data
-                            if "club_id" in player_data:
-                                update_data["club_id"] = player_data["club_id"]
-
-                            update_player(user_id, **update_data)
-                    else:
-                        # File is too large, add a note to the embed
-                        embed.add_field(
-                            name="Nota",
-                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
-                            inline=False
-                        )
-                        logger.warning(f"Junie intro GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-            # Check for Gaia Naturae's first interaction
-            elif npc_name == "Gaia Naturae" and "Bem-vindo, {player_name}. Os espíritos elementais me disseram que você viria." in text:
-                gaia_gif_path = "assets/gifs/gaia_naturae.gif"
-                if os.path.exists(gaia_gif_path):
-                    # Check file size before attaching
-                    file_size = os.path.getsize(gaia_gif_path)
-                    # Discord's file size limit (8MB)
-                    if file_size < 8 * 1024 * 1024:
-                        embed.set_image(url="attachment://gaia_naturae.gif")
-                        # Create file object for the GIF
-                        file = discord.File(gaia_gif_path, filename="gaia_naturae.gif")
-
-                        # Register the gif in the player's image registry
-                        player_data = get_player(user_id)
-                        if player_data:
-                            story_progress = player_data.get("story_progress", {})
-
-                            # Add the gif to the player's image registry
-                            if "image_registry" not in story_progress:
-                                story_progress["image_registry"] = {}
-
-                            story_progress["image_registry"]["gaia_naturae.gif"] = {
-                                "path": gaia_gif_path,
-                                "description": "Introdução de Gaia Naturae, líder dos Elementalistas",
-                                "seen_at": discord.utils.utcnow().isoformat()
-                            }
-
-                            player_data["story_progress"] = story_progress
-
-                            # Update player data in database
-                            update_data = {"story_progress": player_data["story_progress"]}
-
-                            # Also update club_id if it's in the player data
-                            if "club_id" in player_data:
-                                update_data["club_id"] = player_data["club_id"]
-
-                            update_player(user_id, **update_data)
-                    else:
-                        # File is too large, add a note to the embed
-                        embed.add_field(
-                            name="Nota",
-                            value="Uma imagem não pôde ser carregada devido ao tamanho do arquivo.",
-                            inline=False
-                        )
-                        logger.warning(f"Gaia Naturae GIF is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+            # Add character intro images for first interactions
+            if "image" in dialogue and dialogue["image"]:
+                image_filename = dialogue["image"]
+                image_path = f"assets/images/{image_filename}"
+                if os.path.exists(image_path):
+                    try:
+                        # Check file size
+                        file_size = os.path.getsize(image_path)
+                        if file_size <= 8 * 1024 * 1024:  # 8MB limit
+                            embed.set_image(url=f"attachment://{image_filename}")
+                            file = discord.File(image_path, filename=image_filename)
+                            await interaction.followup.send(embed=embed, file=file)
+                        else:
+                            logger.warning(f"Image file {image_filename} is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+                            await interaction.followup.send(embed=embed)
+                    except Exception as e:
+                        logger.error(f"Error sending image {image_filename}: {str(e)}")
+                        await interaction.followup.send(embed=embed)
+                else:
+                    logger.warning(f"Image file {image_filename} not found at {image_path}")
+                    await interaction.followup.send(embed=embed)
+            else:
+                # If no image field, check for specific character interactions
+                if dialogue.get("character") == "kai":
+                    kai_image_path = "assets/images/kai_intro.png"
+                    if os.path.exists(kai_image_path):
+                        try:
+                            file_size = os.path.getsize(kai_image_path)
+                            if file_size <= 8 * 1024 * 1024:  # 8MB limit
+                                embed.set_image(url="attachment://kai_intro.png")
+                                file = discord.File(kai_image_path, filename="kai_intro.png")
+                                await interaction.followup.send(embed=embed, file=file)
+                            else:
+                                logger.warning(f"Kai intro image is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+                                await interaction.followup.send(embed=embed)
+                        except Exception as e:
+                            logger.error(f"Error sending Kai intro image: {str(e)}")
+                            await interaction.followup.send(embed=embed)
+                elif dialogue.get("character") == "junie":
+                    junie_image_path = "assets/images/junie_intro.png"
+                    if os.path.exists(junie_image_path):
+                        try:
+                            file_size = os.path.getsize(junie_image_path)
+                            if file_size <= 8 * 1024 * 1024:  # 8MB limit
+                                embed.set_image(url="attachment://junie_intro.png")
+                                file = discord.File(junie_image_path, filename="junie_intro.png")
+                                await interaction.followup.send(embed=embed, file=file)
+                            else:
+                                logger.warning(f"Junie intro image is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+                                await interaction.followup.send(embed=embed)
+                        except Exception as e:
+                            logger.error(f"Error sending Junie intro image: {str(e)}")
+                            await interaction.followup.send(embed=embed)
+                elif dialogue.get("character") == "gaia":
+                    gaia_image_path = "assets/images/gaia_naturae.png"
+                    if os.path.exists(gaia_image_path):
+                        try:
+                            file_size = os.path.getsize(gaia_image_path)
+                            if file_size <= 8 * 1024 * 1024:  # 8MB limit
+                                embed.set_image(url="attachment://gaia_naturae.png")
+                                file = discord.File(gaia_image_path, filename="gaia_naturae.png")
+                                await interaction.followup.send(embed=embed, file=file)
+                            else:
+                                logger.warning(f"Gaia Naturae image is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+                                await interaction.followup.send(embed=embed)
+                        except Exception as e:
+                            logger.error(f"Error sending Gaia Naturae image: {str(e)}")
+                            await interaction.followup.send(embed=embed)
+                else:
+                    await interaction.followup.send(embed=embed)
 
             # Check if there are affinity changes to display
             if "affinity_changes" in result and result["affinity_changes"]:

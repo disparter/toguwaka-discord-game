@@ -1,0 +1,131 @@
+{
+    "chapter_id": "romance_3_1_stars",
+    "title": "Olhares nas Estrelas",
+    "description": "Um encontro casual no observatório leva a uma conexão celestial",
+    "route": "route_3",
+    "character": "shy_girl",
+    "requirements": {
+        "reputation": {
+            "shy_girl": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "observatory_meeting",
+            "background": "romantic_observatory_headrest.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "attentive"
+                },
+                {
+                    "id": "shy_girl",
+                    "image": "shy_girl_intro.png",
+                    "expression": "timid"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "shy_girl",
+                    "text": "Ah... você também gosta de observar as estrelas?"
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, há algo fascinante em olhar para o céu noturno."
+                },
+                {
+                    "speaker": "shy_girl",
+                    "text": "Cada estrela tem sua própria história... e destino."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Perguntar sobre as constelações",
+                    "effects": {
+                        "reputation": {
+                            "shy_girl": 5
+                        },
+                        "knowledge": 5
+                    }
+                },
+                {
+                    "text": "Compartilhar o momento em silêncio",
+                    "effects": {
+                        "reputation": {
+                            "shy_girl": 3
+                        },
+                        "wisdom": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "star_gazing",
+            "background": "romantic_starwatch_observation_tower.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "wonder"
+                },
+                {
+                    "id": "shy_girl",
+                    "image": "shy_girl_intro.png",
+                    "expression": "peaceful"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "shy_girl",
+                    "text": "Veja aquela estrela... ela parece estar piscando só para nós."
+                },
+                {
+                    "speaker": "player",
+                    "text": "É como se ela estivesse tentando nos dizer algo."
+                },
+                {
+                    "speaker": "shy_girl",
+                    "text": "Talvez seja um sinal... de que nossos caminhos estavam destinados a se cruzar."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Concordar sobre o destino",
+                    "effects": {
+                        "reputation": {
+                            "shy_girl": 6
+                        },
+                        "wisdom": 8,
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Falar sobre coincidências",
+                    "effects": {
+                        "reputation": {
+                            "shy_girl": 4
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "shy_girl": 10
+        },
+        "unlocks": [
+            "romantic_observatory_gaze_hand_on_chest",
+            "romantic_first_kiss_dorm_balcony_under_stars"
+        ]
+    },
+    "metadata": {
+        "location": "academy_observatory",
+        "time_of_day": "night",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

@@ -1,0 +1,128 @@
+{
+  "chapter_id": "3_12_portal_rift",
+  "title": "O Portal Dimensional",
+  "description": "A descoberta de um portal dimensional que ameaça a realidade",
+  "phase": "year_3_final",
+  "requirements": {
+    "previous_chapter": "3_11_final_preparations",
+    "power_level": 80,
+    "knowledge": 80
+  },
+  "scenes": [
+    {
+      "scene_id": "portal_discovery",
+      "background": "dimensional_rift_1.png",
+      "characters": [
+        {
+          "id": "player",
+          "image": "student_room_reflection_night.png",
+          "expression": "shocked"
+        },
+        {
+          "id": "professor_quantum",
+          "image": "professor_quantum_intro.png",
+          "expression": "concerned"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_quantum",
+          "text": "Este portal dimensional está se expandindo. Se não o fecharmos, pode destruir nossa realidade."
+        },
+        {
+          "speaker": "player",
+          "text": "O que precisamos fazer, professor?"
+        },
+        {
+          "speaker": "professor_quantum",
+          "text": "Precisamos de seu poder e conhecimento. Você é a única pessoa que pode selar este portal."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar a responsabilidade",
+          "effects": {
+            "reputation": {
+              "professor_quantum": 5
+            },
+            "power": 10,
+            "motivation": 10
+          }
+        },
+        {
+          "text": "Pedir mais informações",
+          "effects": {
+            "reputation": {
+              "professor_quantum": 3
+            },
+            "knowledge": 10
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "portal_confrontation",
+      "background": "dimensional_rift_2.png",
+      "characters": [
+        {
+          "id": "player",
+          "image": "student_room_reflection_night.png",
+          "expression": "determined"
+        },
+        {
+          "id": "professor_quantum",
+          "image": "professor_quantum_intro.png",
+          "expression": "focused"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_quantum",
+          "text": "O portal está reagindo à sua presença. Use seu poder com sabedoria."
+        },
+        {
+          "speaker": "player",
+          "text": "Entendi. Vou fazer o que for necessário."
+        },
+        {
+          "speaker": "professor_quantum",
+          "text": "Lembre-se de tudo o que aprendeu. Sua força e conhecimento são a chave."
+        }
+      ],
+      "choices": [
+        {
+          "text": "Usar poder puro",
+          "effects": {
+            "power": 15,
+            "energy": -10
+          }
+        },
+        {
+          "text": "Combinar poder e conhecimento",
+          "effects": {
+            "power": 8,
+            "knowledge": 8,
+            "energy": -5
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 200,
+    "skills": [
+      "dimensional_control",
+      "reality_manipulation"
+    ],
+    "unlocks": [
+      "true_ending",
+      "dimensional_mastery"
+    ]
+  },
+  "metadata": {
+    "location": "dimensional_rift",
+    "time_of_day": "night",
+    "weather": "dimensional_storm",
+    "season": "winter"
+  }
+} 

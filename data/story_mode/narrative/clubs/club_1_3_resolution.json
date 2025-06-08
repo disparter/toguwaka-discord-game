@@ -1,0 +1,83 @@
+{
+    "chapter_id": "club_1_3_resolution",
+    "title": "Resolução no Clube das Chamas",
+    "description": "O clube supera seus desafios e se fortalece",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_1_2_trouble",
+        "reputation": {
+            "ryuji": 20
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "club_recovery",
+            "background": "clube_das_chamas_resolution.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "relieved"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "proud"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Você mostrou grande controle e coragem. O clube está mais forte graças a você."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Foi um trabalho em equipe. Todos aprendemos com essa experiência."
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Exatamente. O verdadeiro poder do fogo está na união e no controle."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Propor treinamento adicional",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 5
+                        },
+                        "power": 8,
+                        "leadership": 4
+                    }
+                },
+                {
+                    "text": "Sugerir um sistema de segurança",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 4
+                        },
+                        "knowledge": 8,
+                        "responsibility": 4
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 100,
+        "skills": [
+            "fire_mastery",
+            "team_leadership"
+        ],
+        "unlocks": [
+            "fire_club_final",
+            "advanced_techniques"
+        ]
+    },
+    "metadata": {
+        "location": "fire_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

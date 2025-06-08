@@ -1,0 +1,131 @@
+{
+    "chapter_id": "club_4_1_intro",
+    "title": "Introdução ao Clube Elementalistas",
+    "description": "O primeiro encontro com o Clube Elementalistas e seu líder",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "1_1_arrival",
+        "reputation": {
+            "professor_quantum": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "club_entrance",
+            "background": "clube_elementalistas_intro.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "curious"
+                },
+                {
+                    "id": "professor_quantum",
+                    "image": "professor_quantum_intro.png",
+                    "expression": "welcoming"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Bem-vindo ao Clube Elementalistas. Aqui, você aprenderá a controlar e combinar os elementos."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Obrigado por me receber. Estou ansioso para aprender sobre os elementos."
+                },
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Os elementos são mais que poder - são a base de toda a magia e conhecimento."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Expressar interesse no treinamento",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 5
+                        },
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Perguntar sobre a teoria elemental",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 3
+                        },
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "first_training",
+            "background": "clube_elementalistas_trouble_1.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "professor_quantum",
+                    "image": "professor_quantum_intro.png",
+                    "expression": "teaching"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Vamos começar com o básico. Cada elemento tem suas próprias propriedades e características."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como devo começar?"
+                },
+                {
+                    "speaker": "professor_quantum",
+                    "text": "Primeiro, você deve entender a natureza de cada elemento e como eles interagem."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Tentar sentir a energia elemental",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 4
+                        },
+                        "power": 8
+                    }
+                },
+                {
+                    "text": "Observar primeiro os outros membros",
+                    "effects": {
+                        "reputation": {
+                            "professor_quantum": 2
+                        },
+                        "knowledge": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "skills": [
+            "elemental_basics",
+            "elemental_sense"
+        ],
+        "unlocks": [
+            "elemental_club_training",
+            "club_events"
+        ]
+    },
+    "metadata": {
+        "location": "elemental_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

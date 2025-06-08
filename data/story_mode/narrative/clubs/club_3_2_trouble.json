@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_3_2_trouble",
+    "title": "Problemas no Clube dos Ilusionistas",
+    "description": "Um desafio inesperado testa as habilidades de ilusão dos membros",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_3_1_intro",
+        "reputation": {
+            "mina": 10
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "illusion_malfunction",
+            "background": "clube_dos_ilusionistas_trouble_2.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "concerned"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "serious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "Uma ilusão coletiva está fora de controle. Precisamos contê-la antes que afete toda a academia."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como podemos resolver isso?"
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Use seu treinamento. A ilusão responde à sua concentração - controle-a."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Tentar dissipar a ilusão",
+                    "effects": {
+                        "reputation": {
+                            "mina": 5
+                        },
+                        "power": 10,
+                        "energy": -5
+                    }
+                },
+                {
+                    "text": "Criar uma ilusão contrária",
+                    "effects": {
+                        "reputation": {
+                            "mina": 3
+                        },
+                        "power": 5,
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "illusion_containment",
+            "background": "clube_dos_ilusionistas_trouble_3.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "focused"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "A ilusão está se espalhando. Precisamos trabalhar juntos para contê-la."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como podemos coordenar nossos esforços?"
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Sincronize sua energia com a minha. Juntos, somos mais fortes."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Sincronizar poder com Mina",
+                    "effects": {
+                        "reputation": {
+                            "mina": 6
+                        },
+                        "power": 12,
+                        "energy": -8
+                    }
+                },
+                {
+                    "text": "Proteger os outros membros",
+                    "effects": {
+                        "reputation": {
+                            "mina": 4
+                        },
+                        "power": 8,
+                        "leadership": 4
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 75,
+        "skills": [
+            "illusion_control_advanced",
+            "team_coordination"
+        ],
+        "unlocks": [
+            "illusion_club_resolution",
+            "advanced_training"
+        ]
+    },
+    "metadata": {
+        "location": "illusion_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

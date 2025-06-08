@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_2_4_final",
+    "title": "O Legado do Clube das Chamas",
+    "description": "O clube realiza seu maior desafio e prepara a próxima geração",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_2_3_resolution",
+        "reputation": {
+            "ryuji": 20
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "final_challenge",
+            "background": "clube_das_chamas_trouble_5.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "serious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Este é o teste final. Vamos ver se você está pronto para carregar a tocha do clube."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que preciso fazer?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Mostrar que você entendeu o verdadeiro significado do poder do fogo - não é só força, é controle e sabedoria."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Demonstrar controle total",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 8
+                        },
+                        "power": 15,
+                        "energy": -10
+                    }
+                },
+                {
+                    "text": "Mostrar sabedoria nas chamas",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 6
+                        },
+                        "power": 12,
+                        "wisdom": 8
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "passing_legacy",
+            "background": "clube_das_chamas_trouble_6.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "proud"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "satisfied"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Você provou seu valor. O clube está pronto para uma nova era."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que isso significa para o futuro?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Significa que você está pronto para liderar. Para mostrar que o fogo não é só destruição - é transformação."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar a liderança",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 10
+                        },
+                        "leadership": 15,
+                        "wisdom": 10
+                    }
+                },
+                {
+                    "text": "Propor uma nova visão",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 8
+                        },
+                        "leadership": 12,
+                        "innovation": 10
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 150,
+        "skills": [
+            "fire_mastery_advanced",
+            "club_leadership_advanced"
+        ],
+        "unlocks": [
+            "fire_club_legacy",
+            "special_training"
+        ]
+    },
+    "metadata": {
+        "location": "fire_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_3_4_final",
+    "title": "O Legado do Clube dos Ilusionistas",
+    "description": "O clube realiza seu maior espetáculo e prepara a próxima geração",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_3_3_resolution",
+        "reputation": {
+            "mina": 20
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "grand_performance",
+            "background": "clube_dos_ilusionistas_trouble_5.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "confident"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "proud"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "Este é nosso momento. Vamos mostrar a todos o verdadeiro poder da ilusão."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Estou pronto. O que você tem em mente?"
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Uma ilusão que transcende o tempo e o espaço. Algo que ficará na memória de todos."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Criar uma ilusão cósmica",
+                    "effects": {
+                        "reputation": {
+                            "mina": 8
+                        },
+                        "power": 15,
+                        "energy": -10
+                    }
+                },
+                {
+                    "text": "Focar em uma ilusão emocional",
+                    "effects": {
+                        "reputation": {
+                            "mina": 6
+                        },
+                        "power": 12,
+                        "wisdom": 8
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "passing_torch",
+            "background": "clube_dos_ilusionistas_trouble_6.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "reflective"
+                },
+                {
+                    "id": "mina",
+                    "image": "mina_starlight_intro.png",
+                    "expression": "content"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mina",
+                    "text": "Você se tornou um verdadeiro mestre da ilusão. O clube está em boas mãos."
+                },
+                {
+                    "speaker": "player",
+                    "text": "O que isso significa para o futuro?"
+                },
+                {
+                    "speaker": "mina",
+                    "text": "Significa que você está pronto para guiar outros. Para mostrar que a ilusão é mais que truques - é arte."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar a responsabilidade",
+                    "effects": {
+                        "reputation": {
+                            "mina": 10
+                        },
+                        "leadership": 15,
+                        "wisdom": 10
+                    }
+                },
+                {
+                    "text": "Propor uma nova direção",
+                    "effects": {
+                        "reputation": {
+                            "mina": 8
+                        },
+                        "leadership": 12,
+                        "innovation": 10
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 150,
+        "skills": [
+            "illusion_mastery_advanced",
+            "club_leadership_advanced"
+        ],
+        "unlocks": [
+            "illusion_club_legacy",
+            "special_performances"
+        ]
+    },
+    "metadata": {
+        "location": "illusion_club_room",
+        "time_of_day": "evening",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

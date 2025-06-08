@@ -1,0 +1,131 @@
+{
+    "chapter_id": "romance_6_1_mystery",
+    "title": "O Mistério da Biblioteca",
+    "description": "Uma investigação conjunta leva a uma conexão inesperada",
+    "route": "route_6",
+    "character": "mystery_girl",
+    "requirements": {
+        "reputation": {
+            "mystery_girl": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "library_investigation",
+            "background": "tokugawa_academy_6.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "curious"
+                },
+                {
+                    "id": "mystery_girl",
+                    "image": "mystery_girl_intro.png",
+                    "expression": "focused"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mystery_girl",
+                    "text": "Você também está investigando o desaparecimento dos livros antigos?"
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, notei que alguns volumes raros sumiram do acervo."
+                },
+                {
+                    "speaker": "mystery_girl",
+                    "text": "Interessante... Talvez possamos trabalhar juntos nisso."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar a parceria",
+                    "effects": {
+                        "reputation": {
+                            "mystery_girl": 5
+                        },
+                        "knowledge": 5
+                    }
+                },
+                {
+                    "text": "Investigar separadamente",
+                    "effects": {
+                        "reputation": {
+                            "mystery_girl": 3
+                        },
+                        "independence": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "secret_room",
+            "background": "romantic_library_study_close.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "surprised"
+                },
+                {
+                    "id": "mystery_girl",
+                    "image": "mystery_girl_intro.png",
+                    "expression": "excited"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "mystery_girl",
+                    "text": "Encontrei algo... uma sala secreta atrás das estantes."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Uma sala secreta? Como você descobriu?"
+                },
+                {
+                    "speaker": "mystery_girl",
+                    "text": "Os livros... eles formam um padrão. Um código que ninguém mais percebeu."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Admirar sua dedução",
+                    "effects": {
+                        "reputation": {
+                            "mystery_girl": 6
+                        },
+                        "wisdom": 8,
+                        "appreciation": 5
+                    }
+                },
+                {
+                    "text": "Sugerir investigar mais a fundo",
+                    "effects": {
+                        "reputation": {
+                            "mystery_girl": 4
+                        },
+                        "curiosity": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "mystery_girl": 10
+        },
+        "unlocks": [
+            "romantic_library_study_close",
+            "romantic_library_study_close_2"
+        ]
+    },
+    "metadata": {
+        "location": "academy_library",
+        "time_of_day": "night",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

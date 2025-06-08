@@ -1,0 +1,126 @@
+{
+  "chapter_id": "2_1_return",
+  "title": "Retorno à Academia",
+  "description": "O início do segundo ano na Academia Tokugawa",
+  "phase": "year_2_intro",
+  "requirements": {
+    "previous_chapter": "1_12_first_tournament"
+  },
+  "scenes": [
+    {
+      "scene_id": "academy_gate_return",
+      "title": "Portão da Academia",
+      "description": "O retorno à academia após as férias",
+      "background": "tokugawa_academy_2.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "determined",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_quantum",
+          "position": "right",
+          "expression": "welcoming",
+          "image": "professor_quantum_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_quantum",
+          "text": "Bem-vindo de volta. Seu primeiro ano foi promissor. Agora, novos desafios o aguardam.",
+          "expression": "welcoming"
+        },
+        {
+          "speaker": "player",
+          "text": "Estou pronto para enfrentá-los, Professor.",
+          "expression": "determined"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Mencionar os novos poderes descobertos",
+          "next_scene": "power_discussion",
+          "effects": {
+            "reputation": {
+              "professor_quantum": 5
+            }
+          }
+        },
+        {
+          "text": "Perguntar sobre as novidades do ano",
+          "next_scene": "year_preview",
+          "effects": {
+            "knowledge": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "power_discussion",
+      "title": "Discussão sobre Poderes",
+      "description": "Uma conversa sobre o desenvolvimento dos poderes",
+      "background": "scientific_lab.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "focused",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_quantum",
+          "position": "right",
+          "expression": "interested",
+          "image": "professor_quantum_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_quantum",
+          "text": "Seus poderes evoluíram significativamente. Este ano, você aprenderá a controlá-los com mais precisão.",
+          "expression": "serious"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Expressar entusiasmo pelo treinamento",
+          "next_scene": "training_preview",
+          "effects": {
+            "reputation": {
+              "professor_quantum": 4
+            },
+            "motivation": 2
+          }
+        },
+        {
+          "text": "Perguntar sobre os riscos",
+          "next_scene": "risk_discussion",
+          "effects": {
+            "knowledge": 3,
+            "caution": 2
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 150,
+    "skills": {
+      "power_control": 1
+    },
+    "unlocks": ["advanced_training", "year_2_events"]
+  },
+  "next_chapter": "2_2_new_students",
+  "flags": {
+    "year_2_started": true,
+    "advanced_training_available": true
+  },
+  "metadata": {
+    "location": "academy_entrance",
+    "time_of_day": "morning",
+    "weather": "clear",
+    "season": "autumn"
+  }
+} 

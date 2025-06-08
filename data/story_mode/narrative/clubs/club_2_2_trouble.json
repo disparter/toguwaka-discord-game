@@ -1,0 +1,135 @@
+{
+    "chapter_id": "club_2_2_trouble",
+    "title": "Problemas no Clube de Combate",
+    "description": "Um desafio inesperado testa as habilidades de combate dos membros",
+    "phase": "year_1_clubs",
+    "requirements": {
+        "previous_chapter": "club_2_1_intro",
+        "reputation": {
+            "ryuji": 10
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "combat_challenge",
+            "background": "clube_de_combate_trouble_2.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "serious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "Um grupo de estudantes de outra academia desafiou nosso clube. Precisamos defender nossa honra."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como devemos proceder?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Com estratégia e habilidade. Mostre o que aprendeu."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar o desafio individual",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 5
+                        },
+                        "power": 10,
+                        "courage": 5
+                    }
+                },
+                {
+                    "text": "Propor um combate em equipe",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 3
+                        },
+                        "power": 5,
+                        "teamwork": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "combat_confrontation",
+            "background": "clube_de_combate_trouble_3.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "focused"
+                },
+                {
+                    "id": "ryuji",
+                    "image": "ryuji_battleborn_intro.png",
+                    "expression": "focused"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "ryuji",
+                    "text": "O combate está intenso. Precisamos manter a calma e usar nossas técnicas."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Como podemos virar o jogo?"
+                },
+                {
+                    "speaker": "ryuji",
+                    "text": "Lembre-se do treinamento. A vitória vem da disciplina."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Usar técnicas avançadas",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 6
+                        },
+                        "power": 12,
+                        "energy": -8
+                    }
+                },
+                {
+                    "text": "Coordenar com a equipe",
+                    "effects": {
+                        "reputation": {
+                            "ryuji": 4
+                        },
+                        "power": 8,
+                        "teamwork": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 75,
+        "skills": [
+            "combat_advanced",
+            "team_coordination"
+        ],
+        "unlocks": [
+            "combat_club_resolution",
+            "advanced_training"
+        ]
+    },
+    "metadata": {
+        "location": "combat_club_room",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

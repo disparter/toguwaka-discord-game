@@ -1,0 +1,132 @@
+{
+    "chapter_id": "romance_4_1_dojo",
+    "title": "Treino Compartilhado",
+    "description": "Um treino intenso no dojo leva a uma conexão baseada em confiança e respeito",
+    "route": "route_4",
+    "character": "dojo_boy",
+    "requirements": {
+        "reputation": {
+            "dojo_boy": 0
+        }
+    },
+    "scenes": [
+        {
+            "scene_id": "dojo_meeting",
+            "background": "romantic_gym_club_duo_pose.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "determined"
+                },
+                {
+                    "id": "dojo_boy",
+                    "image": "dojo_boy_intro.png",
+                    "expression": "focused"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "dojo_boy",
+                    "text": "Você tem potencial. Quer treinar junto?"
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, estou pronto para dar o meu melhor."
+                },
+                {
+                    "speaker": "dojo_boy",
+                    "text": "O treino é mais que força física. É sobre confiança e respeito mútuo."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar o desafio",
+                    "effects": {
+                        "reputation": {
+                            "dojo_boy": 5
+                        },
+                        "power": 5
+                    }
+                },
+                {
+                    "text": "Perguntar sobre a técnica",
+                    "effects": {
+                        "reputation": {
+                            "dojo_boy": 3
+                        },
+                        "knowledge": 5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "intense_training",
+            "background": "romantic_gym_mats_exhausted_smiles.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "exhausted"
+                },
+                {
+                    "id": "dojo_boy",
+                    "image": "dojo_boy_intro.png",
+                    "expression": "satisfied"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "dojo_boy",
+                    "text": "Você se superou hoje. É raro encontrar alguém com tanta dedicação."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Obrigado por me desafiar. Aprendi muito."
+                },
+                {
+                    "speaker": "dojo_boy",
+                    "text": "Quando dois guerreiros treinam juntos, eles criam um vínculo único."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Concordar sobre o vínculo",
+                    "effects": {
+                        "reputation": {
+                            "dojo_boy": 6
+                        },
+                        "power": 8,
+                        "wisdom": 5
+                    }
+                },
+                {
+                    "text": "Propor mais treinos",
+                    "effects": {
+                        "reputation": {
+                            "dojo_boy": 4
+                        },
+                        "power": 8,
+                        "determination": 5
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "relationship": {
+            "dojo_boy": 10
+        },
+        "unlocks": [
+            "romantic_first_kiss_training_field_glow",
+            "romantic_gym_club_duo_pose"
+        ]
+    },
+    "metadata": {
+        "location": "academy_dojo",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 
