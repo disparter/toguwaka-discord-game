@@ -412,7 +412,7 @@ class StoryModeCog(commands.Cog):
                 description="Você já completou este desafio com sucesso. Não é possível refazê-lo.",
                 color=discord.Color.gold()
             )
-            await channel.send(embed=embed)
+            await channel.send(embed=embed, ephemeral=True)
             return
 
         if "already_failed" in chapter_data and chapter_data["already_failed"]:
@@ -421,7 +421,7 @@ class StoryModeCog(commands.Cog):
                 description="Você já falhou neste desafio. Não é possível tentá-lo novamente.",
                 color=discord.Color.red()
             )
-            await channel.send(embed=embed)
+            await channel.send(embed=embed, ephemeral=True)
             return
 
         # Check if a path is blocked due to previous failures
@@ -431,7 +431,7 @@ class StoryModeCog(commands.Cog):
                 description="Devido a falhas anteriores, este caminho da história está bloqueado para você.",
                 color=discord.Color.red()
             )
-            await channel.send(embed=embed)
+            await channel.send(embed=embed, ephemeral=True)
             return
 
         # Check if a challenge was just completed successfully
@@ -441,7 +441,7 @@ class StoryModeCog(commands.Cog):
                 description="Parabéns! Você completou o desafio com sucesso e recebeu recompensas.",
                 color=discord.Color.green()
             )
-            await channel.send(embed=embed)
+            await channel.send(embed=embed, ephemeral=True)
 
         # Check if a challenge was just failed
         if "challenge_failure" in result and result["challenge_failure"]:
@@ -450,7 +450,7 @@ class StoryModeCog(commands.Cog):
                 description="Você falhou no desafio. Isso terá consequências para sua jornada.",
                 color=discord.Color.red()
             )
-            await channel.send(embed=embed)
+            await channel.send(embed=embed, ephemeral=True)
 
         # If there's a current dialogue, send it
         if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
@@ -463,29 +463,15 @@ class StoryModeCog(commands.Cog):
             # Replace placeholders in the text with player-specific information
             player_data = get_player(user_id)
             if player_data:
-                # Handle club-specific content
-                if "club_id" in player_data and player_data["club_id"] is not None:
-                    club_id = player_data["club_id"]
-                    club = get_club(club_id)
-                    if club:
-                        club_name = club.get("name", "Desconhecido")
-                        club_leader = club.get("leader", "Desconhecido")
+                text = text.format(
+                    player_name=player_data["name"],
+                    player_level=player_data["level"],
+                    player_element=player_data.get("element", "desconhecido")
+                )
 
-                        # Replace placeholders with actual values
-                        text = text.replace("{club_name}", club_name)
-                        text = text.replace("{{club_name}}", club_name)
-                        text = text.replace("{club_leader}", club_leader)
-
-                        # If text contains "líder de clube", make sure the club name is mentioned
-                        if "líder de clube" in text and "{club_name}" not in text and club_name not in text:
-                            text = text.replace("líder de clube", f"líder do clube {club_name}")
-
-                # Replace player name if needed
-                player_name = player_data.get("name", "Estudante")
-                text = text.replace("{player_name}", player_name)
-
+            # Create embed for the dialogue
             embed = create_basic_embed(
-                title=f"{npc_name}",
+                title=npc_name,
                 description=text,
                 color=discord.Color.blue()
             )
@@ -501,85 +487,18 @@ class StoryModeCog(commands.Cog):
                         if file_size <= 8 * 1024 * 1024:  # 8MB limit
                             embed.set_image(url=f"attachment://{image_filename}")
                             file = discord.File(image_path, filename=image_filename)
-                            await interaction.followup.send(embed=embed, file=file)
+                            await channel.send(embed=embed, file=file, ephemeral=True)
                         else:
                             logger.warning(f"Image file {image_filename} is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-                            await interaction.followup.send(embed=embed)
+                            await channel.send(embed=embed, ephemeral=True)
                     except Exception as e:
                         logger.error(f"Error sending image {image_filename}: {str(e)}")
-                        await interaction.followup.send(embed=embed)
+                        await channel.send(embed=embed, ephemeral=True)
                 else:
                     logger.warning(f"Image file {image_filename} not found at {image_path}")
-                    await interaction.followup.send(embed=embed)
+                    await channel.send(embed=embed, ephemeral=True)
             else:
-                # If no image field, check for specific character interactions
-                if dialogue.get("character") == "kai":
-                    kai_image_path = "assets/images/kai_intro.png"
-                    if os.path.exists(kai_image_path):
-                        try:
-                            file_size = os.path.getsize(kai_image_path)
-                            if file_size <= 8 * 1024 * 1024:  # 8MB limit
-                                embed.set_image(url="attachment://kai_intro.png")
-                                file = discord.File(kai_image_path, filename="kai_intro.png")
-                                await interaction.followup.send(embed=embed, file=file)
-                            else:
-                                logger.warning(f"Kai intro image is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-                                await interaction.followup.send(embed=embed)
-                        except Exception as e:
-                            logger.error(f"Error sending Kai intro image: {str(e)}")
-                            await interaction.followup.send(embed=embed)
-                elif dialogue.get("character") == "junie":
-                    junie_image_path = "assets/images/junie_intro.png"
-                    if os.path.exists(junie_image_path):
-                        try:
-                            file_size = os.path.getsize(junie_image_path)
-                            if file_size <= 8 * 1024 * 1024:  # 8MB limit
-                                embed.set_image(url="attachment://junie_intro.png")
-                                file = discord.File(junie_image_path, filename="junie_intro.png")
-                                await interaction.followup.send(embed=embed, file=file)
-                            else:
-                                logger.warning(f"Junie intro image is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-                                await interaction.followup.send(embed=embed)
-                        except Exception as e:
-                            logger.error(f"Error sending Junie intro image: {str(e)}")
-                            await interaction.followup.send(embed=embed)
-                elif dialogue.get("character") == "gaia":
-                    gaia_image_path = "assets/images/gaia_naturae.png"
-                    if os.path.exists(gaia_image_path):
-                        try:
-                            file_size = os.path.getsize(gaia_image_path)
-                            if file_size <= 8 * 1024 * 1024:  # 8MB limit
-                                embed.set_image(url="attachment://gaia_naturae.png")
-                                file = discord.File(gaia_image_path, filename="gaia_naturae.png")
-                                await interaction.followup.send(embed=embed, file=file)
-                            else:
-                                logger.warning(f"Gaia Naturae image is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
-                                await interaction.followup.send(embed=embed)
-                        except Exception as e:
-                            logger.error(f"Error sending Gaia Naturae image: {str(e)}")
-                            await interaction.followup.send(embed=embed)
-                else:
-                    await interaction.followup.send(embed=embed)
-
-            # Check if there are affinity changes to display
-            if "affinity_changes" in result and result["affinity_changes"]:
-                affinity_changes = result["affinity_changes"]
-
-                # Create a field for each affinity change
-                for change_info in affinity_changes:
-                    npc_name = change_info["npc"]
-                    change = change_info["change"]
-                    new_level = change_info["new_level"].capitalize()
-
-                    # Determine icon based on change direction
-                    icon = "⬆️" if change > 0 else "⬇️" if change < 0 else "➡️"
-
-                    # Create field with affinity change information
-                    embed.add_field(
-                        name=f"Relacionamento com {npc_name}",
-                        value=f"{icon} {'+' if change > 0 else ''}{change} pontos de afinidade\nNível atual: {new_level}",
-                        inline=True
-                    )
+                await channel.send(embed=embed, ephemeral=True)
 
             # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
@@ -599,11 +518,11 @@ class StoryModeCog(commands.Cog):
                     button.callback = self._create_choice_callback(user_id, i)
                     view.add_item(button)
 
-                # Don't use ephemeral for messages with choices so they're visible to everyone
+                # Send choices as ephemeral
                 if file:
-                    message = await channel.send(file=file, embed=embed, view=view)
+                    message = await channel.send(file=file, embed=embed, view=view, ephemeral=True)
                 else:
-                    message = await channel.send(embed=embed, view=view)
+                    message = await channel.send(embed=embed, view=view, ephemeral=True)
                 return
 
             # If there are choices in the chapter data but not in the dialogue, check if we should show them
@@ -625,11 +544,11 @@ class StoryModeCog(commands.Cog):
                     button.callback = self._create_choice_callback(user_id, i)
                     view.add_item(button)
 
-                # Don't use ephemeral for messages with choices so they're visible to everyone
+                # Send choices as ephemeral
                 if file:
-                    message = await channel.send(file=file, embed=embed, view=view)
+                    message = await channel.send(file=file, embed=embed, view=view, ephemeral=True)
                 else:
-                    message = await channel.send(embed=embed, view=view)
+                    message = await channel.send(embed=embed, view=view, ephemeral=True)
                 return
             else:
                 # If no choices, add a "Continue" button
@@ -647,11 +566,11 @@ class StoryModeCog(commands.Cog):
                 button.callback = self._create_continue_callback(user_id)
                 view.add_item(button)
 
-                # Don't use ephemeral for messages with continue button so they're visible to everyone
+                # Send continue button as ephemeral
                 if file:
-                    message = await channel.send(file=file, embed=embed, view=view)
+                    message = await channel.send(file=file, embed=embed, view=view, ephemeral=True)
                 else:
-                    message = await channel.send(embed=embed, view=view)
+                    message = await channel.send(embed=embed, view=view, ephemeral=True)
                 return
 
         # If there are choices but no current dialogue, send the choices
@@ -689,8 +608,8 @@ class StoryModeCog(commands.Cog):
                 button.callback = self._create_choice_callback(user_id, i)
                 view.add_item(button)
 
-            # Don't use ephemeral for messages with choices so they're visible to everyone
-            message = await channel.send(embed=embed, view=view)
+            # Send choices as ephemeral
+            message = await channel.send(embed=embed, view=view, ephemeral=True)
             return
 
         # If no dialogue or choices, the chapter is complete
@@ -714,8 +633,8 @@ class StoryModeCog(commands.Cog):
             color=color
         )
 
-        # Don't use ephemeral for chapter complete message so it's visible to everyone
-        await channel.send(embed=embed)
+        # Send chapter completion message as ephemeral
+        await channel.send(embed=embed, ephemeral=True)
 
     def _create_choice_callback(self, user_id: int, choice_index: int):
         """
