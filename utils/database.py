@@ -1359,7 +1359,7 @@ def update_market_listing(item_id, seller_id, **kwargs):
             fields.append(f"{k} = ?")
             values.append(v)
         values.extend([str(item_id), str(seller_id)])
-        sql = f'UPDATE market SET {', '.join(fields)} WHERE item_id = ? AND seller_id = ?'
+        sql = f'UPDATE market SET {", ".join(fields)} WHERE item_id = ? AND seller_id = ?'
         cursor.execute(sql, values)
         conn.commit()
         return True
