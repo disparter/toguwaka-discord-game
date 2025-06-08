@@ -34,12 +34,16 @@ def migrate_players():
     players = sqlite_db.get_all_players()
     count = 0
 
+    # Get DynamoDB table reference
+    from utils import dynamodb as dynamo_db
+    table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+
     for player in players:
         user_id = player['user_id']
 
         # Create player profile in DynamoDB
         # Convert numeric values to Decimal to avoid float type errors
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': 'PROFILE',
@@ -75,7 +79,7 @@ def migrate_players():
                 'quantidade': safe_decimal(quantity)
             })
 
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': 'INVENTORY',
@@ -95,7 +99,7 @@ def migrate_players():
                 'dano': safe_decimal(tech_data.get('damage', 0))
             })
 
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': 'TECHNIQUES',
@@ -118,11 +122,15 @@ def migrate_clubs():
     clubs = sqlite_db.get_all_clubs()
     count = 0
 
+    # Get DynamoDB table reference
+    from utils import dynamodb as dynamo_db
+    table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+
     for club in clubs:
         club_id = club['club_id']
 
         # Create club profile in DynamoDB
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'CLUBE#{club_id}',
                 'SK': 'PROFILE',
@@ -142,7 +150,7 @@ def migrate_clubs():
         member_ids = [f'PLAYER#{member["user_id"]}' for member in members]
 
         # Create club members in DynamoDB
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'CLUBE#{club_id}',
                 'SK': 'MEMBROS',
@@ -169,6 +177,10 @@ def migrate_events():
     events = cursor.fetchall()
     count = 0
 
+    # Get DynamoDB table reference
+    from utils import dynamodb as dynamo_db
+    table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+
     for event in events:
         event_id = event['event_id']
 
@@ -194,23 +206,21 @@ def migrate_events():
                 data[key] = value
 
         # Create event in DynamoDB
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'EVENTO#{event_id}',
                 'SK': 'PROFILE',
                 'GSI1PK': 'EVENTOS',
-                'GSI1SK': event['type'],
+                'GSI1SK': event['name'],
                 'nome': event['name'],
                 'descricao': event['description'],
                 'tipo': event['type'],
-                'channel_id': event['channel_id'],
-                'message_id': event['message_id'],
-                'start_time': event['start_time'],
-                'end_time': event['end_time'],
-                'completed': bool(event['completed']),
+                'canal_id': event['channel_id'],
+                'mensagem_id': event['message_id'],
+                'inicio': event['start_time'],
+                'fim': event['end_time'],
                 'participantes': participants,
-                'data': data,
-                'created_at': event['created_at']
+                'dados': data
             }
         )
 
@@ -234,6 +244,10 @@ def migrate_cooldowns():
     cooldowns = cursor.fetchall()
     count = 0
 
+    # Get DynamoDB table reference
+    from utils import dynamodb as dynamo_db
+    table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+
     for cooldown in cooldowns:
         user_id = cooldown['user_id']
         command = cooldown['command']
@@ -244,7 +258,7 @@ def migrate_cooldowns():
         if isinstance(expiry_time, (int, float)):
             expiry_time = datetime.fromtimestamp(expiry_time).isoformat()
 
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'COOLDOWN#{command}',
@@ -272,11 +286,15 @@ def migrate_system_flags():
     flags = cursor.fetchall()
     count = 0
 
+    # Get DynamoDB table reference
+    from utils import dynamodb as dynamo_db
+    table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+
     for flag in flags:
         flag_name = flag['flag_name']
 
         # Create system flag in DynamoDB
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': 'SYSTEM',
                 'SK': f'FLAG#{flag_name}',
@@ -305,6 +323,10 @@ def migrate_items():
     items = cursor.fetchall()
     count = 0
 
+    # Get DynamoDB table reference
+    from utils import dynamodb as dynamo_db
+    table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+
     for item in items:
         item_id = item['item_id']
 
@@ -320,7 +342,7 @@ def migrate_items():
                 effects[key] = value
 
         # Create item in DynamoDB
-        dynamo_db.table.put_item(
+        table.put_item(
             Item={
                 'PK': f'ITEM#{item_id}',
                 'SK': 'PROFILE',
@@ -351,10 +373,16 @@ def migrate_all():
             logger.error(f"SQLite database file not found: {SQLITE_DB_PATH}")
             return False
 
-        # Check if DynamoDB table is accessible
+        # Initialize DynamoDB and get table reference
         try:
-            dynamo_db.table.table_status
-            logger.info(f"DynamoDB table {dynamo_db.TABLE_NAME} is accessible")
+            from utils import dynamodb as dynamo_db
+            if not dynamo_db.init_db():
+                logger.error("Failed to initialize DynamoDB")
+                return False
+            
+            # Get a fresh table reference after initialization
+            table = dynamo_db.get_table(dynamo_db.TABLES['main'])
+            logger.info(f"DynamoDB table {dynamo_db.TABLES['main']} is accessible")
         except Exception as e:
             logger.error(f"Error accessing DynamoDB table: {e}")
             logger.error("Make sure the table exists and AWS credentials are properly configured")
