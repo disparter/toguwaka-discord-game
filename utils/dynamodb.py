@@ -62,10 +62,6 @@ def get_dynamodb_client():
         dynamodb = session.resource('dynamodb')
         logger.info("Successfully created DynamoDB client")
         
-        # Test the connection by listing tables
-        tables = list(dynamodb.tables.all())
-        logger.info(f"Successfully connected to DynamoDB. Available tables: {[table.name for table in tables]}")
-        
         return dynamodb
     except (NoCredentialsError, EndpointConnectionError) as e:
         error_msg = f"Failed to create DynamoDB client: {str(e)}"
@@ -83,9 +79,9 @@ def get_table(table_name):
         dynamodb = get_dynamodb_client()
         table = dynamodb.Table(table_name)
         
-        # Test table access
+        # Test table access by getting table description
         try:
-            table.table_status
+            table.meta.client.describe_table(TableName=table_name)
             logger.info(f"Successfully accessed table {table_name}")
         except Exception as e:
             logger.error(f"Error accessing table {table_name}: {e}")
@@ -108,20 +104,23 @@ def init_db():
         for table_name in TABLES.values():
             try:
                 logger.info(f"Checking table {table_name}")
-                table = dynamodb.Table(table_name)
-                # Wait for table to be active if it exists
-                table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-                logger.info(f"Table {table_name} exists and is active")
-            except ClientError as e:
-                if e.response['Error']['Code'] == 'ResourceNotFoundException':
-                    logger.info(f"Creating table {table_name}")
-                    create_table(dynamodb, table_name)
-                    # Wait for table to be active after creation
-                    dynamodb.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-                    logger.info(f"Table {table_name} created and is active")
-                else:
-                    logger.error(f"Error checking table {table_name}: {e}")
-                    raise
+                # Try to describe the table to check if it exists
+                try:
+                    dynamodb.meta.client.describe_table(TableName=table_name)
+                    logger.info(f"Table {table_name} exists and is active")
+                except ClientError as e:
+                    if e.response['Error']['Code'] == 'ResourceNotFoundException':
+                        logger.info(f"Creating table {table_name}")
+                        create_table(dynamodb, table_name)
+                        # Wait for table to be active after creation
+                        dynamodb.meta.client.get_waiter('table_exists').wait(TableName=table_name)
+                        logger.info(f"Table {table_name} created and is active")
+                    else:
+                        logger.error(f"Error checking table {table_name}: {e}")
+                        raise
+            except Exception as e:
+                logger.error(f"Error initializing table {table_name}: {e}")
+                raise
 
         logger.info("DynamoDB initialized successfully")
         return True
