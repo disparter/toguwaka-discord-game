@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_4_4_final",
+    "type": "story",
     "title": "O Legado do Clube Elementalistas",
     "description": "O clube realiza seu maior ritual e prepara a próxima geração",
     "phase": "year_1_clubs",
@@ -131,5 +132,6 @@
         "time_of_day": "evening",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": []
 } 

@@ -1,5 +1,6 @@
 {
   "chapter_id": "club_1_1_intro",
+  "type": "story",
   "title": "Introdução ao Clube das Chamas",
   "description": "O primeiro encontro com o Clube das Chamas e seu líder",
   "phase": "year_1_clubs",
@@ -138,5 +139,6 @@
     "time_of_day": "afternoon",
     "weather": "clear",
     "season": "spring"
-  }
+  },
+  "choices": []
 } 

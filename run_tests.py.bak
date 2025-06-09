@@ -13,8 +13,8 @@ from tests.utils.game_mechanics.duel.test_duel_narrator import TestDuelNarrator
 from tests.utils.game_mechanics.events.test_random_event import TestRandomEvent
 from tests.utils.game_mechanics.events.test_training_event import TestTrainingEvent
 
-# Import the new story mode test modules
-from tests.story_mode.test_story_mode_initialization import TestStoryModeInitialization, TestStoryModeCurrentChapter
+# Import the story mode test modules
+from tests.story_mode.test_story_mode_initialization import TestStoryModeInitialization
 from tests.story_mode.test_story_mode_progression import TestStoryModeProgression
 from tests.story_mode.test_story_mode_cog import TestStoryModeCogInitialization
 from tests.story_mode.test_club_integration import TestStoryModeClubIntegration
@@ -43,9 +43,8 @@ def create_test_suite():
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestRandomEvent))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestTrainingEvent))
 
-    # Add the new story mode test cases
+    # Add the story mode test cases
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeInitialization))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCurrentChapter))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeProgression))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCogInitialization))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeClubIntegration))

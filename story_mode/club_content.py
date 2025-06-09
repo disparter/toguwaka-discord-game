@@ -32,30 +32,17 @@ class ClubContentManager:
         
     def load_club_chapter(self, chapter_id: str, club_id: int) -> Optional[Dict[str, Any]]:
         """
-        Load club-specific chapter data.
-        
-        Args:
-            chapter_id: Chapter ID to load
-            club_id: Club ID to get specific content for
-            
-        Returns:
-            Chapter data dictionary or None if not found
+        Load club-specific chapter data from the new narrative/clubs directory.
         """
-        club_name = self.CLUBS.get(club_id)
-        if not club_name:
-            return None
-            
-        club_dir = self.clubs_dir / club_name
-        chapter_file = club_dir / f"{club_name}_{chapter_id}.json"
-        
+        clubs_dir = Path("data/story_mode/narrative/clubs")
+        chapter_file = clubs_dir / f"{chapter_id}.json"
         if not chapter_file.exists():
             return None
-            
         try:
-            with open(chapter_file, 'r') as f:
+            with open(chapter_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"Error loading club chapter {chapter_id} for club {club_name}: {e}")
+            logger.error(f"Error loading club chapter {chapter_id}: {e}")
             return None
             
     def get_club_dialogues(self, chapter_data: Dict[str, Any]) -> List[Dict[str, str]]:

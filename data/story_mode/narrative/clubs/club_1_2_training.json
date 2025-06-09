@@ -1,0 +1,50 @@
+{
+  "chapter_id": "club_1_2_training",
+  "type": "story",
+  "title": "Treinamento Intermediário no Clube das Chamas",
+  "description": "O próximo passo no treinamento do clube, focando em técnicas intermediárias de controle de fogo.",
+  "phase": "year_1_clubs",
+  "requirements": {
+    "previous_chapter": "club_1_1_intro",
+    "reputation": {
+      "ryuji": 10
+    }
+  },
+  "scenes": [
+    {
+      "scene_id": "intermediate_training",
+      "title": "Treinamento Intermediário",
+      "description": "Os membros praticam técnicas mais avançadas sob a supervisão de Ryuji.",
+      "background": "clube_das_chamas_training_2.png",
+      "characters": [
+        { "id": "player", "position": "center", "expression": "focused", "image": "student_room_reflection_night.png" },
+        { "id": "ryuji", "position": "right", "expression": "instructing", "image": "ryuji_battleborn_intro.png" }
+      ],
+      "dialogue": [
+        { "speaker": "ryuji", "text": "Agora, vamos avançar para técnicas intermediárias. Mantenham o foco!" },
+        { "speaker": "player", "text": "Estou pronto para o desafio." }
+      ],
+      "choices": [
+        { "text": "Tentar a nova técnica", "effects": { "reputation": { "ryuji": 6 }, "power": 12 } },
+        { "text": "Observar os outros membros", "effects": { "reputation": { "ryuji": 3 }, "knowledge": 10 } }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 100,
+    "skills": ["fire_control_intermediate"],
+    "items": ["fire_club_badge"],
+    "unlocks": ["club_1_3_resolution"]
+  },
+  "next_chapter": "club_1_3_resolution",
+  "flags": {
+    "intermediate_training": true
+  },
+  "metadata": {
+    "location": "fire_club_room",
+    "time_of_day": "afternoon",
+    "weather": "clear",
+    "season": "spring"
+  },
+  "choices": []
+} 

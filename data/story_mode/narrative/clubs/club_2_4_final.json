@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_2_4_final",
+    "type": "story",
     "title": "O Legado do Clube das Chamas",
     "description": "O clube realiza seu maior desafio e prepara a próxima geração",
     "phase": "year_1_clubs",
@@ -131,5 +132,6 @@
         "time_of_day": "evening",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": []
 } 

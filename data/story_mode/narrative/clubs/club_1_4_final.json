@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_1_4_final",
+    "type": "story",
     "title": "O Legado do Clube das Chamas",
     "description": "O clube celebra suas conquistas e prepara o futuro",
     "phase": "year_1_clubs",
@@ -79,5 +80,6 @@
         "time_of_day": "evening",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": []
 } 

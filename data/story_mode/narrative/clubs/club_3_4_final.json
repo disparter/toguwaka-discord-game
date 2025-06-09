@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_3_4_final",
+    "type": "story",
     "title": "O Legado do Clube dos Ilusionistas",
     "description": "O clube realiza seu maior espetáculo e prepara a próxima geração",
     "phase": "year_1_clubs",
@@ -131,5 +132,6 @@
         "time_of_day": "evening",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": []
 } 

@@ -1,0 +1,111 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
+import unittest
+from unittest.mock import patch
+from story_mode.story_mode import StoryMode
+from story_mode.chapter import StoryChapter
+import json
+
+class TestStoryModeClubIntegration(unittest.TestCase):
+    """Tests for club chapter loading and effects in StoryMode."""
+    def setUp(self):
+        patcher = patch.object(StoryMode, '_validate_story_structure', lambda x: None)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.story_mode = StoryMode()
+        patcher2 = patch.object(self.story_mode.arc_manager, 'get_available_chapters', return_value={})
+        patcher2.start()
+        self.addCleanup(patcher2.stop)
+        self.story_mode.player_data = {
+            "club": {
+                "id": 1,  # flames
+                "reputation": 0,
+                "experience": 0,
+                "next_event": "flames_1"
+            },
+            "experience": 0,
+            "tusd": 0,
+            "skills": {},
+            "story_progress": {"current_chapter": "flames_1"}
+        }
+        self.base_path = "data/story_mode/narrative"
+        self.clubs_path = os.path.join(self.base_path, "clubs")
+
+    def test_club_chapter_loading_and_effects(self):
+        with patch.object(self.story_mode.arc_manager, 'get_chapter') as mock_get_chapter:
+            chapter = StoryChapter(
+                "flames_1",
+                {
+                    "title": "Flames Training",
+                    "dialogues": ["Welcome to Flames training!"],
+                    "choices": [{"text": "Begin training", "next_chapter": "flames_2"}],
+                    "completion_exp": 100,
+                    "completion_tusd": 50,
+                    "club_reputation_gain": 10,
+                    "skill_gains": {"fire_control": 5}
+                }
+            )
+            mock_get_chapter.return_value = chapter
+            current_chapter = self.story_mode.get_current_chapter()
+            self.assertIsNotNone(current_chapter)
+            self.assertIn("title", current_chapter.data)
+            self.assertIn("dialogues", current_chapter.data)
+            if current_chapter.data.get("choices"):
+                choice = 0
+                effects = {
+                    "experience": current_chapter.data.get("completion_exp", 0),
+                    "tusd": current_chapter.data.get("completion_tusd", 0),
+                    "club_reputation": current_chapter.data.get("club_reputation_gain", 0),
+                    "skill_gains": current_chapter.data.get("skill_gains", {})
+                }
+                updated_player = self.story_mode.club_manager.apply_club_effects(self.story_mode.player_data, effects)
+                self.assertGreaterEqual(updated_player["club"]["experience"], 0)
+                self.assertGreaterEqual(updated_player["tusd"], 0)
+                self.assertIsInstance(updated_player["skills"], dict)
+
+    def test_club_chapter_sequence(self):
+        """Test that club chapters follow the correct sequence"""
+        club_sequences = {
+            "club_1": ["club_1_1_intro", "club_1_2_trouble", "club_1_3_resolution", "club_1_4_final"],
+            "club_2": ["club_2_1_intro", "club_2_2_trouble", "club_2_3_resolution", "club_2_4_final"],
+            "club_3": ["club_3_1_intro", "club_3_2_trouble", "club_3_3_resolution", "club_3_4_final"],
+            "club_4": ["club_4_1_intro", "club_4_4_final"],
+            "club_5": ["club_5_1_intro", "club_5_4_final"]
+        }
+
+        for club_id, sequence in club_sequences.items():
+            for i in range(len(sequence) - 1):
+                current_chapter = sequence[i]
+                next_chapter = sequence[i + 1]
+                
+                current_path = os.path.join(self.clubs_path, f"{current_chapter}.json")
+                next_path = os.path.join(self.clubs_path, f"{next_chapter}.json")
+                
+                with open(current_path, 'r', encoding='utf-8') as f:
+                    current_data = json.load(f)
+                    self.assertEqual(current_data['next_chapter'], next_chapter,
+                                   f"Chapter {current_chapter} should point to {next_chapter}")
+
+    def test_club_chapter_requirements(self):
+        """Test that club chapters have appropriate requirements"""
+        test_chapter = "club_1_1_intro"
+        file_path = os.path.join(self.clubs_path, f"{test_chapter}.json")
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            chapter_data = json.load(f)
+            
+            # Test requirements structure
+            self.assertIn('requirements', chapter_data)
+            requirements = chapter_data['requirements']
+            
+            # Test that previous chapter requirement exists
+            self.assertIn('previous_chapter', requirements)
+            
+            # Test that reputation requirements exist
+            self.assertIn('reputation', requirements)
+            self.assertIn('ryuji', requirements['reputation'])
+
+if __name__ == '__main__':
+    unittest.main() 
