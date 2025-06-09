@@ -405,8 +405,8 @@ def get_all_clubs():
             for item in response['Items']:
                 # Convert the item to a standard format
                 club = {
-                    'club_id': item.get('NomeClube'),  # Use NomeClube as club_id
-                    'name': item.get('NomeClube'),
+                    'club_id': item.get('PK', '').split('#')[1] if 'PK' in item else item.get('NomeClube', ''),
+                    'name': item.get('NomeClube', ''),
                     'description': item.get('descricao', ''),
                     'leader_id': item.get('leader_id', ''),
                     'reputacao': item.get('reputacao', 0)
@@ -425,7 +425,9 @@ def create_club(club_id, name, description, leader_id):
         table = get_table(TABLES['clubs'])
         table.put_item(
             Item={
-                'NomeClube': name,  # Use name as the primary key
+                'PK': f'CLUB#{club_id}',
+                'SK': 'PROFILE',
+                'NomeClube': name,
                 'descricao': description,
                 'leader_id': leader_id,
                 'reputacao': 0,
