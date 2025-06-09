@@ -1,0 +1,50 @@
+{
+    "chapter_id": "romance_1_intro",
+    "type": "story",
+    "title": "Primeiros Encontros",
+    "description": "O início de possíveis relacionamentos na academia",
+    "phase": "act_1",
+    "requirements": {
+        "previous_chapter": "club_3_4_final"
+    },
+    "scenes": [
+        {
+            "scene_id": "courtyard",
+            "background": "courtyard.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "image": "student_room_reflection_night.png",
+                    "expression": "curious"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "narrator",
+                    "text": "Com o treinamento do clube concluído, você tem mais tempo para conhecer pessoas na academia."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Conversar com outros estudantes",
+                    "effects": {
+                        "charisma": 5,
+                        "social": 5
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 100,
+        "skills": [
+            "social_interaction"
+        ]
+    },
+    "metadata": {
+        "location": "courtyard",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 
