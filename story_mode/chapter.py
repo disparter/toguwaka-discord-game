@@ -487,6 +487,7 @@ class StoryChapter(BaseChapter):
     """
     def __init__(self, chapter_id: str, data: Dict[str, Any]):
         super().__init__(chapter_id, data)
+        self.chapter_data = data  # Add this line to properly set chapter_data
 
     def process_choice(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
         """
