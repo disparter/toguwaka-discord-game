@@ -4,6 +4,7 @@ from discord import app_commands
 import logging
 from utils.database import get_player, get_club, get_all_clubs
 from utils.embeds import create_basic_embed, create_club_embed
+from story_mode.club_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -130,26 +131,19 @@ class Clubs(commands.Cog):
     @commands.command(name="clubes")
     async def all_clubs(self, ctx):
         """Exibe a lista de todos os clubes disponíveis."""
-        # Get all clubs
-        clubs = get_all_clubs()
-
-        # Create embed
+        club_system = ClubSystem()
+        clubs = club_system.CLUBS.values()
         embed = create_basic_embed(
             title="Clubes da Academia Tokugawa",
             description="Aqui estão todos os clubes disponíveis na academia:",
             color=0x1E90FF
         )
-
-        # Add each club to the embed
-        for club in clubs:
+        for name in clubs:
             embed.add_field(
-                name=f"{club['PK'].split('#')[1]}. {club['name']}",
-                value=f"{club['descricao']}\n"
-                      f"**Membros:** {club.get('members_count', 0)} 👥\n"
-                      f"**Reputação:** {club.get('reputacao', 0)} 🏆",
+                name=name,
+                value=f"O {name} é um dos clubes mais prestigiados da Academia Tokugawa.",
                 inline=False
             )
-
         await ctx.send(embed=embed)
 
 async def setup(bot):
