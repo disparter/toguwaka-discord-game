@@ -9,7 +9,7 @@ import boto3
 import json
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, time
 from decimal import Decimal
 from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
 
@@ -23,7 +23,12 @@ TABLES = {
     'inventory': os.environ.get('DYNAMODB_INVENTORY_TABLE', 'Inventario'),
     'players': os.environ.get('DYNAMODB_PLAYERS_TABLE', 'Jogadores'),
     'market': os.environ.get('DYNAMODB_MARKET_TABLE', 'Mercado'),
-    'items': os.environ.get('DYNAMODB_ITEMS_TABLE', 'Itens')
+    'items': os.environ.get('DYNAMODB_ITEMS_TABLE', 'Itens'),
+    'club_activities': os.environ.get('DYNAMODB_CLUB_ACTIVITIES_TABLE', 'ClubActivities'),
+    'grades': os.environ.get('DYNAMODB_GRADES_TABLE', 'Notas'),
+    'votes': os.environ.get('DYNAMODB_VOTES_TABLE', 'Votos'),
+    'quiz_questions': os.environ.get('DYNAMODB_QUIZ_QUESTIONS_TABLE', 'QuizQuestions'),
+    'quiz_answers': os.environ.get('DYNAMODB_QUIZ_ANSWERS_TABLE', 'QuizAnswers')
 }
 
 # AWS region
@@ -275,6 +280,200 @@ def create_table(dynamodb, table_name):
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
+        elif table_name == TABLES['club_activities']:
+            table = dynamodb.create_table(
+                TableName=TABLES['club_activities'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
+                    {'AttributeName': 'club_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'week', 'KeyType': 'HASH'},
+                    {'AttributeName': 'year', 'KeyType': 'HASH'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'},
+                    {'AttributeName': 'club_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'week', 'AttributeType': 'N'},
+                    {'AttributeName': 'year', 'AttributeType': 'N'}
+                ],
+                GlobalSecondaryIndexes=[
+                    {
+                        'IndexName': 'week-year-index',
+                        'KeySchema': [
+                            {'AttributeName': 'week', 'KeyType': 'HASH'},
+                            {'AttributeName': 'year', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    }
+                ],
+                BillingMode='PAY_PER_REQUEST'
+            )
+        elif table_name == TABLES['grades']:
+            table = dynamodb.create_table(
+                TableName=TABLES['grades'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
+                    {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'subject', 'KeyType': 'HASH'},
+                    {'AttributeName': 'month', 'KeyType': 'HASH'},
+                    {'AttributeName': 'year', 'KeyType': 'HASH'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'},
+                    {'AttributeName': 'user_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'subject', 'AttributeType': 'S'},
+                    {'AttributeName': 'month', 'AttributeType': 'N'},
+                    {'AttributeName': 'year', 'AttributeType': 'N'}
+                ],
+                GlobalSecondaryIndexes=[
+                    {
+                        'IndexName': 'user-subject-index',
+                        'KeySchema': [
+                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                            {'AttributeName': 'subject', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    },
+                    {
+                        'IndexName': 'user-month-index',
+                        'KeySchema': [
+                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                            {'AttributeName': 'month', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    },
+                    {
+                        'IndexName': 'user-year-index',
+                        'KeySchema': [
+                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                            {'AttributeName': 'year', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    }
+                ],
+                BillingMode='PAY_PER_REQUEST'
+            )
+        elif table_name == TABLES['votes']:
+            table = dynamodb.create_table(
+                TableName=TABLES['votes'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
+                    {'AttributeName': 'category', 'KeyType': 'HASH'},
+                    {'AttributeName': 'voter_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'candidate_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'week', 'KeyType': 'HASH'},
+                    {'AttributeName': 'year', 'KeyType': 'HASH'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'},
+                    {'AttributeName': 'category', 'AttributeType': 'S'},
+                    {'AttributeName': 'voter_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'candidate_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'week', 'AttributeType': 'N'},
+                    {'AttributeName': 'year', 'AttributeType': 'N'}
+                ],
+                GlobalSecondaryIndexes=[
+                    {
+                        'IndexName': 'category-voter-index',
+                        'KeySchema': [
+                            {'AttributeName': 'category', 'KeyType': 'HASH'},
+                            {'AttributeName': 'voter_id', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    },
+                    {
+                        'IndexName': 'category-candidate-index',
+                        'KeySchema': [
+                            {'AttributeName': 'category', 'KeyType': 'HASH'},
+                            {'AttributeName': 'candidate_id', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    },
+                    {
+                        'IndexName': 'voter-year-index',
+                        'KeySchema': [
+                            {'AttributeName': 'voter_id', 'KeyType': 'HASH'},
+                            {'AttributeName': 'year', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    }
+                ],
+                BillingMode='PAY_PER_REQUEST'
+            )
+        elif table_name == TABLES['quiz_questions']:
+            table = dynamodb.create_table(
+                TableName=TABLES['quiz_questions'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
+                    {'AttributeName': 'question_id', 'KeyType': 'HASH'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'},
+                    {'AttributeName': 'question_id', 'AttributeType': 'S'}
+                ],
+                GlobalSecondaryIndexes=[
+                    {
+                        'IndexName': 'QuestionIDIndex',
+                        'KeySchema': [
+                            {'AttributeName': 'question_id', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    }
+                ],
+                BillingMode='PAY_PER_REQUEST'
+            )
+        elif table_name == TABLES['quiz_answers']:
+            table = dynamodb.create_table(
+                TableName=TABLES['quiz_answers'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
+                    {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'question_id', 'KeyType': 'HASH'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'},
+                    {'AttributeName': 'user_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'question_id', 'AttributeType': 'S'}
+                ],
+                GlobalSecondaryIndexes=[
+                    {
+                        'IndexName': 'user-question-index',
+                        'KeySchema': [
+                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                            {'AttributeName': 'question_id', 'KeyType': 'HASH'}
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'ALL'
+                        }
+                    }
+                ],
+                BillingMode='PAY_PER_REQUEST'
+            )
         else:
             raise ValueError(f"Unknown table name: {table_name}")
 
@@ -406,7 +605,6 @@ def get_club(club_id):
         if 'Item' in response:
             item = response['Item']
             club = {
-                'club_id': item.get('NomeClube', ''),
                 'name': item.get('NomeClube', ''),
                 'description': item.get('descricao', ''),
                 'leader_id': item.get('lider_id', ''),
@@ -425,15 +623,14 @@ def get_all_clubs():
         table = get_table(TABLES['clubs'])
         logger.info("Attempting to scan clubs table")
         response = table.scan()
-        logger.info(f"Raw DynamoDB response: {response}")
+        #logger.info(f"Raw DynamoDB response: {response}")
 
         clubs = []
         if 'Items' in response:
             for item in response['Items']:
-                logger.info(f"Processing club item: {item}")
+                # logger.info(f"Processing club item: {item}")
                 # Convert the item to a standard format
                 club = {
-                    'club_id': item.get('NomeClube', ''),
                     'name': item.get('NomeClube', ''),
                     'description': item.get('descricao', ''),
                     'leader_id': item.get('lider_id', ''),
@@ -444,7 +641,7 @@ def get_all_clubs():
         
         # Sort clubs by name
         sorted_clubs = sorted(clubs, key=lambda x: x['name'])
-        logger.info(f"Final sorted clubs list: {sorted_clubs}")
+        # logger.info(f"Final sorted clubs list: {sorted_clubs}")
         return sorted_clubs
     except Exception as e:
         logger.error(f"Error getting all clubs: {e}")
@@ -456,11 +653,9 @@ def create_club(club_id, name, description, leader_id):
     try:
         table = get_table(TABLES['clubs'])
         club_item = {
-            'PK': f'CLUB#{club_id}',
-            'SK': 'PROFILE',
             'NomeClube': name,
             'descricao': description,
-            'leader_id': leader_id,
+            'lider_id': leader_id,
             'reputacao': 0,
             'created_at': datetime.now().isoformat(),
             'last_active': datetime.now().isoformat()
@@ -468,10 +663,10 @@ def create_club(club_id, name, description, leader_id):
         logger.info(f"Creating club with item: {club_item}")
         
         table.put_item(Item=club_item)
-        logger.info(f"Successfully created club with ID: {club_id}")
+        # logger.info(f"Successfully created club with name: {name}")
         return True
     except Exception as e:
-        logger.error(f"Error creating club {club_id}: {e}")
+        logger.error(f"Error creating club {name}: {e}")
         raise DynamoDBOperationError(f"Failed to create club: {e}")
 
 @handle_dynamo_error
@@ -685,6 +880,351 @@ def create_item(item_id, name, description, type, rarity, price, effects, **kwar
             logger.warning(f"Item already exists: {item_id}")
             return False
         raise DynamoDBError(f"Error creating item: {str(e)}")
+
+@handle_dynamo_error
+def get_top_clubs_by_activity(week=None, year=None, limit=3):
+    """Get top clubs by activity points for a specific week."""
+    try:
+        # If week and year are not provided, use current week
+        if week is None or year is None:
+            now = datetime.now()
+            year, week, _ = now.isocalendar()
+
+        # Get all club activities for the specified week and year
+        activities_table = get_table(TABLES['club_activities'])
+        clubs_table = get_table(TABLES['clubs'])
+
+        # Query activities for the specified week and year
+        response = activities_table.query(
+            IndexName='week-year-index',
+            KeyConditionExpression='week = :week AND year = :year',
+            ExpressionAttributeValues={
+                ':week': week,
+                ':year': year
+            }
+        )
+
+        # Create a dictionary to store club points
+        club_points = {}
+
+        # Process activities and sum points for each club
+        if 'Items' in response:
+            for item in response['Items']:
+                club_id = item.get('club_id')
+                points = item.get('points', 0)
+                
+                if club_id in club_points:
+                    club_points[club_id] += points
+                else:
+                    club_points[club_id] = points
+
+        # Get club details for clubs with points
+        top_clubs = []
+        for club_id, total_points in sorted(club_points.items(), key=lambda x: x[1], reverse=True)[:limit]:
+            club_response = clubs_table.get_item(Key={'NomeClube': club_id})
+            if 'Item' in club_response:
+                club = club_response['Item']
+                top_clubs.append({
+                    'name': club.get('NomeClube', ''),
+                    'description': club.get('descricao', ''),
+                    'leader_id': club.get('lider_id', ''),
+                    'reputacao': club.get('reputacao', 0),
+                    'total_points': total_points
+                })
+
+        return top_clubs
+    except Exception as e:
+        logger.error(f"Error getting top clubs by activity: {e}")
+        return []
+
+@handle_dynamo_error
+def record_club_activity(user_id, activity_type, points=1):
+    """Record a club activity for a player's club."""
+    try:
+        # Get player's club
+        players_table = get_table(TABLES['players'])
+        player_response = players_table.get_item(Key={'user_id': user_id})
+        
+        if 'Item' not in player_response:
+            logger.info(f"Player {user_id} not found, skipping activity recording")
+            return False
+            
+        player = player_response['Item']
+        club_id = player.get('club_id')
+        
+        if not club_id:
+            logger.info(f"Player {user_id} has no club, skipping activity recording")
+            return False
+
+        # Get current week and year
+        now = datetime.now()
+        year, week, _ = now.isocalendar()
+
+        # Record the activity
+        activities_table = get_table(TABLES['club_activities'])
+        activity_id = f"{club_id}#{user_id}#{activity_type}#{week}#{year}"
+        
+        activities_table.put_item(
+            Item={
+                'PK': f"CLUB#{club_id}",
+                'SK': f"ACTIVITY#{activity_id}",
+                'club_id': club_id,
+                'user_id': user_id,
+                'activity_type': activity_type,
+                'points': points,
+                'week': week,
+                'year': year,
+                'created_at': now.isoformat()
+            }
+        )
+
+        logger.info(f"Recorded {activity_type} activity for club {club_id} by player {user_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Error recording club activity: {e}")
+        return False
+
+@handle_dynamo_error
+def get_events_by_date(date=None, include_completed=True):
+    """Get events for a specific date from DynamoDB. Args:
+        date (datetime, optional): The date to get events for. Defaults to today.
+        include_completed (bool, optional): Whether to include completed events. Defaults to True.
+    Returns:
+        list: List of event dictionaries
+    """
+    try:
+        if date is None:
+            date = datetime.now().date()
+        date_start = datetime.combine(date, time.min).isoformat()
+        date_end = datetime.combine(date, time.max).isoformat()
+        table = get_table(TABLES['events'])
+        response = table.scan()
+        events = []
+        for item in response.get('Items', []):
+            # Parse times
+            start_time = item.get('start_time')
+            end_time = item.get('end_time')
+            completed = item.get('completed', False)
+            # Check if event is in the date range
+            in_range = False
+            if start_time and date_start <= start_time <= date_end:
+                in_range = True
+            if end_time and date_start <= end_time <= date_end:
+                in_range = True
+            if not in_range:
+                continue
+            if not include_completed and completed:
+                continue
+            # Parse JSON fields
+            item['participantes'] = json.loads(item.get('participantes', '[]'))
+            item['data'] = json.loads(item.get('data', '{}'))
+            events.append(item)
+        return events
+    except Exception as e:
+        logger.error(f"Error getting events by date from DynamoDB: {e}")
+        return []
+
+@handle_dynamo_error
+def update_event_status(event_id, status):
+    """Update the status of an event."""
+    try:
+        table = get_table(TABLES['events'])
+        table.update_item(
+            Key={'event_id': event_id},
+            UpdateExpression='SET status = :status',
+            ExpressionAttributeValues={
+                ':status': status
+            }
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Error updating event status: {e}")
+        return False
+
+@handle_dynamo_error
+def get_active_events():
+    """Stub for get_active_events. Returns an empty list."""
+    return []
+
+@handle_dynamo_error
+def store_cooldown(*args, **kwargs):
+    """Stub for store_cooldown. Returns True."""
+    return True
+
+@handle_dynamo_error
+def get_cooldowns(*args, **kwargs):
+    """Stub for get_cooldowns. Returns an empty list."""
+    return []
+
+@handle_dynamo_error
+def clear_expired_cooldowns(*args, **kwargs):
+    """Stub for clear_expired_cooldowns. Returns True."""
+    return True
+
+@handle_dynamo_error
+def set_system_flag(*args, **kwargs):
+    """Stub for set_system_flag. Returns True."""
+    return True
+
+@handle_dynamo_error
+def get_player_grades(user_id, subject=None, month=None, year=None):
+    """Get player grades from DynamoDB."""
+    try:
+        table = get_table(TABLES['grades'])
+        # Build filter expression
+        key_expr = 'user_id = :uid'
+        expr_attr = {':uid': user_id}
+        if subject:
+            key_expr += ' AND subject = :subject'
+            expr_attr[':subject'] = subject
+        if month:
+            key_expr += ' AND month = :month'
+            expr_attr[':month'] = int(month)
+        if year:
+            key_expr += ' AND year = :year'
+            expr_attr[':year'] = int(year)
+        response = table.scan(
+            FilterExpression=key_expr,
+            ExpressionAttributeValues=expr_attr
+        )
+        grades = response.get('Items', [])
+        return [dict(g) for g in grades]
+    except Exception as e:
+        logger.error(f"Error getting grades for user {user_id}: {e}")
+        return []
+
+@handle_dynamo_error
+def update_player_grade(user_id, subject, grade, month, year):
+    """Update or insert a player's grade in DynamoDB."""
+    try:
+        table = get_table('grades')
+        item = {
+            'user_id': user_id,
+            'subject': subject,
+            'grade': int(grade),
+            'month': int(month),
+            'year': int(year),
+            'created_at': datetime.now().isoformat()
+        }
+        table.put_item(Item=item)
+        return True
+    except Exception as e:
+        logger.error(f"Error updating grade for user {user_id}: {e}")
+        return False
+
+@handle_dynamo_error
+def get_monthly_average_grades(month, year):
+    """Get average grades per subject for a given month and year from DynamoDB."""
+    try:
+        table = get_table('grades')
+        response = table.scan(
+            FilterExpression='month = :month AND year = :year',
+            ExpressionAttributeValues={
+                ':month': int(month),
+                ':year': int(year)
+            }
+        )
+        grades = response.get('Items', [])
+        subject_totals = {}
+        subject_counts = {}
+        for g in grades:
+            subject = g['subject']
+            grade = int(g['grade'])
+            subject_totals[subject] = subject_totals.get(subject, 0) + grade
+            subject_counts[subject] = subject_counts.get(subject, 0) + 1
+        averages = []
+        for subject, total in subject_totals.items():
+            averages.append({'subject': subject, 'average': total / subject_counts[subject]})
+        return averages
+    except Exception as e:
+        logger.error(f"Error getting monthly averages: {e}")
+        return []
+
+@handle_dynamo_error
+def add_vote(category, voter_id, candidate_id, week, year):
+    """Add a vote in DynamoDB."""
+    try:
+        table = get_table('votes')
+        item = {
+            'category': category,
+            'voter_id': voter_id,
+            'candidate_id': candidate_id,
+            'week': int(week),
+            'year': int(year),
+            'created_at': datetime.now().isoformat()
+        }
+        table.put_item(Item=item)
+        return True
+    except Exception as e:
+        logger.error(f"Error adding vote: {e}")
+        return False
+
+@handle_dynamo_error
+def get_vote_results(category, week, year):
+    """Get vote results for a category/week/year from DynamoDB."""
+    try:
+        table = get_table('votes')
+        response = table.scan(
+            FilterExpression='category = :cat AND week = :week AND year = :year',
+            ExpressionAttributeValues={
+                ':cat': category,
+                ':week': int(week),
+                ':year': int(year)
+            }
+        )
+        votes = response.get('Items', [])
+        results = {}
+        for v in votes:
+            candidate = v['candidate_id']
+            results[candidate] = results.get(candidate, 0) + 1
+        return [{'candidate_id': k, 'votes': v} for k, v in results.items()]
+    except Exception as e:
+        logger.error(f"Error getting vote results: {e}")
+        return []
+
+@handle_dynamo_error
+def update_player_reputation(user_id, reputation):
+    """Update a player's reputation in DynamoDB."""
+    try:
+        table = get_table(TABLES['players'])
+        table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression='SET reputation = :rep',
+            ExpressionAttributeValues={':rep': int(reputation)}
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Error updating reputation for user {user_id}: {e}")
+        return False
+
+@handle_dynamo_error
+def get_quiz_questions():
+    """Get all quiz questions from DynamoDB."""
+    try:
+        table = get_table('quiz_questions')
+        response = table.scan()
+        questions = response.get('Items', [])
+        return [dict(q) for q in questions]
+    except Exception as e:
+        logger.error(f"Error getting quiz questions: {e}")
+        return []
+
+@handle_dynamo_error
+def record_quiz_answer(user_id, question_id, is_correct):
+    """Record a quiz answer for a user in DynamoDB."""
+    try:
+        table = get_table('quiz_answers')
+        item = {
+            'user_id': user_id,
+            'question_id': question_id,
+            'is_correct': bool(is_correct),
+            'created_at': datetime.now().isoformat()
+        }
+        table.put_item(Item=item)
+        return True
+    except Exception as e:
+        logger.error(f"Error recording quiz answer: {e}")
+        return False
 
 # Initialize the DynamoDB connection when the module is imported
 init_db()

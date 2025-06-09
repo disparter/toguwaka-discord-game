@@ -203,4 +203,8 @@ def get_top_players_by_reputation(*args, **kwargs):
     return db_provider.get_db_implementation().get_top_players_by_reputation(*args, **kwargs)
 
 def get_relevant_npcs(*args, **kwargs):
-    return db_provider.get_db_implementation().get_relevant_npcs(*args, **kwargs) 
+    return db_provider.get_db_implementation().get_relevant_npcs(*args, **kwargs)
+
+def get_db_provider():
+    """Return the current database provider instance."""
+    return db_provider 

@@ -16,6 +16,7 @@ Configuration:
 import os
 import logging
 from typing import List, Dict, Any
+from utils.dynamodb import get_table, TABLES
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -41,9 +42,9 @@ else:
 get_player = db_impl.get_player
 create_player = db_impl.create_player
 update_player = db_impl.update_player
-get_all_players = db_impl.get_all_players
-get_top_players = db_impl.get_top_players
-get_top_players_by_reputation = db_impl.get_top_players_by_reputation
+# get_all_players = db_impl.get_all_players  # Removed because not implemented in dynamodb
+# get_top_players = db_impl.get_top_players  # Not implemented in dynamodb
+# get_top_players_by_reputation = db_impl.get_top_players_by_reputation  # Not implemented in dynamodb
 
 # Club operations
 async def get_clubs() -> List[Dict[str, Any]]:
@@ -73,12 +74,10 @@ async def get_dynamodb_clubs() -> List[Dict[str, Any]]:
     """Get all clubs from DynamoDB."""
     try:
         logger.info("Attempting to scan clubs table")
-        table = get_table(TABLES['CLUBES'])
+        table = get_table(TABLES['clubs'])
         logger.info(f"Got table reference: {table}")
-        
         response = table.scan()
         logger.info(f"Raw DynamoDB response: {response}")
-        
         clubs = []
         if 'Items' in response:
             logger.info(f"Found {len(response['Items'])} items in response")
@@ -95,8 +94,6 @@ async def get_dynamodb_clubs() -> List[Dict[str, Any]]:
                 clubs.append(club)
         else:
             logger.warning("No 'Items' found in DynamoDB response")
-            
-        # Sort clubs by name
         clubs.sort(key=lambda x: x['name'])
         logger.info(f"Final sorted clubs list: {clubs}")
         return clubs
@@ -126,11 +123,32 @@ async def update_user_club(user_id: str, club_id: str) -> bool:
         logger.error(f"Error updating user club: {e}")
         return False
 
+async def update_dynamodb_user_club(user_id: str, club_id: str) -> bool:
+    """Update a user's club in DynamoDB."""
+    try:
+        table = get_table(TABLES['players'])
+        logger.info(f"Updating user {user_id} to club {club_id}")
+        
+        response = table.update_item(
+            Key={'DiscordID': user_id},
+            UpdateExpression='SET NomeClube = :club',
+            ExpressionAttributeValues={
+                ':club': club_id
+            },
+            ReturnValues='UPDATED_NEW'
+        )
+        
+        logger.info(f"DynamoDB update response: {response}")
+        return True
+    except Exception as e:
+        logger.error(f"Error updating user club in DynamoDB: {e}")
+        return False
+
 get_club = db_impl.get_club
 get_all_clubs = db_impl.get_all_clubs
-get_club_members = db_impl.get_club_members
-get_relevant_npcs = db_impl.get_relevant_npcs
-update_club_reputation_weekly = db_impl.update_club_reputation_weekly
+# get_club_members = db_impl.get_club_members  # Not implemented in dynamodb
+# get_relevant_npcs = db_impl.get_relevant_npcs  # Not implemented in dynamodb
+# update_club_reputation_weekly = db_impl.update_club_reputation_weekly  # Not implemented in dynamodb
 get_top_clubs_by_activity = db_impl.get_top_clubs_by_activity
 record_club_activity = db_impl.record_club_activity
 
