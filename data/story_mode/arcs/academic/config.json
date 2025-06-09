@@ -1,0 +1,8 @@
+{
+    "name": "Academic Arc",
+    "description": "The main academic storyline of Academia Tokugawa",
+    "order": 1,
+    "requirements": {
+        "level": 1
+    }
+} 
