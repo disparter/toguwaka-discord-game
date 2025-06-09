@@ -117,7 +117,7 @@ class BaseChapter(Chapter):
         if not story_progress:
             story_progress = {
                 "current_year": 1,
-                "current_chapter": 1,
+                "current_chapter": "1_1",  # Enforce string chapter ID
                 "current_challenge_chapter": None,
                 "completed_chapters": [],
                 "completed_challenge_chapters": [],
@@ -132,15 +132,21 @@ class BaseChapter(Chapter):
                 "story_choices": {}
             }
 
-        # Set current chapter
+        # Set current chapter as string
+        story_progress["current_chapter"] = str(self.chapter_id)
+        logger.debug(f"[DEBUG_LOG] Setting current_chapter to {story_progress['current_chapter']} (type: {type(story_progress['current_chapter'])})")
+
         # Handle chapter IDs with multiple underscores (e.g., 1_1_2)
         parts = self.chapter_id.split("_")
         if len(parts) >= 2:
-            story_progress["current_year"] = int(parts[0])
-            story_progress["current_chapter"] = int(parts[1])
+            try:
+                story_progress["current_year"] = int(parts[0])
+                story_progress["current_chapter_number"] = int(parts[1])
+            except Exception as e:
+                logger.warning(f"[DEBUG_LOG] Could not parse year/chapter_number from chapter_id {self.chapter_id}: {e}")
         else:
             story_progress["current_year"] = 1
-            story_progress["current_chapter"] = 1
+            story_progress["current_chapter_number"] = 1
 
         # Set current dialogue index to 0
         story_progress["current_dialogue_index"] = 0
@@ -150,6 +156,7 @@ class BaseChapter(Chapter):
 
         # Debug log for choices
         logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - choices: {self.choices}")
+        logger.debug(f"[DEBUG_LOG] story_progress after start: {story_progress}")
 
         # Get current dialogue choices if available
         current_dialogue_choices = []

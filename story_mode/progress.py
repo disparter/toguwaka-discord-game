@@ -147,71 +147,50 @@ class DefaultStoryProgressManager(StoryProgressManager):
     def get_current_chapter(self, player_data: Dict[str, Any]) -> Optional[str]:
         """
         Returns the ID of the player's current chapter.
-
-        Args:
-            player_data: The player data dictionary
-
-        Returns:
-            The ID of the current chapter or None if no chapter is in progress
         """
         story_progress = self._get_story_progress(player_data)
-
         # First check if there's a full chapter ID stored (including suffixes like _success or _failure)
         full_chapter_id = story_progress.get("full_chapter_id")
         if full_chapter_id:
-            return full_chapter_id
-
+            logger.debug(f"[DEBUG_LOG] get_current_chapter: full_chapter_id={full_chapter_id} (type: {type(full_chapter_id)})")
+            return str(full_chapter_id)
         # If there's a challenge chapter in progress, return that instead
         current_challenge_chapter = story_progress.get("current_challenge_chapter")
         if current_challenge_chapter:
-            return current_challenge_chapter
-
+            logger.debug(f"[DEBUG_LOG] get_current_chapter: current_challenge_chapter={current_challenge_chapter} (type: {type(current_challenge_chapter)})")
+            return str(current_challenge_chapter)
         # Fallback to constructing the chapter ID from year and chapter number
         current_year = story_progress.get("current_year", 1)
-        current_chapter = story_progress.get("current_chapter", 1)
-        return f"{current_year}_{current_chapter}"
+        current_chapter = story_progress.get("current_chapter", "1_1")
+        logger.debug(f"[DEBUG_LOG] get_current_chapter: current_year={current_year}, current_chapter={current_chapter} (type: {type(current_chapter)})")
+        return str(current_chapter)
 
     def set_current_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:
         """
         Sets the player's current chapter and returns updated player data.
-
-        Args:
-            player_data: The player data dictionary
-            chapter_id: The ID of the chapter to set as current
-
-        Returns:
-            The updated player data dictionary
-
-        Raises:
-            ValueError: If the chapter ID format is invalid
         """
         story_progress = self._get_story_progress(player_data)
-
         # Store the full chapter ID including any suffixes
-        story_progress["full_chapter_id"] = chapter_id
-
+        story_progress["full_chapter_id"] = str(chapter_id)
+        logger.debug(f"[DEBUG_LOG] set_current_chapter: full_chapter_id set to {chapter_id} (type: {type(chapter_id)})")
         # Parse chapter ID to get year and chapter number if it's in the format "year_chapter"
         if "_" in chapter_id:
             try:
                 parts = chapter_id.split("_")
-                # Check if the first part is a number (year)
                 if parts[0].isdigit() and parts[1].isdigit():
                     year = parts[0]
                     chapter = parts[1]
                     story_progress["current_year"] = int(year)
-                    story_progress["current_chapter"] = int(chapter)
+                    story_progress["current_chapter"] = f"{year}_{chapter}"
+                    logger.debug(f"[DEBUG_LOG] set_current_chapter: current_chapter set to {story_progress['current_chapter']} (type: {type(story_progress['current_chapter'])})")
                 else:
-                    # If it's not in "year_chapter" format, treat it as a challenge/special chapter
-                    story_progress["current_challenge_chapter"] = chapter_id
-            except (IndexError, ValueError):
-                # If there's any error in parsing, treat it as a challenge/special chapter
-                story_progress["current_challenge_chapter"] = chapter_id
+                    story_progress["current_challenge_chapter"] = str(chapter_id)
+            except (IndexError, ValueError) as e:
+                logger.warning(f"[DEBUG_LOG] set_current_chapter: error parsing chapter_id {chapter_id}: {e}")
+                story_progress["current_challenge_chapter"] = str(chapter_id)
         else:
-            # If no underscore, assume it's a challenge chapter
-            story_progress["current_challenge_chapter"] = chapter_id
-
+            story_progress["current_challenge_chapter"] = str(chapter_id)
         self._log_with_player_context(f"Set current chapter to {chapter_id}", player_data)
-
         return self._update_story_progress(player_data, story_progress)
 
     def complete_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:

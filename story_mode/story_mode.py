@@ -223,55 +223,43 @@ class StoryMode:
     def get_current_chapter(self, player_data: Dict[str, Any]) -> Optional[Chapter]:
         """
         Get the current chapter based on player data.
-        
-        Args:
-            player_data: Player data dictionary
-            
-        Returns:
-            Current Chapter object or None if no chapter is available
         """
         if not player_data:
             return None
-            
         # Check if player is in a club
         club_data = player_data.get("club", {})
         if club_data:
             club_id = club_data.get("id")
             next_event = club_data.get("next_event")
-            
             if club_id and next_event:
-                # Load club-specific chapter
                 chapter_data = self.club_manager.load_club_chapter(next_event, club_id)
                 if chapter_data:
                     chapter_id = f"club_{club_id}_{next_event}"
                     chapter_data["chapter_id"] = chapter_id
+                    logger.debug(f"[DEBUG_LOG] Looking up club chapter: {chapter_id} (type: {type(chapter_id)})")
                     return self._create_chapter(chapter_data)
-                    
         # If no club chapter is available, load main story chapter
         story_progress = player_data.get("story_progress", {})
-        chapter_id = story_progress.get("current_chapter", "1_1_arrival")  # Default to first chapter
-        
-        # Try to get chapter from arc manager first
+        chapter_id = story_progress.get("current_chapter", "1_1")
+        logger.debug(f"[DEBUG_LOG] Looking up main story chapter: {chapter_id} (type: {type(chapter_id)})")
+        chapter_id = str(chapter_id)
         chapter = self.arc_manager.get_chapter(chapter_id)
         if chapter:
             return chapter
-            
-        # If not found in arc manager, try to load from file
         chapter_file = self.data_dir / "narrative" / "chapters" / f"{chapter_id}.json"
-        
         if not chapter_file.exists():
             logger.error(f"Chapter file not found: {chapter_file}")
             return None
-            
         try:
             with open(chapter_file, 'r') as f:
                 chapter_data = json.load(f)
                 chapter_data["chapter_id"] = chapter_id
+                logger.debug(f"[DEBUG_LOG] Loaded chapter from file: {chapter_id} (type: {type(chapter_id)})")
                 return self._create_chapter(chapter_data)
         except Exception as e:
             logger.error(f"Error loading chapter {chapter_id}: {e}")
             return None
-            
+
     def _create_chapter(self, chapter_data: Dict[str, Any]) -> Chapter:
         """
         Create a chapter instance based on its type.
