@@ -32,6 +32,62 @@ class StoryModeCog(commands.Cog):
         """Called when the cog is loaded."""
         logger.info("StoryModeCog loaded")
 
+    @commands.command(name="historia")
+    async def start_story(self, ctx):
+        """
+        Regular command to start or continue the story mode.
+        """
+        user_id = ctx.author.id
+        player_data = get_player(user_id)
+
+        if not player_data:
+            await ctx.send("Você precisa criar um personagem primeiro! Use /registrar")
+            return
+
+        # Start or continue the story
+        result = self.story_mode.start_story(player_data)
+        logger.info(f"start_story result: {result}")
+
+        if "error" in result:
+            await ctx.send(f"Erro ao iniciar o modo história: {result['error']}")
+            return
+
+        if "player_data" not in result or "chapter_data" not in result:
+            await ctx.send("Erro interno: dados do modo história ausentes. Por favor, contate um administrador.")
+            logger.error(f"start_story returned incomplete result: {result}")
+            return
+
+        # Update player data in database
+        update_data = {"story_progress": json_dumps(result["player_data"]["story_progress"])}
+
+        # Also update club_id if it's in the player data
+        if "club_id" in result["player_data"]:
+            update_data["club_id"] = result["player_data"]["club_id"]
+
+        update_player(user_id, **update_data)
+
+        # Store session data
+        self.active_sessions[user_id] = {
+            "channel_id": ctx.channel.id,
+            "last_activity": datetime.now()
+        }
+
+        # Send chapter information
+        chapter_data = result["chapter_data"]
+        embed = create_basic_embed(
+            title=f"Capítulo: {chapter_data['title']}",
+            description=chapter_data['description'],
+            color=discord.Color.blue()
+        )
+        await ctx.send(embed=embed)
+
+        # Send first dialogue or choices
+        await self._send_dialogue_or_choices(ctx.channel, user_id, result)
+
+        # Check for available events
+        if "available_events" in result and result["available_events"]:
+            await self._notify_about_events(ctx.channel, user_id, result["available_events"])
+
     @app_commands.command(name="historia", description="Inicia ou continua o modo história")
     async def slash_start_story(self, interaction: discord.Interaction):
         """
