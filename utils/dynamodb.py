@@ -354,28 +354,36 @@ def handle_dynamo_error(func):
 def get_player(user_id):
     """Get a player from DynamoDB."""
     if not user_id:
+        logger.warning("get_player called with no user_id")
         return None
         
     try:
+        logger.info(f"Attempting to get player with user_id: {user_id}")
         table = get_table(TABLES['players'])
         
         # Get player by primary key
-        response = table.get_item(
-            Key={
-                'PK': f"PLAYER#{user_id}",
-                'SK': 'PROFILE'
-            }
-        )
+        key = {
+            'PK': f"PLAYER#{user_id}",
+            'SK': 'PROFILE'
+        }
+        logger.info(f"Searching with key: {key}")
+        
+        response = table.get_item(Key=key)
+        logger.info(f"Raw DynamoDB response: {response}")
         
         item = response.get('Item')
         if not item:
+            logger.warning(f"No player found for user_id: {user_id}")
             return None
+            
+        logger.info(f"Found player data: {item}")
             
         # Convert Decimal values to int/float
         for key, value in item.items():
             if isinstance(value, Decimal):
                 item[key] = int(value) if value % 1 == 0 else float(value)
                 
+        logger.info(f"Converted player data: {item}")
         return item
     except Exception as e:
         logger.error(f"Error getting player: {e}")
@@ -440,7 +448,7 @@ def get_all_clubs():
     """Get all clubs from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        logger.info("Attempting to scan clubs table")
+        #logger.info("Attempting to scan clubs table")
         response = table.scan()
         #logger.info(f"Raw DynamoDB response: {response}")
 
@@ -455,7 +463,7 @@ def get_all_clubs():
                     'leader_id': item.get('lider_id', ''),
                     'reputacao': item.get('reputacao', 0)
                 }
-                logger.info(f"Converted club object: {club}")
+                #logger.info(f"Converted club object: {club}")
                 clubs.append(club)
         
         # Sort clubs by name

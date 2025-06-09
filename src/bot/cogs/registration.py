@@ -46,13 +46,19 @@ class Registration(commands.Cog):
     @commands.command(name="ingressar")
     async def register(self, ctx):
         """Iniciar o processo de registro na Academia Tokugawa."""
+        logger.info(f"Register command called by user {ctx.author.id} ({ctx.author.name})")
+        
         # Check if player already exists
         player = get_player(ctx.author.id)
+        logger.info(f"Player lookup result for {ctx.author.id}: {player}")
+        
         if player:
+            logger.info(f"Player {ctx.author.id} already registered")
             await ctx.send(f"{ctx.author.mention}, você já está registrado na Academia Tokugawa!")
             return
 
         # Start registration process
+        logger.info(f"Starting registration process for user {ctx.author.id}")
         welcome_embed = create_basic_embed(
             title="Bem-vindo à Academia Tokugawa!",
             description="Você está prestes a ingressar na mais prestigiada academia para estudantes com superpoderes!\n\n"
