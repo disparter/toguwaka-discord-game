@@ -97,7 +97,85 @@ def init_db():
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS system_flags (
             flag_name TEXT PRIMARY KEY,
-            flag_value TEXT
+            flag_value TEXT,
+            updated_at TEXT
+        )
+        ''')
+
+        # Create events table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS events (
+            event_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            type TEXT,
+            channel_id TEXT,
+            message_id TEXT,
+            start_time TEXT,
+            end_time TEXT,
+            completed BOOLEAN DEFAULT 0,
+            participants TEXT DEFAULT '[]',
+            data TEXT DEFAULT '{}'
+        )
+        ''')
+
+        # Create cooldowns table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS cooldowns (
+            user_id TEXT,
+            command TEXT,
+            expiry_time TEXT,
+            PRIMARY KEY (user_id, command)
+        )
+        ''')
+
+        # Create grades table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS grades (
+            user_id TEXT,
+            subject TEXT,
+            grade INTEGER,
+            month INTEGER,
+            year INTEGER,
+            created_at TEXT,
+            PRIMARY KEY (user_id, subject, month, year)
+        )
+        ''')
+
+        # Create votes table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS votes (
+            category TEXT,
+            voter_id TEXT,
+            candidate_id TEXT,
+            week INTEGER,
+            year INTEGER,
+            created_at TEXT,
+            PRIMARY KEY (category, voter_id, week, year)
+        )
+        ''')
+
+        # Create quiz_answers table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS quiz_answers (
+            user_id TEXT,
+            question_id TEXT,
+            is_correct BOOLEAN,
+            created_at TEXT,
+            PRIMARY KEY (user_id, question_id)
+        )
+        ''')
+
+        # Create club_activities table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS club_activities (
+            user_id TEXT,
+            activity_type TEXT,
+            points INTEGER,
+            week INTEGER,
+            year INTEGER,
+            created_at TEXT,
+            PRIMARY KEY (user_id, activity_type, week, year)
         )
         ''')
 
