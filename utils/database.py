@@ -4,7 +4,6 @@ import os
 import logging
 from pathlib import Path
 from datetime import datetime
-from utils.db_provider import db_provider, DatabaseType
 
 logger = logging.getLogger('tokugawa_bot')
 

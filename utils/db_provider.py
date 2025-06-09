@@ -15,6 +15,7 @@ logger = logging.getLogger('tokugawa_bot')
 
 # Determine which database implementation to use
 USE_DYNAMODB = os.environ.get('USE_DYNAMODB', 'false').lower() == 'true'
+FORCE_SQLITE = os.environ.get('DB_TYPE', '').upper() == 'SQLITE'
 
 class DatabaseType(Enum):
     DYNAMODB = auto()
@@ -34,31 +35,32 @@ class DatabaseProvider:
 
     def _initialize(self):
         """Initialize the database provider and check availability of both databases."""
-        if USE_DYNAMODB:
+        # Always initialize SQLite first
+        try:
+            from utils import database as sqlite_db
+            sqlite_db.init_db()
+            self._sqlite_available = True
+            logger.info("SQLite is available")
+            self._current_db_type = DatabaseType.SQLITE
+        except Exception as e:
+            logger.error(f"SQLite initialization failed: {e}")
+            self._sqlite_available = False
+
+        # Try DynamoDB if enabled and not forcing SQLite
+        if USE_DYNAMODB and not FORCE_SQLITE:
             try:
-                # Try to import DynamoDB module
                 from utils import dynamodb as dynamo_db
                 self._dynamo_available = dynamo_db.init_db()
                 if self._dynamo_available:
                     logger.info("DynamoDB is available")
                     self._current_db_type = DatabaseType.DYNAMODB
-                    return  # Exit early if DynamoDB is successfully initialized
             except Exception as e:
                 logger.warning(f"DynamoDB initialization failed: {e}")
                 self._dynamo_available = False
 
-        # Only initialize SQLite if DynamoDB is not enabled or failed
-        if not USE_DYNAMODB:
-            try:
-                # Try to import SQLite module
-                from utils import database as sqlite_db
-                sqlite_db.init_db()
-                self._sqlite_available = True
-                logger.info("SQLite is available")
-                self._current_db_type = DatabaseType.SQLITE
-            except Exception as e:
-                logger.error(f"SQLite initialization failed: {e}")
-                self._sqlite_available = False
+        # If no database is available, raise an error
+        if not self._sqlite_available and not self._dynamo_available:
+            raise Exception("No database implementation is available")
 
     @property
     def current_db_type(self) -> DatabaseType:
@@ -141,6 +143,10 @@ class DatabaseProvider:
         """
         if self._current_db_type == DatabaseType.DYNAMODB:
             return True
+
+        if FORCE_SQLITE:
+            logger.info("SQLite is forced, not switching to DynamoDB")
+            return False
 
         try:
             from utils import dynamodb as dynamo_db
