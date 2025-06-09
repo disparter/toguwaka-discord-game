@@ -770,14 +770,37 @@ class ScheduledEvents(commands.Cog):
                 logger.info("Weekly reset completed")
 
                 # Update club reputation based on weekly activities
-                from utils.database import update_club_reputation_weekly
-                if update_club_reputation_weekly():
-                    logger.info("Updated club reputation based on weekly activities")
+                from utils.database import get_all_clubs, update_club_reputation_weekly, get_top_clubs_by_activity
+                
+                # Get all clubs and their weekly activities
+                clubs = get_all_clubs()
+                top_clubs = get_top_clubs_by_activity(limit=3)
+                
+                # Calculate reputation changes based on weekly rankings
+                for club in clubs:
+                    reputation_change = 0
+                    
+                    # Check if club is in top 3
+                    for i, top_club in enumerate(top_clubs):
+                        if top_club['club_id'] == club['club_id']:
+                            # Award reputation based on position
+                            if i == 0:  # First place
+                                reputation_change = 50
+                            elif i == 1:  # Second place
+                                reputation_change = 30
+                            elif i == 2:  # Third place
+                                reputation_change = 20
+                            break
+                    
+                    # Update club reputation
+                    if reputation_change > 0:
+                        if update_club_reputation_weekly(club['club_id'], reputation_change):
+                            logger.info(f"Updated reputation for club {club['name']} by {reputation_change}")
+                        else:
+                            logger.error(f"Failed to update reputation for club {club['name']}")
 
-                    # Announce top clubs
-                    await self.announce_top_clubs()
-                else:
-                    logger.error("Failed to update club reputation")
+                # Announce top clubs
+                await self.announce_top_clubs()
         except Exception as e:
             logger.error(f"Error in weekly_reset: {e}")
 
