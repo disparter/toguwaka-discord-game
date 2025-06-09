@@ -380,22 +380,18 @@ def create_event_embed(event):
     return embed
 
 def create_inventory_embed(player):
-    """Create an embed displaying player inventory."""
+    """Create an embed displaying a player's inventory."""
     embed = discord.Embed(
-        title=f"Inventário de {player['name']}",
-        description=f"TUSD: {player['tusd']} 💰",
+        title="Inventário",
         color=0x1E90FF,
         timestamp=datetime.utcnow()
     )
 
     # Add items if any
-    if player['inventory']:
+    if player.get('inventory'):
         items_text = []
         for item_id, item in player['inventory'].items():
-            rarity = RARITIES.get(item['rarity'], RARITIES['common'])
-            item_type = item['type'].capitalize()
-            equipped_text = " [EQUIPADO]" if item.get('equipped', False) else ""
-            items_text.append(f"{rarity['emoji']} **{item['name']}**{equipped_text} (ID: {item_id}, Tipo: {item_type}) - {item['description']}")
+            items_text.append(f"🔹 **{item['name']}** - {item['description']}")
 
         embed.add_field(
             name="Itens",
@@ -410,7 +406,7 @@ def create_inventory_embed(player):
         )
 
     # Add techniques if any
-    if player['techniques']:
+    if player.get('techniques'):
         techniques_text = []
         for tech_id, tech in player['techniques'].items():
             techniques_text.append(f"⚡ **{tech['name']}** - {tech['description']}")

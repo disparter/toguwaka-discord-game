@@ -224,7 +224,7 @@ class StoryMode:
         
         return {
             "player_data": player_data,
-            "chapter_data": {"chapter_data": chapter_data}
+            "chapter_data": chapter_data
         }
 
     def get_current_chapter(self, player_data: Dict[str, Any]) -> Optional[Chapter]:

@@ -49,6 +49,9 @@ class StoryModeCog(commands.Cog):
         # Start or continue the story
         result = self.story_mode.start_story(player_data)
         logger.info(f"start_story result: {result}")
+        logger.debug(f"start_story result type: {type(result)}")
+        logger.debug(f"chapter_data type: {type(result.get('chapter_data'))}")
+        logger.debug(f"chapter_data content: {result.get('chapter_data')}")
 
         if "error" in result:
             await ctx.send(f"Erro ao iniciar o modo história: {result['error']}")
@@ -76,6 +79,8 @@ class StoryModeCog(commands.Cog):
 
         # Send chapter information
         chapter_data = result["chapter_data"]
+        if isinstance(chapter_data, dict) and "chapter_data" in chapter_data:
+            chapter_data = chapter_data["chapter_data"]
         embed = create_basic_embed(
             title=f"Capítulo: {chapter_data['title']}",
             description=chapter_data['description'],
@@ -111,6 +116,9 @@ class StoryModeCog(commands.Cog):
         # Start or continue the story
         result = self.story_mode.start_story(player_data)
         logger.info(f"start_story result: {result}")
+        logger.debug(f"start_story result type: {type(result)}")
+        logger.debug(f"chapter_data type: {type(result.get('chapter_data'))}")
+        logger.debug(f"chapter_data content: {result.get('chapter_data')}")
 
         if "error" in result:
             await interaction.followup.send(f"Erro ao iniciar o modo história: {result['error']}", ephemeral=True)
@@ -138,6 +146,8 @@ class StoryModeCog(commands.Cog):
 
         # Send chapter information
         chapter_data = result["chapter_data"]
+        if isinstance(chapter_data, dict) and "chapter_data" in chapter_data:
+            chapter_data = chapter_data["chapter_data"]
         embed = create_basic_embed(
             title=f"Capítulo: {chapter_data['title']}",
             description=chapter_data['description'],
