@@ -41,3 +41,5 @@ data/tokugawa.db
 /extract_character_lines.sh
 /npc_dialogues/
 data/logs/
+scripts/attach_dynamo_permissions.sh
+/scripts/attach_dynamodb_permissions.sh
