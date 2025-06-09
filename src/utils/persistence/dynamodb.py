@@ -543,5 +543,174 @@ async def record_quiz_answer(user_id, question_id, is_correct):
         logger.error(f"Error recording quiz answer: {e}")
         return False
 
+@handle_dynamo_error
+async def put_item(table_name, item):
+    """
+    Put an item into a DynamoDB table.
+    
+    Args:
+        table_name (str): The name of the table to put the item into
+        item (dict): The item to put into the table
+        
+    Returns:
+        dict: The response from DynamoDB
+    """
+    try:
+        table = get_table(table_name)
+        response = table.put_item(Item=item)
+        logger.info(f"Successfully put item into table {table_name}")
+        return response
+    except Exception as e:
+        logger.error(f"Error putting item into table {table_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to put item into table {table_name}") from e
+
+@handle_dynamo_error
+async def get_item(table_name, key):
+    """
+    Get an item from a DynamoDB table.
+    
+    Args:
+        table_name (str): The name of the table to get the item from
+        key (dict): The key of the item to get
+        
+    Returns:
+        dict: The item from DynamoDB, or None if not found
+    """
+    try:
+        table = get_table(table_name)
+        response = table.get_item(Key=key)
+        item = response.get('Item')
+        if item:
+            logger.info(f"Successfully retrieved item from table {table_name}")
+        else:
+            logger.info(f"No item found in table {table_name} with key {key}")
+        return item
+    except Exception as e:
+        logger.error(f"Error getting item from table {table_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to get item from table {table_name}") from e
+
+@handle_dynamo_error
+async def query_items(table_name, key_condition_expression, expression_attribute_values=None, filter_expression=None):
+    """
+    Query items from a DynamoDB table.
+    
+    Args:
+        table_name (str): The name of the table to query
+        key_condition_expression (str): The key condition expression for the query
+        expression_attribute_values (dict, optional): The expression attribute values
+        filter_expression (str, optional): The filter expression for the query
+        
+    Returns:
+        list: The items from DynamoDB matching the query
+    """
+    try:
+        table = get_table(table_name)
+        query_params = {
+            'KeyConditionExpression': key_condition_expression
+        }
+        
+        if expression_attribute_values:
+            query_params['ExpressionAttributeValues'] = expression_attribute_values
+            
+        if filter_expression:
+            query_params['FilterExpression'] = filter_expression
+            
+        response = table.query(**query_params)
+        items = response.get('Items', [])
+        
+        logger.info(f"Successfully queried {len(items)} items from table {table_name}")
+        return items
+    except Exception as e:
+        logger.error(f"Error querying items from table {table_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to query items from table {table_name}") from e
+
+@handle_dynamo_error
+async def scan_items(table_name, filter_expression=None, expression_attribute_values=None):
+    """
+    Scan items from a DynamoDB table.
+    
+    Args:
+        table_name (str): The name of the table to scan
+        filter_expression (str, optional): The filter expression for the scan
+        expression_attribute_values (dict, optional): The expression attribute values
+        
+    Returns:
+        list: The items from DynamoDB matching the scan criteria
+    """
+    try:
+        table = get_table(table_name)
+        scan_params = {}
+        
+        if filter_expression:
+            scan_params['FilterExpression'] = filter_expression
+            
+        if expression_attribute_values:
+            scan_params['ExpressionAttributeValues'] = expression_attribute_values
+            
+        response = table.scan(**scan_params)
+        items = response.get('Items', [])
+        
+        logger.info(f"Successfully scanned {len(items)} items from table {table_name}")
+        return items
+    except Exception as e:
+        logger.error(f"Error scanning items from table {table_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to scan items from table {table_name}") from e
+
+@handle_dynamo_error
+async def update_item(table_name, key, update_expression, expression_attribute_values=None, expression_attribute_names=None):
+    """
+    Update an item in a DynamoDB table.
+    
+    Args:
+        table_name (str): The name of the table to update the item in
+        key (dict): The key of the item to update
+        update_expression (str): The update expression for the update
+        expression_attribute_values (dict, optional): The expression attribute values
+        expression_attribute_names (dict, optional): The expression attribute names
+        
+    Returns:
+        dict: The response from DynamoDB
+    """
+    try:
+        table = get_table(table_name)
+        update_params = {
+            'Key': key,
+            'UpdateExpression': update_expression
+        }
+        
+        if expression_attribute_values:
+            update_params['ExpressionAttributeValues'] = expression_attribute_values
+            
+        if expression_attribute_names:
+            update_params['ExpressionAttributeNames'] = expression_attribute_names
+            
+        response = table.update_item(**update_params)
+        logger.info(f"Successfully updated item in table {table_name}")
+        return response
+    except Exception as e:
+        logger.error(f"Error updating item in table {table_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to update item in table {table_name}") from e
+
+@handle_dynamo_error
+async def delete_item(table_name, key):
+    """
+    Delete an item from a DynamoDB table.
+    
+    Args:
+        table_name (str): The name of the table to delete the item from
+        key (dict): The key of the item to delete
+        
+    Returns:
+        dict: The response from DynamoDB
+    """
+    try:
+        table = get_table(table_name)
+        response = table.delete_item(Key=key)
+        logger.info(f"Successfully deleted item from table {table_name}")
+        return response
+    except Exception as e:
+        logger.error(f"Error deleting item from table {table_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to delete item from table {table_name}") from e
+
 # Initialize the DynamoDB connection when the module is imported
 init_db()

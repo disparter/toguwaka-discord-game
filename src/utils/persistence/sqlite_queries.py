@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
-from utils.sqlite_schemas import get_db, init_db
+from src.utils.sqlite_schemas import get_db, init_db
 
 logger = logging.getLogger('tokugawa_bot')
 

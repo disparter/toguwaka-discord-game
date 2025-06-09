@@ -5,8 +5,8 @@ import os
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 
-from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
-from utils.game_mechanics.constants import HP_FACTOR_THRESHOLD, HP_FACTOR_MIN
+from src.utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from src.utils.game_mechanics.constants import HP_FACTOR_THRESHOLD, HP_FACTOR_MIN
 
 class TestHPFactorCalculator(unittest.TestCase):
     """Test cases for the HPFactorCalculator class."""

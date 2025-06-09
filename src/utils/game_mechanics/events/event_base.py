@@ -4,7 +4,7 @@ This class implements common functionality for all events.
 """
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from utils.game_mechanics.events.event_interface import IEvent
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 class EventBase(IEvent, ABC):
     """Abstract base class for all events."""

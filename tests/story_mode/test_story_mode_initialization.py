@@ -3,6 +3,7 @@ from story_mode.story_mode import StoryMode
 from story_mode.chapter_validator import ChapterValidator
 import os
 import json
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 class TestStoryModeInitialization(unittest.TestCase):
     def setUp(self):

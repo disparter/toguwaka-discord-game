@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.persistence.db_provider import get_all_clubs, update_player
-from utils.normalization import normalize_club_name
+from src.utils.persistence.db_provider import get_all_clubs, update_player
+from src.utils.normalization import normalize_club_name
 
 logger = logging.getLogger('tokugawa_bot')
 

@@ -4,9 +4,10 @@ from decimal import Decimal
 import discord
 from discord import app_commands
 from cogs.registration import Registration, normalize_club_name
-from utils.persistence.db_provider import get_all_clubs, update_player, get_player, get_club
-from utils.normalization import normalize_club_name
-import utils.game_mechanics
+from src.utils.persistence.dynamodb_clubs import get_club, get_all_clubs
+from src.utils.persistence.dynamodb_players import get_player, update_player
+from src.utils.normalization import normalize_club_name
+import src.utils.game_mechanics
 
 # Test data
 MOCK_CLUBS = [
@@ -93,9 +94,9 @@ async def test_club_selection_autocomplete(mock_interaction):
 @pytest.mark.asyncio
 async def test_select_club_success():
     """Test successful club selection."""
-    with patch('utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
-         patch('utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs, \
-         patch('utils.game_mechanics.update_player', new_callable=AsyncMock) as mock_update_player:
+    with patch('src.utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch('src.utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs, \
+         patch('src.utils.game_mechanics.update_player', new_callable=AsyncMock) as mock_update_player:
         
         mock_get_player.return_value = {'id': '123456789', 'club_id': None}
         mock_get_all_clubs.return_value = [
@@ -103,7 +104,7 @@ async def test_select_club_success():
         ]
         mock_update_player.return_value = True
         
-        result = await utils.game_mechanics.select_club("123456789", "Test Club")
+        result = await src.utils.game_mechanics.select_club("123456789", "Test Club")
         
         mock_get_all_clubs.assert_called_once()
         mock_update_player.assert_called_once_with(
@@ -115,14 +116,14 @@ async def test_select_club_success():
 @pytest.mark.asyncio
 async def test_select_club_invalid():
     """Test club selection with invalid club name."""
-    with patch('utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
-         patch('utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
+    with patch('src.utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch('src.utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
         mock_get_player.return_value = {'id': '123456789', 'club_id': None}
         mock_get_all_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
         ]
         
-        result = await utils.game_mechanics.select_club("123456789", "Invalid Club")
+        result = await src.utils.game_mechanics.select_club("123456789", "Invalid Club")
         
         mock_get_all_clubs.assert_called_once()
         assert result == "Clube inválido. Por favor, escolha um clube válido."
@@ -130,16 +131,16 @@ async def test_select_club_invalid():
 @pytest.mark.asyncio
 async def test_select_club_database_error():
     """Test club selection with database error."""
-    with patch('utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
-         patch('utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs, \
-         patch('utils.game_mechanics.update_player', new_callable=AsyncMock) as mock_update_player:
+    with patch('src.utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch('src.utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs, \
+         patch('src.utils.game_mechanics.update_player', new_callable=AsyncMock) as mock_update_player:
         mock_get_player.return_value = {'id': '123456789', 'club_id': None}
         mock_get_all_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
         ]
         mock_update_player.return_value = False
         
-        result = await utils.game_mechanics.select_club("123456789", "Test Club")
+        result = await src.utils.game_mechanics.select_club("123456789", "Test Club")
         
         mock_get_all_clubs.assert_called_once()
         mock_update_player.assert_called_once()
@@ -148,12 +149,12 @@ async def test_select_club_database_error():
 @pytest.mark.asyncio
 async def test_select_club_no_clubs():
     """Test club selection when no clubs are available."""
-    with patch('utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
-         patch('utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
+    with patch('src.utils.game_mechanics.get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch('src.utils.game_mechanics.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
         mock_get_player.return_value = {'id': '123456789', 'club_id': None}
         mock_get_all_clubs.return_value = []
         
-        result = await utils.game_mechanics.select_club("123456789", "Test Club")
+        result = await src.utils.game_mechanics.select_club("123456789", "Test Club")
         
         mock_get_all_clubs.assert_called_once()
         assert result == "Clube inválido. Por favor, escolha um clube válido."

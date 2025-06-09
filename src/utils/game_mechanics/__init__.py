@@ -3,33 +3,39 @@
 # to maintain backward compatibility during the transition to SOLID principles
 
 # Import and re-export constants
-from utils.game_mechanics.constants import (
-    HP_FACTOR_THRESHOLD, HP_FACTOR_MIN, BASE_EXP, EXP_LEVELS,
-    STRENGTH_LEVELS, RARITIES, TRAINING_OUTCOMES, RANDOM_EVENTS
+from src.utils.game_mechanics.constants import (
+    STRENGTH_LEVELS,
+    RARITIES,
+    BASE_EXP,
+    EXP_LEVELS,
+    HP_FACTOR_THRESHOLD,
+    HP_FACTOR_MIN,
+    TRAINING_OUTCOMES,
+    RANDOM_EVENTS
 )
 
 # Import and re-export classes from their new locations
 # Calculators
-from utils.game_mechanics.calculators.calculator_interface import ICalculator
-from utils.game_mechanics.calculators.experience_calculator_interface import IExperienceCalculator
-from utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPFactorCalculator
-from utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
-from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from src.utils.game_mechanics.calculators.calculator_interface import ICalculator
+from src.utils.game_mechanics.calculators.experience_calculator_interface import IExperienceCalculator
+from src.utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPFactorCalculator
+from src.utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
+from src.utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
 
 # Events
-from utils.game_mechanics.events.event_interface import IEvent
-from utils.game_mechanics.events.event_base import EventBase
-from utils.game_mechanics.events.training_event import TrainingEvent
-from utils.game_mechanics.events.random_event import RandomEvent
+from src.utils.game_mechanics.events.event_interface import IEvent
+from src.utils.game_mechanics.events.event_base import EventBase
+from src.utils.game_mechanics.events.training_event import TrainingEvent
+from src.utils.game_mechanics.events.random_event import RandomEvent
 
 # Duel
-from utils.game_mechanics.duel.duel_calculator_interface import IDuelCalculator
-from utils.game_mechanics.duel.duel_narrator_interface import IDuelNarrator
-from utils.game_mechanics.duel.duel_calculator import DuelCalculator
-from utils.game_mechanics.duel.duel_narrator import DuelNarrator
+from src.utils.game_mechanics.duel.duel_calculator_interface import IDuelCalculator
+from src.utils.game_mechanics.duel.duel_narrator_interface import IDuelNarrator
+from src.utils.game_mechanics.duel.duel_calculator import DuelCalculator
+from src.utils.game_mechanics.duel.duel_narrator import DuelNarrator
 
 # Faction
-from utils.game_mechanics.faction_reputation import FactionReputationManager
+from src.utils.game_mechanics.faction_reputation import FactionReputationManager
 
 # Provide backward compatibility functions
 def calculate_exp_for_level(level):
@@ -70,8 +76,8 @@ def generate_duel_narration(duel_result):
 
 import re
 from typing import Dict, List, Optional, Tuple
-from utils.persistence.dynamodb_players import get_player, update_player
-from utils.persistence.dynamodb_clubs import get_all_clubs
+from src.utils.persistence.dynamodb_players import get_player, update_player
+from src.utils.persistence.dynamodb_clubs import get_all_clubs
 
 def normalize_club_name(name: str) -> str:
     """Normalize club name to a valid format."""

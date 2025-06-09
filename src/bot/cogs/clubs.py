@@ -2,9 +2,10 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.persistence.db_provider import get_player, get_club, get_all_clubs, update_player, get_club_members, get_relevant_npcs
-from utils.embeds import create_basic_embed, create_club_embed
+from src.utils.persistence.db_provider import get_player, get_club, get_all_clubs, update_player, get_club_members, get_relevant_npcs
+from src.utils.embeds import create_basic_embed, create_club_embed
 from story_mode.club_system import ClubSystem
+from src.utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -148,7 +149,6 @@ class Clubs(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
-    from utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = Clubs(bot)

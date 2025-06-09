@@ -1,8 +1,8 @@
 import pytest
-from utils.game_mechanics.events.random_event import RandomEvent
-from utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
-from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
-from utils.game_mechanics import select_club, calculate_exp_gain, calculate_level_up
+from src.utils.game_mechanics.events.random_event import RandomEvent
+from src.utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
+from src.utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from src.utils.game_mechanics import select_club, calculate_exp_gain, calculate_level_up
 # from utils.sqlite_queries import _get_player, _update_player
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch

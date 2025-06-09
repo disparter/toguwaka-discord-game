@@ -35,6 +35,7 @@ from .progress import (
 )
 from .chapter_loader import FileChapterLoader
 from .story_mode import StoryMode
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 __all__ = [
     'FileChapterLoader',

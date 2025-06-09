@@ -4,7 +4,7 @@ This class is responsible for generating narrative descriptions of duels.
 """
 import random
 from typing import Dict, Any
-from utils.game_mechanics.duel.duel_narrator_interface import IDuelNarrator
+from src.utils.game_mechanics.duel.duel_narrator_interface import IDuelNarrator
 
 class DuelNarrator(IDuelNarrator):
     """Narrator for duel-related narrations."""

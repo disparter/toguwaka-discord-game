@@ -2,8 +2,17 @@ import decimal
 import json
 import logging
 from datetime import datetime
-from utils.persistence.dynamodb import (
-    get_table, TABLES, handle_dynamo_error, DynamoDBOperationError
+from src.utils.persistence.dynamodb import (
+    get_table,
+    put_item,
+    get_item,
+    query_items,
+    scan_items,
+    update_item,
+    delete_item,
+    TABLES,
+    handle_dynamo_error,
+    DynamoDBOperationError
 )
 
 logger = logging.getLogger('tokugawa_bot')

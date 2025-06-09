@@ -2,6 +2,7 @@ import unittest
 from story_mode.story_mode import StoryMode
 import os
 import json
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 class TestStoryModeClubIntegration(unittest.TestCase):
     def setUp(self):

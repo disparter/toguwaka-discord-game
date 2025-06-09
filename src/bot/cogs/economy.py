@@ -7,9 +7,10 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from utils.persistence.db_provider import get_player, update_player, get_club, store_cooldown, get_player_inventory, add_item_to_inventory
-from utils.embeds import create_basic_embed
-from utils.game_mechanics import RARITIES
+from src.utils.database import get_player, update_player, get_club, store_cooldown, get_player_inventory, add_item_to_inventory
+from src.utils.embeds import create_basic_embed
+from src.utils.game_mechanics import RARITIES
+from src.utils.club_perks import apply_shop_discount
 from src.bot.cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
 
 logger = logging.getLogger('tokugawa_bot')

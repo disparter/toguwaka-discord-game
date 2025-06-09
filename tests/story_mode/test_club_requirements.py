@@ -3,6 +3,7 @@ import os
 import json
 from story_mode.story_mode import StoryMode
 from story_mode.chapter import StoryChapter
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 @pytest.fixture
 def story_mode():

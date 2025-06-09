@@ -137,3 +137,69 @@ def get_club_perk_description(club_id):
         return f"Bônus de {TUSD_REWARD_BOOST_PERCENTAGE}% em recompensas de TUSD ao ganhar duelos"
     else:
         return "Sem bônus de clube"
+
+def apply_duel_bonus(damage, energy_cost, club_id, duel_type):
+    """
+    Apply all relevant duel bonuses for a club member.
+    
+    Args:
+        damage (int): The original damage
+        energy_cost (int): The original energy cost
+        club_id (int): The club ID of the player
+        duel_type (str): The type of duel ("physical" or "mental")
+        
+    Returns:
+        tuple: (modified_damage, modified_energy_cost)
+    """
+    modified_damage = apply_physical_damage_boost(damage, club_id, duel_type)
+    modified_energy_cost = apply_mental_energy_reduction(energy_cost, club_id, duel_type)
+    return modified_damage, modified_energy_cost
+
+def apply_duel_penalty(damage, energy_cost, club_id, duel_type):
+    """
+    Apply penalties for club members in certain duel types.
+    
+    Args:
+        damage (int): The original damage
+        energy_cost (int): The original energy cost
+        club_id (int): The club ID of the player
+        duel_type (str): The type of duel ("physical" or "mental")
+        
+    Returns:
+        tuple: (modified_damage, modified_energy_cost)
+    """
+    # Clube das Chamas members have reduced damage in mental duels
+    if club_id == CLUBE_DAS_CHAMAS and duel_type == "mental":
+        damage = int(damage * 0.8)  # 20% damage reduction
+        logger.info(f"Applied Clube das Chamas mental duel penalty: damage reduced by 20%")
+    
+    # Ilusionistas Mentais members have increased energy cost in physical duels
+    if club_id == ILUSIONISTAS_MENTAIS and duel_type == "physical":
+        energy_cost = int(energy_cost * 1.2)  # 20% energy cost increase
+        logger.info(f"Applied Ilusionistas Mentais physical duel penalty: energy cost increased by 20%")
+    
+    return damage, energy_cost
+
+def apply_duel_resistance(damage, club_id, duel_type):
+    """
+    Apply resistance bonuses for club members in certain duel types.
+    
+    Args:
+        damage (int): The original damage
+        club_id (int): The club ID of the player
+        duel_type (str): The type of duel ("physical" or "mental")
+        
+    Returns:
+        int: The modified damage after applying resistance
+    """
+    # Clube das Chamas members have increased resistance to physical damage
+    if club_id == CLUBE_DAS_CHAMAS and duel_type == "physical":
+        damage = int(damage * 0.8)  # 20% damage reduction
+        logger.info(f"Applied Clube das Chamas physical resistance: damage reduced by 20%")
+    
+    # Ilusionistas Mentais members have increased resistance to mental damage
+    if club_id == ILUSIONISTAS_MENTAIS and duel_type == "mental":
+        damage = int(damage * 0.8)  # 20% damage reduction
+        logger.info(f"Applied Ilusionistas Mentais mental resistance: damage reduced by 20%")
+    
+    return damage

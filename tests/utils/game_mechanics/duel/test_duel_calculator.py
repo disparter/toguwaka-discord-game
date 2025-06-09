@@ -6,7 +6,7 @@ import os
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 
-from utils.game_mechanics.duel.duel_calculator import DuelCalculator
+from src.utils.game_mechanics.duel.duel_calculator import DuelCalculator
 
 class TestDuelCalculator(unittest.TestCase):
     """Test cases for the DuelCalculator class."""

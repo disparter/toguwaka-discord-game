@@ -2,8 +2,8 @@
 Implementation of the HP factor calculator.
 This class is responsible for calculating how a player's attributes are affected by their HP.
 """
-from utils.game_mechanics.constants import HP_FACTOR_THRESHOLD, HP_FACTOR_MIN
-from utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPFactorCalculator
+from src.utils.game_mechanics.constants import HP_FACTOR_THRESHOLD, HP_FACTOR_MIN
+from src.utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPFactorCalculator
 
 class HPFactorCalculator(IHPFactorCalculator):
     """Calculator for HP factor-related calculations."""

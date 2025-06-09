@@ -28,6 +28,12 @@ if ! command_exists pip3; then
     exit 1
 fi
 
+# Check if git is installed
+if ! command_exists git; then
+    echo -e "${RED}Error: git is not installed${NC}"
+    exit 1
+fi
+
 # Create and activate virtual environment if it doesn't exist
 if [ ! -d "venv" ]; then
     print_section "Creating virtual environment"
@@ -68,10 +74,16 @@ if [ $? -eq 0 ]; then
     elif command_exists xdg-open; then
         xdg-open htmlcov/index.html
     fi
+
+    # Git operations
+    print_section "Committing and pushing to Git"
+    git add .
+    git commit -m "✅ All tests passed – build verified and coverage updated"
+    git push
 else
     echo -e "\n${RED}Some tests failed!${NC}"
     exit 1
 fi
 
 # Deactivate virtual environment
-deactivate 
+deactivate

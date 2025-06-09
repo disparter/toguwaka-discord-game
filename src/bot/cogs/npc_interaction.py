@@ -5,9 +5,10 @@ import logging
 import os
 from typing import Dict, List, Any, Optional, Union
 
-from utils.persistence.db_provider import get_player, update_player
-from utils.embeds import create_basic_embed
+from src.utils.persistence.db_provider import get_player, update_player
+from src.utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
+from src.utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -332,8 +333,6 @@ async def setup(bot):
     """
     Setup function for the cog.
     """
-    from utils.command_registrar import CommandRegistrar
-
     # Create and add the cog
     cog = NPCInteractionCog(bot)
     await bot.add_cog(cog)

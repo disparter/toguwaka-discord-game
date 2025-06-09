@@ -4,10 +4,10 @@ from discord import app_commands
 import asyncio
 import logging
 import random
-from utils.persistence.db_provider import get_player, create_player, get_all_clubs
-from utils.embeds import create_basic_embed, create_player_embed
-from utils.game_mechanics import STRENGTH_LEVELS
-from utils.command_registrar import CommandRegistrar
+from src.utils.persistence.db_provider import get_player, create_player, get_all_clubs
+from src.utils.embeds import create_basic_embed, create_player_embed
+from src.utils.game_mechanics import STRENGTH_LEVELS
+from src.utils.command_registrar import CommandRegistrar
 from story_mode.club_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
@@ -234,7 +234,7 @@ class Registration(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
-    from utils.command_registrar import CommandRegistrar
+    from src.utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = Registration(bot)
@@ -257,7 +257,7 @@ async def setup(bot):
         """Direct slash command for registration."""
         try:
             # Check if player already exists
-            from utils.persistence.db_provider import get_player
+            from src.utils.persistence.db_provider import get_player
             player = get_player(interaction.user.id)
             if player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")

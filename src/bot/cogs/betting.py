@@ -10,8 +10,9 @@ import logging
 import random
 import asyncio
 from datetime import datetime, timedelta
-from utils.database import get_player, update_player
-from utils.embeds import create_basic_embed
+from src.utils.database import get_player, update_player
+from src.utils.embeds import create_basic_embed
+from src.utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -283,8 +284,6 @@ class Betting(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
-    from utils.command_registrar import CommandRegistrar
-
     # Create and add the cog
     cog = Betting(bot)
     await bot.add_cog(cog)

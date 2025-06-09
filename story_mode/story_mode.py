@@ -5,8 +5,8 @@ import os
 from .interfaces import Chapter, Event, NPC, ChapterLoader, EventManager, StoryProgressManager
 from .chapter import BaseChapter, StoryChapter, ChallengeChapter, BranchingChapter
 from .event import BaseEvent, ClimacticEvent, RandomEvent, SeasonalEvent, DefaultEventManager
-from utils.game_mechanics.events.event_interface import IEvent
-from utils.game_mechanics.events.random_event import RandomEvent as GameRandomEvent
+from src.utils.game_mechanics.events.event_interface import IEvent
+from src.utils.game_mechanics.events.random_event import RandomEvent as GameRandomEvent
 from .npc import BaseNPC, StudentNPC, FacultyNPC, NPCManager
 from .progress import DefaultStoryProgressManager
 from .consequences import DynamicConsequencesSystem

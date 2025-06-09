@@ -6,8 +6,8 @@ import os
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 
-from utils.game_mechanics.events.training_event import TrainingEvent
-from utils.game_mechanics.constants import TRAINING_OUTCOMES
+from src.utils.game_mechanics.events.training_event import TrainingEvent
+from src.utils.game_mechanics.constants import TRAINING_OUTCOMES
 
 class TestTrainingEvent(unittest.TestCase):
     """Test cases for the TrainingEvent class."""

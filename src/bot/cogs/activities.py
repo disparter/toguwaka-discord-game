@@ -6,25 +6,25 @@ import random
 import asyncio
 import json
 from datetime import datetime, timedelta
-from utils.database import get_player, update_player, get_club
-from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed
-from utils.game_mechanics import (
+from src.utils.database import get_player, update_player, get_club
+from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed
+from src.utils.game_mechanics import (
     get_random_training_outcome, get_random_event, 
     calculate_duel_outcome, generate_duel_narration,
     calculate_level_from_exp, calculate_hp_factor
 )
-from utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
-from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
-from utils.game_mechanics.events.training_event import TrainingEvent
-from utils.game_mechanics.events.random_event import RandomEvent
-from utils.game_mechanics.duel.duel_calculator import DuelCalculator
-from utils.game_mechanics.duel.duel_narrator import DuelNarrator
-from utils.persistence.db_provider import (
+from src.utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
+from src.utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from src.utils.game_mechanics.events.training_event import TrainingEvent
+from src.utils.game_mechanics.events.random_event import RandomEvent
+from src.utils.game_mechanics.duel.duel_calculator import DuelCalculator
+from src.utils.game_mechanics.duel.duel_narrator import DuelNarrator
+from src.utils.persistence.db_provider import (
     store_cooldown,
     get_cooldowns,
     clear_expired_cooldowns
 )
-from utils.command_registrar import CommandRegistrar
+from src.utils.command_registrar import CommandRegistrar
 from discord.ext import tasks
 
 logger = logging.getLogger('tokugawa_bot')
@@ -1159,7 +1159,7 @@ class Activities(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
-    from utils.command_registrar import CommandRegistrar
+    from src.utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = Activities(bot)

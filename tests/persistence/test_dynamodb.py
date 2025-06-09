@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from botocore.exceptions import ClientError
-from utils.persistence.dynamodb_players import get_player
-from utils.persistence.dynamodb_clubs import get_club, get_all_clubs
-from utils.persistence.dynamodb import get_player_inventory, add_item_to_inventory, remove_item_from_inventory, DynamoDBOperationError
+from src.utils.persistence.dynamodb_players import get_player
+from src.utils.persistence.dynamodb_clubs import get_club, get_all_clubs
+from src.utils.persistence.dynamodb import get_player_inventory, add_item_to_inventory, remove_item_from_inventory, DynamoDBOperationError
 
 # Test data
 TEST_PLAYER = {

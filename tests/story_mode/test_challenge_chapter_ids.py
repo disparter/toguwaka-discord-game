@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 from story_mode.story_mode import StoryMode
 from story_mode.chapter import StoryChapter
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 class TestChallengeChapterIds(unittest.TestCase):
     """Tests for challenge chapter ID handling in StoryMode."""

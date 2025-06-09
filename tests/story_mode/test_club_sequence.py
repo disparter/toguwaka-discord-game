@@ -2,6 +2,7 @@ import pytest
 import os
 import json
 from story_mode.story_mode import StoryMode
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 @pytest.fixture
 def story_mode():

@@ -9,6 +9,7 @@ from story_mode.chapter import StoryChapter
 import pytest
 import json
 from pathlib import Path
+from src.utils.game_mechanics.events.event_interface import IEvent
 
 @pytest.fixture
 def mock_ctx():

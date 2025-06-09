@@ -2,21 +2,23 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.json_utils import dumps as json_dumps
+from src.utils.json_utils import dumps as json_dumps
 import asyncio
 import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
 import random
 
-from utils.persistence.db_provider import get_player, update_player, get_club, get_all_clubs
-from utils.embeds import create_basic_embed, create_event_embed
-from utils.game_mechanics import calculate_level_from_exp
+from src.utils.persistence.db_provider import get_player, update_player, get_club, get_all_clubs
+from src.utils.embeds import create_basic_embed, create_event_embed
+from src.utils.game_mechanics import calculate_level_from_exp
 
 from story_mode.story_mode import StoryMode
 from story_mode.club_system import ClubSystem
 from story_mode.consequences_system import ConsequencesSystem
 from story_mode.relationship_system import RelationshipSystem
+
+from src.utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 

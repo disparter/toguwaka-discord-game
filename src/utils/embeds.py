@@ -1,8 +1,9 @@
 import discord
 from datetime import datetime
-from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
+from src.utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
 import json
-from utils.persistence.db_provider import get_relevant_npcs
+from src.utils.persistence.db_provider import get_relevant_npcs
+from src.utils.club_perks import get_club_perk_description
 
 def create_basic_embed(title, description=None, color=0x1E90FF):
     """Create a basic embed with the Academia Tokugawa theme."""
@@ -85,8 +86,9 @@ def create_player_embed(player, club=None):
 
 def create_club_embed(club):
     """Create an embed displaying club information."""
-    # Import club perks module
-    from utils.club_perks import get_club_perk_description
+    # Get club perks module
+    # club_perks = __import__('utils.club_perks')
+    # get_club_perk_description = club_perks.get_club_perk_description
 
     # Determine color based on club
     club_colors = {

@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from discord.ext import commands
 from commands.registration import RegistrationCommands
-from utils.persistence.db_provider import get_all_clubs, update_player
-from utils.normalization import normalize_club_name
-from utils.game_mechanics import select_club
+from src.utils.persistence.db_provider import get_all_clubs, update_player
+from src.utils.normalization import normalize_club_name
+from src.utils.game_mechanics import select_club
 
 pytest.skip('Skipping: depende de patch em utils.dynamodb.get_table, removido do projeto', allow_module_level=True)
 
@@ -33,8 +33,8 @@ def mock_dynamodb():
 @pytest.mark.asyncio
 async def test_club_selection_success(mock_ctx):
     """Test successful club selection."""
-    with patch('utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
-         patch('utils.persistence.db_provider.update_player', new_callable=AsyncMock) as mock_update:
+    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
+         patch('src.utils.persistence.db_provider.update_player', new_callable=AsyncMock) as mock_update:
         
         mock_get_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
@@ -53,7 +53,7 @@ async def test_club_selection_success(mock_ctx):
 @pytest.mark.asyncio
 async def test_club_selection_invalid_club(mock_ctx):
     """Test club selection with invalid club name."""
-    with patch('utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
+    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
         mock_get_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
         ]
@@ -67,8 +67,8 @@ async def test_club_selection_invalid_club(mock_ctx):
 @pytest.mark.asyncio
 async def test_club_selection_database_error(mock_ctx):
     """Test club selection with database error."""
-    with patch('utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
-         patch('utils.persistence.db_provider.update_player', new_callable=AsyncMock) as mock_update:
+    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
+         patch('src.utils.persistence.db_provider.update_player', new_callable=AsyncMock) as mock_update:
         
         mock_get_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
@@ -85,7 +85,7 @@ async def test_club_selection_database_error(mock_ctx):
 @pytest.mark.asyncio
 async def test_club_selection_no_clubs(mock_ctx):
     """Test club selection when no clubs are available."""
-    with patch('utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
+    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
         mock_get_clubs.return_value = []
         
         cmd = RegistrationCommands()

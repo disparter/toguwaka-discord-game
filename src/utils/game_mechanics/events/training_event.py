@@ -4,8 +4,8 @@ This class is responsible for handling training events.
 """
 import random
 from typing import Dict, Any, List
-from utils.game_mechanics.events.event_base import EventBase
-from utils.game_mechanics.constants import TRAINING_OUTCOMES
+from src.utils.game_mechanics.events.event_base import EventBase
+from src.utils.game_mechanics.constants import TRAINING_OUTCOMES
 
 class TrainingEvent(EventBase):
     """Class for training events."""
