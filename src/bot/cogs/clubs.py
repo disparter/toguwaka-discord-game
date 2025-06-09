@@ -161,28 +161,37 @@ class Clubs(commands.Cog):
             await ctx.send(f"Você já é membro do clube {player['club']}!")
             return
 
-        # Validate club name
-        club_name = club_name.strip()
-        if club_name not in self.club_system.CLUBS.values():
+        # Find club ID from name
+        club_id = None
+        for cid, name in self.club_system.CLUBS.items():
+            if name.lower() == club_name.lower():
+                club_id = cid
+                break
+
+        if not club_id:
             await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
             return
 
-        # Update player's club
-        update_player_club(ctx.author.id, club_name)
-        
-        # Create embed
-        embed = create_basic_embed(
-            title="Ingresso no Clube",
-            description=f"Bem-vindo ao clube {club_name}!",
-            color=0x00FF00
-        )
-        embed.add_field(
-            name="Mensagem",
-            value=f"Você agora é um membro oficial do clube {club_name}!",
-            inline=False
-        )
-        
-        await ctx.send(embed=embed)
+        # Join club using ClubSystem
+        if self.club_system.join_club(player, club_id):
+            # Update player's club in database
+            update_player_club(ctx.author.id, club_name)
+            
+            # Create embed
+            embed = create_basic_embed(
+                title="Ingresso no Clube",
+                description=f"Bem-vindo ao clube {club_name}!",
+                color=0x00FF00
+            )
+            embed.add_field(
+                name="Mensagem",
+                value=f"Você agora é um membro oficial do clube {club_name}!",
+                inline=False
+            )
+            
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("Ocorreu um erro ao ingressar no clube. Tente novamente mais tarde.")
 
 async def setup(bot):
     """Add the cog to the bot."""
