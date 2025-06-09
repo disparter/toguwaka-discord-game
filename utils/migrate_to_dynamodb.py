@@ -129,6 +129,10 @@ def migrate_clubs():
     for club in clubs:
         club_id = club['club_id']
 
+        # Get club members to calculate members_count
+        members = sqlite_db.get_club_members(club_id)
+        members_count = len(members)
+
         # Create club profile in DynamoDB
         table.put_item(
             Item={
@@ -139,17 +143,14 @@ def migrate_clubs():
                 'nome': club['name'],
                 'descricao': club['description'],
                 'lider_id': club['leader_id'],
-                'membros_count': safe_decimal(club['members_count']),
+                'membros_count': safe_decimal(members_count),
                 'reputacao': safe_decimal(club['reputation']),
                 'created_at': club['created_at']
             }
         )
 
-        # Get club members
-        members = sqlite_db.get_club_members(club_id)
-        member_ids = [f'PLAYER#{member["user_id"]}' for member in members]
-
         # Create club members in DynamoDB
+        member_ids = [f'PLAYER#{member["user_id"]}' for member in members]
         table.put_item(
             Item={
                 'PK': f'CLUBE#{club_id}',

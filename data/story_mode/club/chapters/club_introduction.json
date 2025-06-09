@@ -15,7 +15,7 @@
     "choices": [
         {
             "text": "Introduce yourself",
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_1_1_intro",
             "effects": {
                 "club_experience": 5,
                 "club_reputation": 2
@@ -23,7 +23,7 @@
         },
         {
             "text": "Ask about the club's history",
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_1_1_intro",
             "effects": {
                 "club_experience": 3,
                 "club_reputation": 1
@@ -32,7 +32,7 @@
         {
             "text": "Show your skills",
             "club_requirement": 1,
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_1_1_intro",
             "effects": {
                 "club_experience": 10,
                 "club_reputation": 5,
@@ -42,7 +42,7 @@
         {
             "text": "Demonstrate mental powers",
             "club_requirement": 2,
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_2_1_intro",
             "effects": {
                 "club_experience": 10,
                 "club_reputation": 5,
@@ -52,7 +52,7 @@
         {
             "text": "Present your political views",
             "club_requirement": 3,
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_3_1_intro",
             "effects": {
                 "club_experience": 10,
                 "club_reputation": 5,
@@ -62,7 +62,7 @@
         {
             "text": "Show elemental control",
             "club_requirement": 4,
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_4_1_intro",
             "effects": {
                 "club_experience": 10,
                 "club_reputation": 5,
@@ -72,7 +72,7 @@
         {
             "text": "Demonstrate combat skills",
             "club_requirement": 5,
-            "next_chapter": "club_introduction_2",
+            "next_chapter": "club_5_1_intro",
             "effects": {
                 "club_experience": 10,
                 "club_reputation": 5,
