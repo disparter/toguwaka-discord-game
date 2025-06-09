@@ -249,8 +249,15 @@ class StoryMode:
                     
         # If no club chapter is available, load main story chapter
         story_progress = player_data.get("story_progress", {})
-        chapter_id = story_progress.get("current_chapter", "1_1")  # Default to chapter_1_1.json
-        chapter_file = self.data_dir / "arcs" / "introduction" / f"chapter_{chapter_id}.json"
+        chapter_id = story_progress.get("current_chapter", "1_1_arrival")  # Default to first chapter
+        
+        # Try to get chapter from arc manager first
+        chapter = self.arc_manager.get_chapter(chapter_id)
+        if chapter:
+            return chapter
+            
+        # If not found in arc manager, try to load from file
+        chapter_file = self.data_dir / "narrative" / "chapters" / f"{chapter_id}.json"
         
         if not chapter_file.exists():
             logger.error(f"Chapter file not found: {chapter_file}")
@@ -323,6 +330,9 @@ class StoryMode:
         # Update next chapter/event
         if "next_chapter" in choice.get("effects", {}):
             player_data["story_progress"]["current_chapter"] = choice["effects"]["next_chapter"]
+            
+        # Save progress
+        self.progress_manager.save_progress(player_data)
             
         return player_data
 

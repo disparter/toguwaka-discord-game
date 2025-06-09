@@ -17,19 +17,19 @@ class TestClubSpecificDialogues(unittest.TestCase):
         patcher2 = patch.object(self.story_mode.arc_manager, 'get_available_chapters', return_value={})
         patcher2.start()
         self.addCleanup(patcher2.stop)
-        self.story_mode.player_data["story_progress"]["current_chapter"] = "club_chapter"
-        self.story_mode.player_data["club"] = {"id": 1, "reputation": 0}
+        self.story_mode.player_data["story_progress"]["current_chapter"] = "1_1_arrival"
+        self.story_mode.player_data["club"] = {"id": "fire", "reputation": 0}
 
     def test_club_specific_dialogues(self):
         with patch.object(self.story_mode.arc_manager, 'get_chapter') as mock_get_chapter:
             chapter = StoryChapter(
-                "club_chapter",
+                "1_1_arrival",
                 {
-                    "title": "Club Training",
-                    "dialogues": ["Welcome to club training!"],
+                    "title": "Chegada à Academia",
+                    "dialogues": ["Welcome to the academy!"],
                     "club_specific": {
-                        "1": ["Welcome to Flames training!"],
-                        "2": ["Welcome to Water training!"]
+                        "fire": ["Welcome to Flames training!"],
+                        "water": ["Welcome to Water training!"]
                     }
                 }
             )

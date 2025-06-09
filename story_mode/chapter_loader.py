@@ -20,14 +20,14 @@ class FileChapterLoader(ChapterLoader):
     def _load_chapters(self) -> None:
         """Load all chapter files from the data directory."""
         # Load main story chapters
-        main_chapter_dir = self.data_dir / "arcs" / "introduction"
+        main_chapter_dir = self.data_dir / "narrative" / "chapters"
         if not main_chapter_dir.exists():
             logger.warning(f"Main chapter directory not found: {main_chapter_dir}")
         else:
             for filename in os.listdir(main_chapter_dir):
                 if filename.endswith(".json"):
                     try:
-                        chapter_id = filename.replace(".json", "").replace("chapter_", "")
+                        chapter_id = filename.replace(".json", "")
                         with open(main_chapter_dir / filename, 'r') as f:
                             chapter_data = json.load(f)
                             chapter_data["chapter_id"] = chapter_id

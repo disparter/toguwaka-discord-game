@@ -17,23 +17,23 @@ class TestConditionalChapterNavigation(unittest.TestCase):
         patcher2 = patch.object(self.story_mode.arc_manager, 'get_available_chapters', return_value={})
         patcher2.start()
         self.addCleanup(patcher2.stop)
-        self.story_mode.player_data["story_progress"]["current_chapter"] = "conditional_chapter"
+        self.story_mode.player_data["story_progress"]["current_chapter"] = "1_1_arrival"
         self.story_mode.player_data["stats"] = {"strength": 10, "intellect": 5}
 
     def test_conditional_navigation(self):
         with patch.object(self.story_mode.arc_manager, 'get_chapter') as mock_get_chapter:
             chapter = StoryChapter(
-                "conditional_chapter",
+                "1_1_arrival",
                 {
                     "choices": [
                         {
-                            "text": "Fight",
-                            "next_chapter": "combat_1",
+                            "text": "Expressar interesse em magia elemental",
+                            "next_chapter": "1_2_power_awakening",
                             "requirements": {"strength": 10}
                         },
                         {
-                            "text": "Study",
-                            "next_chapter": "academic_1",
+                            "text": "Perguntar sobre os clubes disponíveis",
+                            "next_chapter": "1_2_club_introduction",
                             "requirements": {"intellect": 5}
                         }
                     ]

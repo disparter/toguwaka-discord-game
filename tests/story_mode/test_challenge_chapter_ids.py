@@ -17,16 +17,16 @@ class TestChallengeChapterIDs(unittest.TestCase):
         patcher2 = patch.object(self.story_mode.arc_manager, 'get_available_chapters', return_value={})
         patcher2.start()
         self.addCleanup(patcher2.stop)
-        self.story_mode.player_data["story_progress"]["current_chapter"] = "challenge_chapter"
+        self.story_mode.player_data["story_progress"]["current_chapter"] = "1_1_arrival"
 
     def test_challenge_chapter_id_handling(self):
         with patch.object(self.story_mode.arc_manager, 'get_chapter') as mock_get_chapter:
             chapter = StoryChapter(
-                "challenge_chapter",
+                "1_1_arrival",
                 {
-                    "title": "Challenge",
-                    "dialogues": ["Welcome to the challenge!"],
-                    "challenge_id": "challenge_1"
+                    "title": "Chegada à Academia",
+                    "dialogues": ["Welcome to the academy!"],
+                    "challenge_id": "power_awakening_1"
                 }
             )
             mock_get_chapter.return_value = chapter

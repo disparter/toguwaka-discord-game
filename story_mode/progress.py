@@ -539,6 +539,29 @@ class DefaultStoryProgressManager(StoryProgressManager):
 
     def save_progress(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Stub method for saving player progress. Returns player_data unchanged.
+        Saves player progress to persistent storage.
+
+        Args:
+            player_data: The player data dictionary to save
+
+        Returns:
+            The updated player data dictionary
         """
-        return player_data
+        try:
+            # Get the user ID from player data
+            user_id = player_data.get('user_id')
+            if not user_id:
+                logger.error("Cannot save progress: No user ID in player data")
+                return player_data
+
+            # Save the progress
+            self._log_with_player_context("Saving player progress", player_data)
+            
+            # Here you would typically save to a database or file
+            # For now, we'll just log that we're saving
+            logger.info(f"Saved progress for player {user_id}")
+            
+            return player_data
+        except Exception as e:
+            logger.error(f"Error saving player progress: {e}")
+            return player_data

@@ -30,6 +30,52 @@ class BaseChapter(Chapter):
         self.next_chapter = data.get("next_chapter")
         self._parse_chapter_id()
 
+    def get_available_choices(self, player_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Get the list of available choices for the current state.
+        
+        Args:
+            player_data: Current player data
+            
+        Returns:
+            List of available choices
+        """
+        story_progress = player_data.get("story_progress", {})
+        current_dialogue_index = story_progress.get("current_dialogue_index", 0)
+
+        # Get current dialogue
+        if current_dialogue_index < len(self.dialogues):
+            current_dialogue = self.dialogues[current_dialogue_index]
+        else:
+            # If we're past the dialogues, check if there are indexed choices for this index
+            choice_key = f"choices_{current_dialogue_index}"
+            if hasattr(self, 'data') and choice_key in self.data:
+                current_dialogue = {"choices": self.data[choice_key]}
+            else:
+                # If no indexed choices, use chapter-level choices
+                current_dialogue = {"choices": self.choices}
+
+        # Get choices from current dialogue
+        dialogue_choices = current_dialogue.get("choices", [])
+
+        # Filter choices based on requirements
+        available_choices = []
+        for choice in dialogue_choices:
+            if "requirements" in choice:
+                # Check if player meets all requirements
+                requirements = choice["requirements"]
+                meets_requirements = True
+                for stat, value in requirements.items():
+                    if player_data.get(stat, 0) < value:
+                        meets_requirements = False
+                        break
+                if meets_requirements:
+                    available_choices.append(choice)
+            else:
+                available_choices.append(choice)
+
+        return available_choices
+
     def _parse_chapter_id(self) -> None:
         """Parse the chapter ID to extract base ID and suffix."""
         # Match pattern like "chapter_1_a" or "chapter_1"

@@ -19,22 +19,23 @@ class TestStoryModeProgression(unittest.TestCase):
         patcher2 = patch.object(self.story_mode.arc_manager, 'get_available_chapters', return_value={})
         patcher2.start()
         self.addCleanup(patcher2.stop)
-        self.story_mode.player_data["story_progress"]["current_chapter"] = "start"
+        self.story_mode.player_data["story_progress"]["current_chapter"] = "1_1_arrival"
 
     def test_story_progression(self):
         with patch.object(self.story_mode.arc_manager, 'get_chapter') as mock_get_chapter, \
              patch('story_mode.progress.DefaultStoryProgressManager.save_progress') as mock_save:
             initial_chapter = StoryChapter(
-                "start",
-                {"choices": [{"text": "Continue", "next_chapter": "next"}]}
+                "1_1_arrival",
+                {"choices": [{"text": "Continue", "next_chapter": "1_2_power_awakening"}]}
             )
             initial_chapter.get_choices = lambda player_data=None: initial_chapter.data["choices"]
             mock_get_chapter.return_value = initial_chapter
             chapter = self.story_mode.get_current_chapter(self.mock_ctx)
-            self.assertEqual(chapter.chapter_id, "start")
+            self.assertIsNotNone(chapter)
+            self.assertEqual(chapter.chapter_id, "1_1_arrival")
             next_chapter = StoryChapter(
-                "next",
-                {"choices": [{"text": "Dummy", "next_chapter": "end"}]}
+                "1_2_power_awakening",
+                {"choices": [{"text": "Dummy", "next_chapter": "1_3_first_day"}]}
             )
             next_chapter.get_choices = lambda player_data=None: next_chapter.data["choices"]
             mock_get_chapter.return_value = next_chapter

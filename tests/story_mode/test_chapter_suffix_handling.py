@@ -17,15 +17,15 @@ class TestChapterSuffixHandling(unittest.TestCase):
         patcher2 = patch.object(self.story_mode.arc_manager, 'get_available_chapters', return_value={})
         patcher2.start()
         self.addCleanup(patcher2.stop)
-        self.story_mode.player_data["story_progress"]["current_chapter"] = "test_chapter"
+        self.story_mode.player_data["story_progress"]["current_chapter"] = "1_1_arrival"
 
     def test_chapter_suffix_handling(self):
         with patch.object(self.story_mode.arc_manager, 'get_chapter') as mock_get_chapter:
             chapter = StoryChapter(
-                "test_chapter_1",
-                {"next_chapter": "test_chapter_2", "branches": []}
+                "1_1_arrival",
+                {"next_chapter": "1_2_power_awakening", "branches": []}
             )
             mock_get_chapter.return_value = chapter
             current_chapter = self.story_mode.get_current_chapter(self.story_mode.player_data)
             self.assertIsNotNone(current_chapter)
-            self.assertEqual(current_chapter.chapter_id, "test_chapter_1") 
+            self.assertEqual(current_chapter.chapter_id, "1_1_arrival") 
