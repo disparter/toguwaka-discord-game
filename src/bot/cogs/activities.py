@@ -693,130 +693,134 @@ class Activities(commands.Cog):
     @commands.command(name="treinar")
     async def train(self, ctx):
         """Treinar para ganhar experiência e melhorar atributos."""
-        # Check if player exists
-        player = get_player(ctx.author.id)
-        if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
-            return
+        try:
+            # Check if player exists
+            player = await get_player(ctx.author.id)
+            if not player:
+                await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                return
 
-        # LOG: Mostrar dados do player e inventário
-        logger.info(f"[TREINAR] Player lido: {player}")
-        logger.info(f"[TREINAR] Inventário lido: {player.get('inventory')}")
+            # LOG: Mostrar dados do player e inventário
+            logger.info(f"[TREINAR] Player lido: {player}")
+            logger.info(f"[TREINAR] Inventário lido: {player.get('inventory')}")
 
-        # Garantir que o inventário é um dicionário
-        inventory = player.get('inventory', {})
-        if isinstance(inventory, str):
-            try:
-                inventory = json.loads(inventory)
-            except Exception:
+            # Garantir que o inventário é um dicionário
+            inventory = player.get('inventory', {})
+            if isinstance(inventory, str):
+                try:
+                    inventory = json.loads(inventory)
+                except Exception:
+                    inventory = {}
+            if not isinstance(inventory, dict):
                 inventory = {}
-        if not isinstance(inventory, dict):
-            inventory = {}
 
-        # Check cooldown
-        cooldown = self._check_cooldown(ctx.author.id, "treinar")
-        if cooldown:
-            await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
-            return
+            # Check cooldown
+            cooldown = self._check_cooldown(ctx.author.id, "treinar")
+            if cooldown:
+                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
+                return
 
-        # Get a random training outcome
-        outcome = get_random_training_outcome()
+            # Get a random training outcome
+            outcome = get_random_training_outcome()
 
-        # Calculate experience and attribute gains
-        exp_gain = random.randint(10, 30)
-        attribute_gain = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
+            # Calculate experience and attribute gains
+            exp_gain = random.randint(10, 30)
+            attribute_gain = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
 
-        # Check if player has equipped accessories that boost experience
-        accessory_boost_applied = False
-        accessory_name = ""
-        original_exp = exp_gain
+            # Check if player has equipped accessories that boost experience
+            accessory_boost_applied = False
+            accessory_name = ""
+            original_exp = exp_gain
 
-        for item_id, item in inventory.items():
-            if item["type"] == "accessory" and item.get("equipped", False) and "exp_boost" in item["effects"]:
-                # Apply experience boost from accessory
-                exp_boost = item["effects"]["exp_boost"]
-                exp_gain = int(exp_gain * exp_boost)
-                accessory_boost_applied = True
-                accessory_name = item["name"]
-                logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+            for item_id, item in inventory.items():
+                if item["type"] == "accessory" and item.get("equipped", False) and "exp_boost" in item["effects"]:
+                    # Apply experience boost from accessory
+                    exp_boost = item["effects"]["exp_boost"]
+                    exp_gain = int(exp_gain * exp_boost)
+                    accessory_boost_applied = True
+                    accessory_name = item["name"]
+                    logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
-        # Update player data using the new ExperienceCalculator
-        new_exp = player["exp"] + exp_gain
-        new_level = ExperienceCalculator.calculate_level(new_exp)
-        level_up = new_level > player["level"]
+            # Update player data using the new ExperienceCalculator
+            new_exp = player["exp"] + exp_gain
+            new_level = ExperienceCalculator.calculate_level(new_exp)
+            level_up = new_level > player["level"]
 
-        # Prepare update data
-        update_data = {
-            "exp": new_exp,
-            attribute_gain: player[attribute_gain] + 1,  # Increase the chosen attribute
-            "tusd": player["tusd"] + 10  # Add TUSD reward for training
-        }
-
-        if level_up:
-            update_data["level"] = new_level
-            # Full HP recovery on level up
-            update_data["hp"] = player["max_hp"]
-            # Bonus TUSD for level up
-            update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
-
-        # Apply HP loss for training (5-15% of max HP)
-        if "hp" in player and "max_hp" in player:
-            hp_loss = random.randint(5, 15)
-            hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
-            current_hp = player.get("hp", player["max_hp"])
-            update_data["hp"] = max(1, current_hp - hp_loss_amount)
-
-        # Update player in database
-        success = update_player(ctx.author.id, **update_data)
-
-        if success:
-            # Set cooldown
-            self._set_cooldown(ctx.author.id, "treinar")
-
-            # Create embed for training result
-            embed = create_basic_embed(
-                title="Treinamento Concluído!",
-                description=outcome,
-                color=0x00FF00
-            )
-
-            # Add experience gain
-            if accessory_boost_applied:
-                embed.add_field(
-                    name="Experiência Ganha",
-                    value=f"+{exp_gain} EXP (Bônus de {accessory_name}: +{exp_gain - original_exp} EXP)",
-                    inline=True
-                )
-            else:
-                embed.add_field(
-                    name="Experiência Ganha",
-                    value=f"+{exp_gain} EXP",
-                    inline=True
-                )
-
-            # Add attribute gain
-            attribute_names = {
-                "dexterity": "Destreza 🏃‍♂️",
-                "intellect": "Intelecto 🧠",
-                "charisma": "Carisma 💬",
-                "power_stat": "Poder ⚡"
+            # Prepare update data
+            update_data = {
+                "exp": new_exp,
+                attribute_gain: player[attribute_gain] + 1,  # Increase the chosen attribute
+                "tusd": player["tusd"] + 10  # Add TUSD reward for training
             }
-            embed.add_field(
-                name="Atributo Melhorado",
-                value=f"{attribute_names[attribute_gain]} +1",
-                inline=True
-            )
 
-            # Add level up message if applicable
             if level_up:
-                embed.add_field(
-                    name="Nível Aumentado!",
-                    value=f"Você subiu para o nível {new_level}!\n+{new_level * 50} TUSD",
-                    inline=False
+                update_data["level"] = new_level
+                # Full HP recovery on level up
+                update_data["hp"] = player["max_hp"]
+                # Bonus TUSD for level up
+                update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+
+            # Apply HP loss for training (5-15% of max HP)
+            if "hp" in player and "max_hp" in player:
+                hp_loss = random.randint(5, 15)
+                hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+                current_hp = player.get("hp", player["max_hp"])
+                update_data["hp"] = max(1, current_hp - hp_loss_amount)
+
+            # Update player in database
+            success = await update_player(ctx.author.id, **update_data)
+
+            if success:
+                # Set cooldown
+                self._set_cooldown(ctx.author.id, "treinar")
+
+                # Create embed for training result
+                embed = create_basic_embed(
+                    title="Treinamento Concluído!",
+                    description=outcome,
+                    color=0x00FF00
                 )
 
-            await ctx.send(embed=embed)
-        else:
+                # Add experience gain
+                if accessory_boost_applied:
+                    embed.add_field(
+                        name="Experiência Ganha",
+                        value=f"+{exp_gain} EXP (Bônus de {accessory_name}: +{exp_gain - original_exp} EXP)",
+                        inline=True
+                    )
+                else:
+                    embed.add_field(
+                        name="Experiência Ganha",
+                        value=f"+{exp_gain} EXP",
+                        inline=True
+                    )
+
+                # Add attribute gain
+                attribute_names = {
+                    "dexterity": "Destreza 🏃‍♂️",
+                    "intellect": "Intelecto 🧠",
+                    "charisma": "Carisma 💬",
+                    "power_stat": "Poder ⚡"
+                }
+                embed.add_field(
+                    name="Atributo Melhorado",
+                    value=f"{attribute_names[attribute_gain]} +1",
+                    inline=True
+                )
+
+                # Add level up message if applicable
+                if level_up:
+                    embed.add_field(
+                        name="Nível Aumentado!",
+                        value=f"Você subiu para o nível {new_level}!\n+{new_level * 50} TUSD",
+                        inline=False
+                    )
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.")
+        except Exception as e:
+            logger.error(f"Error in train command: {e}", exc_info=True)
             await ctx.send("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.")
 
     @commands.command(name="explorar")

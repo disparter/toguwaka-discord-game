@@ -235,27 +235,20 @@ def handle_db_error(func):
 # Apply the error handler to all database functions
 @handle_db_error
 async def get_player(user_id):
-    """Get a player's data from the database."""
+    """Get player data from database."""
     conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
-    try:
-        cursor.execute('SELECT * FROM players WHERE user_id = ?', (str(user_id),))
-        player = cursor.fetchone()
-        
-        if player:
-            # Convert row to dictionary
-            columns = [description[0] for description in cursor.description]
-            player_data = dict(zip(columns, player))
-            
-            # Parse JSON fields
-            if 'inventory' in player_data and player_data['inventory']:
-                player_data['inventory'] = json.loads(player_data['inventory'])
-            
-            return player_data
-        return None
-    finally:
-        conn.close()
+
+    cursor.execute("SELECT * FROM players WHERE user_id = ?", (user_id,))
+    player = cursor.fetchone()
+
+    conn.close()
+
+    if player:
+        return dict(player)
+
+    return None
 
 @handle_db_error
 async def create_player(user_id, name, **kwargs):
@@ -363,18 +356,28 @@ def sync_db_to_s3():
         logger.error(f"Error uploading database to S3: {e}")
         return False
 
-def update_player(user_id, **kwargs):
-    """Update player data in the database."""
+@handle_db_error
+async def update_player(user_id, **kwargs):
+    """Update player data in database."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
     try:
-        if db_provider._current_db_type == DatabaseType.DYNAMODB:
-            from utils import dynamodb as db_impl
-        else:
-            from utils import database as db_impl
-            
-        return db_impl.update_player(user_id, **kwargs)
-    except Exception as e:
-        logger.error(f"Error updating player: {e}")
+        # Build the SET clause for the UPDATE statement
+        set_clause = ", ".join([f"{key} = ?" for key in kwargs.keys()])
+        values = list(kwargs.values())
+        values.append(user_id)  # Add user_id for the WHERE clause
+
+        # Execute the UPDATE statement
+        cursor.execute(f"UPDATE players SET {set_clause} WHERE user_id = ?", values)
+        conn.commit()
+        return True
+    except sqlite3.Error as e:
+        conn.rollback()
+        logger.error(f"Error updating player {user_id}: {e}")
         return False
+    finally:
+        conn.close()
 
 def get_club(club_id):
     """Get club data from database."""
