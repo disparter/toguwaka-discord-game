@@ -65,7 +65,7 @@ class MainArc(BaseArc):
         import glob
         try:
             # Use the correct absolute path for introduction chapters
-            chapters_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "story_mode", "arcs", "introduction")
+            chapters_dir = os.path.join("data", "story_mode", "narrative", "chapters")
             if not os.path.exists(chapters_dir):
                 logger.error(f"Chapters directory not found: {chapters_dir}")
                 return
