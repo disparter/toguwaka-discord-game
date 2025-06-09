@@ -12,7 +12,7 @@ Você está prestes a ingressar na mais prestigiada academia para estudantes com
      - Escolha um nome para seu personagem
      - Descreva seu superpoder
      - Selecione o nível de força do seu poder (1-5 estrelas)
-     - Escolha um clube para se afiliar
+     - Escolha um clube para se afiliar (esta escolha é permanente)
 
 2. **Verifique seu Status**:
    - Use o comando `/status status` para ver seu perfil e estatísticas

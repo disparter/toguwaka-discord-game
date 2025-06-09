@@ -14,7 +14,6 @@ Na Academia Tokugawa, os clubes são organizações estudantis que reúnem aluno
   - [Clube de Combate](#clube-de-combate)
 - [Benefícios dos Clubes](#benefícios-dos-clubes)
 - [Reputação nos Clubes](#reputação-nos-clubes)
-- [Mudança de Clube](#mudança-de-clube)
 - [Comandos Relacionados](#comandos-relacionados)
 
 ## 📋 Lista de Clubes
@@ -47,56 +46,55 @@ Na Academia Tokugawa, os clubes são organizações estudantis que reúnem aluno
 **Benefícios**:
 - Bônus em duelos mentais
 - Acesso a técnicas de ilusão exclusivas
-- Habilidade aprimorada para detectar mentiras e ilusões
 
-**Atributos Favorecidos**: Intelecto e Carisma
+**Atributos Favorecidos**: Inteligência e Carisma
 
-**Membros Notáveis**: Yuki Shirogane (Presidente), Mei Tsukino, Haru Kanzaki
+**Membros Notáveis**: Yuki Nakamura (Presidente), Rei Akiyama, Sora Hoshino
 
 ### Conselho Político
 
-**Especialidade**: Estratégia, liderança e política estudantil
+**Especialidade**: Estratégia e liderança
 
-**Descrição**: O Conselho Político é composto por estudantes com ambições de liderança e habilidades diplomáticas excepcionais. Seus membros controlam grande parte da política estudantil e têm influência significativa na administração da academia.
+**Descrição**: O Conselho Político é composto por estudantes com talento para liderança e estratégia. Seus membros são conhecidos por sua capacidade de análise e tomada de decisões.
 
-**Filosofia**: "Através da estratégia e da influência, moldamos o futuro."
-
-**Benefícios**:
-- Bônus em duelos sociais
-- Acesso a informações privilegiadas
-- Influência sobre outros estudantes e professores
-
-**Atributos Favorecidos**: Carisma e Intelecto
-
-**Membros Notáveis**: Takashi Mizuno (Presidente), Sora Amano, Rin Tachibana
-
-### Elementalistas
-
-**Especialidade**: Domínio dos elementos naturais com precisão científica
-
-**Descrição**: Os Elementalistas estudam e manipulam os elementos fundamentais da natureza através de uma abordagem científica e metódica. Combinam conhecimento teórico com aplicação prática para criar efeitos impressionantes e precisos.
-
-**Filosofia**: "Compreender a natureza é o primeiro passo para dominá-la."
-
-**Benefícios**:
-- Versatilidade em todos os tipos de duelos
-- Acesso a laboratórios avançados
-- Capacidade de adaptar técnicas a diferentes situações
-
-**Atributos Favorecidos**: Intelecto e Poder
-
-**Membros Notáveis**: Hiroshi Tanaka (Presidente), Aoi Mizuki, Kaito Fujioka
-
-### Clube de Combate
-
-**Especialidade**: Técnicas de luta e duelos táticos
-
-**Descrição**: O Clube de Combate é dedicado ao aperfeiçoamento das habilidades de combate em todas as suas formas. Seus membros treinam rigorosamente para dominar diversas técnicas de luta e desenvolver estratégias eficazes para duelos.
-
-**Filosofia**: "A verdadeira força vem da disciplina e do treinamento constante."
+**Filosofia**: "O poder real vem da capacidade de influenciar e liderar."
 
 **Benefícios**:
 - Bônus em duelos estratégicos
+- Acesso a técnicas de liderança exclusivas
+- Influência em decisões da academia
+
+**Atributos Favorecidos**: Inteligência e Carisma
+
+**Membros Notáveis**: Takeshi Yamamoto (Presidente), Mei Fujimoto, Kenji Tanaka
+
+### Elementalistas
+
+**Especialidade**: Controle dos elementos naturais
+
+**Descrição**: Os Elementalistas dominam os elementos da natureza - água, terra, ar e fogo. Este clube atrai estudantes com afinidade natural com os elementos.
+
+**Filosofia**: "Harmonia com a natureza é a chave para o verdadeiro poder."
+
+**Benefícios**:
+- Bônus em duelos elementais
+- Acesso a técnicas elementais exclusivas
+- Resistência a danos elementais
+
+**Atributos Favorecidos**: Poder e Inteligência
+
+**Membros Notáveis**: Haru Mizuki (Presidente), Aiko Tachibana, Riku Kaze
+
+### Clube de Combate
+
+**Especialidade**: Artes marciais e combate corpo a corpo
+
+**Descrição**: O Clube de Combate é focado no desenvolvimento de habilidades físicas e técnicas de combate. Seus membros são conhecidos por sua disciplina e força física.
+
+**Filosofia**: "A verdadeira força vem do corpo e da mente unidos."
+
+**Benefícios**:
+- Bônus em duelos físicos
 - Treinamento especializado em técnicas defensivas e ofensivas
 - Acesso a equipamentos de treinamento exclusivos
 
@@ -129,17 +127,6 @@ Para aumentar sua reputação:
 - Vença duelos representando seu clube
 - Complete missões específicas do clube
 - Contribua para os objetivos coletivos do clube
-
-## 🔄 Mudança de Clube
-
-É possível mudar de clube durante o jogo, mas isso tem consequências:
-
-- Você perderá toda a reputação acumulada no clube anterior
-- Haverá um período probatório no novo clube
-- Membros do seu antigo clube podem se tornar hostis
-- Algumas técnicas exclusivas do clube anterior podem ser perdidas
-
-Para mudar de clube, você precisará completar uma missão especial para provar seu valor ao novo clube.
 
 ## 📝 Comandos Relacionados
 

@@ -147,54 +147,6 @@ class Clubs(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name="ingressar")
-    async def join_club(self, ctx, *, club_choice: str):
-        """Ingressa em um clube da academia."""
-        # Get player data
-        player = get_player(ctx.author.id)
-        if not player:
-            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
-            return
-
-        # Check if player is already in a club
-        if player.get('club'):
-            await ctx.send(f"Você já é membro do clube {player['club']}!")
-            return
-
-        # Convert club_choice to index (1-based to 0-based)
-        try:
-            club_index = int(club_choice) - 1
-            if club_index < 0 or club_index >= len(self.club_system.CLUBS):
-                await ctx.send("Por favor, escolha um número válido da lista.")
-                return
-        except ValueError:
-            await ctx.send("Por favor, digite apenas o número do clube escolhido.")
-            return
-
-        # Get club name from index
-        club_name = list(self.club_system.CLUBS.values())[club_index]
-        
-        # Join club using ClubSystem
-        if self.club_system.join_club(player, club_index + 1):  # Convert back to 1-based for club_id
-            # Update player's club
-            update_player(ctx.author.id, club=club_name)
-            
-            # Create embed
-            embed = create_basic_embed(
-                title="Ingresso no Clube",
-                description=f"Bem-vindo ao clube {club_name}!",
-                color=0x00FF00
-            )
-            embed.add_field(
-                name="Mensagem",
-                value=f"Você agora é um membro oficial do clube {club_name}!",
-                inline=False
-            )
-            
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("Ocorreu um erro ao ingressar no clube. Tente novamente mais tarde.")
-
 async def setup(bot):
     """Add the cog to the bot."""
     from utils.command_registrar import CommandRegistrar

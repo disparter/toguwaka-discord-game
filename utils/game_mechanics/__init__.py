@@ -49,6 +49,10 @@ def get_random_event():
     """Backward compatibility function for get_random_event."""
     return RandomEvent.get_random_event()
 
+def generate_random_event():
+    """Backward compatibility function for generate_random_event."""
+    return RandomEvent.create_random_event()
+
 def calculate_duel_outcome(challenger, opponent, duel_type):
     """Backward compatibility function for calculate_duel_outcome."""
     return DuelCalculator.calculate_outcome(challenger, opponent, duel_type)
