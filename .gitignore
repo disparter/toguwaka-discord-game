@@ -56,3 +56,4 @@ scripts/attach_dynamo_permissions.sh
 .Trashes
 ehthumbs.db
 Thumbs.db
+/.coverage
