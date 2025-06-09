@@ -512,7 +512,11 @@ async def get_all_clubs():
     """Get all clubs from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        response = await table.scan()
+        # Use the async client for scan operation
+        client = table.meta.client
+        response = await client.scan(
+            TableName=TABLES['clubs']
+        )
 
         clubs = []
         if 'Items' in response:
