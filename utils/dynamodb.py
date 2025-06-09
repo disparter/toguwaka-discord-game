@@ -141,13 +141,11 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['players'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'name', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'name', 'AttributeType': 'S'}
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 GlobalSecondaryIndexes=[
                     {
