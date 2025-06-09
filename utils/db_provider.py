@@ -192,20 +192,25 @@ def get_events_by_date(*args, **kwargs):
 def update_event_status(*args, **kwargs):
     return db_provider.get_db_implementation().update_event_status(*args, **kwargs)
 
-def get_player(*args, **kwargs):
-    return db_provider.get_db_implementation().get_player(*args, **kwargs)
+async def get_player(*args, **kwargs):
+    """Get player data from the database."""
+    return await db_provider.get_db_implementation().get_player(*args, **kwargs)
 
-def create_player(*args, **kwargs):
-    return db_provider.get_db_implementation().create_player(*args, **kwargs)
+async def create_player(*args, **kwargs):
+    """Create a new player in the database."""
+    return await db_provider.get_db_implementation().create_player(*args, **kwargs)
 
-def update_player(*args, **kwargs):
-    return db_provider.get_db_implementation().update_player(*args, **kwargs)
+async def update_player(*args, **kwargs):
+    """Update player data in the database."""
+    return await db_provider.get_db_implementation().update_player(*args, **kwargs)
 
-def get_all_players(*args, **kwargs):
-    return db_provider.get_db_implementation().get_all_players(*args, **kwargs)
+async def get_all_players(*args, **kwargs):
+    """Get all players from the database."""
+    return await db_provider.get_db_implementation().get_all_players(*args, **kwargs)
 
-def get_top_players(*args, **kwargs):
-    return db_provider.get_db_implementation().get_top_players(*args, **kwargs)
+async def get_top_players(*args, **kwargs):
+    """Get top players from the database."""
+    return await db_provider.get_db_implementation().get_top_players(*args, **kwargs)
 
 def get_top_players_by_reputation(*args, **kwargs):
     return db_provider.get_db_implementation().get_top_players_by_reputation(*args, **kwargs)

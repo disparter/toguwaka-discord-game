@@ -1,0 +1,61 @@
+{
+    "chapter_id": "academic_1",
+    "title": "O Primeiro Dia de Aulas",
+    "description": "O início da jornada acadêmica na Academia Tokugawa",
+    "requirements": {
+        "level": 1,
+        "completed_chapters": []
+    },
+    "scenes": [
+        {
+            "scene_id": "intro",
+            "type": "narrative",
+            "content": "Bem-vindo à Academia Tokugawa! Este é o primeiro dia de um novo semestre, e você está prestes a embarcar em uma jornada de descobertas e aprendizado.",
+            "choices": [
+                {
+                    "text": "Explorar o campus",
+                    "next_scene": "explore_campus"
+                },
+                {
+                    "text": "Ir direto para a sala de aula",
+                    "next_scene": "classroom"
+                }
+            ]
+        },
+        {
+            "scene_id": "explore_campus",
+            "type": "narrative",
+            "content": "O campus da Academia Tokugawa é impressionante. Você vê vários prédios históricos, jardins bem cuidados e estudantes animados conversando em grupos.",
+            "choices": [
+                {
+                    "text": "Conversar com outros estudantes",
+                    "next_scene": "talk_students"
+                },
+                {
+                    "text": "Continuar explorando",
+                    "next_scene": "continue_explore"
+                }
+            ]
+        },
+        {
+            "scene_id": "classroom",
+            "type": "narrative",
+            "content": "Você entra na sala de aula e encontra um ambiente moderno e bem equipado. O professor ainda não chegou, mas vários estudantes já estão sentados.",
+            "choices": [
+                {
+                    "text": "Sentar-se no fundo",
+                    "next_scene": "back_row"
+                },
+                {
+                    "text": "Sentar-se na frente",
+                    "next_scene": "front_row"
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "exp": 100,
+        "tusd": 50,
+        "items": []
+    }
+} 
