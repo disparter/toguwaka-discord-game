@@ -1,0 +1,41 @@
+[
+    {
+        "id": 1,
+        "name": "Poção de Treinamento",
+        "description": "Reduz o tempo de cooldown do comando !treinar em 30 minutos. Pode ser usada apenas 3 vezes por dia.",
+        "price": 150,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "uncommon",
+        "effects": {
+            "cooldown_reduction": {"command": "treinar", "amount": 1800},
+            "daily_usage_limit": 3
+        }
+    },
+    {
+        "id": 2,
+        "name": "Amuleto de Foco",
+        "description": "Aumenta a experiência ganha em treinamentos quando equipado. Efeito aumenta com seu nível.",
+        "price": 200,
+        "type": "accessory",
+        "category": "training",
+        "rarity": "uncommon",
+        "effects": {
+            "exp_boost": {"base": 1.5, "level_multiplier": 0.1},
+            "training_quality_boost": 0.2
+        }
+    },
+    {
+        "id": 3,
+        "name": "Pergaminho de Técnica",
+        "description": "Ensina uma técnica especial aleatória ao seu personagem. Maior chance de técnicas raras em níveis altos.",
+        "price": 500,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "epic",
+        "effects": {
+            "learn_technique": true,
+            "rare_technique_chance": {"base": 0.1, "level_multiplier": 0.01}
+        }
+    }
+] 

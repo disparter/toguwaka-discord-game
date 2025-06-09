@@ -1,0 +1,30 @@
+[
+    {
+        "id": 8,
+        "name": "Emblema do Clube",
+        "description": "Aumenta sua reputação no clube atual e a chance de eventos especiais do clube.",
+        "price": 300,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "uncommon",
+        "effects": {
+            "club_reputation": 50,
+            "club_event_chance": 0.2,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 201,
+        "name": "Amuleto de Sorte",
+        "description": "Aumenta a chance de eventos raros em 25% e a recompensa de TUSD em 20%.",
+        "price": 600,
+        "type": "accessory",
+        "category": "social",
+        "rarity": "rare",
+        "effects": {
+            "rare_event_chance": 0.25,
+            "tusd_reward_boost": 0.2,
+            "weekly_usage_limit": 1
+        }
+    }
+] 

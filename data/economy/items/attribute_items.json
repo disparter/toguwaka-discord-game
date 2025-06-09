@@ -1,0 +1,45 @@
+[
+    {
+        "id": 104,
+        "name": "Pílula de Concentração",
+        "description": "Aumenta temporariamente o Intelecto e a chance de eventos raros durante treinamento.",
+        "price": 90,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "uncommon",
+        "effects": {
+            "temp_attribute_boost": {"intellect": 2},
+            "rare_event_chance": 0.15,
+            "duration": 3600,
+            "daily_usage_limit": 2
+        }
+    },
+    {
+        "id": 105,
+        "name": "Bebida Energética",
+        "description": "Aumenta temporariamente a Destreza e a experiência ganha em treinamentos.",
+        "price": 90,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "uncommon",
+        "effects": {
+            "temp_attribute_boost": {"dexterity": 2},
+            "exp_boost": 1.25,
+            "duration": 3600,
+            "daily_usage_limit": 2
+        }
+    },
+    {
+        "id": 9,
+        "name": "Elixir de Atributo",
+        "description": "Aumenta permanentemente um atributo aleatório em +1. Maior chance de atributos raros em níveis altos.",
+        "price": 1000,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "effects": {
+            "permanent_attribute": 1,
+            "rare_attribute_chance": {"base": 0.1, "level_multiplier": 0.01}
+        }
+    }
+] 

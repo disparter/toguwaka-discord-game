@@ -1,0 +1,58 @@
+[
+    {
+        "id": 4,
+        "name": "Luvas de Combate",
+        "description": "Aumenta a Destreza em +2 durante duelos e a chance de esquiva em 10%.",
+        "price": 250,
+        "type": "equipment",
+        "category": "combat",
+        "rarity": "rare",
+        "effects": {
+            "attribute_boost": {"dexterity": 2},
+            "dodge_chance": 0.1,
+            "combat_only": true
+        }
+    },
+    {
+        "id": 5,
+        "name": "Grimório Arcano",
+        "description": "Aumenta o Intelecto em +2 durante duelos e reduz o custo de energia das técnicas em 15%.",
+        "price": 250,
+        "type": "equipment",
+        "category": "combat",
+        "rarity": "rare",
+        "effects": {
+            "attribute_boost": {"intellect": 2},
+            "energy_cost_reduction": 0.15,
+            "combat_only": true
+        }
+    },
+    {
+        "id": 6,
+        "name": "Broche de Eloquência",
+        "description": "Aumenta o Carisma em +2 durante duelos e a chance de persuasão em 15%.",
+        "price": 250,
+        "type": "equipment",
+        "category": "combat",
+        "rarity": "rare",
+        "effects": {
+            "attribute_boost": {"charisma": 2},
+            "persuasion_chance": 0.15,
+            "combat_only": true
+        }
+    },
+    {
+        "id": 7,
+        "name": "Cristal de Amplificação",
+        "description": "Aumenta o Poder em +2 durante duelos e a chance de críticos em 10%.",
+        "price": 250,
+        "type": "equipment",
+        "category": "combat",
+        "rarity": "rare",
+        "effects": {
+            "attribute_boost": {"power_stat": 2},
+            "critical_chance": 0.1,
+            "combat_only": true
+        }
+    }
+] 

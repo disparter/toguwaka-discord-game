@@ -1,0 +1,45 @@
+[
+    {
+        "id": 101,
+        "name": "Poção de Energia",
+        "description": "Recupera energia para realizar mais atividades hoje. Efeito aumenta com seu nível.",
+        "price": 100,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "common",
+        "effects": {
+            "energy_restore": {"base": 50, "level_multiplier": 2},
+            "daily_usage_limit": 2
+        }
+    },
+    {
+        "id": 102,
+        "name": "Doce Energético",
+        "description": "Um doce que dá um boost temporário de energia. Efeito acumulativo com outros itens.",
+        "price": 50,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "common",
+        "effects": {
+            "energy_boost": 30,
+            "duration": 1800,
+            "stackable": true,
+            "daily_usage_limit": 3
+        }
+    },
+    {
+        "id": 103,
+        "name": "Chá Revigorante",
+        "description": "Aumenta temporariamente a regeneração de energia e reduz o cooldown de treinamento.",
+        "price": 75,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "uncommon",
+        "effects": {
+            "energy_regen_boost": 3,
+            "training_cooldown_reduction": 900,
+            "duration": 3600,
+            "daily_usage_limit": 2
+        }
+    }
+] 
