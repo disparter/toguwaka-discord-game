@@ -3,87 +3,252 @@
   "title": "Harmonia dos Elementos",
   "description": "Sua primeira aula com Gaia Naturae no Círculo dos Elementalistas.",
   "dialogues": [
-    {"npc": "Gaia Naturae", "text": "Bem-vindo ao Círculo dos Elementalistas. Aqui, não vemos os elementos como ferramentas ou armas, mas como extensões da própria vida."},
-    {"npc": "Gaia Naturae", "text": "Água, Terra, Fogo, Ar - e para alguns, o quinto elemento, Éter. Todos estão conectados em um ciclo eterno de equilíbrio e transformação."},
-    {"npc": "Gaia Naturae", "text": "Nossa primeira lição será sobre percepção elemental - aprender a sentir os elementos ao seu redor e dentro de você."}
+    {
+      "npc": "Gaia Naturae",
+      "text": "Bem-vindo ao Círculo dos Elementalistas. Aqui, não vemos os elementos como ferramentas ou armas, mas como extensões da própria vida."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Água, Terra, Fogo, Ar - e para alguns, o quinto elemento, Éter. Todos estão conectados em um ciclo eterno de equilíbrio e transformação."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Nossa primeira lição será sobre percepção elemental - aprender a sentir os elementos ao seu redor e dentro de você."
+    }
   ],
   "choices": [
-    {"text": "Qual elemento você acha que combina mais comigo?", "next_dialogue": 1},
-    {"text": "Como a percepção elemental funciona na prática?", "next_dialogue": 2},
-    {"text": "Todos podem controlar todos os elementos?", "next_dialogue": 3}
+    {
+      "text": "Qual elemento você acha que combina mais comigo?",
+      "next_dialogue": 1
+    },
+    {
+      "text": "Como a percepção elemental funciona na prática?",
+      "next_dialogue": 2
+    },
+    {
+      "text": "Todos podem controlar todos os elementos?",
+      "next_dialogue": 3
+    }
   ],
   "additional_dialogues": {
     "1": [
-      {"npc": "Gaia Naturae", "text": "Uma pergunta interessante. A maioria dos mestres elementais diria que precisamos de tempo para determinar isso, mas..."},
-      {"npc": "Gaia Naturae", "text": "Posso sentir uma afinidade em você. Há uma ressonância particular, mas não vou revelá-la ainda."},
-      {"npc": "Gaia Naturae", "text": "Parte da jornada é descobrir isso por si mesmo. Se eu simplesmente lhe disser, você pode inconscientemente forçar essa conexão, em vez de permitir que ela floresça naturalmente."},
-      {"npc": "Gaia Naturae", "text": "Além disso, nos Elementalistas, não nos limitamos a um único elemento. Buscamos compreender todos eles, mesmo que tenhamos afinidades naturais mais fortes com alguns."},
-      {"npc": "Gaia Naturae", "text": "Vamos começar nosso exercício de percepção, e talvez você mesmo descubra a resposta."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "Uma pergunta interessante. A maioria dos mestres elementais diria que precisamos de tempo para determinar isso, mas..."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Posso sentir uma afinidade em você. Há uma ressonância particular, mas não vou revelá-la ainda."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Parte da jornada é descobrir isso por si mesmo. Se eu simplesmente lhe disser, você pode inconscientemente forçar essa conexão, em vez de permitir que ela floresça naturalmente."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Além disso, nos Elementalistas, não nos limitamos a um único elemento. Buscamos compreender todos eles, mesmo que tenhamos afinidades naturais mais fortes com alguns."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Vamos começar nosso exercício de percepção, e talvez você mesmo descubra a resposta."
+      }
     ],
     "2": [
-      {"npc": "Gaia Naturae", "text": "A percepção elemental é tanto uma prática física quanto espiritual. Começa com a consciência."},
-      {"npc": "Gaia Naturae", "text": "Feche os olhos por um momento. Sinta o ar tocando sua pele - isso é o elemento Ar manifestando-se de forma sutil."},
-      {"npc": "Gaia Naturae", "text": "Sinta o calor do seu corpo - uma manifestação do Fogo interno que mantém sua vida."},
-      {"npc": "Gaia Naturae", "text": "A solidez dos seus ossos e músculos - Terra. O sangue e fluidos corporais - Água."},
-      {"npc": "Gaia Naturae", "text": "E a consciência que permite perceber tudo isso - alguns chamam de Éter ou Espírito."},
-      {"npc": "Gaia Naturae", "text": "A percepção elemental é simplesmente expandir essa consciência para além do seu corpo, reconhecendo esses mesmos elementos no mundo ao redor."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "A percepção elemental é tanto uma prática física quanto espiritual. Começa com a consciência."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Feche os olhos por um momento. Sinta o ar tocando sua pele - isso é o elemento Ar manifestando-se de forma sutil."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Sinta o calor do seu corpo - uma manifestação do Fogo interno que mantém sua vida."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "A solidez dos seus ossos e músculos - Terra. O sangue e fluidos corporais - Água."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "E a consciência que permite perceber tudo isso - alguns chamam de Éter ou Espírito."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "A percepção elemental é simplesmente expandir essa consciência para além do seu corpo, reconhecendo esses mesmos elementos no mundo ao redor."
+      }
     ],
     "3": [
-      {"npc": "Gaia Naturae", "text": "Uma questão que divide opiniões entre os mestres elementais."},
-      {"npc": "Gaia Naturae", "text": "A visão tradicional é que cada pessoa nasce com afinidade para um ou, raramente, dois elementos. Essa é a posição do Clube das Chamas e outros especialistas."},
-      {"npc": "Gaia Naturae", "text": "Nossa filosofia é diferente. Acreditamos que todos os elementos existem dentro de cada pessoa, embora em proporções variadas."},
-      {"npc": "Gaia Naturae", "text": "Com treinamento adequado, qualquer um pode desenvolver conexão com todos os elementos, mesmo que alguns sejam mais desafiadores que outros."},
-      {"npc": "Gaia Naturae", "text": "Eu mesma posso manipular os quatro elementos principais, embora Terra e Água sejam minhas afinidades naturais mais fortes."},
-      {"npc": "Gaia Naturae", "text": "Nosso objetivo não é dominar os elementos, mas compreendê-los e trabalhar em harmonia com eles."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "Uma questão que divide opiniões entre os mestres elementais."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "A visão tradicional é que cada pessoa nasce com afinidade para um ou, raramente, dois elementos. Essa é a posição do Clube das Chamas e outros especialistas."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Nossa filosofia é diferente. Acreditamos que todos os elementos existem dentro de cada pessoa, embora em proporções variadas."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Com treinamento adequado, qualquer um pode desenvolver conexão com todos os elementos, mesmo que alguns sejam mais desafiadores que outros."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Eu mesma posso manipular os quatro elementos principais, embora Terra e Água sejam minhas afinidades naturais mais fortes."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Nosso objetivo não é dominar os elementos, mas compreendê-los e trabalhar em harmonia com eles."
+      }
     ]
   },
   "shared_dialogue": [
-    {"npc": "Gaia Naturae", "text": "Vamos começar nosso exercício prático. Por favor, sente-se confortavelmente neste círculo de meditação."},
-    {"npc": "Gaia Naturae", "text": "Observe estes quatro objetos à sua frente: uma tigela com água, uma pequena chama de vela, um cristal de quartzo e uma pena."},
-    {"npc": "Gaia Naturae", "text": "Feche os olhos e respire profundamente. Com cada respiração, sinta-se mais conectado à terra sob você e ao ar ao seu redor."},
-    {"npc": "Gaia Naturae", "text": "Agora, abra os olhos e estenda suas mãos, palmas para cima, sobre os quatro objetos. Não toque neles, apenas sinta."},
-    {"npc": "Gaia Naturae", "text": "Perceba qualquer sensação - calor, frio, formigamento, peso, leveza. Não force nada, apenas observe."},
-    {"npc": "Narrador", "text": "Seguindo as instruções de Gaia, você estende suas mãos sobre os objetos. Após alguns momentos, começa a notar sensações sutis mas distintas emanando de cada um."},
-    {"npc": "Gaia Naturae", "text": "Interessante... Vejo que você está respondendo. Qual dos elementos você sentiu mais fortemente?"}
+    {
+      "npc": "Gaia Naturae",
+      "text": "Vamos começar nosso exercício prático. Por favor, sente-se confortavelmente neste círculo de meditação."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Observe estes quatro objetos à sua frente: uma tigela com água, uma pequena chama de vela, um cristal de quartzo e uma pena."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Feche os olhos e respire profundamente. Com cada respiração, sinta-se mais conectado à terra sob você e ao ar ao seu redor."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Agora, abra os olhos e estenda suas mãos, palmas para cima, sobre os quatro objetos. Não toque neles, apenas sinta."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Perceba qualquer sensação - calor, frio, formigamento, peso, leveza. Não force nada, apenas observe."
+    },
+    {
+      "npc": "Narrador",
+      "text": "Seguindo as instruções de Gaia, você estende suas mãos sobre os objetos. Após alguns momentos, começa a notar sensações sutis mas distintas emanando de cada um."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Interessante... Vejo que você está respondendo. Qual dos elementos você sentiu mais fortemente?"
+    }
   ],
   "choices_2": [
-    {"text": "A água - senti uma sensação refrescante e fluida", "next_dialogue": 4},
-    {"text": "O fogo - percebi calor e energia pulsante", "next_dialogue": 5},
-    {"text": "A terra - notei peso e estabilidade do cristal", "next_dialogue": 6},
-    {"text": "O ar - senti leveza e movimento da pena", "next_dialogue": 7}
+    {
+      "text": "A água - senti uma sensação refrescante e fluida",
+      "next_dialogue": 4
+    },
+    {
+      "text": "O fogo - percebi calor e energia pulsante",
+      "next_dialogue": 5
+    },
+    {
+      "text": "A terra - notei peso e estabilidade do cristal",
+      "next_dialogue": 6
+    },
+    {
+      "text": "O ar - senti leveza e movimento da pena",
+      "next_dialogue": 7
+    }
   ],
   "additional_dialogues_2": {
     "4": [
-      {"npc": "Gaia Naturae", "text": "A Água, elemento da adaptabilidade e intuição. Interessante."},
-      {"npc": "Gaia Naturae", "text": "A Água representa emoção, cura, e transformação. Aqueles com afinidade pela Água tendem a ser empáticos e intuitivos."},
-      {"npc": "Gaia Naturae", "text": "Essa conexão sugere que você pode ter facilidade com técnicas de cura e transformação. A Água não confronta obstáculos - ela flui ao redor deles, encontrando novos caminhos."},
-      {"npc": "Gaia Naturae", "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que todos os elementos têm valor e propósito."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "A Água, elemento da adaptabilidade e intuição. Interessante."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "A Água representa emoção, cura, e transformação. Aqueles com afinidade pela Água tendem a ser empáticos e intuitivos."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Essa conexão sugere que você pode ter facilidade com técnicas de cura e transformação. A Água não confronta obstáculos - ela flui ao redor deles, encontrando novos caminhos."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que todos os elementos têm valor e propósito."
+      }
     ],
     "5": [
-      {"npc": "Gaia Naturae", "text": "O Fogo, elemento da paixão e transformação. Fascinante."},
-      {"npc": "Gaia Naturae", "text": "O Fogo representa vontade, energia e mudança. Aqueles com afinidade pelo Fogo tendem a ser determinados e carismáticos."},
-      {"npc": "Gaia Naturae", "text": "Essa conexão sugere que você pode ter facilidade com técnicas de energia e transmutação. O Fogo não recua diante de desafios - ele os consome e transforma."},
-      {"npc": "Gaia Naturae", "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que o Fogo sem equilíbrio pode consumir a si mesmo."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "O Fogo, elemento da paixão e transformação. Fascinante."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "O Fogo representa vontade, energia e mudança. Aqueles com afinidade pelo Fogo tendem a ser determinados e carismáticos."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Essa conexão sugere que você pode ter facilidade com técnicas de energia e transmutação. O Fogo não recua diante de desafios - ele os consome e transforma."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que o Fogo sem equilíbrio pode consumir a si mesmo."
+      }
     ],
     "6": [
-      {"npc": "Gaia Naturae", "text": "A Terra, elemento da estabilidade e abundância. Revelador."},
-      {"npc": "Gaia Naturae", "text": "A Terra representa força, resistência e nutrição. Aqueles com afinidade pela Terra tendem a ser práticos e confiáveis."},
-      {"npc": "Gaia Naturae", "text": "Essa conexão sugere que você pode ter facilidade com técnicas de proteção e manifestação. A Terra não se apressa - ela é paciente e persistente."},
-      {"npc": "Gaia Naturae", "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que a Terra sem movimento pode se tornar estagnada."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "A Terra, elemento da estabilidade e abundância. Revelador."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "A Terra representa força, resistência e nutrição. Aqueles com afinidade pela Terra tendem a ser práticos e confiáveis."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Essa conexão sugere que você pode ter facilidade com técnicas de proteção e manifestação. A Terra não se apressa - ela é paciente e persistente."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que a Terra sem movimento pode se tornar estagnada."
+      }
     ],
     "7": [
-      {"npc": "Gaia Naturae", "text": "O Ar, elemento da liberdade e intelecto. Esclarecedor."},
-      {"npc": "Gaia Naturae", "text": "O Ar representa pensamento, comunicação e movimento. Aqueles com afinidade pelo Ar tendem a ser criativos e adaptáveis."},
-      {"npc": "Gaia Naturae", "text": "Essa conexão sugere que você pode ter facilidade com técnicas de percepção e influência. O Ar não pode ser contido - ele encontra o menor espaço e passa através dele."},
-      {"npc": "Gaia Naturae", "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que o Ar sem direção pode se dissipar sem propósito."}
+      {
+        "npc": "Gaia Naturae",
+        "text": "O Ar, elemento da liberdade e intelecto. Esclarecedor."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "O Ar representa pensamento, comunicação e movimento. Aqueles com afinidade pelo Ar tendem a ser criativos e adaptáveis."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Essa conexão sugere que você pode ter facilidade com técnicas de percepção e influência. O Ar não pode ser contido - ele encontra o menor espaço e passa através dele."
+      },
+      {
+        "npc": "Gaia Naturae",
+        "text": "Nos próximos exercícios, exploraremos essa conexão mais profundamente. Mas lembre-se que o Ar sem direção pode se dissipar sem propósito."
+      }
     ]
   },
   "final_dialogue": [
-    {"npc": "Gaia Naturae", "text": "Você demonstrou uma sensibilidade natural aos elementos. Este é apenas o primeiro passo de muitos."},
-    {"npc": "Gaia Naturae", "text": "Nos Elementalistas, não buscamos apenas poder, mas compreensão. Cada elemento tem lições a ensinar, forças a oferecer e limitações a respeitar."},
-    {"npc": "Gaia Naturae", "text": "Para nossa próxima sessão, quero que observe os elementos em sua vida diária. Como a água flui dos canos, como o fogo aquece alimentos, como a terra sustenta edifícios, como o ar transporta sons e aromas."},
-    {"npc": "Gaia Naturae", "text": "Mantenha um pequeno diário dessas observações. A consciência é o primeiro e mais importante passo para a harmonia elemental."},
-    {"npc": "Gaia Naturae", "text": "Bem-vindo ao caminho do equilíbrio, jovem Elementalista. Que sua jornada seja iluminadora."}
+    {
+      "npc": "Gaia Naturae",
+      "text": "Você demonstrou uma sensibilidade natural aos elementos. Este é apenas o primeiro passo de muitos."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Nos Elementalistas, não buscamos apenas poder, mas compreensão. Cada elemento tem lições a ensinar, forças a oferecer e limitações a respeitar."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Para nossa próxima sessão, quero que observe os elementos em sua vida diária. Como a água flui dos canos, como o fogo aquece alimentos, como a terra sustenta edifícios, como o ar transporta sons e aromas."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Mantenha um pequeno diário dessas observações. A consciência é o primeiro e mais importante passo para a harmonia elemental."
+    },
+    {
+      "npc": "Gaia Naturae",
+      "text": "Bem-vindo ao caminho do equilíbrio, jovem Elementalista. Que sua jornada seja iluminadora."
+    }
   ],
   "completion_exp": 75,
   "completion_tusd": 50,
@@ -93,5 +258,6 @@
     "meditation": 2,
     "elemental_harmony": 2
   },
-  "next_club_event": "club_elemental_2"
+  "next_club_event": "club_elemental_2",
+  "chapter_id": "elemental_1"
 }

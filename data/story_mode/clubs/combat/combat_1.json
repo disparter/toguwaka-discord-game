@@ -3,78 +3,222 @@
   "title": "Primeiro Treino no Clube de Combate",
   "description": "Sua primeira sessão de treinamento com Ryuji Battleborn no Clube de Combate.",
   "dialogues": [
-    {"npc": "Ryuji Battleborn", "text": "Bem-vindo ao Clube de Combate, novato. Aqui não temos filosofias complicadas ou teorias abstratas. Temos ação."},
-    {"npc": "Ryuji Battleborn", "text": "Nosso objetivo é simples: transformar seu poder em uma ferramenta eficaz para combate, seja para ataque ou defesa."},
-    {"npc": "Ryuji Battleborn", "text": "Hoje vamos avaliar suas habilidades básicas e começar a trabalhar em suas deficiências. Prepare-se para suar."}
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Bem-vindo ao Clube de Combate, novato. Aqui não temos filosofias complicadas ou teorias abstratas. Temos ação."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Nosso objetivo é simples: transformar seu poder em uma ferramenta eficaz para combate, seja para ataque ou defesa."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Hoje vamos avaliar suas habilidades básicas e começar a trabalhar em suas deficiências. Prepare-se para suar."
+    }
   ],
   "choices": [
-    {"text": "Estou pronto para qualquer desafio", "next_dialogue": 1},
-    {"text": "Qual é sua filosofia de combate?", "next_dialogue": 2},
-    {"text": "Tenho pouca experiência em lutas", "next_dialogue": 3}
+    {
+      "text": "Estou pronto para qualquer desafio",
+      "next_dialogue": 1
+    },
+    {
+      "text": "Qual é sua filosofia de combate?",
+      "next_dialogue": 2
+    },
+    {
+      "text": "Tenho pouca experiência em lutas",
+      "next_dialogue": 3
+    }
   ],
   "additional_dialogues": {
     "1": [
-      {"npc": "Ryuji Battleborn", "text": "Confiança. Bom. Mas vamos ver se é justificada."},
-      {"npc": "Ryuji Battleborn", "text": "No Clube de Combate, não medimos ninguém por suas palavras, mas por suas ações e resultados."},
-      {"npc": "Ryuji Battleborn", "text": "Muitos chegam aqui cheios de bravata e saem com o rabo entre as pernas após o primeiro treino real."},
-      {"npc": "Ryuji Battleborn", "text": "Espero que você seja diferente. Vamos começar com uma avaliação básica de suas capacidades físicas e depois passaremos para aplicações de poder."}
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Confiança. Bom. Mas vamos ver se é justificada."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "No Clube de Combate, não medimos ninguém por suas palavras, mas por suas ações e resultados."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Muitos chegam aqui cheios de bravata e saem com o rabo entre as pernas após o primeiro treino real."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Espero que você seja diferente. Vamos começar com uma avaliação básica de suas capacidades físicas e depois passaremos para aplicações de poder."
+      }
     ],
     "2": [
-      {"npc": "Ryuji Battleborn", "text": "Minha filosofia? É bastante direta: eficiência, adaptabilidade e determinação."},
-      {"npc": "Ryuji Battleborn", "text": "Eficiência significa usar o mínimo de energia para o máximo de resultado. Nada de movimentos desnecessários ou exibicionismo."},
-      {"npc": "Ryuji Battleborn", "text": "Adaptabilidade é sobre responder apropriadamente a qualquer situação. Um lutador que só conhece um caminho é facilmente derrotado quando esse caminho é bloqueado."},
-      {"npc": "Ryuji Battleborn", "text": "E determinação... bem, sem ela, as outras duas não importam. A vontade de continuar quando tudo dói, quando você está exausto, quando parece impossível."},
-      {"npc": "Ryuji Battleborn", "text": "Essas três qualidades são o que buscamos desenvolver em cada membro do Clube de Combate."}
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Minha filosofia? É bastante direta: eficiência, adaptabilidade e determinação."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Eficiência significa usar o mínimo de energia para o máximo de resultado. Nada de movimentos desnecessários ou exibicionismo."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Adaptabilidade é sobre responder apropriadamente a qualquer situação. Um lutador que só conhece um caminho é facilmente derrotado quando esse caminho é bloqueado."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "E determinação... bem, sem ela, as outras duas não importam. A vontade de continuar quando tudo dói, quando você está exausto, quando parece impossível."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Essas três qualidades são o que buscamos desenvolver em cada membro do Clube de Combate."
+      }
     ],
     "3": [
-      {"npc": "Ryuji Battleborn", "text": "Honestidade. Isso eu respeito mais que falsa bravura."},
-      {"npc": "Ryuji Battleborn", "text": "Todos começam de algum lugar. Alguns dos nossos melhores lutadores mal sabiam dar um soco quando chegaram."},
-      {"npc": "Ryuji Battleborn", "text": "O que importa não é onde você começa, mas sua dedicação ao processo. Estamos aqui para transformar iniciantes em guerreiros."},
-      {"npc": "Ryuji Battleborn", "text": "Vamos começar com o básico e construir a partir daí. Postura, equilíbrio, respiração - os fundamentos que muitos negligenciam, mas que fazem toda a diferença."}
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Honestidade. Isso eu respeito mais que falsa bravura."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Todos começam de algum lugar. Alguns dos nossos melhores lutadores mal sabiam dar um soco quando chegaram."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "O que importa não é onde você começa, mas sua dedicação ao processo. Estamos aqui para transformar iniciantes em guerreiros."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Vamos começar com o básico e construir a partir daí. Postura, equilíbrio, respiração - os fundamentos que muitos negligenciam, mas que fazem toda a diferença."
+      }
     ]
   },
   "shared_dialogue": [
-    {"npc": "Ryuji Battleborn", "text": "Vamos começar. Primeiro, quero ver sua condição física básica. Dê-me 20 flexões, 30 abdominais e 10 agachamentos."},
-    {"npc": "Narrador", "text": "Você realiza os exercícios sob o olhar atento de Ryuji. Ele observa sua forma, resistência e determinação sem dizer uma palavra."},
-    {"npc": "Ryuji Battleborn", "text": "Agora, vamos para a parte interessante. Quero ver como você usa seu poder em situação de combate."},
-    {"npc": "Ryuji Battleborn", "text": "Aqui está um alvo de treinamento. Ele foi projetado para absorver e medir a força de ataques. Quero que você o atinja com toda a força que puder reunir."},
-    {"npc": "Narrador", "text": "O alvo é um manequim metálico com marcações de energia que brilham em diferentes cores. Ele está posicionado a alguns metros de distância."},
-    {"npc": "Ryuji Battleborn", "text": "Não se contenha. Este é um ambiente seguro para testar seus limites. Mostre-me o que você pode fazer."}
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Vamos começar. Primeiro, quero ver sua condição física básica. Dê-me 20 flexões, 30 abdominais e 10 agachamentos."
+    },
+    {
+      "npc": "Narrador",
+      "text": "Você realiza os exercícios sob o olhar atento de Ryuji. Ele observa sua forma, resistência e determinação sem dizer uma palavra."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Agora, vamos para a parte interessante. Quero ver como você usa seu poder em situação de combate."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Aqui está um alvo de treinamento. Ele foi projetado para absorver e medir a força de ataques. Quero que você o atinja com toda a força que puder reunir."
+    },
+    {
+      "npc": "Narrador",
+      "text": "O alvo é um manequim metálico com marcações de energia que brilham em diferentes cores. Ele está posicionado a alguns metros de distância."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Não se contenha. Este é um ambiente seguro para testar seus limites. Mostre-me o que você pode fazer."
+    }
   ],
   "choices_2": [
-    {"text": "Concentrar-se em um ataque preciso e focado", "next_dialogue": 4},
-    {"text": "Liberar uma explosão de poder bruto", "next_dialogue": 5},
-    {"text": "Tentar uma combinação de ataques rápidos", "next_dialogue": 6}
+    {
+      "text": "Concentrar-se em um ataque preciso e focado",
+      "next_dialogue": 4
+    },
+    {
+      "text": "Liberar uma explosão de poder bruto",
+      "next_dialogue": 5
+    },
+    {
+      "text": "Tentar uma combinação de ataques rápidos",
+      "next_dialogue": 6
+    }
   ],
   "additional_dialogues_2": {
     "4": [
-      {"npc": "Narrador", "text": "Você respira fundo, concentrando-se em um único ponto do alvo. Canalizando seu poder com precisão, você libera um ataque focado que atinge exatamente onde mirou."},
-      {"npc": "Narrador", "text": "O manequim registra o impacto, luzes amarelas pulsando no ponto de contato, indicando um golpe de precisão moderada."},
-      {"npc": "Ryuji Battleborn", "text": "Controle e precisão. Interessante. Muitos novatos optam pela força bruta, mas você escolheu finesse."},
-      {"npc": "Ryuji Battleborn", "text": "Isso mostra disciplina mental, o que é valioso. No entanto, precisamos trabalhar na potência. Um golpe preciso sem força suficiente não derrubará um oponente determinado."},
-      {"npc": "Ryuji Battleborn", "text": "Vamos desenvolver exercícios que mantenham sua precisão enquanto aumentamos a potência do impacto."}
+      {
+        "npc": "Narrador",
+        "text": "Você respira fundo, concentrando-se em um único ponto do alvo. Canalizando seu poder com precisão, você libera um ataque focado que atinge exatamente onde mirou."
+      },
+      {
+        "npc": "Narrador",
+        "text": "O manequim registra o impacto, luzes amarelas pulsando no ponto de contato, indicando um golpe de precisão moderada."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Controle e precisão. Interessante. Muitos novatos optam pela força bruta, mas você escolheu finesse."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Isso mostra disciplina mental, o que é valioso. No entanto, precisamos trabalhar na potência. Um golpe preciso sem força suficiente não derrubará um oponente determinado."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Vamos desenvolver exercícios que mantenham sua precisão enquanto aumentamos a potência do impacto."
+      }
     ],
     "5": [
-      {"npc": "Narrador", "text": "Você recua, reunindo toda sua energia. Com um grito, libera uma explosão massiva de poder contra o alvo. O impacto é impressionante, fazendo o manequim tremer em sua base."},
-      {"npc": "Narrador", "text": "Luzes vermelhas pulsam por todo o manequim, indicando um ataque de alta potência, mas com dispersão significativa de energia."},
-      {"npc": "Ryuji Battleborn", "text": "Poder bruto. Você não tem escassez disso, isso é certo."},
-      {"npc": "Ryuji Battleborn", "text": "Mas observe como a energia se dispersou. Em um combate real, isso significa desperdício e possível exaustão prematura."},
-      {"npc": "Ryuji Battleborn", "text": "Vamos trabalhar em canalizar essa força impressionante de maneira mais eficiente. Você tem o martelo, agora precisamos afiar sua borda."}
+      {
+        "npc": "Narrador",
+        "text": "Você recua, reunindo toda sua energia. Com um grito, libera uma explosão massiva de poder contra o alvo. O impacto é impressionante, fazendo o manequim tremer em sua base."
+      },
+      {
+        "npc": "Narrador",
+        "text": "Luzes vermelhas pulsam por todo o manequim, indicando um ataque de alta potência, mas com dispersão significativa de energia."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Poder bruto. Você não tem escassez disso, isso é certo."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Mas observe como a energia se dispersou. Em um combate real, isso significa desperdício e possível exaustão prematura."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Vamos trabalhar em canalizar essa força impressionante de maneira mais eficiente. Você tem o martelo, agora precisamos afiar sua borda."
+      }
     ],
     "6": [
-      {"npc": "Narrador", "text": "Você opta por uma abordagem versátil, lançando uma série de ataques rápidos em diferentes pontos do alvo. Seus movimentos são fluidos, quase como uma dança."},
-      {"npc": "Narrador", "text": "O manequim registra múltiplos impactos, com luzes azuis piscando em vários pontos, indicando ataques de velocidade moderada com impacto distribuído."},
-      {"npc": "Ryuji Battleborn", "text": "Velocidade e adaptabilidade. Você pensa como um lutador tático."},
-      {"npc": "Ryuji Battleborn", "text": "Essa abordagem tem mérito, especialmente contra oponentes maiores ou mais lentos. No entanto, cada golpe individual carece de impacto decisivo."},
-      {"npc": "Ryuji Battleborn", "text": "Vamos trabalhar em encontrar o equilíbrio entre velocidade e impacto. Um lutador verdadeiramente versátil sabe quando usar cada abordagem."}
+      {
+        "npc": "Narrador",
+        "text": "Você opta por uma abordagem versátil, lançando uma série de ataques rápidos em diferentes pontos do alvo. Seus movimentos são fluidos, quase como uma dança."
+      },
+      {
+        "npc": "Narrador",
+        "text": "O manequim registra múltiplos impactos, com luzes azuis piscando em vários pontos, indicando ataques de velocidade moderada com impacto distribuído."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Velocidade e adaptabilidade. Você pensa como um lutador tático."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Essa abordagem tem mérito, especialmente contra oponentes maiores ou mais lentos. No entanto, cada golpe individual carece de impacto decisivo."
+      },
+      {
+        "npc": "Ryuji Battleborn",
+        "text": "Vamos trabalhar em encontrar o equilíbrio entre velocidade e impacto. Um lutador verdadeiramente versátil sabe quando usar cada abordagem."
+      }
     ]
   },
   "final_dialogue": [
-    {"npc": "Ryuji Battleborn", "text": "Bem, você sobreviveu ao seu primeiro treino. Isso já é algo."},
-    {"npc": "Ryuji Battleborn", "text": "Baseado no que vi hoje, tenho uma ideia clara de suas forças e áreas que precisam de desenvolvimento."},
-    {"npc": "Ryuji Battleborn", "text": "No Clube de Combate, cada membro segue um programa de treinamento personalizado. O seu focará em [baseado na escolha anterior: precisão+potência/controle+eficiência/equilíbrio+impacto]."},
-    {"npc": "Ryuji Battleborn", "text": "Espero ver você aqui três vezes por semana, no mínimo. Progresso requer consistência e dedicação."},
-    {"npc": "Ryuji Battleborn", "text": "E lembre-se: aqui não lutamos apenas para vencer outros, mas para superar nossas próprias limitações. Esse é o verdadeiro espírito do guerreiro."}
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Bem, você sobreviveu ao seu primeiro treino. Isso já é algo."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Baseado no que vi hoje, tenho uma ideia clara de suas forças e áreas que precisam de desenvolvimento."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "No Clube de Combate, cada membro segue um programa de treinamento personalizado. O seu focará em [baseado na escolha anterior: precisão+potência/controle+eficiência/equilíbrio+impacto]."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "Espero ver você aqui três vezes por semana, no mínimo. Progresso requer consistência e dedicação."
+    },
+    {
+      "npc": "Ryuji Battleborn",
+      "text": "E lembre-se: aqui não lutamos apenas para vencer outros, mas para superar nossas próprias limitações. Esse é o verdadeiro espírito do guerreiro."
+    }
   ],
   "completion_exp": 75,
   "completion_tusd": 50,
@@ -84,5 +228,6 @@
     "power_control": 2,
     "physical_conditioning": 2
   },
-  "next_club_event": "club_combat_2"
+  "next_club_event": "club_combat_2",
+  "chapter_id": "combat_1"
 }

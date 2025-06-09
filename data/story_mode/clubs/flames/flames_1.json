@@ -3,67 +3,187 @@
   "title": "Treinamento Inicial no Clube das Chamas",
   "description": "Seu primeiro treinamento com Kai Flameheart no Clube das Chamas.",
   "dialogues": [
-    {"npc": "Kai Flameheart", "text": "Bem-vindo ao seu primeiro treinamento oficial no Clube das Chamas, novato."},
-    {"npc": "Kai Flameheart", "text": "Hoje vamos começar com o básico: controle de respiração e foco mental. Pode parecer simples, mas é a base de tudo que fazemos aqui."},
-    {"npc": "Kai Flameheart", "text": "A chama que queima dentro de nós responde às nossas emoções e pensamentos. Aprender a controlar isso é o primeiro passo para dominar seu poder."}
+    {
+      "npc": "Kai Flameheart",
+      "text": "Bem-vindo ao seu primeiro treinamento oficial no Clube das Chamas, novato."
+    },
+    {
+      "npc": "Kai Flameheart",
+      "text": "Hoje vamos começar com o básico: controle de respiração e foco mental. Pode parecer simples, mas é a base de tudo que fazemos aqui."
+    },
+    {
+      "npc": "Kai Flameheart",
+      "text": "A chama que queima dentro de nós responde às nossas emoções e pensamentos. Aprender a controlar isso é o primeiro passo para dominar seu poder."
+    }
   ],
   "choices": [
-    {"text": "Estou pronto para começar", "next_dialogue": 1},
-    {"text": "Por que começar com algo tão básico?", "next_dialogue": 2},
-    {"text": "Pensei que iríamos direto para técnicas de combate", "next_dialogue": 3}
+    {
+      "text": "Estou pronto para começar",
+      "next_dialogue": 1
+    },
+    {
+      "text": "Por que começar com algo tão básico?",
+      "next_dialogue": 2
+    },
+    {
+      "text": "Pensei que iríamos direto para técnicas de combate",
+      "next_dialogue": 3
+    }
   ],
   "additional_dialogues": {
     "1": [
-      {"npc": "Kai Flameheart", "text": "Boa atitude. Vamos começar então."},
-      {"npc": "Kai Flameheart", "text": "Sente-se em posição de meditação e concentre-se na sua respiração. Inspire por 4 segundos, segure por 2, expire por 4."},
-      {"npc": "Kai Flameheart", "text": "Enquanto respira, visualize uma pequena chama no centro do seu peito. Sinta-a crescer quando inspira e estabilizar quando expira."},
-      {"npc": "Narrador", "text": "Você segue as instruções de Kai e, após alguns minutos, começa a sentir um calor agradável se espalhando pelo seu corpo."},
-      {"npc": "Kai Flameheart", "text": "Muito bem. Agora, tente canalizar esse calor para a palma da sua mão. Não force, apenas direcione sua atenção para lá."},
-      {"npc": "Narrador", "text": "Concentrando-se, você sente o calor fluindo para sua mão. Para sua surpresa, uma pequena chama aparece flutuando acima de sua palma."},
-      {"npc": "Kai Flameheart", "text": "Excelente! Você tem aptidão natural. Agora, mantenha a chama estável. Não deixe que cresça ou diminua."}
+      {
+        "npc": "Kai Flameheart",
+        "text": "Boa atitude. Vamos começar então."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Sente-se em posição de meditação e concentre-se na sua respiração. Inspire por 4 segundos, segure por 2, expire por 4."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Enquanto respira, visualize uma pequena chama no centro do seu peito. Sinta-a crescer quando inspira e estabilizar quando expira."
+      },
+      {
+        "npc": "Narrador",
+        "text": "Você segue as instruções de Kai e, após alguns minutos, começa a sentir um calor agradável se espalhando pelo seu corpo."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Muito bem. Agora, tente canalizar esse calor para a palma da sua mão. Não force, apenas direcione sua atenção para lá."
+      },
+      {
+        "npc": "Narrador",
+        "text": "Concentrando-se, você sente o calor fluindo para sua mão. Para sua surpresa, uma pequena chama aparece flutuando acima de sua palma."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Excelente! Você tem aptidão natural. Agora, mantenha a chama estável. Não deixe que cresça ou diminua."
+      }
     ],
     "2": [
-      {"npc": "Kai Flameheart", "text": "Uma pergunta válida. Muitos novatos subestimam o básico, ansiosos por técnicas avançadas."},
-      {"npc": "Kai Flameheart", "text": "Mas é como construir uma casa - sem uma fundação sólida, tudo desmorona quando testado."},
-      {"npc": "Kai Flameheart", "text": "O controle de respiração e foco mental são essa fundação. Sem eles, suas técnicas serão instáveis e potencialmente perigosas."},
-      {"npc": "Kai Flameheart", "text": "Já vi estudantes que pularam essas etapas perderem o controle de seus poderes em situações críticas. Não quero que isso aconteça com você."},
-      {"npc": "Kai Flameheart", "text": "Agora, vamos começar. Sente-se e concentre-se na sua respiração."}
+      {
+        "npc": "Kai Flameheart",
+        "text": "Uma pergunta válida. Muitos novatos subestimam o básico, ansiosos por técnicas avançadas."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Mas é como construir uma casa - sem uma fundação sólida, tudo desmorona quando testado."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "O controle de respiração e foco mental são essa fundação. Sem eles, suas técnicas serão instáveis e potencialmente perigosas."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Já vi estudantes que pularam essas etapas perderem o controle de seus poderes em situações críticas. Não quero que isso aconteça com você."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Agora, vamos começar. Sente-se e concentre-se na sua respiração."
+      }
     ],
     "3": [
-      {"npc": "Kai Flameheart", "text": "Ha! Típico de novatos. Todos querem ser guerreiros antes de aprender a ficar de pé."},
-      {"npc": "Kai Flameheart", "text": "Técnicas de combate sem controle são como dar uma espada a uma criança - perigoso e inútil."},
-      {"npc": "Kai Flameheart", "text": "Além disso, o que você acha que aconteceria se você tentasse usar poderes de fogo em combate sem saber controlá-los? Provavelmente queimaria a si mesmo antes de atingir o oponente."},
-      {"npc": "Kai Flameheart", "text": "Paciência, novato. Você chegará lá. Mas primeiro, o básico. Sente-se e comece a respirar como instruí."}
+      {
+        "npc": "Kai Flameheart",
+        "text": "Ha! Típico de novatos. Todos querem ser guerreiros antes de aprender a ficar de pé."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Técnicas de combate sem controle são como dar uma espada a uma criança - perigoso e inútil."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Além disso, o que você acha que aconteceria se você tentasse usar poderes de fogo em combate sem saber controlá-los? Provavelmente queimaria a si mesmo antes de atingir o oponente."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Paciência, novato. Você chegará lá. Mas primeiro, o básico. Sente-se e comece a respirar como instruí."
+      }
     ]
   },
   "shared_dialogue": [
-    {"npc": "Kai Flameheart", "text": "Bom trabalho para o primeiro dia. Você tem potencial, mas precisará de prática constante."},
-    {"npc": "Kai Flameheart", "text": "Quero que pratique esse exercício de respiração e visualização todos os dias, pelo menos 15 minutos."},
-    {"npc": "Kai Flameheart", "text": "Na próxima sessão, começaremos a trabalhar com manipulação de temperatura e controle de intensidade."},
-    {"npc": "Kai Flameheart", "text": "Alguma pergunta antes de encerrarmos?"}
+    {
+      "npc": "Kai Flameheart",
+      "text": "Bom trabalho para o primeiro dia. Você tem potencial, mas precisará de prática constante."
+    },
+    {
+      "npc": "Kai Flameheart",
+      "text": "Quero que pratique esse exercício de respiração e visualização todos os dias, pelo menos 15 minutos."
+    },
+    {
+      "npc": "Kai Flameheart",
+      "text": "Na próxima sessão, começaremos a trabalhar com manipulação de temperatura e controle de intensidade."
+    },
+    {
+      "npc": "Kai Flameheart",
+      "text": "Alguma pergunta antes de encerrarmos?"
+    }
   ],
   "choices_2": [
-    {"text": "Como posso melhorar mais rapidamente?", "next_dialogue": 4},
-    {"text": "Quando aprenderemos técnicas ofensivas?", "next_dialogue": 5},
-    {"text": "Não, entendi tudo. Obrigado pelo treinamento.", "next_dialogue": 6}
+    {
+      "text": "Como posso melhorar mais rapidamente?",
+      "next_dialogue": 4
+    },
+    {
+      "text": "Quando aprenderemos técnicas ofensivas?",
+      "next_dialogue": 5
+    },
+    {
+      "text": "Não, entendi tudo. Obrigado pelo treinamento.",
+      "next_dialogue": 6
+    }
   ],
   "additional_dialogues_2": {
     "4": [
-      {"npc": "Kai Flameheart", "text": "Dedicação e consistência são as chaves. Não existem atalhos reais."},
-      {"npc": "Kai Flameheart", "text": "Pratique os exercícios que ensinei diariamente. A meditação com foco em chama é especialmente importante."},
-      {"npc": "Kai Flameheart", "text": "Também recomendo exercícios físicos regulares. Um corpo forte ajuda a canalizar e controlar melhor o poder."},
-      {"npc": "Kai Flameheart", "text": "E por fim, estude. Temos livros na biblioteca do clube sobre teoria elemental e história dos grandes mestres do fogo. O conhecimento teórico complementa a prática."}
+      {
+        "npc": "Kai Flameheart",
+        "text": "Dedicação e consistência são as chaves. Não existem atalhos reais."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Pratique os exercícios que ensinei diariamente. A meditação com foco em chama é especialmente importante."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Também recomendo exercícios físicos regulares. Um corpo forte ajuda a canalizar e controlar melhor o poder."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "E por fim, estude. Temos livros na biblioteca do clube sobre teoria elemental e história dos grandes mestres do fogo. O conhecimento teórico complementa a prática."
+      }
     ],
     "5": [
-      {"npc": "Kai Flameheart", "text": "Ansioso, não é? Típico."},
-      {"npc": "Kai Flameheart", "text": "Começaremos técnicas básicas de ataque após você dominar o controle de temperatura e intensidade. Isso geralmente leva algumas semanas de prática consistente."},
-      {"npc": "Kai Flameheart", "text": "Mas lembre-se: no Clube das Chamas, aprendemos a lutar não para iniciar conflitos, mas para estar preparados quando eles forem inevitáveis."},
-      {"npc": "Kai Flameheart", "text": "O verdadeiro poder está no controle e na sabedoria de saber quando usar suas habilidades."}
+      {
+        "npc": "Kai Flameheart",
+        "text": "Ansioso, não é? Típico."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Começaremos técnicas básicas de ataque após você dominar o controle de temperatura e intensidade. Isso geralmente leva algumas semanas de prática consistente."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Mas lembre-se: no Clube das Chamas, aprendemos a lutar não para iniciar conflitos, mas para estar preparados quando eles forem inevitáveis."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "O verdadeiro poder está no controle e na sabedoria de saber quando usar suas habilidades."
+      }
     ],
     "6": [
-      {"npc": "Kai Flameheart", "text": "Bom. Gosto de estudantes que sabem ouvir e absorver o conhecimento."},
-      {"npc": "Kai Flameheart", "text": "Continue praticando e nos veremos na próxima sessão. Estou curioso para ver seu progresso."},
-      {"npc": "Kai Flameheart", "text": "Lembre-se: 'Queime com paixão ou não queime'. Leve esse lema a sério em tudo que fizer aqui."}
+      {
+        "npc": "Kai Flameheart",
+        "text": "Bom. Gosto de estudantes que sabem ouvir e absorver o conhecimento."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Continue praticando e nos veremos na próxima sessão. Estou curioso para ver seu progresso."
+      },
+      {
+        "npc": "Kai Flameheart",
+        "text": "Lembre-se: 'Queime com paixão ou não queime'. Leve esse lema a sério em tudo que fizer aqui."
+      }
     ]
   },
   "completion_exp": 75,
@@ -74,5 +194,6 @@
     "meditation": 3,
     "focus": 2
   },
-  "next_club_event": "club_flames_2"
+  "next_club_event": "club_flames_2",
+  "chapter_id": "flames_1"
 }
