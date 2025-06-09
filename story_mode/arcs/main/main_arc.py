@@ -60,11 +60,12 @@ class MainArc(BaseArc):
     
     def _load_arc_data(self) -> None:
         """
-        Load main story arc data and chapters from the arcs/introduction directory.
+        Load main story arc data and chapters from the data/story_mode/arcs/introduction directory.
         """
         import glob
         try:
-            chapters_dir = os.path.join(os.path.dirname(os.path.dirname(self.data_dir)), "arcs", "introduction")
+            # Use the correct absolute path for introduction chapters
+            chapters_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "story_mode", "arcs", "introduction")
             if not os.path.exists(chapters_dir):
                 logger.error(f"Chapters directory not found: {chapters_dir}")
                 return

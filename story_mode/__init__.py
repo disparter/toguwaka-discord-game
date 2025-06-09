@@ -33,11 +33,12 @@ from .npc import (
 from .progress import (
     DefaultStoryProgressManager
 )
-from .story_mode import (
-    FileChapterLoader, StoryMode
-)
+from .chapter_loader import FileChapterLoader
+from .story_mode import StoryMode
 
 __all__ = [
+    'FileChapterLoader',
+    'StoryMode',
     # Interfaces
     'Chapter', 'Event', 'NPC', 'ChapterLoader', 'EventManager', 'StoryProgressManager',
     
@@ -52,7 +53,4 @@ __all__ = [
     
     # Progress implementations
     'DefaultStoryProgressManager',
-    
-    # Story mode
-    'FileChapterLoader', 'StoryMode'
 ]
