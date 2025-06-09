@@ -1,6 +1,7 @@
 import discord
 from datetime import datetime
 from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
+import json
 
 def create_basic_embed(title, description=None, color=0x1E90FF):
     """Create a basic embed with the Academia Tokugawa theme."""
@@ -387,10 +388,20 @@ def create_inventory_embed(player):
         timestamp=datetime.utcnow()
     )
 
+    # Garantir que o inventário é um dicionário
+    inventory = player.get('inventory', {})
+    if isinstance(inventory, str):
+        try:
+            inventory = json.loads(inventory)
+        except Exception:
+            inventory = {}
+    if not isinstance(inventory, dict):
+        inventory = {}
+
     # Add items if any
-    if player.get('inventory'):
+    if inventory:
         items_text = []
-        for item_id, item in player['inventory'].items():
+        for item_id, item in inventory.items():
             items_text.append(f"🔹 **{item['name']}** - {item['description']}")
 
         embed.add_field(

@@ -377,13 +377,40 @@ def get_player(user_id):
             return None
             
         logger.info(f"Found player data: {item}")
-            
+        
         # Convert Decimal values to int/float
-        for key, value in item.items():
+        for k, value in item.items():
             if isinstance(value, Decimal):
-                item[key] = int(value) if value % 1 == 0 else float(value)
-                
-        logger.info(f"Converted player data: {item}")
+                item[k] = int(value) if value % 1 == 0 else float(value)
+
+        # Garantir campos obrigatórios
+        defaults = {
+            'power_stat': 10,
+            'dexterity': 10,
+            'intellect': 10,
+            'charisma': 10,
+            'club_id': None,
+            'exp': 0,
+            'hp': 100,
+            'tusd': 1000,
+            'inventory': {},
+            'level': 1
+        }
+        for k, v in defaults.items():
+            if k not in item or item[k] is None:
+                item[k] = v
+
+        # Desserializar inventário se for string
+        if isinstance(item['inventory'], str):
+            try:
+                item['inventory'] = json.loads(item['inventory'])
+            except Exception as e:
+                logger.warning(f"Could not decode inventory for player {user_id}: {e}")
+                item['inventory'] = {}
+        if not isinstance(item['inventory'], dict):
+            item['inventory'] = {}
+
+        logger.info(f"Final player data after normalization: {item}")
         return item
     except Exception as e:
         logger.error(f"Error getting player: {e}")

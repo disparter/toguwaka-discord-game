@@ -4,6 +4,7 @@ from discord import app_commands
 import logging
 from utils.database import get_player, get_club, get_top_players
 from utils.embeds import create_player_embed, create_inventory_embed, create_leaderboard_embed
+import json
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -147,6 +148,21 @@ class PlayerStatus(commands.Cog):
                 await ctx.send(f"{target.display_name} não está registrado na Academia Tokugawa.")
             return
 
+        # LOG: Mostrar dados do player e inventário
+        logger.info(f"[STATUS] Player lido: {player}")
+        logger.info(f"[STATUS] Inventário lido: {player.get('inventory')}")
+
+        # Garantir que o inventário é um dicionário
+        inventory = player.get('inventory', {})
+        if isinstance(inventory, str):
+            try:
+                inventory = json.loads(inventory)
+            except Exception:
+                inventory = {}
+        if not isinstance(inventory, dict):
+            inventory = {}
+        player['inventory'] = inventory
+
         # Get club data
         club = None
         if player['club_id']:
@@ -165,12 +181,27 @@ class PlayerStatus(commands.Cog):
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
+        # LOG: Mostrar dados do player e inventário
+        logger.info(f"[INVENTARIO] Player lido: {player}")
+        logger.info(f"[INVENTARIO] Inventário lido: {player.get('inventory')}")
+
+        # Garantir que o inventário é um dicionário
+        inventory = player.get('inventory', {})
+        if isinstance(inventory, str):
+            try:
+                inventory = json.loads(inventory)
+            except Exception:
+                inventory = {}
+        if not isinstance(inventory, dict):
+            inventory = {}
+        player['inventory'] = inventory
+
         # Create inventory embed
         embed = create_inventory_embed(player)
 
         # Check if player has consumable items
         has_consumables = False
-        for item_id, item in player['inventory'].items():
+        for item_id, item in inventory.items():
             if item['type'] == 'consumable':
                 has_consumables = True
                 break

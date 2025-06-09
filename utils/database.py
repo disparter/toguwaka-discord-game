@@ -213,22 +213,44 @@ def handle_db_error(func):
 # Apply the error handler to all database functions
 @handle_db_error
 def get_player(user_id):
-    """Get player data from the database."""
+    """Get player data from the database.
+    
+    Args:
+        user_id (str): The Discord user ID of the player
+        
+    Returns:
+        dict: Player data if found, None otherwise
+    """
+    if not user_id:
+        logger.warning("Attempted to get player with None or empty user_id")
+        return None
+        
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     try:
+        logger.debug(f"Fetching player data for user_id: {user_id}")
         cursor.execute('''
         SELECT * FROM players WHERE user_id = ?
-        ''', (user_id,))
+        ''', (str(user_id),))
 
         player = cursor.fetchone()
         if player:
             # Convert row to dict and parse JSON fields
             player_dict = dict(player)
-            player_dict['inventory'] = json.loads(player_dict['inventory'])
+            try:
+                player_dict['inventory'] = json.loads(player_dict['inventory'])
+            except json.JSONDecodeError as e:
+                logger.error(f"Error parsing inventory JSON for player {user_id}: {e}")
+                player_dict['inventory'] = {}
+            logger.debug(f"Successfully retrieved player data for {user_id}")
             return player_dict
+            
+        logger.debug(f"No player found for user_id: {user_id}")
+        return None
+    except sqlite3.Error as e:
+        logger.error(f"Database error while getting player {user_id}: {e}")
         return None
     finally:
         conn.close()

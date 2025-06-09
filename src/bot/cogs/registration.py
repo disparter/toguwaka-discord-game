@@ -74,37 +74,32 @@ class Registration(commands.Cog):
             return m.author == ctx.author and m.channel == ctx.channel
 
         try:
+            # Get character name
             name_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
             character_name = name_msg.content.strip()
 
-            if len(character_name) < 3 or len(character_name) > 20:
-                await ctx.send("Seu nome deve ter entre 3 e 20 caracteres. Por favor, tente novamente com o comando !ingressar.")
-                return
-
             # Get character power
-            await ctx.send("**Qual é o seu superpoder?** (Descreva brevemente)")
+            await ctx.send("**Qual é o seu superpoder?** (Descreva brevemente sua habilidade)")
             power_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
             character_power = power_msg.content.strip()
-
-            if len(character_power) < 3 or len(character_power) > 100:
-                await ctx.send("A descrição do seu poder deve ter entre 3 e 100 caracteres. Por favor, tente novamente com o comando !ingressar.")
-                return
 
             # Get strength level
             strength_embed = create_basic_embed(
                 title="Nível de Força",
-                description="Escolha o nível de força do seu poder (1-5 estrelas):\n\n"
-                            "1 ⭐ - Poder básico, ainda em desenvolvimento\n"
-                            "2 ⭐⭐ - Poder moderado, com potencial\n"
-                            "3 ⭐⭐⭐ - Poder considerável, acima da média\n"
-                            "4 ⭐⭐⭐⭐ - Poder muito forte, raro entre os estudantes\n"
-                            "5 ⭐⭐⭐⭐⭐ - Poder excepcional, elite da academia\n\n"
-                            "Digite um número de 1 a 5:",
+                description="Escolha o nível de força do seu poder (1-5):\n\n" +
+                            "1. Fraco - Poderes básicos e limitados\n" +
+                            "2. Moderado - Poderes com algumas limitações\n" +
+                            "3. Forte - Poderes significativos\n" +
+                            "4. Muito Forte - Poderes excepcionais\n" +
+                            "5. Extremamente Forte - Poderes raros e poderosos\n\n" +
+                            "Digite o número correspondente ao nível escolhido:",
                 color=0x1E90FF
             )
             await ctx.send(embed=strength_embed)
 
             valid_strength = False
+            strength_level = None
+
             while not valid_strength:
                 strength_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
                 try:

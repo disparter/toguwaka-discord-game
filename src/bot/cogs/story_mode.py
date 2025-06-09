@@ -7,13 +7,16 @@ import asyncio
 import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
+import random
 
 from utils.database import get_player, update_player, get_club, get_all_clubs
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
 
-from story_mode.story_mode import StoryMode
-from story_mode.club_system import ClubSystem
+from src.story_mode.story_mode import StoryMode
+from src.story_mode.club_system import ClubSystem
+from src.story_mode.consequences_system import ConsequencesSystem
+from src.story_mode.relationship_system import RelationshipSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -27,6 +30,8 @@ class StoryModeCog(commands.Cog):
         self.story_mode = StoryMode()
         self.active_sessions = {}  # user_id -> session_data
         self.club_system = ClubSystem()
+        self.consequences_system = ConsequencesSystem()
+        self.relationship_system = RelationshipSystem()
 
         logger.info("StoryModeCog initialized")
 
@@ -929,61 +934,97 @@ class StoryModeCog(commands.Cog):
 
         return admin_role in member.roles
 
-    @commands.command(name="clube")
-    async def club_info(self, ctx):
-        """Exibe informações sobre o clube atual do jogador."""
+    @commands.command(name="alianca")
+    async def form_alliance(self, ctx, *, club_name: str):
+        """Forma uma aliança com outro clube."""
         # Get player data
         player = get_player(ctx.author.id)
         if not player:
             await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
             return
 
-        # Get club info
-        club_info = self.club_system.get_club_info(player)
-        if "error" in club_info:
-            await ctx.send("Você não está em nenhum clube. Use `!ingressar` para entrar em um clube.")
+        # Check if player is in a club
+        if not player.get('club'):
+            await ctx.send("Você precisa estar em um clube para formar alianças!")
+            return
+
+        # Find target club
+        target_club_id = None
+        for club_id, name in self.club_system.CLUBS.items():
+            if name.lower() == club_name.lower():
+                target_club_id = club_id
+                break
+
+        if not target_club_id:
+            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
+            return
+
+        # Form alliance
+        result = self.club_system.form_alliance(player, target_club_id)
+        if "error" in result:
+            await ctx.send(result["error"])
             return
 
         # Create embed
         embed = create_basic_embed(
-            title=f"Informações do Clube: {club_info['name']}",
-            description=f"Líder: {club_info['leader']}",
-            color=0x1E90FF
+            title="Aliança Formada!",
+            description=f"Seu clube formou uma aliança com o clube {club_name}!",
+            color=0x00FF00
         )
 
-        # Add rank information
+        # Add alliance information
         embed.add_field(
-            name="Rank",
-            value=f"{club_info['rank_name']} (Nível {club_info['rank']})",
+            name="Detalhes da Aliança",
+            value=result["message"],
             inline=False
         )
 
-        # Add experience information
-        embed.add_field(
-            name="Experiência",
-            value=f"{club_info['experience']}/{club_info['experience_needed']} EXP",
-            inline=False
+        await ctx.send(embed=embed)
+
+    @commands.command(name="rivalidade")
+    async def declare_rivalry(self, ctx, *, club_name: str):
+        """Declara rivalidade com outro clube."""
+        # Get player data
+        player = get_player(ctx.author.id)
+        if not player:
+            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
+            return
+
+        # Check if player is in a club
+        if not player.get('club'):
+            await ctx.send("Você precisa estar em um clube para declarar rivalidades!")
+            return
+
+        # Find target club
+        target_club_id = None
+        for club_id, name in self.club_system.CLUBS.items():
+            if name.lower() == club_name.lower():
+                target_club_id = club_id
+                break
+
+        if not target_club_id:
+            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
+            return
+
+        # Declare rivalry
+        result = self.club_system.declare_rivalry(player, target_club_id)
+        if "error" in result:
+            await ctx.send(result["error"])
+            return
+
+        # Create embed
+        embed = create_basic_embed(
+            title="Rivalidade Declarada!",
+            description=f"Seu clube declarou rivalidade com o clube {club_name}!",
+            color=0xFF0000
         )
 
-        # Add rivalries information
-        rivalries = self.club_system._get_rivalries_info(player)
-        if rivalries:
-            rivalries_text = "\n".join([f"- {r['name']}: {r['affinity']}" for r in rivalries])
-            embed.add_field(
-                name="Rivalidades",
-                value=rivalries_text,
-                inline=False
-            )
-
-        # Add alliances information
-        alliances = self.club_system._get_alliances_info(player)
-        if alliances:
-            alliances_text = "\n".join([f"- {a['name']}: {a['affinity']}" for a in alliances])
-            embed.add_field(
-                name="Alianças",
-                value=alliances_text,
-                inline=False
-            )
+        # Add rivalry information
+        embed.add_field(
+            name="Detalhes da Rivalidade",
+            value=result["message"],
+            inline=False
+        )
 
         await ctx.send(embed=embed)
 
