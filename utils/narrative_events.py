@@ -92,7 +92,10 @@ def generate_dynamic_event(player: Dict[str, Any]) -> Dict[str, Any]:
         "difficulty": difficulty,
         "check_result": check_result,
         "rewards": rewards,
-        "dynamic_elements": dynamic_elements
+        "dynamic_elements": {
+            **dynamic_elements,
+            "outcome": template["dynamic_elements"]["outcome"]
+        }
     }
 
     logger.info(f"Generated dynamic event: {event['title']} (Success: {success})")
