@@ -1,19 +1,34 @@
-FROM python:3.11-slim
+# Build stage
+FROM python:3.13-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Install build dependencies
+RUN apk add --no-cache build-base
+
+# Install setuptools first
+RUN pip install --no-cache-dir setuptools
+
+# Install Python dependencies
 COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application
+# Copy only necessary source files
 COPY . .
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
+# Final stage
+FROM python:3.13-alpine
 
-# Run the bot
+WORKDIR /app
+
+# Copy installed Python packages from builder
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+# Copy application code
+COPY --from=builder /app .
+
+# Set environment variables
+ENV PYTHONPATH=/app
+
 CMD ["python", "bot.py"]

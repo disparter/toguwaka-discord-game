@@ -455,5 +455,23 @@ def list_item_for_sale(item_id, seller_id, price):
         logger.error(f"Error listing item {item_id} by seller {seller_id}: {e}")
         raise DynamoDBOperationError(f"Failed to list item for sale: {e}")
 
+@handle_dynamo_error
+def get_system_flag(flag_name):
+    """Get a system flag from DynamoDB."""
+    try:
+        table = get_table(TABLES['main'])
+        response = table.get_item(
+            Key={
+                'PK': 'SYSTEM',
+                'SK': f'FLAG#{flag_name}'
+            }
+        )
+        if 'Item' in response:
+            return response['Item'].get('value')
+        return None
+    except Exception as e:
+        logger.error(f"Error getting system flag {flag_name}: {e}")
+        raise DynamoDBOperationError(f"Failed to get system flag: {e}")
+
 # Initialize the DynamoDB connection when the module is imported
 init_db()
