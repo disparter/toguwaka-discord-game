@@ -473,5 +473,35 @@ def get_system_flag(flag_name):
         logger.error(f"Error getting system flag {flag_name}: {e}")
         raise DynamoDBOperationError(f"Failed to get system flag: {e}")
 
+@handle_dynamo_error
+def update_player(user_id, **kwargs):
+    """Update player data in DynamoDB."""
+    try:
+        table = get_table(TABLES['players'])
+        update_expression = []
+        expression_attribute_values = {}
+        for key, value in kwargs.items():
+            update_expression.append(f"{key} = :{key}")
+            # Serializa dicts para JSON
+            if isinstance(value, dict):
+                value = json.dumps(value)
+            expression_attribute_values[f":{key}"] = value
+        update_expression.append("last_active = :last_active")
+        expression_attribute_values[":last_active"] = datetime.now().isoformat()
+        update_expr = "SET " + ", ".join(update_expression)
+        table.update_item(
+            Key={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'PROFILE'
+            },
+            UpdateExpression=update_expr,
+            ExpressionAttributeValues=expression_attribute_values
+        )
+        logger.info(f"Updated player {user_id} in DynamoDB: {list(kwargs.keys())}")
+        return True
+    except Exception as e:
+        logger.error(f"Error updating player {user_id}: {e}")
+        raise DynamoDBOperationError(f"Failed to update player: {e}")
+
 # Initialize the DynamoDB connection when the module is imported
 init_db()

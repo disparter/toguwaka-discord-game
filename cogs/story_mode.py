@@ -52,9 +52,15 @@ class StoryModeCog(commands.Cog):
 
         # Start or continue the story
         result = self.story_mode.start_story(player_data)
+        logger.info(f"start_story result: {result}")
 
         if "error" in result:
             await interaction.followup.send(f"Erro ao iniciar o modo história: {result['error']}", ephemeral=True)
+            return
+
+        if "player_data" not in result or "chapter_data" not in result:
+            await interaction.followup.send("Erro interno: dados do modo história ausentes. Por favor, contate um administrador.", ephemeral=True)
+            logger.error(f"start_story returned incomplete result: {result}")
             return
 
         # Update player data in database
