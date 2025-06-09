@@ -1,13 +1,28 @@
 # Build stage
-FROM python:3.13-alpine AS builder
+FROM python:3.11-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache build-base
+# Install build dependencies and required system libraries
+RUN apk add --no-cache \
+    build-base \
+    python3-dev \
+    py3-pip \
+    libffi-dev \
+    cairo-dev \
+    pango-dev \
+    gdk-pixbuf-dev \
+    gcc \
+    musl-dev \
+    linux-headers \
+    g++ \
+    make \
+    freetype-dev \
+    libpng-dev \
+    openblas-dev
 
-# Install setuptools first
-RUN pip install --no-cache-dir setuptools
+# Install setuptools and wheel first
+RUN pip install --no-cache-dir setuptools wheel
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -17,9 +32,19 @@ RUN pip install --user --no-cache-dir -r requirements.txt
 COPY . .
 
 # Final stage
-FROM python:3.13-alpine
+FROM python:3.11-alpine
 
 WORKDIR /app
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    libstdc++ \
+    cairo \
+    pango \
+    gdk-pixbuf \
+    freetype \
+    libpng \
+    openblas
 
 # Copy installed Python packages from builder
 COPY --from=builder /root/.local /root/.local
