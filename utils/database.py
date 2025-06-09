@@ -249,6 +249,11 @@ def sync_db_to_s3():
     The synchronization frequency is controlled by the DB_SYNC_INTERVAL_MINUTES
     environment variable. If not set, the default is 5 minutes.
     """
+    # Skip sync if we're using DynamoDB
+    from utils.db_provider import db_provider
+    if db_provider.current_db_type == db_provider.DatabaseType.DYNAMODB:
+        return True
+
     if not IS_AWS:
         return True
 
@@ -298,6 +303,11 @@ def update_player(user_id, **kwargs):
     """Update player data in the database."""
     if not kwargs:
         return False
+
+    # Skip if we're using DynamoDB
+    from utils.db_provider import db_provider
+    if db_provider.current_db_type == db_provider.DatabaseType.DYNAMODB:
+        return True
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
