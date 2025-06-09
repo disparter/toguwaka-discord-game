@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.db_provider import get_player, get_club, get_top_players
+from utils.db_provider import get_player, get_club, get_top_players, get_player_inventory
 from utils.embeds import create_player_embed, create_inventory_embed, create_leaderboard_embed
 import json
 
@@ -52,10 +52,14 @@ class PlayerStatus(commands.Cog):
         """Slash command version of the inventory command."""
         try:
             # Get player data
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
+
+            # Buscar inventário na tabela Inventario
+            inventory = await get_player_inventory(interaction.user.id)
+            player['inventory'] = inventory
 
             # Create inventory embed
             embed = create_inventory_embed(player)
@@ -65,12 +69,12 @@ class PlayerStatus(commands.Cog):
 
             # Check if player has consumable items
             has_consumables = False
-            for item_id, item in player['inventory'].items():
-                if item['type'] == 'consumable':
+            for item_id, item in inventory.items():
+                if item.get('type') == 'consumable':
                     has_consumables = True
                     # Create button for each consumable item
                     button = discord.ui.Button(
-                        label=f"Usar {item['name']}",
+                        label=f"Usar {item.get('name', item_id)}",
                         custom_id=f"use_{item_id}",
                         style=discord.ButtonStyle.primary
                     )
@@ -176,24 +180,13 @@ class PlayerStatus(commands.Cog):
     async def inventory(self, ctx):
         """Exibe o inventário do jogador."""
         # Get player data
-        player = get_player(ctx.author.id)
+        player = await get_player(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
-        # LOG: Mostrar dados do player e inventário
-        logger.info(f"[INVENTARIO] Player lido: {player}")
-        logger.info(f"[INVENTARIO] Inventário lido: {player.get('inventory')}")
-
-        # Garantir que o inventário é um dicionário
-        inventory = player.get('inventory', {})
-        if isinstance(inventory, str):
-            try:
-                inventory = json.loads(inventory)
-            except Exception:
-                inventory = {}
-        if not isinstance(inventory, dict):
-            inventory = {}
+        # Buscar inventário na tabela Inventario
+        inventory = await get_player_inventory(ctx.author.id)
         player['inventory'] = inventory
 
         # Create inventory embed
@@ -202,7 +195,7 @@ class PlayerStatus(commands.Cog):
         # Check if player has consumable items
         has_consumables = False
         for item_id, item in inventory.items():
-            if item['type'] == 'consumable':
+            if item.get('type') == 'consumable':
                 has_consumables = True
                 break
 

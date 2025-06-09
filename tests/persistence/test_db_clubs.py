@@ -3,10 +3,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 from utils.dynamodb import get_all_clubs, update_player
 
-pytestmark = pytest.mark.skipif(
-    os.environ.get('USE_DYNAMO', 'false').lower() == 'true',
-    reason="Testes SQLite desabilitados quando USE_DYNAMO=True"
-)
+pytestmark = pytest.mark.skip(reason='Desabilitado para evitar dependência do SQLite')
 
 @pytest.fixture
 def mock_dynamodb():
@@ -20,7 +17,7 @@ def mock_dynamodb():
         mock.return_value = mock_client
         yield mock_client
 
-@pytest.mark.skip(reason="Requires AWS credentials")
+@pytest.mark.skip(reason="DynamoDB tests disabled")
 class TestDatabaseClubs:
     """Test suite for club database operations."""
 

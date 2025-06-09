@@ -11,6 +11,8 @@ from unittest.mock import MagicMock, patch
 from tests.mocks.dynamodb_mock import MockDynamoDB
 from utils.dynamodb import init_db
 from datetime import datetime
+from unittest.mock import AsyncMock
+import sqlite3
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -64,22 +66,63 @@ def mock_aws():
         yield mock_dynamo
 
 @pytest.fixture
-def mock_dynamodb(mock_aws):
-    """Provide mock DynamoDB instance."""
-    return mock_aws
+def mock_dynamodb():
+    mock_tables = {
+        'players': MagicMock(),
+        'inventory': MagicMock(),
+        'reset': lambda: None
+    }
+    
+    # Configure mock tables with AsyncMock
+    mock_tables['players'].get_item = AsyncMock(return_value={'Item': {'user_id': 'test_user_123'}})
+    mock_tables['players'].put_item = AsyncMock(return_value={})
+    mock_tables['players'].query = AsyncMock(return_value={'Items': []})
+    mock_tables['players'].scan = AsyncMock(return_value={'Items': []})
+    
+    mock_tables['inventory'].get_item = AsyncMock(return_value={'Item': {'user_id': 'test_user_123', 'items': []}})
+    mock_tables['inventory'].put_item = AsyncMock(return_value={})
+    mock_tables['inventory'].query = AsyncMock(return_value={'Items': []})
+    mock_tables['inventory'].delete_item = AsyncMock(return_value={})
+    
+    # Configure reset function
+    def reset():
+        mock_tables['players'].get_item.reset_mock()
+        mock_tables['players'].put_item.reset_mock()
+        mock_tables['players'].query.reset_mock()
+        mock_tables['players'].scan.reset_mock()
+        mock_tables['inventory'].get_item.reset_mock()
+        mock_tables['inventory'].put_item.reset_mock()
+        mock_tables['inventory'].query.reset_mock()
+        mock_tables['inventory'].delete_item.reset_mock()
+    
+    mock_tables['reset'] = reset
+    
+    # Mock get_table function
+    def get_table(table_name):
+        return mock_tables[table_name]
+    
+    with patch('utils.dynamodb.get_table', side_effect=get_table):
+        yield mock_tables
 
-@pytest.fixture(autouse=True)
-def setup_database(mock_dynamodb):
-    """Initialize database for tests."""
-    init_db()
-    yield
-    mock_dynamodb.reset()
-
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def reset_mock_dynamodb(mock_dynamodb):
-    """Reset mock DynamoDB state before each test."""
-    mock_dynamodb.reset()
-    yield 
+    mock_dynamodb['reset']()
+    return mock_dynamodb
+
+@pytest.fixture
+def test_player():
+    return {
+        'user_id': 'test_user_123',
+        'exp': 0,
+        'level': 1,
+        'club_id': None,
+        'power_stat': 10,
+        'dexterity': 10,
+        'intellect': 10,
+        'charisma': 10,
+        'hp': 100,
+        'tusd': 1000
+    }
 
 @pytest.fixture
 def mock_discord():
@@ -105,17 +148,19 @@ def test_player():
         "user_id": "123456789",
         "name": "Test Player",
         "level": 1,
-        "xp": 0,
-        "gold": 100,
+        "exp": 0,
+        "tusd": 1000,
         "hp": 100,
-        "attributes": {
-            "strength": 5,
-            "agility": 5,
-            "intelligence": 5
-        },
-        "inventory": [],
-        "club": None,
-        "created_at": datetime.now().isoformat()
+        "max_hp": 100,
+        "dexterity": 10,
+        "intellect": 10,
+        "charisma": 10,
+        "power_stat": 10,
+        "reputation": 0,
+        "strength_level": 1,
+        "club_id": None,
+        "created_at": datetime.now().isoformat(),
+        "last_active": datetime.now().isoformat()
     }
 
 @pytest.fixture
@@ -148,23 +193,47 @@ def test_item():
     }
 
 @pytest.fixture
+def test_inventory():
+    """Provide test inventory data."""
+    return {
+        "item_1": {
+            "name": "Test Item 1",
+            "type": "weapon",
+            "rarity": "common",
+            "stats": {"attack": 5}
+        },
+        "item_2": {
+            "name": "Test Item 2",
+            "type": "consumable",
+            "rarity": "rare",
+            "effect": "heal"
+        }
+    }
+
+@pytest.fixture
 def mock_db():
     """Mock database operations."""
     with patch('utils.db_provider.get_player') as mock_get_player, \
          patch('utils.db_provider.update_player') as mock_update_player, \
          patch('utils.db_provider.get_club') as mock_get_club, \
-         patch('utils.db_provider.get_item') as mock_get_item:
+         patch('utils.db_provider.get_player_inventory') as mock_get_inventory, \
+         patch('utils.db_provider.add_item_to_inventory') as mock_add_item, \
+         patch('utils.db_provider.remove_item_from_inventory') as mock_remove_item:
         
         mock_get_player.return_value = None
         mock_update_player.return_value = True
         mock_get_club.return_value = None
-        mock_get_item.return_value = None
+        mock_get_inventory.return_value = {}
+        mock_add_item.return_value = True
+        mock_remove_item.return_value = True
         
         yield {
             'get_player': mock_get_player,
             'update_player': mock_update_player,
             'get_club': mock_get_club,
-            'get_item': mock_get_item
+            'get_inventory': mock_get_inventory,
+            'add_item': mock_add_item,
+            'remove_item': mock_remove_item
         }
 
 @pytest.fixture

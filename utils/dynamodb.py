@@ -613,39 +613,55 @@ async def get_player_inventory(user_id):
     try:
         table = get_table(TABLES['inventory'])
         response = await table.query(
-            KeyConditionExpression='JogadorID = :uid',
+            KeyConditionExpression='PK = :pk',
             ExpressionAttributeValues={
-                ':uid': user_id
+                ':pk': f'PLAYER#{user_id}'
             }
         )
-
-        if 'Items' in response:
-            inventory = {}
-            for item in response['Items']:
-                inventory[item['ItemID']] = int(item['quantidade'])
-            return inventory
-        return {}
+        
+        # Convert items to inventory format
+        inventory = {}
+        for item in response.get('Items', []):
+            item_id = item['SK'].replace('ITEM#', '')
+            inventory[item_id] = item['item_data']
+        
+        return inventory
     except Exception as e:
         logger.error(f"Error getting inventory for player {user_id}: {e}")
         raise DynamoDBOperationError(f"Failed to get inventory: {e}")
 
 @handle_dynamo_error
-async def add_item_to_inventory(user_id, item_id, quantity):
-    """Add an item to player's inventory in DynamoDB."""
+async def add_item_to_inventory(user_id, item_id, item_data):
+    """Add item to player's inventory."""
     try:
         table = get_table(TABLES['inventory'])
         await table.put_item(
             Item={
-                'JogadorID': user_id,
-                'ItemID': item_id,
-                'quantidade': quantity,
-                'updated_at': datetime.now().isoformat()
+                'PK': f'PLAYER#{user_id}',
+                'SK': f'ITEM#{item_id}',
+                'item_data': item_data
             }
         )
         return True
     except Exception as e:
-        logger.error(f"Error adding item {item_id} to inventory for player {user_id}: {e}")
+        logger.error(f"Error adding item to inventory for player {user_id}: {e}")
         raise DynamoDBOperationError(f"Failed to add item to inventory: {e}")
+
+@handle_dynamo_error
+async def remove_item_from_inventory(user_id, item_id):
+    """Remove item from player's inventory."""
+    try:
+        table = get_table(TABLES['inventory'])
+        await table.delete_item(
+            Key={
+                'PK': f'PLAYER#{user_id}',
+                'SK': f'ITEM#{item_id}'
+            }
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Error removing item from inventory for player {user_id}: {e}")
+        raise DynamoDBOperationError(f"Failed to remove item from inventory: {e}")
 
 @handle_dynamo_error
 async def get_market_listing(item_id, seller_id):

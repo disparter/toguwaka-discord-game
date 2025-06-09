@@ -28,6 +28,9 @@ from utils.game_mechanics.duel.duel_narrator_interface import IDuelNarrator
 from utils.game_mechanics.duel.duel_calculator import DuelCalculator
 from utils.game_mechanics.duel.duel_narrator import DuelNarrator
 
+# Faction
+from utils.game_mechanics.faction_reputation import FactionReputationManager
+
 # Provide backward compatibility functions
 def calculate_exp_for_level(level):
     """Backward compatibility function for calculate_exp_for_level."""
@@ -64,3 +67,89 @@ def calculate_hp_factor(current_hp, max_hp):
 def generate_duel_narration(duel_result):
     """Backward compatibility function for generate_duel_narration."""
     return DuelNarrator.generate_narration(duel_result)
+
+import re
+from typing import Dict, List, Optional, Tuple
+from utils.dynamodb import get_player, update_player, get_all_clubs
+
+def normalize_club_name(name: str) -> str:
+    """Normalize club name to a valid format."""
+    # Convert to lowercase
+    name = name.lower()
+    # Replace spaces with underscores
+    name = name.replace(' ', '_')
+    # Remove special characters
+    name = re.sub(r'[^a-z0-9_]', '', name)
+    return name
+
+async def select_club(user_id: str, club_id: Optional[str] = None) -> str:
+    """Select a club for a player."""
+    try:
+        # Get player data
+        player = await get_player(user_id)
+        if not player:
+            return "Jogador não encontrado."
+        
+        # Check if player is already in a club
+        if player.get('club_id'):
+            return "Você já está em um clube. Não é possível trocar de clube."
+        
+        # If no club specified, return available clubs
+        if not club_id:
+            clubs = await get_all_clubs()
+            if not clubs:
+                return "Nenhum clube disponível no momento."
+            return "Por favor, escolha um clube válido."
+        
+        # Normalize club ID
+        club_id = normalize_club_name(club_id)
+        
+        # Get all clubs to validate club_id
+        clubs = await get_all_clubs()
+        valid_clubs = [c['club_id'] for c in clubs]
+        
+        if club_id not in valid_clubs:
+            return "Clube inválido. Por favor, escolha um clube válido."
+        
+        # Update player's club
+        await update_player(user_id, club_id=club_id)
+        
+        # Get club name for response
+        club = next((c for c in clubs if c['club_id'] == club_id), None)
+        club_name = club['name'] if club else club_id
+        
+        return f"Você foi registrado no clube {club_name}!"
+        
+    except Exception as e:
+        return f"Erro ao selecionar clube. Por favor, tente novamente mais tarde."
+
+def calculate_exp_gain(player_level: int, enemy_level: int) -> int:
+    """Calculate experience gain based on player and enemy levels."""
+    level_diff = enemy_level - player_level
+    base_exp = 10
+    
+    if level_diff > 0:
+        # Bonus for fighting higher level enemies
+        exp_gain = base_exp * (1 + (level_diff * 0.2))
+    else:
+        # Penalty for fighting lower level enemies
+        exp_gain = base_exp * (1 + (level_diff * 0.1))
+    
+    return max(1, int(exp_gain))
+
+def calculate_level_up(current_level: int, current_exp: int) -> Tuple[int, int]:
+    """Calculate new level and remaining experience."""
+    exp_needed = current_level * 100  # Base experience needed for next level
+    
+    if current_exp < exp_needed:
+        return current_level, current_exp
+    
+    new_level = current_level
+    remaining_exp = current_exp
+    
+    while remaining_exp >= exp_needed:
+        remaining_exp -= exp_needed
+        new_level += 1
+        exp_needed = new_level * 100
+    
+    return new_level, remaining_exp

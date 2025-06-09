@@ -25,7 +25,7 @@ class RankingFormatter:
             )
         
         # Sort players by exp gained
-        daily_players.sort(key=lambda x: x['exp_gained'], reverse=True)
+        daily_players.sort(key=lambda x: x.get('exp_gained', 0), reverse=True)
         top_daily = daily_players[:5]
         
         # Create ranking text with improved formatting
@@ -33,10 +33,9 @@ class RankingFormatter:
         
         for i, player in enumerate(top_daily, 1):
             medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-            club = get_club(player['club_id']) if player.get('club_id') else None
-            club_name = club['name'] if club else "Sem clube"
+            club_name = player.get('club_name', 'Sem clube')
             
-            ranking_text += f"{medal} **{player['name']}** | {club_name} | Total: {player['exp_gained']} pts\n"
+            ranking_text += f"{medal} **{player.get('name', 'Unknown')}** | {club_name} | Total: {player.get('exp_gained', 0)} pts\n"
         
         ranking_text += "──────────────\n\n"
         
@@ -78,10 +77,9 @@ class RankingFormatter:
         
         for i, player in enumerate(overall_players[:5], 1):
             medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-            club = get_club(player.get('club_id')) if player.get('club_id') else None
-            club_name = club['name'] if club else "Sem clube"
+            club_name = player.get('club_name', 'Sem clube')
             
-            ranking_text += f"{medal} **{player['name']}** | {club_name} | Nível: {player['level']}\n"
+            ranking_text += f"{medal} **{player.get('name', 'Unknown')}** | {club_name} | Nível: {player.get('level', 1)}\n"
         
         ranking_text += "──────────────\n\n"
         
@@ -119,7 +117,7 @@ class RankingFormatter:
             )
         
         # Sort players by reputation
-        reputation_players.sort(key=lambda x: x['reputation'], reverse=True)
+        reputation_players.sort(key=lambda x: x.get('reputation', 0), reverse=True)
         top_reputation = reputation_players[:5]
         
         # Create ranking text with improved formatting
@@ -127,10 +125,9 @@ class RankingFormatter:
         
         for i, player in enumerate(top_reputation, 1):
             medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-            club = get_club(player['club_id']) if player.get('club_id') else None
-            club_name = club['name'] if club else "Sem clube"
+            club_name = player.get('club_name', 'Sem clube')
             
-            ranking_text += f"{medal} **{player['name']}**: {player['reputation']} pts\n"
+            ranking_text += f"{medal} **{player.get('name', 'Unknown')}**: {player.get('reputation', 0)} pts\n"
         
         ranking_text += "──────────────\n\n"
         

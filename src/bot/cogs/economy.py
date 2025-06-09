@@ -7,7 +7,7 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from utils.db_provider import get_player, update_player, get_club, store_cooldown
+from utils.db_provider import get_player, update_player, get_club, store_cooldown, get_player_inventory, add_item_to_inventory
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
 from src.bot.cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
@@ -1052,7 +1052,7 @@ class Economy(commands.Cog):
     async def slash_buy(self, interaction: discord.Interaction, item_id: int):
         """Slash command version of the buy command."""
         # Check if player exists
-        player = get_player(interaction.user.id)
+        player = await get_player(interaction.user.id)
         if not player:
             await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
             return
@@ -1094,6 +1094,9 @@ class Economy(commands.Cog):
             await interaction.response.send_message(f"{interaction.user.mention}, item não encontrado ou não disponível neste momento. Use `/economia loja` para ver os itens disponíveis.")
             return
 
+        # Buscar inventário na tabela Inventario
+        inventory = await get_player_inventory(interaction.user.id)
+
         # Check if item requires alternative currency
         if "currency" in item and item["currency"] in ALTERNATIVE_CURRENCIES:
             currency_type = item["currency"]
@@ -1108,50 +1111,26 @@ class Economy(commands.Cog):
                 return
 
             # Process the purchase with alternative currency
-            inventory = player["inventory"]
-
-            # Add item to inventory
-            if str(item["id"]) in inventory:
+            # Add or update item in inventory table
+            item_key = str(item["id"])
+            if item_key in inventory:
                 # If player already has this item, increase quantity
-                inventory[str(item["id"])]["quantity"] += 1
+                await add_item_to_inventory(interaction.user.id, item_key, inventory[item_key]["quantity"] + 1)
             else:
                 # Add new item to inventory
-                inventory_item = {
-                    "id": item["id"],
-                    "name": item["name"],
-                    "description": item["description"],
-                    "type": item["type"],
-                    "rarity": item["rarity"],
-                    "effects": item["effects"],
-                    "quantity": 1
-                }
+                await add_item_to_inventory(interaction.user.id, item_key, 1)
 
-                # Add category and season/event info if applicable
-                if "category" in item:
-                    inventory_item["category"] = item["category"]
-                if "season" in item:
-                    inventory_item["season"] = item["season"]
-                if "event" in item:
-                    inventory_item["event"] = item["event"]
-
-                inventory[str(item["id"])] = inventory_item
-
-            # Update player data
+            # Update player data (currencies)
             alt_currencies[currency_type] = alt_currencies.get(currency_type, 0) - item["price"]
-            update_data = {
-                "currencies": json.dumps(alt_currencies),
-                "inventory": json.dumps(inventory)
-            }
+            await update_player(interaction.user.id, currencies=json.dumps(alt_currencies))
         else:
             # Standard TUSD purchase
-            # Apply club discount if applicable
             from utils.club_perks import apply_shop_discount
             original_price = item["price"]
             discounted_price = apply_shop_discount(original_price, player.get('club_id'))
 
             # Check if player has enough TUSD
             if player["tusd"] < discounted_price:
-                # Show original and discounted price if there's a discount
                 if discounted_price < original_price:
                     await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: ~~{original_price}~~ {discounted_price} TUSD (Desconto de Clube), Seu saldo: {player['tusd']} TUSD")
                 else:
@@ -1161,242 +1140,20 @@ class Economy(commands.Cog):
             # Store the discounted price for later use
             item["discounted_price"] = discounted_price
 
-            # Process the purchase
-            inventory = player["inventory"]
-
-            # Add item to inventory
-            if str(item["id"]) in inventory:
-                # If player already has this item, increase quantity
-                inventory[str(item["id"])]["quantity"] += 1
+            # Add or update item in inventory table
+            item_key = str(item["id"])
+            if item_key in inventory:
+                await add_item_to_inventory(interaction.user.id, item_key, inventory[item_key]["quantity"] + 1)
             else:
-                # Add new item to inventory
-                inventory_item = {
-                    "id": item["id"],
-                    "name": item["name"],
-                    "description": item["description"],
-                    "type": item["type"],
-                    "rarity": item["rarity"],
-                    "effects": item["effects"],
-                    "quantity": 1
-                }
+                await add_item_to_inventory(interaction.user.id, item_key, 1)
 
-                # Add category and season/event info if applicable
-                if "category" in item:
-                    inventory_item["category"] = item["category"]
-                if "season" in item:
-                    inventory_item["season"] = item["season"]
-                if "event" in item:
-                    inventory_item["event"] = item["event"]
-
-                inventory[str(item["id"])] = inventory_item
-
-            # Update player data
-            # Use the discounted price if available, otherwise use the original price
+            # Update player data (TUSD)
             price_to_deduct = item.get("discounted_price", item["price"])
-            update_data = {
-                "tusd": player["tusd"] - price_to_deduct,
-                "inventory": json.dumps(inventory)
-            }
+            await update_player(interaction.user.id, tusd=player["tusd"] - price_to_deduct)
 
-        # Special handling for permanent attribute items
-        if item["type"] == "consumable" and "permanent_attribute" in item["effects"]:
-            # Check if it's a specific attribute or random
-            if isinstance(item["effects"]["permanent_attribute"], dict):
-                # Specific attribute
-                for attr, value in item["effects"]["permanent_attribute"].items():
-                    if attr in ["dexterity", "intellect", "charisma", "power_stat"]:
-                        update_data[attr] = player[attr] + value
-            else:
-                # Random attribute
-                attribute = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
-                update_data[attribute] = player[attribute] + item["effects"]["permanent_attribute"]
+        # TODO: Tratar efeitos especiais (permanent_attribute, learn_technique, etc) migrando lógica para Inventario se necessário
 
-            # Remove the item from inventory since it's consumed immediately
-            inventory[str(item["id"])]["quantity"] -= 1
-            if inventory[str(item["id"])]["quantity"] <= 0:
-                del inventory[str(item["id"])]
-
-            update_data["inventory"] = json.dumps(inventory)
-
-        # Special handling for technique scrolls
-        techniques = player["techniques"]
-        technique_learned = None
-
-        # Regular technique scroll (random technique)
-        if item["type"] == "consumable" and "learn_technique" in item["effects"]:
-            # Choose a random technique
-            available_techniques = [t for t in TECHNIQUES if str(t["id"]) not in techniques]
-            if available_techniques:
-                technique = random.choice(available_techniques)
-                if str(technique["id"]) not in techniques:
-                    techniques[str(technique["id"])] = {
-                        "id": technique["id"],
-                        "name": technique["name"],
-                        "description": technique["description"],
-                        "type": technique["type"],
-                        "category": technique["category"],
-                        "tier": technique["tier"],
-                        "level": technique["level"],
-                        "effects": technique["effects"]
-                    }
-                    technique_learned = technique
-                    update_data["techniques"] = json.dumps(techniques)
-
-                    # Remove the item from inventory since it's consumed immediately
-                    inventory[str(item["id"])]["quantity"] -= 1
-                    if inventory[str(item["id"])]["quantity"] <= 0:
-                        del inventory[str(item["id"])]
-
-                    update_data["inventory"] = json.dumps(inventory)
-            else:
-                await interaction.response.send_message(f"{interaction.user.mention}, você já conhece todas as técnicas disponíveis!")
-                return
-
-        # Advanced technique scroll (random advanced technique)
-        elif item["type"] == "consumable" and "learn_advanced_technique" in item["effects"]:
-            # Choose a random advanced technique
-            advanced_techniques = [t for t in TECHNIQUES if t["tier"] == "advanced" and str(t["id"]) not in techniques]
-            if advanced_techniques:
-                technique = random.choice(advanced_techniques)
-                if str(technique["id"]) not in techniques:
-                    techniques[str(technique["id"])] = {
-                        "id": technique["id"],
-                        "name": technique["name"],
-                        "description": technique["description"],
-                        "type": technique["type"],
-                        "category": technique["category"],
-                        "tier": technique["tier"],
-                        "level": technique["level"],
-                        "effects": technique["effects"]
-                    }
-                    technique_learned = technique
-                    update_data["techniques"] = json.dumps(techniques)
-
-                    # Remove the item from inventory since it's consumed immediately
-                    inventory[str(item["id"])]["quantity"] -= 1
-                    if inventory[str(item["id"])]["quantity"] <= 0:
-                        del inventory[str(item["id"])]
-
-                    update_data["inventory"] = json.dumps(inventory)
-            else:
-                await interaction.response.send_message(f"{interaction.user.mention}, você já conhece todas as técnicas avançadas disponíveis!")
-                return
-
-        # Specific technique scroll
-        elif item["type"] == "consumable" and "learn_specific_technique" in item["effects"]:
-            technique_id = item["effects"]["learn_specific_technique"]
-            technique = next((t for t in TECHNIQUES if t["id"] == technique_id), None)
-
-            if technique and str(technique["id"]) not in techniques:
-                techniques[str(technique["id"])] = {
-                    "id": technique["id"],
-                    "name": technique["name"],
-                    "description": technique["description"],
-                    "type": technique["type"],
-                    "category": technique["category"],
-                    "tier": technique["tier"],
-                    "level": technique["level"],
-                    "effects": technique["effects"]
-                }
-                technique_learned = technique
-                update_data["techniques"] = json.dumps(techniques)
-
-                # Remove the item from inventory since it's consumed immediately
-                inventory[str(item["id"])]["quantity"] -= 1
-                if inventory[str(item["id"])]["quantity"] <= 0:
-                    del inventory[str(item["id"])]
-
-                update_data["inventory"] = json.dumps(inventory)
-            elif str(technique["id"]) in techniques:
-                await interaction.response.send_message(f"{interaction.user.mention}, você já conhece a técnica {technique['name']}!")
-                return
-            else:
-                await interaction.response.send_message(f"{interaction.user.mention}, técnica não encontrada!")
-                return
-
-        # Update player in database
-        success = update_player(interaction.user.id, **update_data)
-
-        if success:
-            # Create purchase confirmation embed
-            rarity = RARITIES.get(item["rarity"], RARITIES["common"])
-
-            # Add category info to the embed
-            category_info = ""
-            if "category" in item:
-                category_name = ITEM_CATEGORIES.get(item["category"], "")
-                if category_name:
-                    category_info = f"\nCategoria: {category_name}"
-
-                    # Add seasonal or event info
-                    if item["category"] == "seasonal" and "season" in item:
-                        season_names = {
-                            "spring": "Primavera",
-                            "summer": "Verão",
-                            "autumn": "Outono",
-                            "winter": "Inverno"
-                        }
-                        season_name = season_names.get(item["season"], item["season"])
-                        category_info += f" (Sazonal: {season_name})"
-                    elif item["category"] == "event" and "event" in item:
-                        event_name = item["event"].replace("_", " ").title()
-                        category_info += f" (Evento: {event_name})"
-
-            embed = create_basic_embed(
-                title="Compra Realizada!",
-                description=f"Você comprou {rarity['emoji']} **{item['name']}** por " + 
-                            (f"~~{item['price']}~~ {item.get('discounted_price')} TUSD (Desconto de Clube)." if item.get('discounted_price', item['price']) < item['price'] else f"{item['price']} TUSD.") +
-                            f"{category_info}\n\n"
-                            f"Saldo atual: {update_data['tusd']} TUSD 💰",
-                color=rarity["color"]
-            )
-
-            # Add special messages for consumed items
-            if item["type"] == "consumable" and "permanent_attribute" in item["effects"]:
-                attribute_names = {
-                    "dexterity": "Destreza 🏃‍♂️",
-                    "intellect": "Intelecto 🧠",
-                    "charisma": "Carisma 💬",
-                    "power_stat": "Poder ⚡"
-                }
-
-                if isinstance(item["effects"]["permanent_attribute"], dict):
-                    # Specific attribute
-                    attr_messages = []
-                    for attr, value in item["effects"]["permanent_attribute"].items():
-                        if attr in attribute_names:
-                            attr_messages.append(f"{attribute_names[attr]} em +{value}")
-
-                    if attr_messages:
-                        embed.add_field(
-                            name="Item Consumido!",
-                            value=f"O Elixir aumentou seu(s) atributo(s) de {', '.join(attr_messages)}!",
-                            inline=False
-                        )
-                else:
-                    # Random attribute
-                    embed.add_field(
-                        name="Item Consumido!",
-                        value=f"O Elixir aumentou seu atributo de {attribute_names[attribute]} em +{item['effects']['permanent_attribute']}!",
-                        inline=False
-                    )
-
-            if technique_learned:
-                # Format the technique info nicely
-                tier_name = TECHNIQUE_TIERS.get(technique_learned["tier"], technique_learned["tier"].capitalize())
-                category_name = TECHNIQUE_CATEGORIES.get(technique_learned["category"], technique_learned["category"].capitalize())
-
-                embed.add_field(
-                    name="Técnica Aprendida!",
-                    value=f"Você aprendeu a técnica **{technique_learned['name']}**!\n"
-                          f"Tipo: {technique_learned['type'].capitalize()} | Categoria: {category_name} | Nível: {tier_name}\n"
-                          f"Descrição: {technique_learned['description']}",
-                    inline=False
-                )
-
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("Ocorreu um erro durante a compra. Por favor, tente novamente mais tarde.")
+        await interaction.response.send_message(f"{interaction.user.mention}, você comprou o item {item['name']} com sucesso!")
 
     @economy_group.command(name="mercado", description="Acessar o mercado de itens entre jogadores")
     async def slash_market(self, interaction: discord.Interaction):
