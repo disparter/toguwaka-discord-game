@@ -137,9 +137,4 @@ async def test_error_handling(mock_dynamodb):
     )
     with pytest.raises(DynamoDBOperationError) as exc_info:
         await get_player('123')
-    assert 'Failed to execute get_player' in str(exc_info.value)
-
-@pytest.mark.skip(reason="Requires complex setup")
-def test_create_club():
-    """Test club creation."""
-    pass 
+    assert 'Failed to execute get_player' in str(exc_info.value) 

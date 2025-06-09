@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from utils.db_provider import db_provider, DatabaseType
+import asyncio
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -190,7 +191,25 @@ def init_db():
 
 def handle_db_error(func):
     """Decorator to handle database errors and attempt fallback to SQLite if needed."""
-    def wrapper(*args, **kwargs):
+    async def async_wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Database error in {func.__name__}: {e}")
+            
+            # Try to fallback to SQLite if we're not already using it
+            try:
+                if db_provider._current_db_type != DatabaseType.SQLITE:
+                    logger.info(f"Attempting to fallback to SQLite for {func.__name__}")
+                    if db_provider.fallback_to_sqlite():
+                        return await func(*args, **kwargs)
+            except Exception as fallback_error:
+                logger.error(f"Error during fallback to SQLite: {fallback_error}")
+            
+            # If we get here, either the fallback failed or we were already using SQLite
+            raise e
+
+    def sync_wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception as e:
@@ -198,130 +217,90 @@ def handle_db_error(func):
             
             # Try to fallback to SQLite if we're not already using it
             try:
-                from utils.db_provider import db_provider
-                if db_provider.current_db_type != DatabaseType.SQLITE:
+                if db_provider._current_db_type != DatabaseType.SQLITE:
+                    logger.info(f"Attempting to fallback to SQLite for {func.__name__}")
                     if db_provider.fallback_to_sqlite():
-                        # Retry the operation with SQLite
                         return func(*args, **kwargs)
             except Exception as fallback_error:
                 logger.error(f"Error during fallback to SQLite: {fallback_error}")
             
-            # If we get here, either fallback failed or we're already using SQLite
-            raise
-    return wrapper
+            # If we get here, either the fallback failed or we were already using SQLite
+            raise e
+
+    # Return the appropriate wrapper based on whether the function is async
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    return sync_wrapper
 
 # Apply the error handler to all database functions
 @handle_db_error
-def get_player(user_id):
-    """Get player data from the database.
-    
-    Args:
-        user_id (str): The Discord user ID of the player
-        
-    Returns:
-        dict: Player data if found, None otherwise
-    """
-    if not user_id:
-        logger.warning("Attempted to get player with None or empty user_id")
-        return None
-        
+async def get_player(user_id):
+    """Get a player's data from the database."""
     conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-
+    
     try:
-        logger.debug(f"Fetching player data for user_id: {user_id}")
-        cursor.execute('''
-        SELECT * FROM players WHERE user_id = ?
-        ''', (str(user_id),))
-
+        cursor.execute('SELECT * FROM players WHERE user_id = ?', (str(user_id),))
         player = cursor.fetchone()
+        
         if player:
-            # Convert row to dict and parse JSON fields
-            player_dict = dict(player)
-            try:
-                player_dict['inventory'] = json.loads(player_dict['inventory'])
-            except json.JSONDecodeError as e:
-                logger.error(f"Error parsing inventory JSON for player {user_id}: {e}")
-                player_dict['inventory'] = {}
-            logger.debug(f"Successfully retrieved player data for {user_id}")
-            return player_dict
+            # Convert row to dictionary
+            columns = [description[0] for description in cursor.description]
+            player_data = dict(zip(columns, player))
             
-        logger.debug(f"No player found for user_id: {user_id}")
-        return None
-    except sqlite3.Error as e:
-        logger.error(f"Database error while getting player {user_id}: {e}")
+            # Parse JSON fields
+            if 'inventory' in player_data and player_data['inventory']:
+                player_data['inventory'] = json.loads(player_data['inventory'])
+            
+            return player_data
         return None
     finally:
         conn.close()
 
 @handle_db_error
-def create_player(user_id, name, **kwargs):
-    """Create a new player in the database, supporting all fields."""
-    if not user_id or not name:
-        return False
+async def create_player(user_id, name, **kwargs):
+    """Create a new player in the database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    
     try:
-        # Check for duplicate
-        cursor.execute('SELECT 1 FROM players WHERE user_id = ?', (str(user_id),))
+        # Check if player already exists
+        cursor.execute('SELECT user_id FROM players WHERE user_id = ?', (str(user_id),))
         if cursor.fetchone():
+            logger.warning(f"Player {user_id} already exists")
             return False
-
-        # Remove user_id and name from kwargs if present
-        kwargs.pop('user_id', None)
-        kwargs.pop('name', None)
-
-        # Prepare columns and values
-        columns = ['user_id', 'name']
-        values = [str(user_id), str(name)]
-
-        # List of all possible columns in the players table
-        player_columns = [
-            'power', 'level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma',
-            'power_stat', 'reputation', 'hp', 'max_hp', 'inventory', 'strength_level', 'created_at', 'last_active'
-        ]
-
-        # Add default values for required fields
-        defaults = {
-            'power': kwargs.get('power', ''),
-            'level': kwargs.get('level', 1),
-            'exp': kwargs.get('exp', 0),
-            'tusd': kwargs.get('tusd', 1000),
-            'club_id': kwargs.get('club_id', None),
-            'dexterity': kwargs.get('dexterity', 10),
-            'intellect': kwargs.get('intellect', 10),
-            'charisma': kwargs.get('charisma', 10),
-            'power_stat': kwargs.get('power_stat', 10),
-            'reputation': kwargs.get('reputation', 0),
-            'hp': kwargs.get('hp', 100),
-            'max_hp': kwargs.get('max_hp', 100),
-            'inventory': kwargs.get('inventory', '{}'),
-            'strength_level': kwargs.get('strength_level', 1),
-            'created_at': datetime.now().isoformat(),
-            'last_active': datetime.now().isoformat()
-        }
-
-        # Add all columns and their values
-        for col in player_columns:
-            columns.append(col)
-            value = kwargs.get(col, defaults[col])
-            if col == 'inventory' and isinstance(value, dict):
-                values.append(json.dumps(value))
-            else:
-                values.append(value)
-
-        # Create the SQL query
-        sql = f"INSERT INTO players ({', '.join(columns)}) VALUES ({', '.join(['?'] * len(values))})"
         
-        # Execute the query
-        cursor.execute(sql, values)
+        # Prepare the data
+        now = datetime.now().isoformat()
+        data = {
+            'user_id': str(user_id),
+            'name': name,
+            'created_at': now,
+            'last_active': now
+        }
+        
+        # Add any additional fields from kwargs
+        data.update(kwargs)
+        
+        # Convert inventory to JSON if present
+        if 'inventory' in data and isinstance(data['inventory'], dict):
+            data['inventory'] = json.dumps(data['inventory'])
+        
+        # Build the SQL query dynamically
+        columns = ', '.join(data.keys())
+        placeholders = ', '.join(['?' for _ in data])
+        values = list(data.values())
+        
+        cursor.execute(f'''
+            INSERT INTO players ({columns})
+            VALUES ({placeholders})
+        ''', values)
+        
         conn.commit()
         logger.info(f"Created new player: {name} (ID: {user_id})")
         return True
-    except Exception as e:
-        logger.error(f"Error creating player {user_id}: {e}")
-        conn.rollback()
+    except sqlite3.Error as e:
+        logger.error(f"Error creating player: {e}")
         return False
     finally:
         conn.close()

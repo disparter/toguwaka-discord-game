@@ -72,7 +72,7 @@ class DatabaseProvider:
             from utils import database as db_impl
         return db_impl
 
-    def sync_to_dynamo_if_empty(self) -> bool:
+    async def sync_to_dynamo_if_empty(self) -> bool:
         """
         Sync data from SQLite to DynamoDB if DynamoDB is empty.
         Returns True if sync was successful or not needed, False otherwise.
@@ -93,7 +93,7 @@ class DatabaseProvider:
             # Check if DynamoDB is empty by querying the clubs table
             try:
                 # Try to get all clubs as a test
-                clubs = dynamo_db.get_all_clubs()
+                clubs = await dynamo_db.get_all_clubs()
                 if clubs and len(clubs) > 0:
                     logger.info("DynamoDB is not empty, skipping sync")
                     return True

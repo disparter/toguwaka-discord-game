@@ -179,7 +179,7 @@ async def on_ready():
         # Try to ensure DynamoDB is available
         if db_provider.ensure_dynamo_available():
             # If DynamoDB is available, try to sync data if needed
-            if not db_provider.sync_to_dynamo_if_empty():
+            if not await db_provider.sync_to_dynamo_if_empty():
                 logger.error("Failed to sync data to DynamoDB")
         else:
             # If DynamoDB is not available, fallback to SQLite
