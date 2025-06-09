@@ -42,24 +42,23 @@ class DatabaseProvider:
                 if self._dynamo_available:
                     logger.info("DynamoDB is available")
                     self._current_db_type = DatabaseType.DYNAMODB
+                    return  # Exit early if DynamoDB is successfully initialized
             except Exception as e:
                 logger.warning(f"DynamoDB initialization failed: {e}")
                 self._dynamo_available = False
 
-        try:
-            # Try to import SQLite module
-            from utils import database as sqlite_db
-            sqlite_db.init_db()
-            self._sqlite_available = True
-            logger.info("SQLite is available")
-        except Exception as e:
-            logger.error(f"SQLite initialization failed: {e}")
-            self._sqlite_available = False
-
-        # If DynamoDB is not available but SQLite is, switch to SQLite
-        if not self._dynamo_available and self._sqlite_available:
-            self._current_db_type = DatabaseType.SQLITE
-            logger.info("Switching to SQLite as fallback")
+        # Only initialize SQLite if DynamoDB is not enabled or failed
+        if not USE_DYNAMODB:
+            try:
+                # Try to import SQLite module
+                from utils import database as sqlite_db
+                sqlite_db.init_db()
+                self._sqlite_available = True
+                logger.info("SQLite is available")
+                self._current_db_type = DatabaseType.SQLITE
+            except Exception as e:
+                logger.error(f"SQLite initialization failed: {e}")
+                self._sqlite_available = False
 
     @property
     def current_db_type(self) -> DatabaseType:

@@ -82,6 +82,7 @@ def init_db():
                 hp INTEGER DEFAULT 100,
                 max_hp INTEGER DEFAULT 100,
                 inventory TEXT DEFAULT '{}',
+                strength_level INTEGER DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -216,7 +217,7 @@ def create_player(user_id, name, **kwargs):
         # List of all possible columns in the players table
         player_columns = [
             'power', 'level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma',
-            'power_stat', 'reputation', 'hp', 'max_hp', 'inventory', 'created_at', 'last_active'
+            'power_stat', 'reputation', 'hp', 'max_hp', 'inventory', 'strength_level', 'created_at', 'last_active'
         ]
         for col in player_columns:
             if col in kwargs:
@@ -1415,6 +1416,29 @@ def update_inventory_item_quantity(user_id, item_id, quantity, **kwargs):
     finally:
         conn.close()
 
+def add_strength_level_column():
+    """Add strength_level column to players table if it doesn't exist."""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Check if column exists
+        cursor.execute("PRAGMA table_info(players)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'strength_level' not in columns:
+            cursor.execute('ALTER TABLE players ADD COLUMN strength_level INTEGER DEFAULT 1')
+            conn.commit()
+            logger.info("Added strength_level column to players table")
+            return True
+        return False
+    except sqlite3.Error as e:
+        logger.error(f"Error adding strength_level column: {e}")
+        return False
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
 # Helper to reset SQLite DB (for schema updates)
 def reset_sqlite_db():
     if os.path.exists(DB_PATH):
@@ -1423,3 +1447,5 @@ def reset_sqlite_db():
 
 # Initialize the database when the module is imported
 init_db()
+# Add strength_level column if it doesn't exist
+add_strength_level_column()
