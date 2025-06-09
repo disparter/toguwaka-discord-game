@@ -34,6 +34,6 @@ class TestClubSpecificDialogues(unittest.TestCase):
                 }
             )
             mock_get_chapter.return_value = chapter
-            current_chapter = self.story_mode.get_current_chapter()
+            current_chapter = self.story_mode.get_current_chapter(self.story_mode.player_data)
             self.assertIsNotNone(current_chapter)
             self.assertIn("club_specific", current_chapter.data) 

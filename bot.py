@@ -137,17 +137,17 @@ async def slash_test(interaction: discord.Interaction):
 
 # Initial cogs to load
 initial_extensions = [
-    'cogs.registration',
-    'cogs.player_status',
-    'cogs.activities',
-    'cogs.economy',
-    'cogs.clubs',
-    'cogs.scheduled_events',
-    'cogs.junie_interaction',
-    'cogs.story_mode',
-    'cogs.betting',  # New betting cog for risk mechanics
-    'cogs.moral_choices',  # New moral choices cog for dilemas and collective events
-    'cogs.npc_interaction'  # New cog for NPC interactions and image registry
+    'src.bot.cogs.registration',
+    'src.bot.cogs.player_status',
+    'src.bot.cogs.activities',
+    'src.bot.cogs.economy',
+    'src.bot.cogs.clubs',
+    'src.bot.cogs.scheduled_events',
+    'src.bot.cogs.junie_interaction',
+    'src.bot.cogs.story_mode',
+    'src.bot.cogs.betting',  # New betting cog for risk mechanics
+    'src.bot.cogs.moral_choices',  # New moral choices cog for dilemas and collective events
+    'src.bot.cogs.npc_interaction'  # New cog for NPC interactions and image registry
 ]
 
 # This function is no longer needed as extensions are loaded in setup_hook

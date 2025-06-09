@@ -26,6 +26,6 @@ class TestChapterSuffixHandling(unittest.TestCase):
                 {"next_chapter": "test_chapter_2", "branches": []}
             )
             mock_get_chapter.return_value = chapter
-            current_chapter = self.story_mode.get_current_chapter()
+            current_chapter = self.story_mode.get_current_chapter(self.story_mode.player_data)
             self.assertIsNotNone(current_chapter)
             self.assertEqual(current_chapter.chapter_id, "test_chapter_1") 

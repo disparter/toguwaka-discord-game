@@ -30,6 +30,6 @@ class TestChallengeChapterIDs(unittest.TestCase):
                 }
             )
             mock_get_chapter.return_value = chapter
-            current_chapter = self.story_mode.get_current_chapter()
+            current_chapter = self.story_mode.get_current_chapter(self.story_mode.player_data)
             self.assertIsNotNone(current_chapter)
             self.assertIn("challenge_id", current_chapter.data) 

@@ -17,7 +17,7 @@ class TestStoryModeCogInitialization(unittest.TestCase):
         self.mock_ctx.author.id = 123456789
 
     def test_cog_initialization(self):
-        from cogs.story_mode import StoryModeCog
+        from src.bot.cogs.story_mode import StoryModeCog
         cog = StoryModeCog(self.mock_bot)
         self.assertIsNotNone(cog)
         self.assertEqual(cog.bot, self.mock_bot) 
