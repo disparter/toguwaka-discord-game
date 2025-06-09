@@ -165,8 +165,9 @@ db_provider = DatabaseProvider()
 def get_club(*args, **kwargs):
     return db_provider.get_db_implementation().get_club(*args, **kwargs)
 
-def get_all_clubs(*args, **kwargs):
-    return db_provider.get_db_implementation().get_all_clubs(*args, **kwargs)
+async def get_all_clubs(*args, **kwargs):
+    """Get all clubs from the database."""
+    return await db_provider.get_db_implementation().get_all_clubs(*args, **kwargs)
 
 def get_club_members(*args, **kwargs):
     return db_provider.get_db_implementation().get_club_members(*args, **kwargs)
