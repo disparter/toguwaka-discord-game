@@ -106,6 +106,16 @@ def init_db():
         # Initialize the table variable for global use
         table = get_table(TABLES['main'])
         
+        # After successful initialization, distribute data from main table to specialized tables
+        try:
+            from utils.migrate_to_dynamodb import distribute_data_to_tables
+            if distribute_data_to_tables():
+                logger.info("Successfully distributed data to specialized tables")
+            else:
+                logger.warning("Data distribution completed with warnings")
+        except Exception as e:
+            logger.error(f"Error distributing data to tables: {e}")
+        
         return True
     except Exception as e:
         logger.error(f"Error initializing DynamoDB: {e}")

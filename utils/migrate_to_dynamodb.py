@@ -605,18 +605,6 @@ def clean_academia_tokugawa_table():
 
         logger.info(f"Processed {len(processed_items)} unique items")
 
-        # Delete all items from the table
-        logger.info("Deleting old items from table...")
-        with table.batch_writer() as batch:
-            for item in items:
-                batch.delete_item(
-                    Key={
-                        'PK': item['PK'],
-                        'SK': item['SK']
-                    }
-                )
-        logger.info("Successfully deleted old items")
-
         # Write back the cleaned items
         logger.info("Writing back cleaned items...")
         with table.batch_writer() as batch:
@@ -640,6 +628,74 @@ def clean_academia_tokugawa_table():
         logger.error(f"Traceback: {traceback.format_exc()}")
         return False
 
+def distribute_data_to_tables():
+    """
+    Distribute data from AcademiaTokugawa table to the respective specialized tables.
+    """
+    try:
+        # Initialize DynamoDB client
+        logger.info("Initializing DynamoDB client...")
+        dynamodb = boto3.resource('dynamodb', region_name=os.environ.get('AWS_REGION', 'us-east-1'))
+        main_table = dynamodb.Table(os.environ.get('DYNAMODB_TABLE', 'AcademiaTokugawa'))
+        
+        # Get references to other tables
+        tables = {
+            'clubs': dynamodb.Table(os.environ.get('DYNAMODB_CLUBS_TABLE', 'Clubes')),
+            'events': dynamodb.Table(os.environ.get('DYNAMODB_EVENTS_TABLE', 'Eventos')),
+            'inventory': dynamodb.Table(os.environ.get('DYNAMODB_INVENTORY_TABLE', 'Inventario')),
+            'players': dynamodb.Table(os.environ.get('DYNAMODB_PLAYERS_TABLE', 'Jogadores')),
+            'market': dynamodb.Table(os.environ.get('DYNAMODB_MARKET_TABLE', 'Mercado'))
+        }
+        
+        logger.info("Scanning AcademiaTokugawa table for items...")
+        response = main_table.scan()
+        items = response.get('Items', [])
+        logger.info(f"Found {len(items)} items in AcademiaTokugawa table")
+        
+        # Process items and distribute to appropriate tables
+        for item in items:
+            pk = item.get('PK', '')
+            sk = item.get('SK', '')
+            
+            if not pk or not sk:
+                logger.warning(f"Skipping item with missing PK or SK: {item}")
+                continue
+                
+            # Determine target table based on PK prefix
+            target_table = None
+            if pk.startswith('CLUBE#'):
+                target_table = tables['clubs']
+            elif pk.startswith('EVENTO#'):
+                target_table = tables['events']
+            elif pk.startswith('PLAYER#'):
+                if sk == 'INVENTORY':
+                    target_table = tables['inventory']
+                else:
+                    target_table = tables['players']
+            elif pk.startswith('ITEM#'):
+                target_table = tables['market']
+                
+            if target_table:
+                try:
+                    # Write item to target table
+                    target_table.put_item(Item=item)
+                    logger.debug(f"Distributed item {pk}#{sk} to {target_table.name}")
+                except Exception as e:
+                    logger.error(f"Error distributing item {pk}#{sk} to {target_table.name}: {e}")
+            else:
+                logger.warning(f"No target table found for item {pk}#{sk}")
+                
+        logger.info("Data distribution completed successfully")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error distributing data to tables: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return False
+
 if __name__ == "__main__":
     # Configure logging
     logging.basicConfig(
@@ -652,3 +708,6 @@ if __name__ == "__main__":
 
     # Clean Academia Tokugawa table
     clean_academia_tokugawa_table()
+    
+    # Distribute data to specialized tables
+    distribute_data_to_tables()

@@ -21,7 +21,7 @@ from tests.story_mode.test_club_integration import TestStoryModeClubIntegration
 from tests.story_mode.test_chapter_suffix_handling import TestChapterSuffixHandling
 from tests.story_mode.test_club_specific_dialogues import TestClubSpecificDialogues
 from tests.story_mode.test_conditional_chapter_navigation import TestConditionalChapterNavigation
-from tests.story_mode.test_challenge_chapter_ids import TestChallengeChapterIDs
+from tests.story_mode.test_challenge_chapter_ids import TestChallengeChapterIds
 
 # Import the new test modules
 try:
@@ -51,7 +51,7 @@ def create_test_suite():
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestChapterSuffixHandling))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestClubSpecificDialogues))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestConditionalChapterNavigation))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestChallengeChapterIDs))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestChallengeChapterIds))
 
     # Add the new test cases
     try:

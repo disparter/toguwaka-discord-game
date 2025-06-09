@@ -31,7 +31,11 @@ class FileChapterLoader(ChapterLoader):
                         with open(main_chapter_dir / filename, 'r') as f:
                             chapter_data = json.load(f)
                             chapter_data["chapter_id"] = chapter_id
-                            self.chapters[chapter_id] = self._create_chapter(chapter_data)
+                            chapter = self._create_chapter(chapter_data)
+                            if chapter:
+                                self.chapters[chapter_id] = chapter
+                            else:
+                                logger.error(f"Failed to create chapter {chapter_id}")
                     except Exception as e:
                         logger.error(f"Error loading chapter {filename}: {e}")
 
@@ -50,7 +54,11 @@ class FileChapterLoader(ChapterLoader):
                                 with open(club_path / filename, 'r') as f:
                                     chapter_data = json.load(f)
                                     chapter_data["chapter_id"] = chapter_id
-                                    self.chapters[chapter_id] = self._create_chapter(chapter_data)
+                                    chapter = self._create_chapter(chapter_data)
+                                    if chapter:
+                                        self.chapters[chapter_id] = chapter
+                                    else:
+                                        logger.error(f"Failed to create club chapter {chapter_id}")
                             except Exception as e:
                                 logger.error(f"Error loading club chapter {filename}: {e}")
 
@@ -59,15 +67,26 @@ class FileChapterLoader(ChapterLoader):
         chapter_type = chapter_data.get("type", "story")
         chapter_id = chapter_data.get("chapter_id", "unknown")
         
-        if chapter_type == "story":
-            return StoryChapter(chapter_id, chapter_data)
-        elif chapter_type == "challenge":
-            return ChallengeChapter(chapter_id, chapter_data)
-        elif chapter_type == "branching":
-            return BranchingChapter(chapter_id, chapter_data)
-        else:
-            logger.warning(f"Unknown chapter type: {chapter_type}")
-            return StoryChapter(chapter_id, chapter_data)
+        # Validate required fields
+        required_fields = ["title", "description", "scenes"]
+        missing_fields = [field for field in required_fields if field not in chapter_data]
+        if missing_fields:
+            logger.error(f"Chapter {chapter_id} is missing required fields: {', '.join(missing_fields)}")
+            return None
+        
+        try:
+            if chapter_type == "story":
+                return StoryChapter(chapter_id, chapter_data)
+            elif chapter_type == "challenge":
+                return ChallengeChapter(chapter_id, chapter_data)
+            elif chapter_type == "branching":
+                return BranchingChapter(chapter_id, chapter_data)
+            else:
+                logger.warning(f"Unknown chapter type: {chapter_type}, defaulting to story")
+                return StoryChapter(chapter_id, chapter_data)
+        except Exception as e:
+            logger.error(f"Error creating chapter {chapter_id}: {e}")
+            return None
 
     def load_chapter(self, chapter_id: str) -> Chapter:
         """Load a chapter by its ID."""

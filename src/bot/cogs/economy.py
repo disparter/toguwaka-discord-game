@@ -10,7 +10,7 @@ from datetime import datetime
 from utils.database import get_player, update_player, get_club
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
-from cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
+from src.bot.cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
 
 logger = logging.getLogger('tokugawa_bot')
 
