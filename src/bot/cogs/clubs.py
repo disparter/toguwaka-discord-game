@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.db_provider import get_player, get_club, get_all_clubs, update_player, get_club_members, get_relevant_npcs
+from utils.persistence.db_provider import get_player, get_club, get_all_clubs, update_player, get_club_members, get_relevant_npcs
 from utils.embeds import create_basic_embed, create_club_embed
 from story_mode.club_system import ClubSystem
 

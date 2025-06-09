@@ -174,7 +174,7 @@ async def on_ready():
 
     # Initialize database provider and handle migration
     try:
-        from utils.db_provider import db_provider
+        from utils.persistence.db_provider import db_provider
 
         # Try to ensure DynamoDB is available
         if db_provider.ensure_dynamo_available():

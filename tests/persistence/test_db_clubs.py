@@ -1,7 +1,8 @@
 import os
 import pytest
 from unittest.mock import AsyncMock, patch
-from utils.dynamodb import get_all_clubs, update_player
+from utils.persistence.dynamodb_clubs import get_all_clubs
+from utils.persistence.dynamodb_players import update_player
 
 pytestmark = pytest.mark.skip(reason='Desabilitado para evitar dependência do SQLite')
 

@@ -7,7 +7,7 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from utils.db_provider import get_player, update_player, get_club, store_cooldown, get_player_inventory, add_item_to_inventory
+from utils.persistence.db_provider import get_player, update_player, get_club, store_cooldown, get_player_inventory, add_item_to_inventory
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
 from src.bot.cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS

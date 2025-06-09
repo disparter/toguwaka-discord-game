@@ -19,7 +19,7 @@ from utils.game_mechanics.events.training_event import TrainingEvent
 from utils.game_mechanics.events.random_event import RandomEvent
 from utils.game_mechanics.duel.duel_calculator import DuelCalculator
 from utils.game_mechanics.duel.duel_narrator import DuelNarrator
-from utils.db_provider import (
+from utils.persistence.db_provider import (
     store_cooldown,
     get_cooldowns,
     clear_expired_cooldowns

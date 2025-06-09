@@ -4,7 +4,7 @@ import logging
 from typing import Dict, List, Any
 from datetime import datetime
 from botocore.exceptions import ClientError
-from utils.sqlite_queries import _get_all_players, _get_player_inventory
+# from utils.sqlite_queries import _get_all_players, _get_player_inventory
 
 logger = logging.getLogger(__name__)
 

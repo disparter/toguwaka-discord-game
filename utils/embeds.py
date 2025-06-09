@@ -2,7 +2,7 @@ import discord
 from datetime import datetime
 from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
 import json
-from utils.db_provider import get_relevant_npcs
+from utils.persistence.db_provider import get_relevant_npcs
 
 def create_basic_embed(title, description=None, color=0x1E90FF):
     """Create a basic embed with the Academia Tokugawa theme."""

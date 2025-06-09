@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional, Union
 import random
 
-from utils.db_provider import get_all_clubs, update_player, get_player, get_club
+from utils.persistence.db_provider import get_all_clubs, update_player, get_player, get_club
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
 from utils.club_system import ClubSystem

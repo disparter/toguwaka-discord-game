@@ -5,7 +5,7 @@ import logging
 import os
 from typing import Dict, List, Any, Optional, Union
 
-from utils.db_provider import get_player, update_player
+from utils.persistence.db_provider import get_player, update_player
 from utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
 

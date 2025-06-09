@@ -70,7 +70,8 @@ def generate_duel_narration(duel_result):
 
 import re
 from typing import Dict, List, Optional, Tuple
-from utils.dynamodb import get_player, update_player, get_all_clubs
+from utils.persistence.dynamodb_players import get_player, update_player
+from utils.persistence.dynamodb_clubs import get_all_clubs
 
 def normalize_club_name(name: str) -> str:
     """Normalize club name to a valid format."""

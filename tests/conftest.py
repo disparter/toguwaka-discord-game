@@ -7,12 +7,8 @@ This module contains pytest fixtures and configuration for testing.
 import pytest
 import os
 import sys
-from unittest.mock import MagicMock, patch
-from tests.mocks.dynamodb_mock import MockDynamoDB
-from utils.dynamodb import init_db
+from unittest.mock import MagicMock, patch, AsyncMock
 from datetime import datetime
-from unittest.mock import AsyncMock
-import sqlite3
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -20,26 +16,11 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # Set testing environment
 os.environ['IS_TESTING'] = 'true'
 
-# Import mocks
-from tests.mocks.dynamodb_mock import mock_dynamodb
-
 @pytest.fixture(autouse=True)
 def mock_logging():
     """Mock logging to prevent actual log output during tests."""
     with pytest.MonkeyPatch.context() as m:
         m.setattr('logging.getLogger', MagicMock())
-        yield
-
-@pytest.fixture(autouse=True)
-def mock_aws_credentials():
-    """Mock AWS credentials."""
-    with patch.dict(os.environ, {
-        'AWS_ACCESS_KEY_ID': 'testing',
-        'AWS_SECRET_ACCESS_KEY': 'testing',
-        'AWS_SECURITY_TOKEN': 'testing',
-        'AWS_SESSION_TOKEN': 'testing',
-        'AWS_DEFAULT_REGION': 'us-east-1'
-    }):
         yield
 
 @pytest.fixture(autouse=True)
@@ -56,81 +37,6 @@ def mock_discord():
         m.setattr('discord.app_commands', MagicMock)
         
         yield 
-
-@pytest.fixture(autouse=True)
-def mock_aws():
-    """Mock AWS services for all tests."""
-    with patch('boto3.resource') as mock_boto3:
-        mock_dynamo = MagicMock()
-        mock_boto3.return_value = mock_dynamo
-        yield mock_dynamo
-
-@pytest.fixture
-def mock_dynamodb():
-    mock_tables = {
-        'players': MagicMock(),
-        'inventory': MagicMock(),
-        'reset': lambda: None
-    }
-    
-    # Configure mock tables with AsyncMock
-    mock_tables['players'].get_item = AsyncMock(return_value={'Item': {'user_id': 'test_user_123'}})
-    mock_tables['players'].put_item = AsyncMock(return_value={})
-    mock_tables['players'].query = AsyncMock(return_value={'Items': []})
-    mock_tables['players'].scan = AsyncMock(return_value={'Items': []})
-    
-    mock_tables['inventory'].get_item = AsyncMock(return_value={'Item': {'user_id': 'test_user_123', 'items': []}})
-    mock_tables['inventory'].put_item = AsyncMock(return_value={})
-    mock_tables['inventory'].query = AsyncMock(return_value={'Items': []})
-    mock_tables['inventory'].delete_item = AsyncMock(return_value={})
-    
-    # Configure reset function
-    def reset():
-        mock_tables['players'].get_item.reset_mock()
-        mock_tables['players'].put_item.reset_mock()
-        mock_tables['players'].query.reset_mock()
-        mock_tables['players'].scan.reset_mock()
-        mock_tables['inventory'].get_item.reset_mock()
-        mock_tables['inventory'].put_item.reset_mock()
-        mock_tables['inventory'].query.reset_mock()
-        mock_tables['inventory'].delete_item.reset_mock()
-    
-    mock_tables['reset'] = reset
-    
-    # Mock get_table function
-    def get_table(table_name):
-        return mock_tables[table_name]
-    
-    with patch('utils.dynamodb.get_table', side_effect=get_table):
-        yield mock_tables
-
-@pytest.fixture
-def reset_mock_dynamodb(mock_dynamodb):
-    mock_dynamodb['reset']()
-    return mock_dynamodb
-
-@pytest.fixture
-def test_player():
-    return {
-        'user_id': 'test_user_123',
-        'exp': 0,
-        'level': 1,
-        'club_id': None,
-        'power_stat': 10,
-        'dexterity': 10,
-        'intellect': 10,
-        'charisma': 10,
-        'hp': 100,
-        'tusd': 1000
-    }
-
-@pytest.fixture
-def mock_discord():
-    """Mock Discord client and context."""
-    with patch('discord.ext.commands.Bot') as mock_bot:
-        bot = MagicMock()
-        bot.command = MagicMock()
-        yield bot
 
 @pytest.fixture
 def mock_ctx():
@@ -213,12 +119,12 @@ def test_inventory():
 @pytest.fixture
 def mock_db():
     """Mock database operations."""
-    with patch('utils.db_provider.get_player') as mock_get_player, \
-         patch('utils.db_provider.update_player') as mock_update_player, \
-         patch('utils.db_provider.get_club') as mock_get_club, \
-         patch('utils.db_provider.get_player_inventory') as mock_get_inventory, \
-         patch('utils.db_provider.add_item_to_inventory') as mock_add_item, \
-         patch('utils.db_provider.remove_item_from_inventory') as mock_remove_item:
+    with patch('utils.persistence.db_provider.get_player') as mock_get_player, \
+         patch('utils.persistence.db_provider.update_player') as mock_update_player, \
+         patch('utils.persistence.db_provider.get_club') as mock_get_club, \
+         patch('utils.persistence.db_provider.get_player_inventory') as mock_get_inventory, \
+         patch('utils.persistence.db_provider.add_item_to_inventory') as mock_add_item, \
+         patch('utils.persistence.db_provider.remove_item_from_inventory') as mock_remove_item:
         
         mock_get_player.return_value = None
         mock_update_player.return_value = True
@@ -248,16 +154,6 @@ def mock_story_data():
             "choices": [
                 {"description": "Go forward", "result": "next"},
                 {"description": "Look around", "result": "explore"}
-            ]
-        },
-        "1_2_explore": {
-            "type": "story",
-            "title": "Exploration",
-            "description": "You find something interesting.",
-            "chapter_id": "1_2_explore",
-            "choices": [
-                {"description": "Investigate", "result": "next"},
-                {"description": "Leave", "result": "return"}
             ]
         }
     } 
