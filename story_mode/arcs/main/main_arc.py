@@ -60,11 +60,11 @@ class MainArc(BaseArc):
     
     def _load_arc_data(self) -> None:
         """
-        Load main story arc data and chapters from the chapters directory.
+        Load main story arc data and chapters from the arcs/introduction directory.
         """
         import glob
         try:
-            chapters_dir = os.path.join(self.data_dir, "chapters")
+            chapters_dir = os.path.join(os.path.dirname(os.path.dirname(self.data_dir)), "arcs", "introduction")
             if not os.path.exists(chapters_dir):
                 logger.error(f"Chapters directory not found: {chapters_dir}")
                 return
@@ -75,7 +75,8 @@ class MainArc(BaseArc):
             for chapter_file in chapter_files:
                 with open(chapter_file, 'r') as f:
                     chapter_data = json.load(f)
-                    chapter_id = chapter_data.get("id") or os.path.splitext(os.path.basename(chapter_file))[0]
+                    chapter_id = os.path.splitext(os.path.basename(chapter_file))[0].replace("chapter_", "")
+                    chapter_data["chapter_id"] = chapter_id
                     self.register_chapter(chapter_id, chapter_data)
             logger.info(f"Loaded {len(self.chapters)} main story chapters from directory {chapters_dir}")
         except Exception as e:

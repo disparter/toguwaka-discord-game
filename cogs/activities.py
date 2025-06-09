@@ -93,13 +93,14 @@ class Activities(commands.Cog):
             # Prepare update data
             update_data = {
                 "exp": new_exp,
-                attribute_gain: player[attribute_gain] + 1  # Increase the chosen attribute
+                attribute_gain: player[attribute_gain] + 1,  # Increase the chosen attribute
+                "tusd": player["tusd"] + 10  # Add TUSD reward for training
             }
 
             if level_up:
                 update_data["level"] = new_level
                 # Bonus TUSD for level up
-                update_data["tusd"] = player["tusd"] + (new_level * 50)
+                update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
 
             # Update player in database
             success = update_player(interaction.user.id, **update_data)
@@ -712,13 +713,14 @@ class Activities(commands.Cog):
         # Prepare update data
         update_data = {
             "exp": new_exp,
-            attribute_gain: player[attribute_gain] + 1  # Increase the chosen attribute
+            attribute_gain: player[attribute_gain] + 1,  # Increase the chosen attribute
+            "tusd": player["tusd"] + 10  # Add TUSD reward for training
         }
 
         if level_up:
             update_data["level"] = new_level
             # Bonus TUSD for level up
-            update_data["tusd"] = player["tusd"] + (new_level * 50)
+            update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
 
         # Update player in database
         success = update_player(ctx.author.id, **update_data)

@@ -5,7 +5,7 @@
     "description": "O primeiro dia na Academia Tokugawa",
     "phase": "act_1",
     "requirements": {
-        "previous_chapter": "club_1_4_final"
+        "is_new_player": true
     },
     "scenes": [
         {

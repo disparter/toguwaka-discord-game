@@ -15,18 +15,18 @@
         "title": "Mentor Surpresa",
         "description": "Um mentor misterioso ofereceu treinamento especial para você!",
         "type": "positive",
-        "effect": {"exp": 100, "attribute": "random"}
+        "effect": {"exp": 100, "attribute": "random", "tusd": 15}
     },
     {
         "title": "Desafio Surpresa",
         "description": "Um estudante desconhecido desafiou você para um duelo amistoso!",
         "type": "neutral",
-        "effect": {"exp": 40, "duel": true}
+        "effect": {"exp": 40, "duel": true, "tusd": 25}
     },
     {
         "title": "Artefato Misterioso",
         "description": "Você encontrou um artefato misterioso que aumenta temporariamente seu poder!",
         "type": "positive",
-        "effect": {"item": "random"}
+        "effect": {"item": "random", "tusd": 30}
     }
 ]
