@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.database import get_player, get_club, get_all_clubs, update_player_club
+from utils.database import get_player, get_club, get_all_clubs, update_player
 from utils.embeds import create_basic_embed, create_club_embed
 from story_mode.club_system import ClubSystem
 
@@ -176,8 +176,8 @@ class Clubs(commands.Cog):
         
         # Join club using ClubSystem
         if self.club_system.join_club(player, club_index + 1):  # Convert back to 1-based for club_id
-            # Update player's club in database
-            update_player_club(ctx.author.id, club_name)
+            # Update player's club
+            update_player(ctx.author.id, club=club_name)
             
             # Create embed
             embed = create_basic_embed(
