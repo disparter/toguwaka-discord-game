@@ -13,10 +13,10 @@ from src.utils.persistence.db_provider import get_player, update_player, get_clu
 from src.utils.embeds import create_basic_embed, create_event_embed
 from src.utils.game_mechanics import calculate_level_from_exp
 
-from story_mode.story_mode import StoryMode
-from story_mode.club_system import ClubSystem
-from story_mode.consequences_system import ConsequencesSystem
-from story_mode.relationship_system import RelationshipSystem
+from src.story_mode.story_mode import StoryMode
+from src.story_mode.club_system import ClubSystem
+from src.story_mode.consequences import Consequences
+from src.story_mode.relationship_system import RelationshipSystem
 
 from src.utils.command_registrar import CommandRegistrar
 
@@ -32,7 +32,7 @@ class StoryModeCog(commands.Cog):
         self.story_mode = StoryMode()
         self.active_sessions = {}  # user_id -> session_data
         self.club_system = ClubSystem()
-        self.consequences_system = ConsequencesSystem()
+        self.consequences_system = Consequences()
         self.relationship_system = RelationshipSystem()
 
         logger.info("StoryModeCog initialized")
