@@ -8,6 +8,7 @@ from utils.database import get_player, create_player, get_all_clubs
 from utils.embeds import create_basic_embed, create_player_embed
 from utils.game_mechanics import STRENGTH_LEVELS
 from utils.command_registrar import CommandRegistrar
+from story_mode.club_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -16,6 +17,7 @@ class Registration(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.club_system = ClubSystem()
 
     # Group for registration commands
     registration_group = app_commands.Group(name="registro", description="Comandos de registro da Academia Tokugawa")
@@ -109,9 +111,14 @@ class Registration(commands.Cog):
                     await ctx.send("Por favor, digite um número válido de 1 a 5.")
 
             # Get club choice
-            clubs = get_all_clubs()
-            logger.info(f"Retrieved clubs from database: {clubs}")
-            
+            clubs = []
+            for club_id, club_name in self.club_system.CLUBS.items():
+                clubs.append({
+                    'club_id': club_id,
+                    'name': club_name,
+                    'description': f"O {club_name} é um dos clubes mais prestigiados da Academia Tokugawa."
+                })
+
             clubs_embed = create_basic_embed(
                 title="Escolha de Clube",
                 description="Escolha um clube para se afiliar:\n\n" + 

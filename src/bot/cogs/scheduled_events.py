@@ -13,6 +13,7 @@ from utils.database import get_player, update_player, get_club, get_all_clubs, g
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
 from utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
+from story_mode.club_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -156,6 +157,7 @@ class ScheduledEvents(commands.Cog):
         self.bot = bot
         self.tournament_channel_id = None
         self.announcement_channel_id = None
+        self.club_system = ClubSystem()
 
         # Initialize player progress dictionaries
         PLAYER_PROGRESS['daily'] = {}
@@ -704,20 +706,22 @@ class ScheduledEvents(commands.Cog):
             })
 
     async def generate_club_buffs(self):
-        """Generate random buffs for clubs based on reputation."""
+        """Generate random buffs for clubs based on their reputation."""
         try:
-            # Clear expired buffs
-            expired_buffs = []
+            # Clean up expired buffs
             now = datetime.now()
-            for club_id, buff in CLUB_BUFFS.items():
-                if buff['expires'] < now:
-                    expired_buffs.append(club_id)
-
+            expired_buffs = [club_id for club_id, buff in CLUB_BUFFS.items() if buff['expires'] < now]
             for club_id in expired_buffs:
                 CLUB_BUFFS.pop(club_id, None)
 
-            # Get all clubs
-            clubs = get_all_clubs()
+            # Get all clubs from ClubSystem
+            clubs = []
+            for club_id, club_name in self.club_system.CLUBS.items():
+                clubs.append({
+                    'club_id': club_id,
+                    'name': club_name,
+                    'reputation': 0  # Default reputation
+                })
 
             # Select clubs for buffs based on reputation
             if clubs:

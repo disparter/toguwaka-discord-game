@@ -10,6 +10,7 @@ from typing import Dict, List, Any, Optional, Union
 from utils.database import get_player, update_player, get_club, get_all_clubs
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
+from story_mode.club_system import ClubSystem
 
 class MoralChoices(commands.Cog):
     """Cog para gerenciar dilemas morais e eventos coletivos na Academia Tokugawa."""
@@ -22,6 +23,7 @@ class MoralChoices(commands.Cog):
         self.cooldowns = {}  # user_id: {command: timestamp}
         self.logger = logging.getLogger('tokugawa.moral_choices')
         self.logger.info('MoralChoices cog initialized')
+        self.club_system = ClubSystem()
 
     @app_commands.command(
         name="dilema",
@@ -655,6 +657,100 @@ class MoralChoices(commands.Cog):
             self.cooldowns[user_id] = {}
 
         self.cooldowns[user_id][command] = datetime.now()
+
+    @commands.command(name="alianca")
+    async def form_alliance(self, ctx, *, club_name: str):
+        """Forma uma aliança com outro clube."""
+        # Get player data
+        player = get_player(ctx.author.id)
+        if not player:
+            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
+            return
+
+        # Check if player is in a club
+        if not player.get('club'):
+            await ctx.send("Você precisa estar em um clube para formar alianças!")
+            return
+
+        # Find target club
+        target_club_id = None
+        for club_id, name in self.club_system.CLUBS.items():
+            if name.lower() == club_name.lower():
+                target_club_id = club_id
+                break
+
+        if not target_club_id:
+            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
+            return
+
+        # Form alliance
+        result = self.club_system.form_alliance(player, target_club_id)
+        if "error" in result:
+            await ctx.send(result["error"])
+            return
+
+        # Create embed
+        embed = create_basic_embed(
+            title="Aliança Formada!",
+            description=f"Seu clube formou uma aliança com o clube {club_name}!",
+            color=0x00FF00
+        )
+
+        # Add alliance information
+        embed.add_field(
+            name="Detalhes da Aliança",
+            value=result["message"],
+            inline=False
+        )
+
+        await ctx.send(embed=embed)
+
+    @commands.command(name="rivalidade")
+    async def declare_rivalry(self, ctx, *, club_name: str):
+        """Declara rivalidade com outro clube."""
+        # Get player data
+        player = get_player(ctx.author.id)
+        if not player:
+            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
+            return
+
+        # Check if player is in a club
+        if not player.get('club'):
+            await ctx.send("Você precisa estar em um clube para declarar rivalidades!")
+            return
+
+        # Find target club
+        target_club_id = None
+        for club_id, name in self.club_system.CLUBS.items():
+            if name.lower() == club_name.lower():
+                target_club_id = club_id
+                break
+
+        if not target_club_id:
+            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
+            return
+
+        # Declare rivalry
+        result = self.club_system.declare_rivalry(player, target_club_id)
+        if "error" in result:
+            await ctx.send(result["error"])
+            return
+
+        # Create embed
+        embed = create_basic_embed(
+            title="Rivalidade Declarada!",
+            description=f"Seu clube declarou rivalidade com o clube {club_name}!",
+            color=0xFF0000
+        )
+
+        # Add rivalry information
+        embed.add_field(
+            name="Detalhes da Rivalidade",
+            value=result["message"],
+            inline=False
+        )
+
+        await ctx.send(embed=embed)
 
 async def setup(bot):
     """Adiciona o cog ao bot."""

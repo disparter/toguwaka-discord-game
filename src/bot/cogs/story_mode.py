@@ -13,6 +13,7 @@ from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
 
 from story_mode.story_mode import StoryMode
+from story_mode.club_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -25,6 +26,7 @@ class StoryModeCog(commands.Cog):
         self.bot = bot
         self.story_mode = StoryMode()
         self.active_sessions = {}  # user_id -> session_data
+        self.club_system = ClubSystem()
 
         logger.info("StoryModeCog initialized")
 
@@ -916,6 +918,64 @@ class StoryModeCog(commands.Cog):
             return False
 
         return admin_role in member.roles
+
+    @commands.command(name="clube")
+    async def club_info(self, ctx):
+        """Exibe informações sobre o clube atual do jogador."""
+        # Get player data
+        player = get_player(ctx.author.id)
+        if not player:
+            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
+            return
+
+        # Get club info
+        club_info = self.club_system.get_club_info(player)
+        if "error" in club_info:
+            await ctx.send("Você não está em nenhum clube. Use `!ingressar` para entrar em um clube.")
+            return
+
+        # Create embed
+        embed = create_basic_embed(
+            title=f"Informações do Clube: {club_info['name']}",
+            description=f"Líder: {club_info['leader']}",
+            color=0x1E90FF
+        )
+
+        # Add rank information
+        embed.add_field(
+            name="Rank",
+            value=f"{club_info['rank_name']} (Nível {club_info['rank']})",
+            inline=False
+        )
+
+        # Add experience information
+        embed.add_field(
+            name="Experiência",
+            value=f"{club_info['experience']}/{club_info['experience_needed']} EXP",
+            inline=False
+        )
+
+        # Add rivalries information
+        rivalries = self.club_system._get_rivalries_info(player)
+        if rivalries:
+            rivalries_text = "\n".join([f"- {r['name']}: {r['affinity']}" for r in rivalries])
+            embed.add_field(
+                name="Rivalidades",
+                value=rivalries_text,
+                inline=False
+            )
+
+        # Add alliances information
+        alliances = self.club_system._get_alliances_info(player)
+        if alliances:
+            alliances_text = "\n".join([f"- {a['name']}: {a['affinity']}" for a in alliances])
+            embed.add_field(
+                name="Alianças",
+                value=alliances_text,
+                inline=False
+            )
+
+        await ctx.send(embed=embed)
 
 async def setup(bot):
     """
