@@ -12,8 +12,16 @@ from tests.utils.game_mechanics.duel.test_duel_calculator import TestDuelCalcula
 from tests.utils.game_mechanics.duel.test_duel_narrator import TestDuelNarrator
 from tests.utils.game_mechanics.events.test_random_event import TestRandomEvent
 from tests.utils.game_mechanics.events.test_training_event import TestTrainingEvent
-from tests.story_mode.test_story_mode import TestStoryMode, TestStoryModeIntegration, TestStoryModeCog
-from tests.story_mode.test_story_mode_fixes import TestStoryModeChapterSuffixes, TestStoryModeClubSpecificDialogues, TestStoryModeConditionalChapterNavigation, TestStoryModeChallengeChapterIDs
+
+# Import the new story mode test modules
+from tests.story_mode.test_story_mode_initialization import TestStoryModeInitialization, TestStoryModeCurrentChapter
+from tests.story_mode.test_story_mode_progression import TestStoryModeProgression
+from tests.story_mode.test_story_mode_cog import TestStoryModeCogInitialization
+from tests.story_mode.test_club_integration import TestStoryModeClubIntegration
+from tests.story_mode.test_chapter_suffix_handling import TestChapterSuffixHandling
+from tests.story_mode.test_club_specific_dialogues import TestClubSpecificDialogues
+from tests.story_mode.test_conditional_chapter_navigation import TestConditionalChapterNavigation
+from tests.story_mode.test_challenge_chapter_ids import TestChallengeChapterIDs
 
 # Import the new test modules
 try:
@@ -34,13 +42,17 @@ def create_test_suite():
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestDuelNarrator))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestRandomEvent))
     test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestTrainingEvent))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryMode))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeIntegration))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCog))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeChapterSuffixes))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeClubSpecificDialogues))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeConditionalChapterNavigation))
-    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeChallengeChapterIDs))
+
+    # Add the new story mode test cases
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeInitialization))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCurrentChapter))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeProgression))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeCogInitialization))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestStoryModeClubIntegration))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestChapterSuffixHandling))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestClubSpecificDialogues))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestConditionalChapterNavigation))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestChallengeChapterIDs))
 
     # Add the new test cases
     try:
