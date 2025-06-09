@@ -479,3 +479,146 @@ def test_error_handling(setup_database):
     # Test handling of transaction rollbacks
     # This would require implementing transaction support
     # and testing rollback scenarios 
+
+@pytest.mark.skip(reason="Disabled: SQLite not supported in this environment")
+def test_grade_operations(setup_database):
+    """Test grade-related database operations."""
+    # Test updating grade with invalid data
+    success = db_provider.get_db_implementation().update_player_grade(None, None, None, None, None)
+    assert not success
+    
+    # Test updating grade
+    success = db_provider.get_db_implementation().update_player_grade(
+        TEST_PLAYER['user_id'],
+        'MATH',
+        85,
+        1,  # January
+        2024
+    )
+    assert success
+    
+    # Test getting grades
+    grades = db_provider.get_db_implementation().get_player_grades(
+        TEST_PLAYER['user_id'],
+        subject='MATH',
+        month=1,
+        year=2024
+    )
+    assert grades is not None
+    assert len(grades) > 0
+    assert grades[0]['grade'] == 85
+    
+    # Test getting monthly average
+    avg = db_provider.get_db_implementation().get_monthly_average_grades(
+        TEST_PLAYER['user_id'],
+        month=1,
+        year=2024
+    )
+    assert avg is not None
+    assert avg > 0
+
+@pytest.mark.skip(reason="Disabled: SQLite not supported in this environment")
+def test_vote_operations(setup_database):
+    """Test vote-related database operations."""
+    # Test adding vote with invalid data
+    success = db_provider.get_db_implementation().add_vote(None, None, None, None, None)
+    assert not success
+    
+    # Test adding vote
+    success = db_provider.get_db_implementation().add_vote(
+        'PRESIDENT',
+        TEST_PLAYER['user_id'],
+        '456789',
+        1,  # Week 1
+        2024
+    )
+    assert success
+    
+    # Test getting vote results
+    results = db_provider.get_db_implementation().get_vote_results(
+        'PRESIDENT',
+        week=1,
+        year=2024
+    )
+    assert results is not None
+    assert len(results) > 0
+    assert results[0]['candidate_id'] == '456789'
+
+@pytest.mark.skip(reason="Disabled: SQLite not supported in this environment")
+def test_quiz_operations(setup_database):
+    """Test quiz-related database operations."""
+    # Test getting quiz questions
+    questions = db_provider.get_db_implementation().get_quiz_questions(
+        player_data=TEST_PLAYER,
+        category='MATH',
+        attribute='intellect',
+        count=3
+    )
+    assert questions is not None
+    assert len(questions) == 3
+    
+    # Test recording quiz answer
+    success = db_provider.get_db_implementation().record_quiz_answer(
+        TEST_PLAYER['user_id'],
+        questions[0]['id'],
+        True
+    )
+    assert success
+
+@pytest.mark.skip(reason="Disabled: SQLite not supported in this environment")
+def test_club_activity_operations(setup_database):
+    """Test club activity-related database operations."""
+    # Test recording club activity
+    success = db_provider.get_db_implementation().record_club_activity(
+        TEST_PLAYER['user_id'],
+        'MEETING',
+        points=5
+    )
+    assert success
+    
+    # Test getting top clubs by activity
+    top_clubs = db_provider.get_db_implementation().get_top_clubs_by_activity(
+        week=1,
+        year=2024,
+        limit=3
+    )
+    assert top_clubs is not None
+    assert len(top_clubs) > 0
+
+@pytest.mark.skip(reason="Disabled: SQLite not supported in this environment")
+def test_system_flags_operations(setup_database):
+    """Test system flags-related database operations."""
+    # Test setting system flag
+    success = db_provider.get_db_implementation().set_system_flag(
+        'TEST_FLAG',
+        'test_value'
+    )
+    assert success
+    
+    # Test getting system flag
+    flag_value = db_provider.get_db_implementation().get_system_flag('TEST_FLAG')
+    assert flag_value == 'test_value'
+
+@pytest.mark.skip(reason="Disabled: SQLite not supported in this environment")
+def test_cooldown_operations(setup_database):
+    """Test cooldown-related database operations."""
+    # Test storing cooldown
+    expiry_time = (datetime.now() + timedelta(hours=1)).isoformat()
+    success = db_provider.get_db_implementation().store_cooldown(
+        TEST_PLAYER['user_id'],
+        'TEST_COMMAND',
+        expiry_time
+    )
+    assert success
+    
+    # Test getting cooldowns
+    cooldowns = db_provider.get_db_implementation().get_cooldowns(
+        user_id=TEST_PLAYER['user_id']
+    )
+    assert cooldowns is not None
+    assert len(cooldowns) > 0
+    assert cooldowns[0]['command'] == 'TEST_COMMAND'
+    
+    # Test clearing expired cooldowns
+    success = db_provider.get_db_implementation().clear_expired_cooldowns()
+    assert success 
