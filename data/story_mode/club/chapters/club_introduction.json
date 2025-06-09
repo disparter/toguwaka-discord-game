@@ -4,6 +4,7 @@
     "title": "Club Introduction",
     "description": "Your first day at the club.",
     "content": "Welcome to the club! This is the default content.",
+    "next_chapter": "club_1_1_intro",
     "club_specific_content": {
         "Clube das Chamas": "Welcome to the Flames Club! Here you'll learn to master the power of fire and become a true flame warrior.",
         "Ilusionistas Mentais": "Welcome to the Mental Illusionists! Here you'll develop your mental powers and learn to manipulate reality.",
