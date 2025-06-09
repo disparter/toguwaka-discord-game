@@ -10,7 +10,7 @@ import json
 import os
 import logging
 from datetime import datetime, time
-from decimal import Decimal
+import decimal
 from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
 
 logger = logging.getLogger('tokugawa_bot')
@@ -52,7 +52,7 @@ class DynamoDBOperationError(DynamoDBError):
 # Helper class to convert Decimal to float/int for JSON serialization
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
-        if isinstance(o, Decimal):
+        if isinstance(o, decimal.Decimal):
             return float(o) if o % 1 else int(o)
         return super(DecimalEncoder, self).default(o)
 
@@ -342,47 +342,42 @@ def create_table(dynamodb, table_name):
 
 def handle_dynamo_error(func):
     """Decorator to handle DynamoDB errors."""
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         try:
-            return func(*args, **kwargs)
-        except (DynamoDBError, ClientError, Exception) as e:
+            return await func(*args, **kwargs)
+        except ClientError as e:
             logger.error(f"Error in {func.__name__}: {e}")
-            return False
+            raise DynamoDBOperationError(f"Failed to execute {func.__name__}: {e}") from e
+        except Exception as e:
+            logger.error(f"Unexpected error in {func.__name__}: {e}")
+            raise DynamoDBOperationError(f"Unexpected error in {func.__name__}: {e}") from e
     return wrapper
 
 @handle_dynamo_error
-def get_player(user_id):
+async def get_player(user_id):
     """Get a player from DynamoDB."""
     if not user_id:
         logger.warning("get_player called with no user_id")
         return None
-        
     try:
         logger.info(f"Attempting to get player with user_id: {user_id}")
         table = get_table(TABLES['players'])
-        
-        # Get player by primary key
         key = {
             'PK': f"PLAYER#{user_id}",
             'SK': 'PROFILE'
         }
         logger.info(f"Searching with key: {key}")
-        
-        response = table.get_item(Key=key)
+        response = await table.get_item(Key=key)
         logger.info(f"Raw DynamoDB response: {response}")
-        
         item = response.get('Item')
         if not item:
             logger.warning(f"No player found for user_id: {user_id}")
             return None
-            
         logger.info(f"Found player data: {item}")
-        
         # Convert Decimal values to int/float
         for k, value in item.items():
-            if isinstance(value, Decimal):
+            if isinstance(value, decimal.Decimal):
                 item[k] = int(value) if value % 1 == 0 else float(value)
-
         # Garantir campos obrigatórios
         defaults = {
             'power_stat': 10,
@@ -399,7 +394,6 @@ def get_player(user_id):
         for k, v in defaults.items():
             if k not in item or item[k] is None:
                 item[k] = v
-
         # Desserializar inventário se for string
         if isinstance(item['inventory'], str):
             try:
@@ -409,15 +403,14 @@ def get_player(user_id):
                 item['inventory'] = {}
         if not isinstance(item['inventory'], dict):
             item['inventory'] = {}
-
         logger.info(f"Final player data after normalization: {item}")
         return item
     except Exception as e:
         logger.error(f"Error getting player: {e}")
-        return None
+        raise DynamoDBOperationError(f"Failed to get player: {e}") from e
 
 @handle_dynamo_error
-def create_player(user_id, name, **kwargs):
+async def create_player(user_id, name, **kwargs):
     """Create a new player in DynamoDB."""
     if not user_id or not name:
         return False
@@ -437,72 +430,67 @@ def create_player(user_id, name, **kwargs):
         # Convert numeric values to Decimal
         for key, value in item.items():
             if isinstance(value, (int, float)):
-                item[key] = Decimal(str(value))
+                item[key] = decimal.Decimal(str(value))
         
-        table.put_item(Item=item)
+        await table.put_item(Item=item)
         return True
     except Exception as e:
         logger.error(f"Error creating player: {e}")
         return False
 
 @handle_dynamo_error
-def get_club(club_id):
+async def get_club(club_id):
     """Get club data from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        response = table.get_item(
+        response = await table.get_item(
             Key={
-                'NomeClube': club_id
+                'PK': f"CLUB#{club_id}",
+                'SK': 'INFO'
             }
         )
 
         if 'Item' in response:
             item = response['Item']
             club = {
-                'name': item.get('NomeClube', ''),
-                'description': item.get('descricao', ''),
-                'leader_id': item.get('lider_id', ''),
+                'name': item.get('name', ''),
+                'description': item.get('description', ''),
+                'leader_id': item.get('leader_id', ''),
                 'reputacao': item.get('reputacao', 0)
             }
             return club
         return None
     except Exception as e:
         logger.error(f"Error getting club {club_id}: {e}")
-        raise DynamoDBOperationError(f"Failed to get club: {e}")
+        raise DynamoDBOperationError(f"Failed to get club: {e}") from e
 
 @handle_dynamo_error
-def get_all_clubs():
+async def get_all_clubs():
     """Get all clubs from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        #logger.info("Attempting to scan clubs table")
-        response = table.scan()
-        #logger.info(f"Raw DynamoDB response: {response}")
+        response = await table.scan()
 
         clubs = []
         if 'Items' in response:
             for item in response['Items']:
-                # logger.info(f"Processing club item: {item}")
-                # Convert the item to a standard format
                 club = {
-                    'name': item.get('NomeClube', ''),
-                    'description': item.get('descricao', ''),
-                    'leader_id': item.get('lider_id', ''),
+                    'name': item.get('name', ''),
+                    'description': item.get('description', ''),
+                    'leader_id': item.get('leader_id', ''),
                     'reputacao': item.get('reputacao', 0)
                 }
-                #logger.info(f"Converted club object: {club}")
                 clubs.append(club)
         
         # Sort clubs by name
         sorted_clubs = sorted(clubs, key=lambda x: x['name'])
-        # logger.info(f"Final sorted clubs list: {sorted_clubs}")
         return sorted_clubs
     except Exception as e:
         logger.error(f"Error getting all clubs: {e}")
-        raise DynamoDBOperationError(f"Failed to get all clubs: {e}")
+        raise DynamoDBOperationError(f"Failed to get all clubs: {e}") from e
 
 @handle_dynamo_error
-def create_club(club_id, name, description, leader_id):
+async def create_club(club_id, name, description, leader_id):
     """Create a new club in DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
@@ -516,7 +504,7 @@ def create_club(club_id, name, description, leader_id):
         }
         logger.info(f"Creating club with item: {club_item}")
         
-        table.put_item(Item=club_item)
+        await table.put_item(Item=club_item)
         # logger.info(f"Successfully created club with name: {name}")
         return True
     except Exception as e:
@@ -524,11 +512,11 @@ def create_club(club_id, name, description, leader_id):
         raise DynamoDBOperationError(f"Failed to create club: {e}")
 
 @handle_dynamo_error
-def get_event(event_id):
+async def get_event(event_id):
     """Get event data from DynamoDB."""
     try:
         table = get_table(TABLES['events'])
-        response = table.get_item(
+        response = await table.get_item(
             Key={
                 'EventoID': event_id,
                 'Tipo': 'EVENT'
@@ -544,11 +532,11 @@ def get_event(event_id):
         raise DynamoDBOperationError(f"Failed to get event: {e}")
 
 @handle_dynamo_error
-def store_event(event_id, name, description, event_type, channel_id, message_id, start_time, end_time, participants=None, data=None):
+async def store_event(event_id, name, description, event_type, channel_id, message_id, start_time, end_time, participants=None, data=None):
     """Store an event in DynamoDB."""
     try:
         table = get_table(TABLES['events'])
-        table.put_item(
+        await table.put_item(
             Item={
                 'EventoID': event_id,
                 'Tipo': 'EVENT',
@@ -571,11 +559,11 @@ def store_event(event_id, name, description, event_type, channel_id, message_id,
         raise DynamoDBOperationError(f"Failed to store event: {e}")
 
 @handle_dynamo_error
-def get_player_inventory(user_id):
+async def get_player_inventory(user_id):
     """Get player's inventory from DynamoDB."""
     try:
         table = get_table(TABLES['inventory'])
-        response = table.query(
+        response = await table.query(
             KeyConditionExpression='JogadorID = :uid',
             ExpressionAttributeValues={
                 ':uid': user_id
@@ -593,11 +581,11 @@ def get_player_inventory(user_id):
         raise DynamoDBOperationError(f"Failed to get inventory: {e}")
 
 @handle_dynamo_error
-def add_item_to_inventory(user_id, item_id, quantity):
+async def add_item_to_inventory(user_id, item_id, quantity):
     """Add an item to player's inventory in DynamoDB."""
     try:
         table = get_table(TABLES['inventory'])
-        table.put_item(
+        await table.put_item(
             Item={
                 'JogadorID': user_id,
                 'ItemID': item_id,
@@ -611,11 +599,11 @@ def add_item_to_inventory(user_id, item_id, quantity):
         raise DynamoDBOperationError(f"Failed to add item to inventory: {e}")
 
 @handle_dynamo_error
-def get_market_listing(item_id, seller_id):
+async def get_market_listing(item_id, seller_id):
     """Get a market listing from DynamoDB."""
     try:
         table = get_table(TABLES['market'])
-        response = table.get_item(
+        response = await table.get_item(
             Key={
                 'ItemID': item_id,
                 'VendedorID': seller_id
@@ -631,11 +619,11 @@ def get_market_listing(item_id, seller_id):
         raise DynamoDBOperationError(f"Failed to get market listing: {e}")
 
 @handle_dynamo_error
-def list_item_for_sale(item_id, seller_id, price):
+async def list_item_for_sale(item_id, seller_id, price):
     """List an item for sale in DynamoDB."""
     try:
         table = get_table(TABLES['market'])
-        table.put_item(
+        await table.put_item(
             Item={
                 'ItemID': item_id,
                 'VendedorID': seller_id,
@@ -650,11 +638,11 @@ def list_item_for_sale(item_id, seller_id, price):
         raise DynamoDBOperationError(f"Failed to list item for sale: {e}")
 
 @handle_dynamo_error
-def get_system_flag(flag_name):
+async def get_system_flag(flag_name):
     """Get a system flag from DynamoDB."""
     try:
         table = get_table(TABLES['main'])
-        response = table.get_item(
+        response = await table.get_item(
             Key={
                 'PK': 'SYSTEM',
                 'SK': f'FLAG#{flag_name}'
@@ -668,7 +656,7 @@ def get_system_flag(flag_name):
         raise DynamoDBOperationError(f"Failed to get system flag: {e}")
 
 @handle_dynamo_error
-def update_player(user_id, **kwargs):
+async def update_player(user_id, **kwargs):
     """Update a player in DynamoDB."""
     if not user_id:
         return False
@@ -682,7 +670,7 @@ def update_player(user_id, **kwargs):
         
         for key, value in kwargs.items():
             if isinstance(value, (int, float)):
-                value = Decimal(str(value))
+                value = decimal.Decimal(str(value))
             update_expr += f"#{key} = :{key}, "
             expr_attr_values[f":{key}"] = value
             
@@ -692,7 +680,7 @@ def update_player(user_id, **kwargs):
         expr_attr_names = {f"#{key}": key for key in kwargs.keys()}
         
         # Update player
-        table.update_item(
+        await table.update_item(
             Key={
                 'PK': f"PLAYER#{user_id}",
                 'SK': 'PROFILE'
@@ -708,7 +696,7 @@ def update_player(user_id, **kwargs):
         return False
 
 @handle_dynamo_error
-def create_item(item_id, name, description, type, rarity, price, effects, **kwargs):
+async def create_item(item_id, name, description, type, rarity, price, effects, **kwargs):
     """Create a new item in DynamoDB."""
     if not item_id or not name or not type or not rarity or price is None:
         return False
@@ -733,7 +721,7 @@ def create_item(item_id, name, description, type, rarity, price, effects, **kwar
     
     try:
         table = get_table(TABLES['items'])
-        table.put_item(
+        await table.put_item(
             Item=item,
             ConditionExpression='attribute_not_exists(PK)'
         )
@@ -746,7 +734,7 @@ def create_item(item_id, name, description, type, rarity, price, effects, **kwar
         raise DynamoDBError(f"Error creating item: {str(e)}")
 
 @handle_dynamo_error
-def get_top_clubs_by_activity(week=None, year=None, limit=3):
+async def get_top_clubs_by_activity(week=None, year=None, limit=3):
     """Get top clubs by activity points for a specific week."""
     try:
         # If week and year are not provided, use current week
@@ -759,7 +747,7 @@ def get_top_clubs_by_activity(week=None, year=None, limit=3):
         clubs_table = get_table(TABLES['clubs'])
 
         # Query activities for the specified week and year
-        response = activities_table.query(
+        response = await activities_table.query(
             IndexName='week-year-index',
             KeyConditionExpression='week = :week AND year = :year',
             ExpressionAttributeValues={
@@ -785,7 +773,7 @@ def get_top_clubs_by_activity(week=None, year=None, limit=3):
         # Get club details for clubs with points
         top_clubs = []
         for club_id, total_points in sorted(club_points.items(), key=lambda x: x[1], reverse=True)[:limit]:
-            club_response = clubs_table.get_item(Key={'NomeClube': club_id})
+            club_response = await clubs_table.get_item(Key={'NomeClube': club_id})
             if 'Item' in club_response:
                 club = club_response['Item']
                 top_clubs.append({
@@ -802,12 +790,12 @@ def get_top_clubs_by_activity(week=None, year=None, limit=3):
         return []
 
 @handle_dynamo_error
-def record_club_activity(user_id, activity_type, points=1):
+async def record_club_activity(user_id, activity_type, points=1):
     """Record a club activity for a player's club."""
     try:
         # Get player's club
         players_table = get_table(TABLES['players'])
-        player_response = players_table.get_item(Key={'user_id': user_id})
+        player_response = await players_table.get_item(Key={'user_id': user_id})
         
         if 'Item' not in player_response:
             logger.info(f"Player {user_id} not found, skipping activity recording")
@@ -828,7 +816,7 @@ def record_club_activity(user_id, activity_type, points=1):
         activities_table = get_table(TABLES['club_activities'])
         activity_id = f"{club_id}#{user_id}#{activity_type}#{week}#{year}"
         
-        activities_table.put_item(
+        await activities_table.put_item(
             Item={
                 'PK': f"CLUB#{club_id}",
                 'SK': f"ACTIVITY#{activity_id}",
@@ -849,7 +837,7 @@ def record_club_activity(user_id, activity_type, points=1):
         return False
 
 @handle_dynamo_error
-def get_events_by_date(date=None, include_completed=True):
+async def get_events_by_date(date=None, include_completed=True):
     """Get events for a specific date from DynamoDB. Args:
         date (datetime, optional): The date to get events for. Defaults to today.
         include_completed (bool, optional): Whether to include completed events. Defaults to True.
@@ -862,7 +850,7 @@ def get_events_by_date(date=None, include_completed=True):
         date_start = datetime.combine(date, time.min).isoformat()
         date_end = datetime.combine(date, time.max).isoformat()
         table = get_table(TABLES['events'])
-        response = table.scan()
+        response = await table.scan()
         events = []
         for item in response.get('Items', []):
             # Parse times
@@ -889,11 +877,11 @@ def get_events_by_date(date=None, include_completed=True):
         return []
 
 @handle_dynamo_error
-def update_event_status(event_id, status):
+async def update_event_status(event_id, status):
     """Update the status of an event."""
     try:
         table = get_table(TABLES['events'])
-        table.update_item(
+        await table.update_item(
             Key={'event_id': event_id},
             UpdateExpression='SET status = :status',
             ExpressionAttributeValues={
@@ -906,32 +894,32 @@ def update_event_status(event_id, status):
         return False
 
 @handle_dynamo_error
-def get_active_events():
+async def get_active_events():
     """Stub for get_active_events. Returns an empty list."""
     return []
 
 @handle_dynamo_error
-def store_cooldown(*args, **kwargs):
+async def store_cooldown(*args, **kwargs):
     """Stub for store_cooldown. Returns True."""
     return True
 
 @handle_dynamo_error
-def get_cooldowns(*args, **kwargs):
+async def get_cooldowns(*args, **kwargs):
     """Stub for get_cooldowns. Returns an empty list."""
     return []
 
 @handle_dynamo_error
-def clear_expired_cooldowns(*args, **kwargs):
+async def clear_expired_cooldowns(*args, **kwargs):
     """Stub for clear_expired_cooldowns. Returns True."""
     return True
 
 @handle_dynamo_error
-def set_system_flag(*args, **kwargs):
+async def set_system_flag(*args, **kwargs):
     """Stub for set_system_flag. Returns True."""
     return True
 
 @handle_dynamo_error
-def get_player_grades(user_id, subject=None, month=None, year=None):
+async def get_player_grades(user_id, subject=None, month=None, year=None):
     """Get player grades from DynamoDB."""
     try:
         table = get_table(TABLES['grades'])
@@ -947,7 +935,7 @@ def get_player_grades(user_id, subject=None, month=None, year=None):
         if year:
             key_expr += ' AND year = :year'
             expr_attr[':year'] = int(year)
-        response = table.scan(
+        response = await table.scan(
             FilterExpression=key_expr,
             ExpressionAttributeValues=expr_attr
         )
@@ -958,7 +946,7 @@ def get_player_grades(user_id, subject=None, month=None, year=None):
         return []
 
 @handle_dynamo_error
-def update_player_grade(user_id, subject, grade, month, year):
+async def update_player_grade(user_id, subject, grade, month, year):
     """Update or insert a player's grade in DynamoDB."""
     try:
         table = get_table('grades')
@@ -970,18 +958,18 @@ def update_player_grade(user_id, subject, grade, month, year):
             'year': int(year),
             'created_at': datetime.now().isoformat()
         }
-        table.put_item(Item=item)
+        await table.put_item(Item=item)
         return True
     except Exception as e:
         logger.error(f"Error updating grade for user {user_id}: {e}")
         return False
 
 @handle_dynamo_error
-def get_monthly_average_grades(month, year):
+async def get_monthly_average_grades(month, year):
     """Get average grades per subject for a given month and year from DynamoDB."""
     try:
         table = get_table('grades')
-        response = table.scan(
+        response = await table.scan(
             FilterExpression='month = :month AND year = :year',
             ExpressionAttributeValues={
                 ':month': int(month),
@@ -1005,7 +993,7 @@ def get_monthly_average_grades(month, year):
         return []
 
 @handle_dynamo_error
-def add_vote(category, voter_id, candidate_id, week, year):
+async def add_vote(category, voter_id, candidate_id, week, year):
     """Add a vote in DynamoDB."""
     try:
         table = get_table('votes')
@@ -1017,18 +1005,18 @@ def add_vote(category, voter_id, candidate_id, week, year):
             'year': int(year),
             'created_at': datetime.now().isoformat()
         }
-        table.put_item(Item=item)
+        await table.put_item(Item=item)
         return True
     except Exception as e:
         logger.error(f"Error adding vote: {e}")
         return False
 
 @handle_dynamo_error
-def get_vote_results(category, week, year):
+async def get_vote_results(category, week, year):
     """Get vote results for a category/week/year from DynamoDB."""
     try:
         table = get_table('votes')
-        response = table.scan(
+        response = await table.scan(
             FilterExpression='category = :cat AND week = :week AND year = :year',
             ExpressionAttributeValues={
                 ':cat': category,
@@ -1047,11 +1035,11 @@ def get_vote_results(category, week, year):
         return []
 
 @handle_dynamo_error
-def update_player_reputation(user_id, reputation):
+async def update_player_reputation(user_id, reputation):
     """Update a player's reputation in DynamoDB."""
     try:
         table = get_table(TABLES['players'])
-        table.update_item(
+        await table.update_item(
             Key={'user_id': user_id},
             UpdateExpression='SET reputation = :rep',
             ExpressionAttributeValues={':rep': int(reputation)}
@@ -1062,11 +1050,11 @@ def update_player_reputation(user_id, reputation):
         return False
 
 @handle_dynamo_error
-def get_quiz_questions():
+async def get_quiz_questions():
     """Get all quiz questions from DynamoDB."""
     try:
         table = get_table('quiz_questions')
-        response = table.scan()
+        response = await table.scan()
         questions = response.get('Items', [])
         return [dict(q) for q in questions]
     except Exception as e:
@@ -1074,7 +1062,7 @@ def get_quiz_questions():
         return []
 
 @handle_dynamo_error
-def record_quiz_answer(user_id, question_id, is_correct):
+async def record_quiz_answer(user_id, question_id, is_correct):
     """Record a quiz answer for a user in DynamoDB."""
     try:
         table = get_table('quiz_answers')
@@ -1084,7 +1072,7 @@ def record_quiz_answer(user_id, question_id, is_correct):
             'is_correct': bool(is_correct),
             'created_at': datetime.now().isoformat()
         }
-        table.put_item(Item=item)
+        await table.put_item(Item=item)
         return True
     except Exception as e:
         logger.error(f"Error recording quiz answer: {e}")

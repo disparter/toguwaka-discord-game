@@ -101,13 +101,13 @@ async def get_dynamodb_clubs() -> List[Dict[str, Any]]:
         logger.error(f"Error getting clubs from DynamoDB: {e}")
         return []
 
-async def update_user_club(user_id: str, club_id: str) -> bool:
+async def update_user_club(user_id: str, club_name: str) -> bool:
     """Update a user's club."""
     try:
-        logger.info(f"Attempting to update user {user_id} to club {club_id}")
+        logger.info(f"Attempting to update user {user_id} to club {club_name}")
         if USE_DYNAMODB:
             logger.info("Using DynamoDB for club update")
-            success = await update_dynamodb_user_club(user_id, club_id)
+            success = await update_dynamodb_user_club(user_id, club_name)
             logger.info(f"Club update result: {success}")
             return success
         else:
@@ -115,7 +115,7 @@ async def update_user_club(user_id: str, club_id: str) -> bool:
             async with get_db() as db:
                 success = await db.execute(
                     "UPDATE players SET club_id = ? WHERE user_id = ?",
-                    (club_id, user_id)
+                    (club_name, user_id)
                 )
                 logger.info(f"Club update result: {success}")
                 return success
@@ -123,17 +123,20 @@ async def update_user_club(user_id: str, club_id: str) -> bool:
         logger.error(f"Error updating user club: {e}")
         return False
 
-async def update_dynamodb_user_club(user_id: str, club_id: str) -> bool:
+async def update_dynamodb_user_club(user_id: str, club_name: str) -> bool:
     """Update a user's club in DynamoDB."""
     try:
         table = get_table(TABLES['players'])
-        logger.info(f"Updating user {user_id} to club {club_id}")
+        logger.info(f"Updating user {user_id} to club {club_name}")
         
-        response = table.update_item(
-            Key={'DiscordID': user_id},
-            UpdateExpression='SET NomeClube = :club',
+        response = await table.update_item(
+            Key={
+                'PK': f"PLAYER#{user_id}",
+                'SK': 'PROFILE'
+            },
+            UpdateExpression='SET club_id = :club',
             ExpressionAttributeValues={
-                ':club': club_id
+                ':club': club_name
             },
             ReturnValues='UPDATED_NEW'
         )

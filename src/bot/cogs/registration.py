@@ -27,7 +27,7 @@ class Registration(commands.Cog):
         """Slash command version of the register command."""
         try:
             # Check if player already exists
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
                 return
@@ -49,7 +49,7 @@ class Registration(commands.Cog):
         logger.info(f"Register command called by user {ctx.author.id} ({ctx.author.name})")
         
         # Check if player already exists
-        player = get_player(ctx.author.id)
+        player = await get_player(ctx.author.id)
         logger.info(f"Player lookup result for {ctx.author.id}: {player}")
         
         if player:
@@ -146,7 +146,7 @@ class Registration(commands.Cog):
                     await ctx.send("Por favor, digite apenas o número do clube escolhido.")
 
             # Create the player
-            success = create_player(
+            success = await create_player(
                 ctx.author.id,
                 character_name,
                 power=character_power,
@@ -156,7 +156,7 @@ class Registration(commands.Cog):
 
             if success:
                 # Get the created player and their club
-                player = get_player(ctx.author.id)
+                player = await get_player(ctx.author.id)
 
                 # Send welcome message
                 welcome_msg = create_basic_embed(

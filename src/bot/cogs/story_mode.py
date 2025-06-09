@@ -13,10 +13,10 @@ from utils.database import get_player, update_player, get_club, get_all_clubs
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
 
-from src.story_mode.story_mode import StoryMode
-from src.story_mode.club_system import ClubSystem
-from src.story_mode.consequences_system import ConsequencesSystem
-from src.story_mode.relationship_system import RelationshipSystem
+from story_mode.story_mode import StoryMode
+from story_mode.club_system import ClubSystem
+from story_mode.consequences_system import ConsequencesSystem
+from story_mode.relationship_system import RelationshipSystem
 
 logger = logging.getLogger('tokugawa_bot')
 

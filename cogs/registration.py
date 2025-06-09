@@ -16,18 +16,9 @@ from utils.database import get_player, update_player, get_club, get_all_clubs
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
 from utils.club_system import ClubSystem
+from utils.normalization import normalize_club_name
 
 logger = logging.getLogger('tokugawa_bot')
-
-def normalize_club_name(name: str) -> str:
-    """Normalize club name for comparison by removing accents, converting to lowercase, and replacing special characters with spaces."""
-    import unicodedata
-    # Remove accents
-    name = unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore').decode('ASCII')
-    # Replace hyphens and special characters with spaces
-    name = re.sub(r'[^a-zA-Z0-9 ]', ' ', name)
-    # Convert to lowercase and remove extra spaces
-    return ' '.join(name.lower().split())
 
 class Registration(commands.Cog):
     """Cog for player registration and character creation."""
@@ -104,11 +95,11 @@ class Registration(commands.Cog):
             strength_embed = create_basic_embed(
                 title="Nível de Força",
                 description="Escolha o nível de força do seu poder (1-5):\n\n" +
-                            "1. Fraco - Poderes básicos e limitados\n" +
-                            "2. Moderado - Poderes com algumas limitações\n" +
-                            "3. Forte - Poderes significativos\n" +
-                            "4. Muito Forte - Poderes excepcionais\n" +
-                            "5. Extremamente Forte - Poderes raros e poderosos\n\n" +
+                            "1. Fraco - Poderes básicos e limitados - ⭐\n" +
+                            "2. Moderado - Poderes com algumas limitações - ⭐⭐\n" +
+                            "3. Forte - Poderes significativos - ⭐⭐⭐\n" +
+                            "4. Muito Forte - Poderes excepcionais - ⭐⭐⭐⭐\n" +
+                            "5. Extremamente Forte - Poderes raros e poderosos - ⭐⭐⭐⭐⭐\n\n" +
                             "Digite o número correspondente ao nível escolhido:",
                 color=0x1E90FF
             )
