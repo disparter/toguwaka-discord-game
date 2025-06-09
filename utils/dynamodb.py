@@ -106,16 +106,6 @@ def init_db():
         # Initialize the table variable for global use
         table = get_table(TABLES['main'])
         
-        # After successful initialization, distribute data from main table to specialized tables
-        try:
-            from utils.migrate_to_dynamodb import distribute_data_to_tables
-            if distribute_data_to_tables():
-                logger.info("Successfully distributed data to specialized tables")
-            else:
-                logger.warning("Data distribution completed with warnings")
-        except Exception as e:
-            logger.error(f"Error distributing data to tables: {e}")
-        
         return True
     except Exception as e:
         logger.error(f"Error initializing DynamoDB: {e}")
@@ -263,6 +253,9 @@ def get_player(user_id):
         if 'Item' in response:
             player = response['Item']
             # Convert Decimal types to float/int
+            # If 'nome' exists but 'name' does not, copy it for backward compatibility
+            if 'nome' in player and 'name' not in player:
+                player['name'] = player['nome']
             return json.loads(json.dumps(player, cls=DecimalEncoder))
         return None
     except Exception as e:
@@ -285,7 +278,7 @@ def create_player(user_id, name, **kwargs):
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': 'PROFILE',
-                'nome': name,
+                'name': name,
                 'inventory': inventory,
                 'created_at': datetime.now().isoformat(),
                 'last_active': datetime.now().isoformat(),

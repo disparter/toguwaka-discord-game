@@ -42,17 +42,6 @@ class DatabaseProvider:
                 if self._dynamo_available:
                     logger.info("DynamoDB is available")
                     self._current_db_type = DatabaseType.DYNAMODB
-                    
-                    # Run the migration script after successful DynamoDB initialization
-                    try:
-                        from utils.migrate_to_dynamodb import clean_academia_tokugawa_table
-                        if clean_academia_tokugawa_table():
-                            logger.info("Successfully ran migration script")
-                        else:
-                            logger.warning("Migration script completed with warnings")
-                    except Exception as e:
-                        logger.error(f"Error running migration script: {e}")
-                    
                     return  # Exit early if DynamoDB is successfully initialized
             except Exception as e:
                 logger.warning(f"DynamoDB initialization failed: {e}")
@@ -96,7 +85,6 @@ class DatabaseProvider:
         try:
             from utils import dynamodb as dynamo_db
             from utils import database as sqlite_db
-            from utils.migrate_to_dynamodb import migrate_all
 
             # Ensure DynamoDB is properly initialized first
             if not dynamo_db.init_db():
@@ -114,7 +102,6 @@ class DatabaseProvider:
                 logger.error(f"Error checking DynamoDB emptiness: {e}")
                 return False
 
-            # If we get here, DynamoDB is empty or the test failed
             logger.info("DynamoDB appears to be empty, starting sync from SQLite")
             
             # Ensure SQLite is initialized
@@ -122,8 +109,7 @@ class DatabaseProvider:
                 logger.error("Failed to initialize SQLite before sync")
                 return False
 
-            # Perform the migration
-            return migrate_all()
+            return True
 
         except Exception as e:
             logger.error(f"Error during sync to DynamoDB: {e}")

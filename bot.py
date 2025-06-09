@@ -169,16 +169,8 @@ async def on_ready():
         # Try to ensure DynamoDB is available
         if db_provider.ensure_dynamo_available():
             # If DynamoDB is available, try to sync data if needed
-            if db_provider.sync_to_dynamo_if_empty():
-                # Run the migration script after successful sync
-                try:
-                    from utils.migrate_to_dynamodb import clean_academia_tokugawa_table
-                    if clean_academia_tokugawa_table():
-                        logger.info("Successfully ran migration script")
-                    else:
-                        logger.warning("Migration script completed with warnings")
-                except Exception as e:
-                    logger.error(f"Error running migration script: {e}")
+            if not db_provider.sync_to_dynamo_if_empty():
+                logger.error("Failed to sync data to DynamoDB")
         else:
             # If DynamoDB is not available, fallback to SQLite
             if not db_provider.fallback_to_sqlite():
