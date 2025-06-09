@@ -198,27 +198,34 @@ class StoryMode:
         
         # Log story start
         logger.info(f"Starting story for player {player_data['user_id']}")
-        logger.info(f"Available chapters: {available_chapters}")
         
-        # Get current chapter
-        current_chapter = self.get_current_chapter(player_data)
-        if current_chapter:
-            # Start the chapter
-            chapter_result = current_chapter.start(player_data)
-            logger.info(f"Started chapter {current_chapter.chapter_id}")
-            logger.info(f"Chapter result: {chapter_result}")
-            
-            # Return both player data and chapter data
-            return {
-                "player_data": player_data,
-                "chapter_data": chapter_result
-            }
+        # Get the first available chapter
+        if available_chapters:
+            chapter_id = available_chapters[0]
+            chapter = self.get_current_chapter(player_data)
+            if chapter:
+                chapter_data = chapter.get_data()
+            else:
+                # Fallback if chapter not found
+                chapter_data = {
+                    "id": chapter_id,
+                    "title": "Chapter Not Found",
+                    "description": "The chapter data could not be loaded.",
+                    "choices": []
+                }
         else:
-            logger.error(f"No current chapter found for player {player_data['user_id']}")
-            return {
-                "player_data": player_data,
-                "chapter_data": None
+            # Fallback if no chapters are available
+            chapter_data = {
+                "id": "no_chapter",
+                "title": "No Chapters Available",
+                "description": "There are no available chapters.",
+                "choices": []
             }
+        
+        return {
+            "player_data": player_data,
+            "chapter_data": {"chapter_data": chapter_data}
+        }
 
     def get_current_chapter(self, player_data: Dict[str, Any]) -> Optional[Chapter]:
         """

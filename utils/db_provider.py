@@ -93,11 +93,11 @@ class DatabaseProvider:
                 logger.error("Failed to initialize DynamoDB before sync")
                 return False
 
-            # Check if DynamoDB is empty by querying a key table
+            # Check if DynamoDB is empty by querying the clubs table
             try:
-                # Try to get a system flag as a test
-                test_flag = dynamo_db.get_system_flag('test_flag')
-                if test_flag is not None:
+                # Try to get all clubs as a test
+                clubs = dynamo_db.get_all_clubs()
+                if clubs and len(clubs) > 0:
                     logger.info("DynamoDB is not empty, skipping sync")
                     return True
             except Exception as e:

@@ -17,8 +17,8 @@ class TestRandomEvent(unittest.TestCase):
 
     def test_random_event_trigger(self):
         """Test that a random event can be triggered"""
-        # Create a mock player with required attributes
-        mock_player = type('MockPlayer', (), {
+        # Create a mock player as a dict with required attributes
+        mock_player = {
             'strength': 10,
             'agility': 10,
             'intelligence': 10,
@@ -26,8 +26,7 @@ class TestRandomEvent(unittest.TestCase):
             'max_hp': 100,
             'experience': 0,
             'level': 1
-        })()
-        
+        }
         result = self.random_event.trigger(mock_player)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, dict)

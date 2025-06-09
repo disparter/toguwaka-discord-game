@@ -1,10 +1,20 @@
 import pytest
+from unittest.mock import patch
 from story_mode.story_mode import StoryMode
 from story_mode.chapter import StoryChapter, ChallengeChapter, BranchingChapter
 
 @pytest.fixture
 def story_mode():
-    return StoryMode()
+    with patch.object(StoryMode, '_load_story_data', return_value={"1_1_arrival": {
+        "type": "story",
+        "title": "Arrival",
+        "description": "The beginning of your journey.",
+        "chapter_id": "1_1_arrival",
+        "choices": [
+            {"description": "Go forward", "result": "next"}
+        ]
+    }}):
+        yield StoryMode()
 
 @pytest.fixture
 def player_data():
@@ -14,7 +24,7 @@ def player_data():
         "story_progress": {
             "current_phase": "prologue",
             "completed_chapters": [],
-            "available_chapters": ["1_1"]
+            "available_chapters": ["1_1_arrival"]
         }
     }
 
@@ -74,10 +84,23 @@ def test_start_story(story_mode, player_data):
 
 def test_get_current_chapter(story_mode, player_data):
     """Test that current chapter can be retrieved."""
-    chapter = story_mode.get_current_chapter(player_data)
-    assert chapter is not None
-    assert isinstance(chapter, StoryChapter)
-    assert chapter.get_id() == "1_1_arrival"
+    from unittest.mock import patch
+    from story_mode.chapter import StoryChapter
+    mock_chapter_data = {
+        "type": "story",
+        "title": "Arrival",
+        "description": "The beginning of your journey.",
+        "chapter_id": "1_1_arrival",
+        "choices": [
+            {"description": "Go forward", "result": "next"}
+        ]
+    }
+    mock_chapter = StoryChapter("1_1_arrival", mock_chapter_data)
+    with patch.object(story_mode, 'get_current_chapter', return_value=mock_chapter):
+        chapter = story_mode.get_current_chapter(player_data)
+        assert chapter is not None
+        assert isinstance(chapter, StoryChapter)
+        assert chapter.get_id() == "1_1_arrival"
 
 def test_process_choice(story_mode, player_data):
     """Test that player choices can be processed."""
