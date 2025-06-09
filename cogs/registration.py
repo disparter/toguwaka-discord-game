@@ -7,6 +7,7 @@ import random
 from utils.database import get_player, create_player, get_all_clubs
 from utils.embeds import create_basic_embed, create_player_embed
 from utils.game_mechanics import STRENGTH_LEVELS
+from utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -226,9 +227,15 @@ class Registration(commands.Cog):
 
 async def setup(bot):
     """Add the cog to the bot."""
+    from utils.command_registrar import CommandRegistrar
+
+    # Create and add the cog
     cog = Registration(bot)
     await bot.add_cog(cog)
     logger.info("Registration cog loaded")
+
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)
 
     # Add the registration_group to the bot's command tree
     try:
