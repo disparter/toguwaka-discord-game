@@ -398,18 +398,20 @@ def get_all_clubs():
     """Get all clubs from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        response = table.scan(
-            FilterExpression='begins_with(PK, :prefix)',
-            ExpressionAttributeValues={
-                ':prefix': 'CLUB#'
-            }
-        )
+        response = table.scan()  # Get all items since we're using a simple key schema
 
         clubs = []
         if 'Items' in response:
             for item in response['Items']:
-                if item['SK'] == 'PROFILE':
-                    clubs.append(json.loads(json.dumps(item, cls=DecimalEncoder)))
+                # Convert the item to a standard format
+                club = {
+                    'club_id': item.get('NomeClube'),  # Use NomeClube as club_id
+                    'name': item.get('NomeClube'),
+                    'description': item.get('descricao', ''),
+                    'leader_id': item.get('leader_id', ''),
+                    'reputacao': item.get('reputacao', 0)
+                }
+                clubs.append(club)
         
         return sorted(clubs, key=lambda x: x.get('reputacao', 0), reverse=True)
     except Exception as e:
@@ -423,9 +425,7 @@ def create_club(club_id, name, description, leader_id):
         table = get_table(TABLES['clubs'])
         table.put_item(
             Item={
-                'PK': f'CLUB#{club_id}',
-                'SK': 'PROFILE',
-                'name': name,
+                'NomeClube': name,  # Use name as the primary key
                 'descricao': description,
                 'leader_id': leader_id,
                 'reputacao': 0,
