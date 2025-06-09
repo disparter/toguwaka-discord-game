@@ -17,7 +17,7 @@ from .chapter_validator import ChapterValidator
 from .narrative_logger import get_narrative_logger
 from .validation import get_story_validator
 from .arcs.arc_manager import ArcManager
-from .image_manager import ImageManager
+from .image_processor import ImageProcessor
 from pathlib import Path
 from story_mode.event_manager import ConcreteEventManager
 from .club_system import ClubSystem
@@ -55,7 +55,7 @@ class StoryMode:
         self.arc_manager = ArcManager(str(self.data_dir))
         self.event_manager = ConcreteEventManager()
         self.npc_manager = NPCManager()
-        self.image_manager = ImageManager(str(self.images_dir))
+        self.image_processor = ImageProcessor(str(self.images_dir))
         self.progress_manager = DefaultStoryProgressManager()
         self.consequences_system = DynamicConsequencesSystem()
         self.power_system = PowerEvolutionSystem()
@@ -128,9 +128,9 @@ class StoryMode:
         """
         chapter = self.arc_manager.get_chapter(chapter_id)
         if not chapter or "background_image" not in chapter:
-            return self.image_manager.get_image_path("image_not_found")
+            return self.image_processor.get_image_path("image_not_found")
         
-        return self.image_manager.get_image_path(
+        return self.image_processor.get_image_path(
             chapter["background_image"].replace(".png", "")
         )
 
@@ -144,9 +144,9 @@ class StoryMode:
         Returns:
             Path to the character's image
         """
-        image_path = self.image_manager.get_character_image(character_id)
+        image_path = self.image_processor.get_character_image(character_id)
         if not image_path:
-            return self.image_manager.get_image_path("image_not_found")
+            return self.image_processor.get_image_path("image_not_found")
         return image_path
 
     def get_location_image(self, location_id: str) -> str:
@@ -159,9 +159,9 @@ class StoryMode:
         Returns:
             Path to the location's image
         """
-        image_path = self.image_manager.get_location_image(location_id)
+        image_path = self.image_processor.get_location_image(location_id)
         if not image_path:
-            return self.image_manager.get_image_path("image_not_found")
+            return self.image_processor.get_image_path("image_not_found")
         return image_path
 
     def validate_story_images(self) -> List[str]:
@@ -171,7 +171,7 @@ class StoryMode:
         Returns:
             List of missing image references
         """
-        return self.image_manager.validate_story_images(self.story_data)
+        return self.image_processor.validate_story_images(self.story_data)
 
     def start_story(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """Start the story mode for a player.
