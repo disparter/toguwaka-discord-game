@@ -15,6 +15,7 @@ Configuration:
 
 import os
 import logging
+from typing import List, Dict, Any
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -45,6 +46,54 @@ get_top_players = db_impl.get_top_players
 get_top_players_by_reputation = db_impl.get_top_players_by_reputation
 
 # Club operations
+async def get_clubs() -> List[Dict[str, Any]]:
+    """Get all clubs from the database."""
+    try:
+        logger.info("Attempting to get clubs from database")
+        if USE_DYNAMODB:
+            logger.info("Using DynamoDB for club retrieval")
+            clubs = await get_dynamodb_clubs()
+            logger.info(f"Retrieved {len(clubs)} clubs from DynamoDB")
+            return clubs
+        else:
+            logger.info("Using SQLite for club retrieval")
+            async with get_db() as db:
+                clubs = await db.fetch("SELECT * FROM clubs ORDER BY name")
+                logger.info(f"Retrieved {len(clubs)} clubs from SQLite")
+                return [dict(club) for club in clubs]
+    except Exception as e:
+        logger.error(f"Error getting clubs: {e}")
+        return []
+
+async def get_dynamodb_clubs() -> List[Dict[str, Any]]:
+    """Get all clubs from DynamoDB."""
+    try:
+        logger.info("Attempting to scan clubs table")
+        table = get_table(TABLES['CLUBES'])
+        response = table.scan()
+        logger.info(f"Raw DynamoDB response: {response}")
+        
+        clubs = []
+        for item in response.get('Items', []):
+            logger.info(f"Processing club item: {item}")
+            club = {
+                'club_id': item['NomeClube'],
+                'name': item['NomeClube'],
+                'description': item['descricao'],
+                'leader_id': item.get('lider_id', ''),
+                'reputacao': item.get('reputacao', 0)
+            }
+            logger.info(f"Converted club object: {club}")
+            clubs.append(club)
+            
+        # Sort clubs by name
+        clubs.sort(key=lambda x: x['name'])
+        logger.info(f"Final sorted clubs list: {clubs}")
+        return clubs
+    except Exception as e:
+        logger.error(f"Error getting clubs from DynamoDB: {e}")
+        return []
+
 get_club = db_impl.get_club
 get_all_clubs = db_impl.get_all_clubs
 get_club_members = db_impl.get_club_members
