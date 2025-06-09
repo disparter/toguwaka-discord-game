@@ -128,7 +128,13 @@ class Registration(commands.Cog):
                     await ctx.send("Por favor, escolha um clube válido da lista.")
 
             # Create the player
-            success = create_player(ctx.author.id, character_name, character_power, strength_level, club_id)
+            success = create_player(
+                ctx.author.id,
+                character_name,
+                power=character_power,
+                strength_level=strength_level,
+                club_id=club_id
+            )
 
             if success:
                 # Get the created player and their club
