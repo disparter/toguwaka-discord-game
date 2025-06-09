@@ -26,6 +26,55 @@ def safe_decimal(value):
         logger.warning(f"Invalid value for Decimal conversion: {value}, using 0 instead")
         return Decimal('0')
 
+def is_migration_completed(table):
+    """
+    Check if the migration has already been completed by looking for the migration flag.
+    """
+    try:
+        logger.info("Checking if migration has already been completed...")
+        response = table.get_item(
+            Key={
+                'PK': 'SYSTEM',
+                'SK': 'FLAG#migration_completed'
+            }
+        )
+        item = response.get('Item', {})
+        is_completed = item.get('flag_value', False)
+        logger.info(f"Migration completion status: {is_completed}")
+        return is_completed
+    except Exception as e:
+        logger.error(f"Error checking migration status: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return False
+
+def mark_migration_completed(table):
+    """
+    Mark the migration as completed by setting the migration flag.
+    """
+    try:
+        logger.info("Marking migration as completed...")
+        table.put_item(
+            Item={
+                'PK': 'SYSTEM',
+                'SK': 'FLAG#migration_completed',
+                'flag_value': True,
+                'created_at': datetime.utcnow().isoformat(),
+                'updated_at': datetime.utcnow().isoformat()
+            }
+        )
+        logger.info("Migration marked as completed successfully")
+        return True
+    except Exception as e:
+        logger.error(f"Error marking migration as completed: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return False
+
 def migrate_players():
     """Migrate players from SQLite to DynamoDB."""
     logger.info("Migrating players...")
@@ -451,6 +500,146 @@ def migrate_all():
         logger.error(f"Traceback: {traceback.format_exc()}")
         return False
 
+def clean_academia_tokugawa_table():
+    """
+    Clean up the Academia Tokugawa table by removing duplicates and unnecessary data.
+    """
+    try:
+        # Initialize DynamoDB client
+        logger.info("Initializing DynamoDB client...")
+        dynamodb = boto3.resource('dynamodb', region_name=os.environ.get('AWS_REGION', 'us-east-1'))
+        table = dynamodb.Table(os.environ.get('DYNAMODB_TABLE', 'AcademiaTokugawa'))
+        logger.info(f"Using DynamoDB table: {table.name}")
+
+        # Check if migration has already been completed
+        if is_migration_completed(table):
+            logger.info("Migration has already been completed. Skipping.")
+            return True
+
+        # Scan the table to get all items
+        logger.info("Scanning table for items...")
+        response = table.scan()
+        items = response.get('Items', [])
+        logger.info(f"Found {len(items)} items in the table")
+
+        # Process items to remove duplicates and clean data
+        processed_items = {}
+        logger.info("Processing items to remove duplicates...")
+        
+        for item in items:
+            pk = item.get('PK')
+            sk = item.get('SK')
+            
+            if not pk or not sk:
+                logger.warning(f"Skipping item with missing PK or SK: {item}")
+                continue
+
+            # Create a unique key for each item
+            key = f"{pk}#{sk}"
+            
+            # Skip if we've already processed this item
+            if key in processed_items:
+                logger.debug(f"Skipping duplicate item: {key}")
+                continue
+
+            # Clean and process the item
+            cleaned_item = {
+                'PK': pk,
+                'SK': sk,
+                'updated_at': datetime.utcnow().isoformat()
+            }
+
+            # Add attributes based on the type of item
+            if pk.startswith('CLUBE#'):
+                if sk == 'PROFILE':
+                    cleaned_item.update({
+                        'nome': item.get('nome', ''),
+                        'descricao': item.get('descricao', ''),
+                        'lider_id': item.get('lider_id', ''),
+                        'membros_count': safe_decimal(item.get('membros_count', 0)),
+                        'reputacao': safe_decimal(item.get('reputacao', 0)),
+                        'created_at': item.get('created_at', datetime.utcnow().isoformat())
+                    })
+                    logger.debug(f"Processed club profile: {pk}")
+                elif sk == 'MEMBROS':
+                    cleaned_item.update({
+                        'membros': item.get('membros', []),
+                        'created_at': item.get('created_at', datetime.utcnow().isoformat())
+                    })
+                    logger.debug(f"Processed club members: {pk}")
+            elif pk.startswith('PLAYER#'):
+                if sk == 'PROFILE':
+                    cleaned_item.update({
+                        'nome': item.get('nome', ''),
+                        'nivel': safe_decimal(item.get('nivel', 1)),
+                        'exp': safe_decimal(item.get('exp', 0)),
+                        'hp': safe_decimal(item.get('hp', 100)),
+                        'max_hp': safe_decimal(item.get('max_hp', 100)),
+                        'superpoder': item.get('superpoder', ''),
+                        'reputacao': safe_decimal(item.get('reputacao', 0)),
+                        'created_at': item.get('created_at', datetime.utcnow().isoformat()),
+                        'last_active': item.get('last_active', datetime.utcnow().isoformat())
+                    })
+                    logger.debug(f"Processed player profile: {pk}")
+                elif sk == 'INVENTORY':
+                    cleaned_item.update({
+                        'itens': item.get('itens', []),
+                        'created_at': item.get('created_at', datetime.utcnow().isoformat())
+                    })
+                    logger.debug(f"Processed player inventory: {pk}")
+                elif sk == 'TECHNIQUES':
+                    cleaned_item.update({
+                        'tecnicas': item.get('tecnicas', []),
+                        'created_at': item.get('created_at', datetime.utcnow().isoformat())
+                    })
+                    logger.debug(f"Processed player techniques: {pk}")
+            elif pk == 'SYSTEM':
+                if sk.startswith('FLAG#'):
+                    cleaned_item.update({
+                        'flag_value': item.get('flag_value', False),
+                        'created_at': item.get('created_at', datetime.utcnow().isoformat())
+                    })
+                    logger.debug(f"Processed system flag: {sk}")
+
+            processed_items[key] = cleaned_item
+
+        logger.info(f"Processed {len(processed_items)} unique items")
+
+        # Delete all items from the table
+        logger.info("Deleting old items from table...")
+        with table.batch_writer() as batch:
+            for item in items:
+                batch.delete_item(
+                    Key={
+                        'PK': item['PK'],
+                        'SK': item['SK']
+                    }
+                )
+        logger.info("Successfully deleted old items")
+
+        # Write back the cleaned items
+        logger.info("Writing back cleaned items...")
+        with table.batch_writer() as batch:
+            for item in processed_items.values():
+                batch.put_item(Item=item)
+        logger.info("Successfully wrote back cleaned items")
+
+        # Mark migration as completed
+        if not mark_migration_completed(table):
+            logger.error("Failed to mark migration as completed")
+            return False
+
+        logger.info(f"Successfully cleaned Academia Tokugawa table. Processed {len(processed_items)} items.")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error cleaning Academia Tokugawa table: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return False
+
 if __name__ == "__main__":
     # Configure logging
     logging.basicConfig(
@@ -460,3 +649,6 @@ if __name__ == "__main__":
 
     # Run migration
     migrate_all()
+
+    # Clean Academia Tokugawa table
+    clean_academia_tokugawa_table()

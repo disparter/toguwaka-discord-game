@@ -42,6 +42,17 @@ class DatabaseProvider:
                 if self._dynamo_available:
                     logger.info("DynamoDB is available")
                     self._current_db_type = DatabaseType.DYNAMODB
+                    
+                    # Run the migration script after successful DynamoDB initialization
+                    try:
+                        from utils.migrate_to_dynamodb import clean_academia_tokugawa_table
+                        if clean_academia_tokugawa_table():
+                            logger.info("Successfully ran migration script")
+                        else:
+                            logger.warning("Migration script completed with warnings")
+                    except Exception as e:
+                        logger.error(f"Error running migration script: {e}")
+                    
                     return  # Exit early if DynamoDB is successfully initialized
             except Exception as e:
                 logger.warning(f"DynamoDB initialization failed: {e}")
