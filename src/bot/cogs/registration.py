@@ -110,6 +110,8 @@ class Registration(commands.Cog):
 
             # Get club choice
             clubs = get_all_clubs()
+            logger.info(f"Retrieved clubs from database: {clubs}")
+            
             clubs_embed = create_basic_embed(
                 title="Escolha de Clube",
                 description="Escolha um clube para se afiliar:\n\n" + 
@@ -123,9 +125,14 @@ class Registration(commands.Cog):
             while not valid_club:
                 club_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
                 club_id = club_msg.content.strip()
+                logger.info(f"User {ctx.author.id} selected club_id: {club_id}")
+                logger.info(f"Available club_ids: {[club['club_id'] for club in clubs]}")
+                
                 if any(club['club_id'] == club_id for club in clubs):
                     valid_club = True
+                    logger.info(f"Valid club selection: {club_id}")
                 else:
+                    logger.warning(f"Invalid club selection: {club_id}")
                     await ctx.send("Por favor, escolha um clube válido da lista.")
 
             # Create the player

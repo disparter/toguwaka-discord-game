@@ -398,11 +398,14 @@ def get_all_clubs():
     """Get all clubs from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
+        logger.info("Attempting to scan clubs table")
         response = table.scan()  # Get all items since we're using a simple key schema
+        logger.info(f"Raw DynamoDB response: {response}")
 
         clubs = []
         if 'Items' in response:
             for item in response['Items']:
+                logger.info(f"Processing club item: {item}")
                 # Convert the item to a standard format
                 club = {
                     'club_id': item.get('PK', '').split('#')[1] if 'PK' in item else item.get('NomeClube', ''),
@@ -411,9 +414,12 @@ def get_all_clubs():
                     'leader_id': item.get('leader_id', ''),
                     'reputacao': item.get('reputacao', 0)
                 }
+                logger.info(f"Converted club object: {club}")
                 clubs.append(club)
         
-        return sorted(clubs, key=lambda x: x.get('reputacao', 0), reverse=True)
+        sorted_clubs = sorted(clubs, key=lambda x: x.get('reputacao', 0), reverse=True)
+        logger.info(f"Final sorted clubs list: {sorted_clubs}")
+        return sorted_clubs
     except Exception as e:
         logger.error(f"Error getting all clubs: {e}")
         raise DynamoDBOperationError(f"Failed to get all clubs: {e}")
@@ -423,18 +429,20 @@ def create_club(club_id, name, description, leader_id):
     """Create a new club in DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        table.put_item(
-            Item={
-                'PK': f'CLUB#{club_id}',
-                'SK': 'PROFILE',
-                'NomeClube': name,
-                'descricao': description,
-                'leader_id': leader_id,
-                'reputacao': 0,
-                'created_at': datetime.now().isoformat(),
-                'last_active': datetime.now().isoformat()
-            }
-        )
+        club_item = {
+            'PK': f'CLUB#{club_id}',
+            'SK': 'PROFILE',
+            'NomeClube': name,
+            'descricao': description,
+            'leader_id': leader_id,
+            'reputacao': 0,
+            'created_at': datetime.now().isoformat(),
+            'last_active': datetime.now().isoformat()
+        }
+        logger.info(f"Creating club with item: {club_item}")
+        
+        table.put_item(Item=club_item)
+        logger.info(f"Successfully created club with ID: {club_id}")
         return True
     except Exception as e:
         logger.error(f"Error creating club {club_id}: {e}")
