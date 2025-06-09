@@ -22,50 +22,39 @@ class DatabaseType(Enum):
     SQLITE = auto()
 
 class DatabaseProvider:
-    _instance = None
-    _current_db_type: Optional[DatabaseType] = None
-    _dynamo_available: bool = False
-    _sqlite_available: bool = False
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(DatabaseProvider, cls).__new__(cls)
-            cls._instance._initialize()
-        return cls._instance
-
-    def _initialize(self):
-        """Initialize the database provider and check availability of both databases."""
-        # Always initialize SQLite first
+    """Database provider that manages database implementations."""
+    
+    def __init__(self):
+        self._current_db_type = DatabaseType.DYNAMODB
+        self._dynamo_available = False
+        self._sqlite_available = False
+        self._check_availability()
+        
+    def _check_availability(self):
+        """Check which database implementations are available."""
+        try:
+            from utils import dynamodb as dynamo_db
+            if dynamo_db.init_db():
+                self._dynamo_available = True
+                logger.info("DynamoDB is available")
+        except Exception as e:
+            logger.warning(f"DynamoDB is not available: {e}")
+            
         try:
             from utils import database as sqlite_db
-            sqlite_db.init_db()
-            self._sqlite_available = True
-            logger.info("SQLite is available")
-            self._current_db_type = DatabaseType.SQLITE
+            if sqlite_db.init_db():
+                self._sqlite_available = True
+                logger.info("SQLite is available")
         except Exception as e:
-            logger.error(f"SQLite initialization failed: {e}")
-            self._sqlite_available = False
-
-        # Try DynamoDB if enabled and not forcing SQLite
-        if USE_DYNAMODB and not FORCE_SQLITE:
-            try:
-                from utils import dynamodb as dynamo_db
-                self._dynamo_available = dynamo_db.init_db()
-                if self._dynamo_available:
-                    logger.info("DynamoDB is available")
-                    self._current_db_type = DatabaseType.DYNAMODB
-            except Exception as e:
-                logger.warning(f"DynamoDB initialization failed: {e}")
-                self._dynamo_available = False
-
-        # If no database is available, raise an error
-        if not self._sqlite_available and not self._dynamo_available:
+            logger.warning(f"SQLite is not available: {e}")
+            
+        # If DynamoDB is available, use it as the primary database
+        if self._dynamo_available:
+            self._current_db_type = DatabaseType.DYNAMODB
+        elif self._sqlite_available:
+            self._current_db_type = DatabaseType.SQLITE
+        else:
             raise Exception("No database implementation is available")
-
-    @property
-    def current_db_type(self) -> DatabaseType:
-        """Get the current database type being used."""
-        return self._current_db_type
 
     def get_db_implementation(self):
         """Get the current database implementation module."""
@@ -164,25 +153,7 @@ class DatabaseProvider:
 # Create a singleton instance
 db_provider = DatabaseProvider()
 
-# Re-export all functions from the current implementation
-def get_player(*args, **kwargs):
-    return db_provider.get_db_implementation().get_player(*args, **kwargs)
-
-def create_player(*args, **kwargs):
-    return db_provider.get_db_implementation().create_player(*args, **kwargs)
-
-def update_player(*args, **kwargs):
-    return db_provider.get_db_implementation().update_player(*args, **kwargs)
-
-def get_all_players(*args, **kwargs):
-    return db_provider.get_db_implementation().get_all_players(*args, **kwargs)
-
-def get_top_players(*args, **kwargs):
-    return db_provider.get_db_implementation().get_top_players(*args, **kwargs)
-
-def get_top_players_by_reputation(*args, **kwargs):
-    return db_provider.get_db_implementation().get_top_players_by_reputation(*args, **kwargs)
-
+# Export functions that delegate to the current database implementation
 def get_club(*args, **kwargs):
     return db_provider.get_db_implementation().get_club(*args, **kwargs)
 
@@ -191,9 +162,6 @@ def get_all_clubs(*args, **kwargs):
 
 def get_club_members(*args, **kwargs):
     return db_provider.get_db_implementation().get_club_members(*args, **kwargs)
-
-def get_relevant_npcs(*args, **kwargs):
-    return db_provider.get_db_implementation().get_relevant_npcs(*args, **kwargs)
 
 def update_club_reputation_weekly(*args, **kwargs):
     return db_provider.get_db_implementation().update_club_reputation_weekly(*args, **kwargs)
@@ -214,4 +182,25 @@ def get_events_by_date(*args, **kwargs):
     return db_provider.get_db_implementation().get_events_by_date(*args, **kwargs)
 
 def update_event_status(*args, **kwargs):
-    return db_provider.get_db_implementation().update_event_status(*args, **kwargs) 
+    return db_provider.get_db_implementation().update_event_status(*args, **kwargs)
+
+def get_player(*args, **kwargs):
+    return db_provider.get_db_implementation().get_player(*args, **kwargs)
+
+def create_player(*args, **kwargs):
+    return db_provider.get_db_implementation().create_player(*args, **kwargs)
+
+def update_player(*args, **kwargs):
+    return db_provider.get_db_implementation().update_player(*args, **kwargs)
+
+def get_all_players(*args, **kwargs):
+    return db_provider.get_db_implementation().get_all_players(*args, **kwargs)
+
+def get_top_players(*args, **kwargs):
+    return db_provider.get_db_implementation().get_top_players(*args, **kwargs)
+
+def get_top_players_by_reputation(*args, **kwargs):
+    return db_provider.get_db_implementation().get_top_players_by_reputation(*args, **kwargs)
+
+def get_relevant_npcs(*args, **kwargs):
+    return db_provider.get_db_implementation().get_relevant_npcs(*args, **kwargs) 

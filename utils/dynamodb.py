@@ -399,14 +399,20 @@ def get_club(club_id):
         table = get_table(TABLES['clubs'])
         response = table.get_item(
             Key={
-                'PK': f'CLUB#{club_id}',
-                'SK': 'PROFILE'
+                'NomeClube': club_id
             }
         )
 
         if 'Item' in response:
-            club = response['Item']
-            return json.loads(json.dumps(club, cls=DecimalEncoder))
+            item = response['Item']
+            club = {
+                'club_id': item.get('NomeClube', ''),
+                'name': item.get('NomeClube', ''),
+                'description': item.get('descricao', ''),
+                'leader_id': item.get('lider_id', ''),
+                'reputacao': item.get('reputacao', 0)
+            }
+            return club
         return None
     except Exception as e:
         logger.error(f"Error getting club {club_id}: {e}")
@@ -418,7 +424,7 @@ def get_all_clubs():
     try:
         table = get_table(TABLES['clubs'])
         logger.info("Attempting to scan clubs table")
-        response = table.scan()  # Get all items since we're using a simple key schema
+        response = table.scan()
         logger.info(f"Raw DynamoDB response: {response}")
 
         clubs = []
@@ -427,16 +433,17 @@ def get_all_clubs():
                 logger.info(f"Processing club item: {item}")
                 # Convert the item to a standard format
                 club = {
-                    'club_id': item.get('PK', '').split('#')[1] if 'PK' in item else item.get('NomeClube', ''),
+                    'club_id': item.get('NomeClube', ''),
                     'name': item.get('NomeClube', ''),
                     'description': item.get('descricao', ''),
-                    'leader_id': item.get('leader_id', ''),
+                    'leader_id': item.get('lider_id', ''),
                     'reputacao': item.get('reputacao', 0)
                 }
                 logger.info(f"Converted club object: {club}")
                 clubs.append(club)
         
-        sorted_clubs = sorted(clubs, key=lambda x: x.get('reputacao', 0), reverse=True)
+        # Sort clubs by name
+        sorted_clubs = sorted(clubs, key=lambda x: x['name'])
         logger.info(f"Final sorted clubs list: {sorted_clubs}")
         return sorted_clubs
     except Exception as e:
