@@ -4,6 +4,7 @@ import os
 import logging
 from pathlib import Path
 from datetime import datetime
+from utils.db_provider import db_provider, DatabaseType
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -363,49 +364,16 @@ def sync_db_to_s3():
 
 def update_player(user_id, **kwargs):
     """Update player data in the database."""
-    if not kwargs:
-        return False
-
-    # Skip if we're using DynamoDB
-    if db_provider.current_db_type == DatabaseType.DYNAMODB:
-        return True
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    # Process values to handle dictionaries (convert to JSON strings)
-    processed_kwargs = {}
-    for key, value in kwargs.items():
-        if isinstance(value, dict):
-            processed_kwargs[key] = json.dumps(value)
-        else:
-            processed_kwargs[key] = value
-
-    # Build the SET part of the query
-    set_clause = ", ".join([f"{key} = ?" for key in processed_kwargs.keys()])
-    values = list(processed_kwargs.values())
-    values.append(user_id)
-
     try:
-        cursor.execute(f'''
-        UPDATE players SET {set_clause}, last_active = CURRENT_TIMESTAMP
-        WHERE user_id = ?
-        ''', values)
-
-        conn.commit()
-        result = cursor.rowcount > 0
-
-        # Sync to S3 if running in AWS
-        if IS_AWS and result:
-            sync_db_to_s3()
-
-        return result
-    except sqlite3.Error as e:
-        conn.rollback()
+        if db_provider._current_db_type == DatabaseType.DYNAMODB:
+            from utils import dynamodb as db_impl
+        else:
+            from utils import database as db_impl
+            
+        return db_impl.update_player(user_id, **kwargs)
+    except Exception as e:
         logger.error(f"Error updating player: {e}")
         return False
-    finally:
-        conn.close()
 
 def get_club(club_id):
     """Get club data from database."""

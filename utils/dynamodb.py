@@ -106,15 +106,15 @@ def init_db():
         dynamodb = get_dynamodb_client()
         
         # Check if tables exist and create them if they don't
-        for table_name in TABLES.values():
+        for table_name in [TABLES['players'], TABLES['clubs'], TABLES['events'], TABLES['inventory'], TABLES['market'], TABLES['items'], TABLES['club_activities'], TABLES['grades'], TABLES['votes'], TABLES['quiz_questions'], TABLES['quiz_answers'], TABLES['main']]:
             try:
                 logger.info(f"Checking table {table_name}")
                 # Try to describe the table to check if it exists
                 try:
                     dynamodb.meta.client.describe_table(TableName=table_name)
                     logger.info(f"Table {table_name} exists and is active")
-                except ClientError as e:
-                    if e.response['Error']['Code'] == 'ResourceNotFoundException':
+                except Exception as e:
+                    if hasattr(e, 'response') and e.response['Error']['Code'] in ['ResourceNotFoundException', 'UnrecognizedClientException']:
                         logger.info(f"Creating table {table_name}")
                         create_table(dynamodb, table_name)
                         # Wait for table to be active after creation
@@ -122,10 +122,10 @@ def init_db():
                         logger.info(f"Table {table_name} created and is active")
                     else:
                         logger.error(f"Error checking table {table_name}: {e}")
-                        raise
+                        raise DynamoDBOperationError(f"Error checking table {table_name}: {e}")
             except Exception as e:
                 logger.error(f"Error initializing table {table_name}: {e}")
-                raise
+                raise DynamoDBOperationError(f"Error initializing table {table_name}: {e}")
 
         logger.info("DynamoDB initialized successfully")
         return True
@@ -222,24 +222,24 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['inventory'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'item_id', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'item_id', 'AttributeType': 'S'}
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'ItemIndex',
-                        'KeySchema': [
-                            {'AttributeName': 'item_id', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                BillingMode='PAY_PER_REQUEST'
+            )
+        elif table_name == TABLES['market']:
+            table = dynamodb.create_table(
+                TableName=TABLES['market'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
@@ -248,35 +248,11 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['items'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'name', 'AttributeType': 'S'},
-                    {'AttributeName': 'type', 'AttributeType': 'S'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'name', 'AttributeType': 'S'},
-                    {'AttributeName': 'type', 'AttributeType': 'S'}
-                ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'ItemNameIndex',
-                        'KeySchema': [
-                            {'AttributeName': 'name', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    },
-                    {
-                        'IndexName': 'ItemTypeIndex',
-                        'KeySchema': [
-                            {'AttributeName': 'type', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
@@ -285,29 +261,11 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['club_activities'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'club_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'week', 'KeyType': 'HASH'},
-                    {'AttributeName': 'year', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'club_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'week', 'AttributeType': 'N'},
-                    {'AttributeName': 'year', 'AttributeType': 'N'}
-                ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'week-year-index',
-                        'KeySchema': [
-                            {'AttributeName': 'week', 'KeyType': 'HASH'},
-                            {'AttributeName': 'year', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
@@ -316,51 +274,11 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['grades'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'subject', 'KeyType': 'HASH'},
-                    {'AttributeName': 'month', 'KeyType': 'HASH'},
-                    {'AttributeName': 'year', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'user_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'subject', 'AttributeType': 'S'},
-                    {'AttributeName': 'month', 'AttributeType': 'N'},
-                    {'AttributeName': 'year', 'AttributeType': 'N'}
-                ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'user-subject-index',
-                        'KeySchema': [
-                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                            {'AttributeName': 'subject', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    },
-                    {
-                        'IndexName': 'user-month-index',
-                        'KeySchema': [
-                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                            {'AttributeName': 'month', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    },
-                    {
-                        'IndexName': 'user-year-index',
-                        'KeySchema': [
-                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                            {'AttributeName': 'year', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
@@ -369,53 +287,11 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['votes'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'category', 'KeyType': 'HASH'},
-                    {'AttributeName': 'voter_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'candidate_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'week', 'KeyType': 'HASH'},
-                    {'AttributeName': 'year', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'category', 'AttributeType': 'S'},
-                    {'AttributeName': 'voter_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'candidate_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'week', 'AttributeType': 'N'},
-                    {'AttributeName': 'year', 'AttributeType': 'N'}
-                ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'category-voter-index',
-                        'KeySchema': [
-                            {'AttributeName': 'category', 'KeyType': 'HASH'},
-                            {'AttributeName': 'voter_id', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    },
-                    {
-                        'IndexName': 'category-candidate-index',
-                        'KeySchema': [
-                            {'AttributeName': 'category', 'KeyType': 'HASH'},
-                            {'AttributeName': 'candidate_id', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    },
-                    {
-                        'IndexName': 'voter-year-index',
-                        'KeySchema': [
-                            {'AttributeName': 'voter_id', 'KeyType': 'HASH'},
-                            {'AttributeName': 'year', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
@@ -424,24 +300,11 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['quiz_questions'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'question_id', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'question_id', 'AttributeType': 'S'}
-                ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'QuestionIDIndex',
-                        'KeySchema': [
-                            {'AttributeName': 'question_id', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
@@ -450,85 +313,75 @@ def create_table(dynamodb, table_name):
                 TableName=TABLES['quiz_answers'],
                 KeySchema=[
                     {'AttributeName': 'PK', 'KeyType': 'HASH'},
-                    {'AttributeName': 'SK', 'KeyType': 'RANGE'},
-                    {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'question_id', 'KeyType': 'HASH'}
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
                     {'AttributeName': 'PK', 'AttributeType': 'S'},
-                    {'AttributeName': 'SK', 'AttributeType': 'S'},
-                    {'AttributeName': 'user_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'question_id', 'AttributeType': 'S'}
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'user-question-index',
-                        'KeySchema': [
-                            {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                            {'AttributeName': 'question_id', 'KeyType': 'HASH'}
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        }
-                    }
+                BillingMode='PAY_PER_REQUEST'
+            )
+        elif table_name == TABLES['main']:
+            table = dynamodb.create_table(
+                TableName=TABLES['main'],
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 BillingMode='PAY_PER_REQUEST'
             )
         else:
-            raise ValueError(f"Unknown table name: {table_name}")
-
-        # Wait for table to be created
-        table.meta.client.get_waiter('table_exists').wait(TableName=table.name)
-        logger.info(f"Created table {table.name}")
+            raise DynamoDBOperationError(f"Unknown table name: {table_name}")
+            
         return table
     except Exception as e:
         logger.error(f"Error creating table {table_name}: {e}")
-        raise DynamoDBError(f"Failed to create table: {e}")
+        raise DynamoDBOperationError(f"Failed to create table: {e}")
 
 def handle_dynamo_error(func):
-    """Decorator to handle DynamoDB errors and attempt fallback to SQLite if needed."""
+    """Decorator to handle DynamoDB errors."""
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (DynamoDBError, ClientError) as e:
-            logger.error(f"DynamoDB error in {func.__name__}: {e}")
-            
-            # Try to fallback to SQLite
-            try:
-                from utils.db_provider import db_provider
-                if db_provider.fallback_to_sqlite():
-                    # Retry the operation with SQLite
-                    return func(*args, **kwargs)
-            except Exception as fallback_error:
-                logger.error(f"Error during fallback to SQLite: {fallback_error}")
-            
-            # If we get here, fallback failed
-            raise
+        except (DynamoDBError, ClientError, Exception) as e:
+            logger.error(f"Error in {func.__name__}: {e}")
+            return False
     return wrapper
 
 @handle_dynamo_error
 def get_player(user_id):
-    """Get player data from DynamoDB."""
+    """Get a player from DynamoDB."""
+    if not user_id:
+        return None
+        
     try:
         table = get_table(TABLES['players'])
+        
+        # Get player by primary key
         response = table.get_item(
             Key={
-                'PK': f'PLAYER#{user_id}',
+                'PK': f"PLAYER#{user_id}",
                 'SK': 'PROFILE'
             }
         )
-
-        if 'Item' in response:
-            player = response['Item']
-            # Convert Decimal types to float/int
-            # If 'nome' exists but 'name' does not, copy it for backward compatibility
-            if 'nome' in player and 'name' not in player:
-                player['name'] = player['nome']
-            return json.loads(json.dumps(player, cls=DecimalEncoder))
-        return None
+        
+        item = response.get('Item')
+        if not item:
+            return None
+            
+        # Convert Decimal values to int/float
+        for key, value in item.items():
+            if isinstance(value, Decimal):
+                item[key] = int(value) if value % 1 == 0 else float(value)
+                
+        return item
     except Exception as e:
-        logger.error(f"Error getting player {user_id}: {e}")
-        raise DynamoDBOperationError(f"Failed to get player: {e}")
+        logger.error(f"Error getting player: {e}")
+        return None
 
 @handle_dynamo_error
 def create_player(user_id, name, **kwargs):
@@ -536,60 +389,28 @@ def create_player(user_id, name, **kwargs):
     if not user_id or not name:
         return False
         
-    # Process inventory if provided as dict
-    if 'inventory' in kwargs and isinstance(kwargs['inventory'], dict):
-        kwargs['inventory'] = json.dumps(kwargs['inventory'])
-        
-    # Set default values for required fields
-    defaults = {
-        'power': 100,
-        'level': 1,
-        'exp': 0,
-        'tusd': 0,
-        'club_id': None,
-        'dexterity': 10,
-        'intellect': 10,
-        'charisma': 10,
-        'power_stat': 10,
-        'reputation': 0,
-        'hp': 100,
-        'max_hp': 100,
-        'strength_level': 1
-    }
-    
-    # Convert numeric fields to integers
-    numeric_fields = ['power', 'level', 'exp', 'tusd', 'dexterity', 'intellect', 
-                     'charisma', 'power_stat', 'reputation', 'hp', 'max_hp', 'strength_level']
-    
-    for field in numeric_fields:
-        if field in kwargs:
-            kwargs[field] = int(kwargs[field])
-        else:
-            kwargs[field] = int(defaults[field])
-    
-    # Create player profile
-    item = {
-        'PK': f'PLAYER#{user_id}',
-        'SK': 'PROFILE',
-        'name': name,
-        'created_at': datetime.now().isoformat(),
-        'last_active': datetime.now().isoformat(),
-        **kwargs
-    }
-    
     try:
         table = get_table(TABLES['players'])
-        table.put_item(
-            Item=item,
-            ConditionExpression='attribute_not_exists(PK)'
-        )
-        logger.info(f"Created new player: {name} ({user_id})")
+        
+        # Create player item with proper key structure
+        item = {
+            'PK': f"PLAYER#{user_id}",
+            'SK': 'PROFILE',
+            'user_id': user_id,
+            'name': name,
+            **kwargs
+        }
+        
+        # Convert numeric values to Decimal
+        for key, value in item.items():
+            if isinstance(value, (int, float)):
+                item[key] = Decimal(str(value))
+        
+        table.put_item(Item=item)
         return True
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            logger.warning(f"Player already exists: {user_id}")
-            return False
-        raise DynamoDBError(f"Error creating player: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error creating player: {e}")
+        return False
 
 @handle_dynamo_error
 def get_club(club_id):
@@ -815,33 +636,43 @@ def get_system_flag(flag_name):
 
 @handle_dynamo_error
 def update_player(user_id, **kwargs):
-    """Update player data in DynamoDB."""
+    """Update a player in DynamoDB."""
+    if not user_id:
+        return False
+        
     try:
         table = get_table(TABLES['players'])
-        update_expression = []
-        expression_attribute_values = {}
+        
+        # Build update expression
+        update_expr = "SET "
+        expr_attr_values = {}
+        
         for key, value in kwargs.items():
-            update_expression.append(f"{key} = :{key}")
-            # Serializa dicts para JSON
-            if isinstance(value, dict):
-                value = json.dumps(value)
-            expression_attribute_values[f":{key}"] = value
-        update_expression.append("last_active = :last_active")
-        expression_attribute_values[":last_active"] = datetime.now().isoformat()
-        update_expr = "SET " + ", ".join(update_expression)
+            if isinstance(value, (int, float)):
+                value = Decimal(str(value))
+            update_expr += f"#{key} = :{key}, "
+            expr_attr_values[f":{key}"] = value
+            
+        update_expr = update_expr[:-2]  # Remove trailing comma and space
+        
+        # Add expression attribute names
+        expr_attr_names = {f"#{key}": key for key in kwargs.keys()}
+        
+        # Update player
         table.update_item(
             Key={
-                'PK': f'PLAYER#{user_id}',
+                'PK': f"PLAYER#{user_id}",
                 'SK': 'PROFILE'
             },
             UpdateExpression=update_expr,
-            ExpressionAttributeValues=expression_attribute_values
+            ExpressionAttributeValues=expr_attr_values,
+            ExpressionAttributeNames=expr_attr_names
         )
-        logger.info(f"Updated player {user_id} in DynamoDB: {list(kwargs.keys())}")
+        
         return True
     except Exception as e:
-        logger.error(f"Error updating player {user_id}: {e}")
-        raise DynamoDBOperationError(f"Failed to update player: {e}")
+        logger.error(f"Error updating player: {e}")
+        return False
 
 @handle_dynamo_error
 def create_item(item_id, name, description, type, rarity, price, effects, **kwargs):

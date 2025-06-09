@@ -1,10 +1,24 @@
+"""
+Test configuration for Academia Tokugawa.
+
+This module contains pytest fixtures and configuration for testing.
+"""
+
 import pytest
 import os
 import sys
 from unittest.mock import MagicMock, patch
+from tests.mocks.dynamodb_mock import MockDynamoDB
+from utils.dynamodb import init_db
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Set testing environment
+os.environ['IS_TESTING'] = 'true'
+
+# Import mocks
+from tests.mocks.dynamodb_mock import mock_dynamodb
 
 @pytest.fixture(autouse=True)
 def mock_logging():
@@ -15,11 +29,14 @@ def mock_logging():
 
 @pytest.fixture(autouse=True)
 def mock_aws_credentials():
-    """Mock AWS credentials to prevent actual AWS calls during tests."""
-    with pytest.MonkeyPatch.context() as m:
-        m.setenv('AWS_ACCESS_KEY_ID', 'test-key')
-        m.setenv('AWS_SECRET_ACCESS_KEY', 'test-secret')
-        m.setenv('AWS_DEFAULT_REGION', 'us-east-1')
+    """Mock AWS credentials."""
+    with patch.dict(os.environ, {
+        'AWS_ACCESS_KEY_ID': 'testing',
+        'AWS_SECRET_ACCESS_KEY': 'testing',
+        'AWS_SECURITY_TOKEN': 'testing',
+        'AWS_SESSION_TOKEN': 'testing',
+        'AWS_DEFAULT_REGION': 'us-east-1'
+    }):
         yield
 
 @pytest.fixture(autouse=True)
@@ -38,29 +55,45 @@ def mock_discord():
         yield 
 
 @pytest.fixture(autouse=True)
-def mock_dynamodb():
-    """Mock DynamoDB client and insert mock clubs for tests."""
-    with patch('boto3.resource') as mock_resource:
-        # Create a mock DynamoDB client
-        mock_dynamo = MagicMock()
-        mock_resource.return_value = mock_dynamo
-
-        # Create a mock table for clubs
-        mock_clubs_table = MagicMock()
-        mock_dynamo.Table.return_value = mock_clubs_table
-
-        # Mock the scan response for clubs
-        mock_clubs_table.scan.return_value = {
-            'Items': [
-                {'NomeClube': 'Club1', 'descricao': 'Description1', 'lider_id': 'leader1', 'reputacao': 100},
-                {'NomeClube': 'Club2', 'descricao': 'Description2', 'lider_id': 'leader2', 'reputacao': 200},
-                {'NomeClube': 'Club3', 'descricao': 'Description3', 'lider_id': 'leader3', 'reputacao': 300}
-            ]
+def mock_aws():
+    """Mock AWS services."""
+    mock_dynamodb = MockDynamoDB()
+    with patch('boto3.resource') as mock_resource, \
+         patch('boto3.client') as mock_client, \
+         patch('utils.dynamodb.get_table') as mock_get_table:
+        
+        # Configure mock resource
+        mock_resource.return_value = mock_dynamodb
+        
+        # Configure mock client
+        mock_client.return_value = MagicMock()
+        
+        # Configure mock get_table
+        def get_table_mock(table_name):
+            return mock_dynamodb.Table(table_name)
+        mock_get_table.side_effect = get_table_mock
+        
+        yield {
+            'resource': mock_resource,
+            'client': mock_client,
+            'get_table': mock_get_table,
+            'dynamodb': mock_dynamodb
         }
 
-        # Mock the get_item response for a club
-        mock_clubs_table.get_item.return_value = {
-            'Item': {'NomeClube': 'Club1', 'descricao': 'Description1', 'lider_id': 'leader1', 'reputacao': 100}
-        }
+@pytest.fixture
+def mock_dynamodb(mock_aws):
+    """Provide mock DynamoDB instance."""
+    return mock_aws['dynamodb']
 
-        yield mock_dynamo 
+@pytest.fixture(autouse=True)
+def setup_database(mock_dynamodb):
+    """Initialize database for tests."""
+    init_db()
+    yield
+    mock_dynamodb.reset()
+
+@pytest.fixture(autouse=True)
+def reset_mock_dynamodb(mock_dynamodb):
+    """Reset mock DynamoDB state before each test."""
+    mock_dynamodb.reset()
+    yield 

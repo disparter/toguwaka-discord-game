@@ -58,10 +58,16 @@ def mock_table():
     return table
 
 class TestDatabaseClubs:
-    """Test suite for database club operations."""
-
+    """Test database club operations."""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self, mock_aws):
+        """Set up test environment."""
+        yield
+        
     @pytest.mark.asyncio
-    async def test_get_clubs_dynamodb(self, mock_dynamodb):
+    async def test_get_clubs_dynamodb(self):
+        """Test getting clubs from DynamoDB."""
         with patch('utils.db.get_clubs', new_callable=AsyncMock) as mock_get_clubs:
             mock_get_clubs.return_value = [
                 {'name': 'Ilusionistas Mentais', 'description': 'Description1', 'leader_id': 'leader1', 'reputacao': 100},
@@ -70,7 +76,7 @@ class TestDatabaseClubs:
             ]
             clubs = await utils.db.get_clubs()
             assert len(clubs) == 3
-
+            
     @pytest.mark.asyncio
     async def test_get_clubs_empty(self, mock_dynamodb_client):
         """Test getting clubs when none are available."""
@@ -102,7 +108,8 @@ class TestDatabaseClubs:
             assert len(clubs) == 0
 
     @pytest.mark.asyncio
-    async def test_update_user_club_success(self, mock_dynamodb):
+    async def test_update_user_club_success(self):
+        """Test successful club update."""
         with patch('utils.db.update_user_club', new_callable=AsyncMock) as mock_update:
             mock_update.return_value = True
             success = await utils.db.update_user_club('user1', 'Conselho Político')
