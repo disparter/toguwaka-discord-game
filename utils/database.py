@@ -32,6 +32,19 @@ def reset_sqlite_db():
             return False
     return True  # File doesn't exist, so no need to reset
 
+def init_default_clubs():
+    """Initialize default clubs in the database."""
+    from story_mode.club_system import ClubSystem
+    
+    club_system = ClubSystem()
+    clubs = club_system.CLUBS
+    leaders = club_system.CLUB_LEADERS
+    
+    for club_id, name in clubs.items():
+        description = f"O {name} é um dos clubes mais prestigiados da Academia Tokugawa."
+        leader_id = str(club_id)  # Using club_id as leader_id for now
+        create_club(str(club_id), name, description, leader_id)
+
 def init_db():
     """Initialize the database with required tables."""
     ensure_data_dir()
@@ -39,7 +52,13 @@ def init_db():
     # Check if we should reset the database
     if RESET_DATABASE:
         logger.warning("RESET_DATABASE flag is set to true. Resetting SQLite database...")
-        reset_sqlite_db()
+        if os.path.exists(DB_PATH):
+            try:
+                os.remove(DB_PATH)
+                logger.warning("SQLite database file has been reset")
+            except Exception as e:
+                logger.error(f"Error resetting SQLite database: {e}")
+                return False
 
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -116,7 +135,10 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         ''')
-
+        
+        # Initialize default clubs
+        init_default_clubs()
+        
         conn.commit()
         logger.info("SQLite database initialized successfully")
         return True
