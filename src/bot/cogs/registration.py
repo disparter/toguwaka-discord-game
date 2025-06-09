@@ -122,7 +122,7 @@ class Registration(commands.Cog):
             clubs_embed = create_basic_embed(
                 title="Escolha de Clube",
                 description="Escolha um clube para se afiliar:\n\n" + 
-                            "\n".join([f"{club['club_id']}. **{club['name']}** - {club['description']}" for club in clubs]) +
+                            "\n".join([f"{i+1}. **{club['name']}** - {club['description']}" for i, club in enumerate(clubs)]) +
                             "\n\nDigite o número do clube escolhido:",
                 color=0x1E90FF
             )
@@ -131,16 +131,18 @@ class Registration(commands.Cog):
             valid_club = False
             while not valid_club:
                 club_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
-                club_id = club_msg.content.strip()
-                logger.info(f"User {ctx.author.id} selected club_id: {club_id}")
-                logger.info(f"Available club_ids: {[club['club_id'] for club in clubs]}")
-                
-                if any(club['club_id'] == club_id for club in clubs):
-                    valid_club = True
-                    logger.info(f"Valid club selection: {club_id}")
-                else:
-                    logger.warning(f"Invalid club selection: {club_id}")
-                    await ctx.send("Por favor, escolha um clube válido da lista.")
+                try:
+                    club_index = int(club_msg.content.strip()) - 1
+                    if 0 <= club_index < len(clubs):
+                        valid_club = True
+                        selected_club = clubs[club_index]
+                        logger.info(f"User {ctx.author.id} selected club: {selected_club['name']} (ID: {selected_club['club_id']})")
+                    else:
+                        logger.warning(f"Invalid club index: {club_index + 1}")
+                        await ctx.send("Por favor, escolha um número válido da lista.")
+                except ValueError:
+                    logger.warning(f"Invalid club selection: {club_msg.content}")
+                    await ctx.send("Por favor, digite apenas o número do clube escolhido.")
 
             # Create the player
             success = create_player(
@@ -148,13 +150,12 @@ class Registration(commands.Cog):
                 character_name,
                 power=character_power,
                 strength_level=strength_level,
-                club_id=club_id
+                club_id=selected_club['club_id']
             )
 
             if success:
                 # Get the created player and their club
                 player = get_player(ctx.author.id)
-                selected_club = next((club for club in clubs if club['club_id'] == club_id), None)
 
                 # Send welcome message
                 welcome_msg = create_basic_embed(

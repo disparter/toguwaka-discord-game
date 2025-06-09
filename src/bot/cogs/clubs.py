@@ -148,7 +148,7 @@ class Clubs(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="ingressar")
-    async def join_club(self, ctx, *, club_name: str):
+    async def join_club(self, ctx, *, club_choice: str):
         """Ingressa em um clube da academia."""
         # Get player data
         player = get_player(ctx.author.id)
@@ -161,19 +161,21 @@ class Clubs(commands.Cog):
             await ctx.send(f"Você já é membro do clube {player['club']}!")
             return
 
-        # Find club ID from name
-        club_id = None
-        for cid, name in self.club_system.CLUBS.items():
-            if name.lower() == club_name.lower():
-                club_id = cid
-                break
-
-        if not club_id:
-            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
+        # Convert club_choice to index (1-based to 0-based)
+        try:
+            club_index = int(club_choice) - 1
+            if club_index < 0 or club_index >= len(self.club_system.CLUBS):
+                await ctx.send("Por favor, escolha um número válido da lista.")
+                return
+        except ValueError:
+            await ctx.send("Por favor, digite apenas o número do clube escolhido.")
             return
 
+        # Get club name from index
+        club_name = list(self.club_system.CLUBS.values())[club_index]
+        
         # Join club using ClubSystem
-        if self.club_system.join_club(player, club_id):
+        if self.club_system.join_club(player, club_index + 1):  # Convert back to 1-based for club_id
             # Update player's club in database
             update_player_club(ctx.author.id, club_name)
             
