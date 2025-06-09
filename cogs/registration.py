@@ -121,14 +121,11 @@ class Registration(commands.Cog):
             valid_club = False
             while not valid_club:
                 club_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
-                try:
-                    club_id = int(club_msg.content.strip())
-                    if any(club['club_id'] == club_id for club in clubs):
-                        valid_club = True
-                    else:
-                        await ctx.send("Por favor, escolha um clube válido da lista.")
-                except ValueError:
-                    await ctx.send("Por favor, digite um número válido correspondente a um clube.")
+                club_id = club_msg.content.strip()
+                if any(club['club_id'] == club_id for club in clubs):
+                    valid_club = True
+                else:
+                    await ctx.send("Por favor, escolha um clube válido da lista.")
 
             # Create the player
             success = create_player(ctx.author.id, character_name, character_power, strength_level, club_id)

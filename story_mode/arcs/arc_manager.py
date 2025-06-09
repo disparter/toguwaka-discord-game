@@ -220,6 +220,9 @@ class ArcManager:
         
         # Check for dead ends
         for chapter_id, chapter in arc.chapters.items():
+            # Skip dead-end check for final chapters
+            if chapter_id.endswith('_final') or chapter.chapter_data.get('is_final', False):
+                continue
             if not chapter.chapter_data.get("next_chapter") and not chapter.chapter_data.get("branches"):
                 results["errors"].append(f"Dead end found in chapter {chapter_id}")
         
