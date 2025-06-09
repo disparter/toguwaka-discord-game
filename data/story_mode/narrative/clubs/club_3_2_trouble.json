@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_3_2_trouble",
+    "type": "story",
     "title": "Problemas no Clube dos Ilusionistas",
     "description": "Um desafio inesperado testa as habilidades de ilusão dos membros",
     "phase": "year_1_clubs",
@@ -128,8 +129,10 @@
     },
     "metadata": {
         "location": "illusion_club_room",
-        "time_of_day": "evening",
+        "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_3_3_resolution"
 } 

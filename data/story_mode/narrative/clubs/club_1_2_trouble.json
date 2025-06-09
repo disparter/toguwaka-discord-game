@@ -1,7 +1,8 @@
 {
     "chapter_id": "club_1_2_trouble",
-    "title": "Problemas no Clube das Chamas",
-    "description": "Um desafio inesperado testa o controle do fogo dos membros",
+    "type": "story",
+    "title": "Desafios no Clube das Chamas",
+    "description": "Enfrentando os primeiros desafios no treinamento do clube",
     "phase": "year_1_clubs",
     "requirements": {
         "previous_chapter": "club_1_1_intro",
@@ -131,5 +132,7 @@
         "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_1_3_resolution"
 } 

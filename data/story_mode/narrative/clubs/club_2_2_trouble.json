@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_2_2_trouble",
+    "type": "story",
     "title": "Problemas no Clube de Combate",
     "description": "Um desafio inesperado testa as habilidades de combate dos membros",
     "phase": "year_1_clubs",
@@ -131,5 +132,7 @@
         "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_2_3_resolution"
 } 

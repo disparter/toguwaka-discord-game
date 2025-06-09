@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_2_1_intro",
+    "type": "story",
     "title": "Introdução ao Clube de Combate",
     "description": "O primeiro encontro com o Clube de Combate e seu líder",
     "phase": "year_1_clubs",
@@ -127,5 +128,7 @@
         "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_2_2_trouble"
 } 

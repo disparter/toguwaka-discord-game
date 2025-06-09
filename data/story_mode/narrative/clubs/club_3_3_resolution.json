@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_3_3_resolution",
+    "type": "story",
     "title": "Resolução do Clube dos Ilusionistas",
     "description": "O clube supera seus desafios e emerge mais forte",
     "phase": "year_1_clubs",
@@ -128,8 +129,10 @@
     },
     "metadata": {
         "location": "illusion_club_room",
-        "time_of_day": "evening",
+        "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_3_4_final"
 } 

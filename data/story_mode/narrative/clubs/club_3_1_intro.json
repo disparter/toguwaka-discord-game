@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_3_1_intro",
+    "type": "story",
     "title": "Introdução ao Clube dos Ilusionistas",
     "description": "O primeiro encontro com o Clube dos Ilusionistas e seu líder",
     "phase": "year_1_clubs",
@@ -124,8 +125,10 @@
     },
     "metadata": {
         "location": "illusion_club_room",
-        "time_of_day": "evening",
+        "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_3_2_trouble"
 } 

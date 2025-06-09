@@ -1,5 +1,6 @@
 {
     "chapter_id": "club_1_3_resolution",
+    "type": "story",
     "title": "Resolução no Clube das Chamas",
     "description": "O clube supera seus desafios e se fortalece",
     "phase": "year_1_clubs",
@@ -79,5 +80,7 @@
         "time_of_day": "afternoon",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "choices": [],
+    "next_chapter": "club_1_4_final"
 } 
