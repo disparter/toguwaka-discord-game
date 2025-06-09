@@ -46,5 +46,6 @@
         "time_of_day": "morning",
         "weather": "clear",
         "season": "spring"
-    }
+    },
+    "is_final": true
 } 

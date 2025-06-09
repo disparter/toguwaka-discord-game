@@ -81,5 +81,6 @@
         "weather": "clear",
         "season": "spring"
     },
-    "choices": []
+    "choices": [],
+    "is_final": true
 } 
