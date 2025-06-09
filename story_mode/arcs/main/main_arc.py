@@ -29,10 +29,15 @@ class MainArc(BaseArc):
         # Main story progression attributes
         self.story_phases = {
             "prologue": 0,
-            "act_1": 1,
-            "act_2": 2,
-            "act_3": 3,
-            "epilogue": 4
+            "year_1_intro": 1,
+            "year_1_clubs": 2,
+            "year_1_conflict": 3,
+            "year_2_intro": 4,
+            "year_2_conflict": 5,
+            "year_3_intro": 6,
+            "year_3_resolution": 7,
+            "year_3": 8,
+            "portal_rift": 9
         }
         
         self.required_progress = {

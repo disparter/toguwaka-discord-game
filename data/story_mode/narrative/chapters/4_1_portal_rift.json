@@ -127,7 +127,7 @@
     "items": ["portal_key", "dimensional_compass"],
     "unlocks": ["dimensional_travel", "portal_guardian"]
   },
-  "next_chapter": null,
+  "next_chapter": "4_2_portal_guardian",
   "flags": {
     "portal_discovered": true,
     "dimensional_travel_unlocked": true,

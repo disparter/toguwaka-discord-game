@@ -2,128 +2,97 @@
   "chapter_id": "3_12_portal_rift",
   "type": "story",
   "title": "O Portal Dimensional",
-  "description": "A descoberta de um portal dimensional que ameaça a realidade",
-  "phase": "year_3_final",
+  "description": "O portal dimensional que ameaça a realidade",
+  "phase": "year_3",
   "requirements": {
-    "previous_chapter": "3_11_final_preparations",
-    "power_level": 80,
-    "knowledge": 80
+    "previous_chapter": "3_11_final_tournament",
+    "flags": {
+      "year_3_events_completed": true,
+      "portal_rift_available": true
+    },
+    "stats": {
+      "power": 80,
+      "knowledge": 80
+    }
   },
   "scenes": [
     {
-      "scene_id": "portal_discovery",
-      "background": "dimensional_rift_1.png",
+      "scene_id": "rift_confrontation",
+      "title": "Confronto no Portal",
+      "description": "O momento decisivo no portal dimensional",
+      "background": "dimensional_rift.jpg",
       "characters": [
         {
           "id": "player",
-          "image": "student_room_reflection_night.png",
-          "expression": "shocked"
+          "position": "center",
+          "expression": "determined",
+          "image": "player_determined.jpg"
         },
         {
-          "id": "professor_quantum",
-          "image": "professor_quantum_intro.png",
-          "expression": "concerned"
+          "id": "headmaster",
+          "position": "right",
+          "expression": "serious",
+          "image": "headmaster_serious.jpg"
+        },
+        {
+          "id": "dimensional_entity",
+          "position": "left",
+          "expression": "threatening",
+          "image": "dimensional_entity.jpg"
         }
       ],
       "dialogue": [
         {
-          "speaker": "professor_quantum",
-          "text": "Este portal dimensional está se expandindo. Se não o fecharmos, pode destruir nossa realidade."
+          "speaker": "dimensional_entity",
+          "text": "Você não pode me deter. O portal está aberto e a realidade será reescrita.",
+          "expression": "threatening"
         },
         {
-          "speaker": "player",
-          "text": "O que precisamos fazer, professor?"
-        },
-        {
-          "speaker": "professor_quantum",
-          "text": "Precisamos de seu poder e conhecimento. Você é a única pessoa que pode selar este portal."
+          "speaker": "headmaster",
+          "text": "Use todo seu poder e conhecimento. O destino da academia está em suas mãos.",
+          "expression": "serious"
         }
       ],
       "choices": [
         {
-          "text": "Aceitar a responsabilidade",
+          "text": "Confrontar a entidade",
+          "next_scene": "entity_confrontation",
           "effects": {
+            "power": 5,
             "reputation": {
-              "professor_quantum": 5
-            },
-            "power": 10,
-            "motivation": 10
+              "headmaster": 7
+            }
           }
         },
         {
-          "text": "Pedir mais informações",
+          "text": "Fechar o portal",
+          "next_scene": "portal_closure",
           "effects": {
-            "reputation": {
-              "professor_quantum": 3
-            },
-            "knowledge": 10
-          }
-        }
-      ]
-    },
-    {
-      "scene_id": "portal_confrontation",
-      "background": "dimensional_rift_2.png",
-      "characters": [
-        {
-          "id": "player",
-          "image": "student_room_reflection_night.png",
-          "expression": "determined"
-        },
-        {
-          "id": "professor_quantum",
-          "image": "professor_quantum_intro.png",
-          "expression": "focused"
-        }
-      ],
-      "dialogue": [
-        {
-          "speaker": "professor_quantum",
-          "text": "O portal está reagindo à sua presença. Use seu poder com sabedoria."
-        },
-        {
-          "speaker": "player",
-          "text": "Entendi. Vou fazer o que for necessário."
-        },
-        {
-          "speaker": "professor_quantum",
-          "text": "Lembre-se de tudo o que aprendeu. Sua força e conhecimento são a chave."
-        }
-      ],
-      "choices": [
-        {
-          "text": "Usar poder puro",
-          "effects": {
-            "power": 15,
-            "energy": -10
-          }
-        },
-        {
-          "text": "Combinar poder e conhecimento",
-          "effects": {
-            "power": 8,
-            "knowledge": 8,
-            "energy": -5
+            "knowledge": 5,
+            "caution": 3
           }
         }
       ]
     }
   ],
   "rewards": {
-    "experience": 200,
-    "skills": [
-      "dimensional_control",
-      "reality_manipulation"
-    ],
-    "unlocks": [
-      "true_ending",
-      "dimensional_mastery"
-    ]
+    "experience": 1000,
+    "skills": {
+      "dimensional_control": 3,
+      "reality_manipulation": 2
+    },
+    "items": ["dimensional_seal", "reality_anchor"],
+    "unlocks": ["dimensional_mastery", "reality_guardian"]
+  },
+  "next_chapter": "3_13_graduation_ceremony",
+  "flags": {
+    "portal_rift_resolved": true,
+    "dimensional_mastery_achieved": true
   },
   "metadata": {
     "location": "dimensional_rift",
-    "time_of_day": "night",
-    "weather": "dimensional_storm",
-    "season": "winter"
+    "time_of_day": "special",
+    "weather": "dimensional",
+    "season": "special"
   }
 } 

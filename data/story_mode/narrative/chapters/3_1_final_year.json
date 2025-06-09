@@ -2,138 +2,79 @@
   "chapter_id": "3_1_final_year",
   "type": "story",
   "title": "O Último Ano",
-  "description": "O início do último ano na Academia Tokugawa",
-  "phase": "year_3_intro",
+  "description": "O início do último ano na academia",
+  "phase": "year_3",
   "requirements": {
-    "previous_chapter": "2_12_second_tournament"
+    "previous_chapter": "2_12_year_2_completion",
+    "flags": {
+      "year_2_completed": true
+    }
   },
   "scenes": [
     {
-      "scene_id": "academy_gate_final",
-      "background": "tokugawa_academy_3.png",
+      "scene_id": "year_3_start",
+      "title": "Início do Último Ano",
+      "description": "O momento em que o último ano começa",
+      "background": "academy_entrance.jpg",
       "characters": [
         {
           "id": "player",
-          "image": "student_room_reflection_night.png",
-          "expression": "determined"
+          "position": "center",
+          "expression": "determined",
+          "image": "player_determined.jpg"
         },
         {
-          "id": "professor_quantum",
-          "image": "professor_quantum_intro.png",
-          "expression": "serious"
+          "id": "headmaster",
+          "position": "right",
+          "expression": "proud",
+          "image": "headmaster_proud.jpg"
         }
       ],
       "dialogue": [
         {
-          "speaker": "professor_quantum",
-          "text": "Bem-vindo ao seu último ano na Academia Tokugawa. Este será um ano de grandes desafios e decisões importantes."
-        },
-        {
-          "speaker": "player",
-          "text": "Estou pronto para enfrentar qualquer desafio, professor."
-        },
-        {
-          "speaker": "professor_quantum",
-          "text": "Seu poder tem crescido significativamente. Agora é hora de você decidir seu caminho final."
+          "speaker": "headmaster",
+          "text": "Bem-vindo ao seu último ano na Academia Tokugawa. Este será o ano mais desafiador e importante de sua jornada.",
+          "expression": "proud"
         }
       ],
       "choices": [
         {
-          "text": "Focar no domínio do poder",
+          "text": "Expressar determinação",
+          "next_scene": "determination_scene",
           "effects": {
+            "confidence": 3,
             "reputation": {
-              "professor_quantum": 5
-            },
-            "power": 10
+              "headmaster": 5
+            }
           }
         },
         {
-          "text": "Buscar equilíbrio entre poder e conhecimento",
+          "text": "Perguntar sobre os desafios",
+          "next_scene": "challenges_scene",
           "effects": {
-            "reputation": {
-              "professor_quantum": 3
-            },
-            "power": 5,
-            "knowledge": 5
-          }
-        },
-        {
-          "text": "Priorizar o desenvolvimento pessoal",
-          "effects": {
-            "reputation": {
-              "professor_quantum": 2
-            },
-            "motivation": 10
-          }
-        }
-      ]
-    },
-    {
-      "scene_id": "power_assessment",
-      "background": "scientific_lab.png",
-      "characters": [
-        {
-          "id": "player",
-          "image": "student_room_reflection_night.png",
-          "expression": "focused"
-        },
-        {
-          "id": "professor_quantum",
-          "image": "professor_quantum_intro.png",
-          "expression": "analytical"
-        }
-      ],
-      "dialogue": [
-        {
-          "speaker": "professor_quantum",
-          "text": "Vamos avaliar seu progresso e definir seus objetivos para este ano."
-        },
-        {
-          "speaker": "player",
-          "text": "O que você sugere, professor?"
-        },
-        {
-          "speaker": "professor_quantum",
-          "text": "Você tem potencial para grandes conquistas. O caminho que escolher agora definirá seu futuro."
-        }
-      ],
-      "choices": [
-        {
-          "text": "Aceitar o desafio com determinação",
-          "effects": {
-            "reputation": {
-              "professor_quantum": 5
-            },
-            "power": 8,
-            "motivation": 8
-          }
-        },
-        {
-          "text": "Pedir orientação adicional",
-          "effects": {
-            "reputation": {
-              "professor_quantum": 4
-            },
-            "knowledge": 8,
-            "motivation": 4
+            "knowledge": 3,
+            "preparation": 2
           }
         }
       ]
     }
   ],
   "rewards": {
-    "experience": 100,
-    "skills": [
-      "advanced_power_control",
-      "strategic_planning"
-    ],
-    "unlocks": [
-      "year_3_events",
-      "advanced_training"
-    ]
+    "experience": 300,
+    "skills": {
+      "leadership": 2,
+      "responsibility": 1
+    },
+    "items": ["year_3_badge", "final_year_guide"],
+    "unlocks": ["year_3_events", "graduation_preparation"]
+  },
+  "next_chapter": "3_2_final_challenges",
+  "flags": {
+    "year_3_started": true,
+    "final_year_begun": true
   },
   "metadata": {
-    "location": "academy_gate",
+    "location": "academy_entrance",
     "time_of_day": "morning",
     "weather": "clear",
     "season": "spring"

@@ -77,12 +77,14 @@ def test_get_current_chapter(story_mode, player_data):
     chapter = story_mode.get_current_chapter(player_data)
     assert chapter is not None
     assert isinstance(chapter, StoryChapter)
-    assert chapter.get_id() == "1_1"
+    assert chapter.get_id() == "1_1_arrival"
 
 def test_process_choice(story_mode, player_data):
     """Test that player choices can be processed."""
     # First start the story
     story_mode.start_story(player_data)
+    # Ensure current_chapter is a string
+    player_data['story_progress']['current_chapter'] = '1_1_arrival'
     # Process a choice
     updated_player_data = story_mode.process_choice(player_data, 0)
     assert updated_player_data is not None

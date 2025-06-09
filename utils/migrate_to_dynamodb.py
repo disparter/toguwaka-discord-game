@@ -661,29 +661,96 @@ def distribute_data_to_tables():
                 logger.warning(f"Skipping item with missing PK or SK: {item}")
                 continue
                 
-            # Determine target table based on PK prefix
-            target_table = None
-            if pk.startswith('CLUBE#'):
-                target_table = tables['clubs']
-            elif pk.startswith('EVENTO#'):
-                target_table = tables['events']
-            elif pk.startswith('PLAYER#'):
-                if sk == 'INVENTORY':
-                    target_table = tables['inventory']
-                else:
-                    target_table = tables['players']
-            elif pk.startswith('ITEM#'):
-                target_table = tables['market']
+            try:
+                # Determine target table and map data based on PK prefix
+                if pk.startswith('CLUBE#'):
+                    if sk == 'PROFILE':
+                        # Map club profile data
+                        club_data = {
+                            'NomeClube': item.get('nome', ''),
+                            'descricao': item.get('descricao', ''),
+                            'lider_id': item.get('lider_id', ''),
+                            'membros_count': item.get('membros_count', 0),
+                            'reputacao': item.get('reputacao', 0),
+                            'created_at': item.get('created_at', datetime.utcnow().isoformat())
+                        }
+                        tables['clubs'].put_item(Item=club_data)
+                        logger.debug(f"Distributed club profile {pk} to Clubes table")
+                    elif sk == 'MEMBROS':
+                        # Map club members data
+                        club_id = pk.split('#')[1]
+                        club_data = {
+                            'NomeClube': item.get('nome', ''),
+                            'membros': item.get('membros', [])
+                        }
+                        tables['clubs'].put_item(Item=club_data)
+                        logger.debug(f"Distributed club members {pk} to Clubes table")
                 
-            if target_table:
-                try:
-                    # Write item to target table
-                    target_table.put_item(Item=item)
-                    logger.debug(f"Distributed item {pk}#{sk} to {target_table.name}")
-                except Exception as e:
-                    logger.error(f"Error distributing item {pk}#{sk} to {target_table.name}: {e}")
-            else:
-                logger.warning(f"No target table found for item {pk}#{sk}")
+                elif pk.startswith('EVENTO#'):
+                    # Map event data
+                    event_data = {
+                        'EventoID': pk.split('#')[1],
+                        'Tipo': sk,
+                        'nome': item.get('nome', ''),
+                        'descricao': item.get('descricao', ''),
+                        'tipo': item.get('tipo', ''),
+                        'canal_id': item.get('canal_id', ''),
+                        'mensagem_id': item.get('mensagem_id', ''),
+                        'inicio': item.get('inicio', ''),
+                        'fim': item.get('fim', ''),
+                        'participantes': item.get('participantes', []),
+                        'dados': item.get('dados', {})
+                    }
+                    tables['events'].put_item(Item=event_data)
+                    logger.debug(f"Distributed event {pk} to Eventos table")
+                
+                elif pk.startswith('PLAYER#'):
+                    if sk == 'INVENTORY':
+                        # Map inventory data
+                        player_id = pk.split('#')[1]
+                        inventory_data = {
+                            'JogadorID': player_id,
+                            'ItemID': 'INVENTORY',
+                            'itens': item.get('itens', [])
+                        }
+                        tables['inventory'].put_item(Item=inventory_data)
+                        logger.debug(f"Distributed inventory {pk} to Inventario table")
+                    else:
+                        # Map player data
+                        player_data = {
+                            'PK': pk,
+                            'SK': sk,
+                            'nome': item.get('nome', ''),
+                            'nivel': item.get('nivel', 1),
+                            'exp': item.get('exp', 0),
+                            'hp': item.get('hp', 100),
+                            'max_hp': item.get('max_hp', 100),
+                            'superpoder': item.get('superpoder', ''),
+                            'reputacao': item.get('reputacao', 0),
+                            'created_at': item.get('created_at', datetime.utcnow().isoformat()),
+                            'last_active': item.get('last_active', datetime.utcnow().isoformat())
+                        }
+                        tables['players'].put_item(Item=player_data)
+                        logger.debug(f"Distributed player {pk} to Jogadores table")
+                
+                elif pk.startswith('ITEM#'):
+                    # Map market data
+                    item_data = {
+                        'ItemID': pk.split('#')[1],
+                        'VendedorID': item.get('vendedor_id', 'SYSTEM'),
+                        'nome': item.get('nome', ''),
+                        'descricao': item.get('descricao', ''),
+                        'tipo': item.get('tipo', ''),
+                        'raridade': item.get('raridade', 'COMMON'),
+                        'preco': item.get('preco', 0),
+                        'efeitos': item.get('efeitos', {})
+                    }
+                    tables['market'].put_item(Item=item_data)
+                    logger.debug(f"Distributed item {pk} to Mercado table")
+                
+            except Exception as e:
+                logger.error(f"Error distributing item {pk}#{sk}: {e}")
+                continue
                 
         logger.info("Data distribution completed successfully")
         return True

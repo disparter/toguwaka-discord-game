@@ -3,7 +3,7 @@
     "type": "story",
     "title": "O Primeiro Dia de Aulas",
     "description": "O início da jornada acadêmica na Tokugawa",
-    "phase": "act_1",
+    "phase": "year_1_intro",
     "requirements": {
         "previous_chapter": "club_2_4_final"
     },
