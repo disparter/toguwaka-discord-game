@@ -32,9 +32,13 @@ ALTERNATIVE_CURRENCIES = load_json('data/economy/alternative_currencies.json')
 # Load more economy data from JSON files
 SPECIAL_CURRENCY_ITEMS = load_json('data/economy/special_currency_items.json')
 ITEM_EXCHANGES = load_json('data/economy/item_exchanges.json')
-FIXED_ITEMS = load_json('data/economy/fixed_items.json')
-DAILY_ITEMS = load_json('data/economy/daily_items.json')
-WEEKLY_ITEMS = load_json('data/economy/weekly_items.json')
+
+# Load items from new category-based structure
+TRAINING_ITEMS = load_json('data/economy/items/training_items.json')
+COMBAT_ITEMS = load_json('data/economy/items/combat_items.json')
+ENERGY_ITEMS = load_json('data/economy/items/energy_items.json')
+ATTRIBUTE_ITEMS = load_json('data/economy/items/attribute_items.json')
+SOCIAL_ITEMS = load_json('data/economy/items/social_items.json')
 
 # Itens sazonais (baseados na estação/bimestre)
 SEASONAL_ITEMS = load_json('data/economy/seasonal_items.json')
@@ -78,36 +82,32 @@ def get_available_shop_items(bimestre=1, active_events=None, player_level=1, pla
         "thematic": []
     }
 
-    # Adiciona itens fixos sempre disponíveis
-    for item in FIXED_ITEMS:
+    # Adiciona itens de treinamento
+    for item in TRAINING_ITEMS:
         item_type = item.get("type", "consumable")
         if item_type in available_items:
             available_items[item_type].append(item)
 
-    # Adiciona itens diários com base na data atual
-    # Na implementação real, usaríamos o dia do ano para selecionar itens específicos
-    day_of_year = current_date.timetuple().tm_yday
-    daily_rotation = day_of_year % len(DAILY_ITEMS)
-
-    # Seleciona alguns itens diários com base na rotação
-    daily_items_count = min(3, len(DAILY_ITEMS))
-    for i in range(daily_items_count):
-        item_index = (daily_rotation + i) % len(DAILY_ITEMS)
-        item = DAILY_ITEMS[item_index]
+    # Adiciona itens de combate
+    for item in COMBAT_ITEMS:
         item_type = item.get("type", "consumable")
         if item_type in available_items:
             available_items[item_type].append(item)
 
-    # Adiciona itens semanais com base na semana atual
-    # Na implementação real, usaríamos a semana do ano para selecionar itens específicos
-    week_of_year = current_date.isocalendar()[1]
-    weekly_rotation = week_of_year % len(WEEKLY_ITEMS)
+    # Adiciona itens de energia
+    for item in ENERGY_ITEMS:
+        item_type = item.get("type", "consumable")
+        if item_type in available_items:
+            available_items[item_type].append(item)
 
-    # Seleciona alguns itens semanais com base na rotação
-    weekly_items_count = min(3, len(WEEKLY_ITEMS))
-    for i in range(weekly_items_count):
-        item_index = (weekly_rotation + i) % len(WEEKLY_ITEMS)
-        item = WEEKLY_ITEMS[item_index]
+    # Adiciona itens de atributo
+    for item in ATTRIBUTE_ITEMS:
+        item_type = item.get("type", "consumable")
+        if item_type in available_items:
+            available_items[item_type].append(item)
+
+    # Adiciona itens sociais
+    for item in SOCIAL_ITEMS:
         item_type = item.get("type", "consumable")
         if item_type in available_items:
             available_items[item_type].append(item)
@@ -143,7 +143,12 @@ def get_available_shop_items(bimestre=1, active_events=None, player_level=1, pla
     return available_items
 
 # Lista de itens da loja (para compatibilidade com código existente)
-SHOP_ITEMS = FIXED_ITEMS.copy()
+SHOP_ITEMS = []
+SHOP_ITEMS.extend(TRAINING_ITEMS)
+SHOP_ITEMS.extend(COMBAT_ITEMS)
+SHOP_ITEMS.extend(ENERGY_ITEMS)
+SHOP_ITEMS.extend(ATTRIBUTE_ITEMS)
+SHOP_ITEMS.extend(SOCIAL_ITEMS)
 
 # Categorias de técnicas
 TECHNIQUE_CATEGORIES = {
@@ -1725,7 +1730,7 @@ class Economy(commands.Cog):
 
                 # Get all items of the specified rarity
                 all_items = []
-                for item_list in [FIXED_ITEMS, DAILY_ITEMS, WEEKLY_ITEMS]:
+                for item_list in [TRAINING_ITEMS, COMBAT_ITEMS, ENERGY_ITEMS, ATTRIBUTE_ITEMS, SOCIAL_ITEMS]:
                     all_items.extend([item for item in item_list if item["rarity"] == rarity])
 
                 for season_items in SEASONAL_ITEMS.values():

@@ -41,11 +41,14 @@ class ShopManager:
             "shops": {}
         }
         
-        # Load items
-        items_file = self.shop_dir / "items.json"
-        if items_file.exists():
-            with open(items_file, 'r') as f:
-                shop_data["items"] = json.load(f)
+        # Load items from category-based structure
+        items_dir = Path("data/economy/items")
+        if items_dir.exists():
+            for item_file in items_dir.glob("*.json"):
+                with open(item_file, 'r') as f:
+                    items = json.load(f)
+                    for item in items:
+                        shop_data["items"][str(item["id"])] = item
         
         # Load shops
         shops_file = self.shop_dir / "shops.json"
