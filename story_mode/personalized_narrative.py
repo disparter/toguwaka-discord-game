@@ -4,6 +4,7 @@ import logging
 import os
 import random
 from .interfaces import Chapter, Event, NPC
+from src.utils.database import get_club
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -797,7 +798,6 @@ class PersonalizedNarrative:
             elif "club_id" in player_data and player_data["club_id"]:
                 # If club_name is not in player_data but club_id is, fetch the club name from the database
                 try:
-                    from utils.database import get_club
                     club = get_club(player_data["club_id"])
                     if club and "name" in club:
                         text = text.replace("{club_name}", club["name"])

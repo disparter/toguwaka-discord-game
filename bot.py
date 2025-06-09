@@ -3,6 +3,9 @@ import asyncio
 import discord
 from discord.ext import commands
 import logging
+from src.utils.database import init_db
+from src.utils.persistence.db_provider import db_provider
+from src.utils.persistence.dynamo_migration import normalize_player_data
 
 # Set up logging
 logging.basicConfig(
@@ -164,7 +167,6 @@ async def on_ready():
 
     # Initialize database
     try:
-        from utils.database import init_db
         if init_db():
             logger.info("Database initialized successfully")
         else:
@@ -174,8 +176,6 @@ async def on_ready():
 
     # Initialize database provider and handle migration
     try:
-        from utils.persistence.db_provider import db_provider
-
         # Try to ensure DynamoDB is available
         if not db_provider.ensure_dynamo_available():
             logger.error("DynamoDB is not available. Bot will not function correctly.")
@@ -189,18 +189,12 @@ async def on_ready():
             return
         
         # Normalize player data
-        try:
-            from utils.persistence.dynamo_migration import normalize_player_data
-            logger.info("Starting player data normalization...")
-            success = await normalize_player_data()
-            if success:
-                logger.info("Player data normalization completed successfully!")
-            else:
-                logger.error("Player data normalization failed!")
-                await bot.close()
-                return
-        except Exception as e:
-            logger.error(f"Error during player data normalization: {e}")
+        logger.info("Starting player data normalization...")
+        success = await normalize_player_data()
+        if success:
+            logger.info("Player data normalization completed successfully!")
+        else:
+            logger.error("Player data normalization failed!")
             await bot.close()
             return
 
