@@ -2,12 +2,15 @@
     {
         "id": 1,
         "name": "Poção de Treinamento",
-        "description": "Reduz o tempo de cooldown do comando !treinar em 30 minutos.",
-        "price": 50,
+        "description": "Reduz o tempo de cooldown do comando !treinar em 30 minutos. Pode ser usada apenas 3 vezes por dia.",
+        "price": 150,
         "type": "consumable",
         "category": "fixed",
-        "rarity": "common",
-        "effects": {"cooldown_reduction": {"command": "treinar", "amount": 1800}}
+        "rarity": "uncommon",
+        "effects": {
+            "cooldown_reduction": {"command": "treinar", "amount": 1800},
+            "daily_usage_limit": 3
+        }
     },
     {
         "id": 2,
