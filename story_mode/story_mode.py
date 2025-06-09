@@ -24,6 +24,7 @@ from .club_system import ClubSystem
 from .club_content import ClubContentManager
 from .chapter_loader import FileChapterLoader
 from .player_manager import PlayerManager
+from .choice_processor import ChoiceProcessor
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -317,43 +318,13 @@ class StoryMode:
             player_data = self.club_manager.apply_club_effects(player_data, effects)
         else:
             # Apply regular story effects
-            self._apply_choice_effects(player_data, choice.get("effects", {}))
+            ChoiceProcessor.apply_effects(player_data, choice.get("effects", {}))
             
         # Update next chapter/event
         if "next_chapter" in choice.get("effects", {}):
             player_data["story_progress"]["current_chapter"] = choice["effects"]["next_chapter"]
             
         return player_data
-
-    def _apply_choice_effects(self, player_data: Dict[str, Any], effects: Dict[str, Any]) -> None:
-        """
-        Apply effects from a choice to player data.
-        
-        Args:
-            player_data: Player data to update
-            effects: Effects to apply
-        """
-        # Update attributes
-        if "attributes" in effects:
-            for stat, value in effects["attributes"].items():
-                current = player_data.get("attributes", {}).get(stat, 0)
-                player_data.setdefault("attributes", {})[stat] = current + value
-                
-        # Update relationships
-        if "relationships" in effects:
-            for npc_id, change in effects["relationships"].items():
-                current = player_data.get("relationships", {}).get(npc_id, 0)
-                player_data.setdefault("relationships", {})[npc_id] = current + change
-                
-        # Update faction reputation
-        if "faction_reputation" in effects:
-            for faction_id, change in effects["faction_reputation"].items():
-                current = player_data.get("factions", {})
-                if faction_id in current:
-                    current[faction_id]["reputation"] = max(0, min(100, current[faction_id]["reputation"] + change))
-                else:
-                    current[faction_id] = {"reputation": change}
-                player_data["factions"] = current
 
     def get_story_status(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
