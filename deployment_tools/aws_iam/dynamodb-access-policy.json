@@ -4,33 +4,19 @@
     {
       "Effect": "Allow",
       "Action": [
-        "dynamodb:CreateTable",
-        "dynamodb:DeleteTable",
-        "dynamodb:DescribeTable",
         "dynamodb:GetItem",
         "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
         "dynamodb:UpdateItem",
         "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
         "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem"
+        "dynamodb:BatchWriteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:ListTables"
       ],
       "Resource": [
-        "arn:aws:dynamodb:us-east-1:959903454321:table/AcademiaTokugawa",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Clubes",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Eventos",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Inventario",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Jogadores",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Mercado",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Itens",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/AcademiaTokugawa/index/*",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Clubes/index/*",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Eventos/index/*",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Inventario/index/*",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Jogadores/index/*",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Mercado/index/*",
-        "arn:aws:dynamodb:us-east-1:959903454321:table/Itens/index/*"
+        "arn:aws:dynamodb:*:*:table/*"
       ]
     }
   ]
