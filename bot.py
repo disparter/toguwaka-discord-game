@@ -12,7 +12,11 @@ logging.basicConfig(
 logger = logging.getLogger('tokugawa_bot')
 
 # Configure CloudWatch logging if running in AWS
-if os.environ.get('AWS_EXECUTION_ENV') is not None:
+if (
+    os.environ.get('AWS_EXECUTION_ENV') is not None or  # Lambda
+    os.environ.get('ECS_CONTAINER_METADATA_URI_V4') is not None or  # ECS
+    os.environ.get('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI') is not None  # ECS
+):
     try:
         import watchtower
         import boto3
@@ -23,16 +27,16 @@ if os.environ.get('AWS_EXECUTION_ENV') is not None:
         # Create CloudWatch logs client
         cloudwatch_client = boto3.client('logs', region_name=aws_region)
 
-        # Create CloudWatch handler
+        # Create CloudWatch handler with ECS-specific log group
         cloudwatch_handler = watchtower.CloudWatchLogHandler(
             log_group='/ecs/tokugawa-bot',
-            stream_name='discord-bot-logs',
+            stream_name=f'discord-bot-logs-{os.environ.get("HOSTNAME", "unknown")}',
             boto3_client=cloudwatch_client
         )
 
         # Add CloudWatch handler to logger
         logger.addHandler(cloudwatch_handler)
-        logger.info("CloudWatch logging enabled")
+        logger.info("CloudWatch logging enabled for ECS environment")
     except ImportError:
         logger.warning("watchtower package not installed, CloudWatch logging disabled")
     except Exception as e:

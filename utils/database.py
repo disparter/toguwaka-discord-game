@@ -11,7 +11,11 @@ logger = logging.getLogger('tokugawa_bot')
 DB_PATH = Path('data/tokugawa.db')
 
 # Flag to indicate if we're running in AWS
-IS_AWS = os.environ.get('AWS_EXECUTION_ENV') is not None
+IS_AWS = (
+    os.environ.get('AWS_EXECUTION_ENV') is not None or  # Lambda
+    os.environ.get('ECS_CONTAINER_METADATA_URI_V4') is not None or  # ECS
+    os.environ.get('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI') is not None  # ECS
+)
 
 # Flag to indicate if we should reset the database
 RESET_DATABASE = os.environ.get('RESET_DATABASE', 'false').lower() == 'true'
