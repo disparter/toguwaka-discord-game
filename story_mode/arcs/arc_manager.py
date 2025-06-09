@@ -35,6 +35,7 @@ class ArcManager:
     def get_chapter(self, chapter_id: str) -> Optional[Chapter]:
         """
         Get a chapter from any arc by its ID.
+        Handles chapter suffixes (e.g., "chapter_1_a").
         
         Args:
             chapter_id: ID of the chapter to retrieve
@@ -42,10 +43,22 @@ class ArcManager:
         Returns:
             Chapter object if found, None otherwise
         """
+        # First try to get the exact chapter
         for arc in self.arcs.values():
             chapter = arc.get_chapter(chapter_id)
             if chapter:
                 return chapter
+                
+        # If not found, try to find a chapter with the same base ID
+        base_id = chapter_id.rsplit('_', 1)[0] if '_' in chapter_id else chapter_id
+        for arc in self.arcs.values():
+            chapter = arc.get_chapter(base_id)
+            if chapter:
+                # Create a new chapter instance with the suffixed ID
+                chapter_data = chapter.chapter_data.copy()
+                chapter_data["chapter_id"] = chapter_id
+                return type(chapter)(chapter_id, chapter_data)
+                
         return None
     
     def get_available_chapters(self, player_data: Dict[str, Any]) -> Dict[str, List[str]]:

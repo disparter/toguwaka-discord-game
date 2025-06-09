@@ -34,11 +34,7 @@ tokugawa-discord-game/
 
 ### Sistema de História
 
-A história é gerenciada através do `structured_story.json`, que define:
-- Capítulos e suas conexões
-- Condições de progressão
-- Integração com clubes e romances
-- Verificações de habilidades
+A história é gerenciada através de arquivos de capítulos individuais em diretórios, como `data/story_mode/main/chapters/`, em vez de um único arquivo structured_story.json.
 
 ### Sistema de Clubes
 

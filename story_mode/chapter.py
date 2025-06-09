@@ -2,6 +2,7 @@ from typing import Dict, List, Any, Optional, Union
 import json
 import logging
 from .interfaces import Chapter
+import re
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -27,6 +28,30 @@ class BaseChapter(Chapter):
         self.completion_exp = data.get("completion_exp", 0)
         self.completion_tusd = data.get("completion_tusd", 0)
         self.next_chapter = data.get("next_chapter")
+        self._parse_chapter_id()
+
+    def _parse_chapter_id(self) -> None:
+        """Parse the chapter ID to extract base ID and suffix."""
+        # Match pattern like "chapter_1_a" or "chapter_1"
+        match = re.match(r"(.+?)(?:_([a-z]))?$", self.chapter_id)
+        if match:
+            self.base_id = match.group(1)
+            self.suffix = match.group(2) if match.group(2) else None
+        else:
+            self.base_id = self.chapter_id
+            self.suffix = None
+
+    def get_id(self) -> str:
+        """Get the full chapter ID."""
+        return self.chapter_id
+
+    def get_base_id(self) -> str:
+        """Get the base chapter ID without suffix."""
+        return self.base_id
+
+    def get_suffix(self) -> Optional[str]:
+        """Get the chapter suffix if it exists."""
+        return self.suffix
 
     def get_title(self) -> str:
         """Returns the chapter title."""
@@ -795,3 +820,85 @@ class BranchingChapter(BaseChapter):
 
         # If no branch conditions are met, use the default next chapter
         return super().get_next_chapter(player_data)
+
+    def get_content(self, club: Optional[str] = None) -> str:
+        """
+        Get the chapter content, with club-specific content if available.
+        
+        Args:
+            club: The player's club affiliation
+            
+        Returns:
+            The appropriate content string
+        """
+        if club and "club_specific_content" in self.data:
+            return self.data["club_specific_content"].get(club, self.data["club_specific_content"].get("default", self.data.get("content", "")))
+        return self.data.get("content", "")
+
+    def get_choices(self, player_data: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """
+        Get available choices for the chapter, filtered by conditions if any.
+        
+        Args:
+            player_data: Player data to check conditions against
+            
+        Returns:
+            List of available choices
+        """
+        choices = self.data.get("choices", [])
+        if not player_data:
+            return choices
+
+        available_choices = []
+        for choice in choices:
+            if "condition" in choice:
+                if self._check_condition(choice["condition"], player_data):
+                    available_choices.append(choice)
+            else:
+                available_choices.append(choice)
+        return available_choices
+
+    def _check_condition(self, condition: Dict[str, Any], player_data: Dict[str, Any]) -> bool:
+        """
+        Check if a condition is met based on player data.
+        
+        Args:
+            condition: The condition to check
+            player_data: Player data to check against
+            
+        Returns:
+            True if condition is met, False otherwise
+        """
+        if "stat" in condition:
+            stat = condition["stat"]
+            value = condition["value"]
+            operator = condition.get("operator", ">=")
+            
+            player_stat = player_data.get("attributes", {}).get(stat, 0)
+            
+            if operator == ">=":
+                return player_stat >= value
+            elif operator == ">":
+                return player_stat > value
+            elif operator == "<=":
+                return player_stat <= value
+            elif operator == "<":
+                return player_stat < value
+            elif operator == "==":
+                return player_stat == value
+            elif operator == "!=":
+                return player_stat != value
+                
+        return True
+
+    def get_requirements(self) -> Dict[str, Any]:
+        """Get chapter requirements."""
+        return self.data.get("requirements", {})
+
+    def get_challenge_id(self) -> Optional[str]:
+        """Get the challenge ID if this is a challenge chapter."""
+        return self.data.get("challenge_id")
+
+    def get_club_specific_content(self) -> Dict[str, str]:
+        """Get all club-specific content."""
+        return self.data.get("club_specific_content", {})

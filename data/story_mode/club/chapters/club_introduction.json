@@ -1,0 +1,83 @@
+{
+    "id": "club_introduction",
+    "type": "story",
+    "title": "Club Introduction",
+    "description": "Your first day at the club.",
+    "content": "Welcome to the club! This is the default content.",
+    "club_specific_content": {
+        "Clube das Chamas": "Welcome to the Flames Club! Here you'll learn to master the power of fire and become a true flame warrior.",
+        "Ilusionistas Mentais": "Welcome to the Mental Illusionists! Here you'll develop your mental powers and learn to manipulate reality.",
+        "Conselho Político": "Welcome to the Political Council! Here you'll learn the art of diplomacy and political strategy.",
+        "Elementalistas": "Welcome to the Elementalists! Here you'll learn to control the elements and harness their power.",
+        "Clube de Combate": "Welcome to the Combat Club! Here you'll train your body and mind to become a true warrior.",
+        "default": "Welcome to the club! This is the default content."
+    },
+    "choices": [
+        {
+            "text": "Introduce yourself",
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 5,
+                "club_reputation": 2
+            }
+        },
+        {
+            "text": "Ask about the club's history",
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 3,
+                "club_reputation": 1
+            }
+        },
+        {
+            "text": "Show your skills",
+            "club_requirement": 1,
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 10,
+                "club_reputation": 5,
+                "club_achievements": ["First Flame"]
+            }
+        },
+        {
+            "text": "Demonstrate mental powers",
+            "club_requirement": 2,
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 10,
+                "club_reputation": 5,
+                "club_achievements": ["First Illusion"]
+            }
+        },
+        {
+            "text": "Present your political views",
+            "club_requirement": 3,
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 10,
+                "club_reputation": 5,
+                "club_achievements": ["First Speech"]
+            }
+        },
+        {
+            "text": "Show elemental control",
+            "club_requirement": 4,
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 10,
+                "club_reputation": 5,
+                "club_achievements": ["First Element"]
+            }
+        },
+        {
+            "text": "Demonstrate combat skills",
+            "club_requirement": 5,
+            "next_chapter": "club_introduction_2",
+            "effects": {
+                "club_experience": 10,
+                "club_reputation": 5,
+                "club_achievements": ["First Victory"]
+            }
+        }
+    ]
+} 

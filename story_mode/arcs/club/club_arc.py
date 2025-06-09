@@ -53,28 +53,113 @@ class ClubArc(BaseArc):
     
     def _load_arc_data(self) -> None:
         """
-        Load club arc data and chapters from structured_story.json.
+        Load club arc data and chapters from the chapters directory.
+        Handles club-specific content in chapters.
         """
+        import glob
         try:
-            # Load the main structured story file
-            story_file = os.path.join(self.data_dir, "..", "..", "..", "data", "story_mode", "structured_story.json")
-            
-            if not os.path.exists(story_file):
-                logger.error(f"Structured story file not found: {story_file}")
+            # Load general club chapters
+            chapters_dir = os.path.join(self.data_dir, "chapters")
+            if not os.path.exists(chapters_dir):
+                logger.error(f"Chapters directory not found: {chapters_dir}")
                 return
-                
-            with open(story_file, 'r') as f:
-                story_data = json.load(f)
-            
-            # Extract club chapters
-            club_chapters = story_data.get("club_arc", {})
-            
-            # Register each chapter
-            for chapter_id, chapter_data in club_chapters.items():
-                self.register_chapter(chapter_id, chapter_data)
-                
-            logger.info(f"Loaded {len(self.chapters)} club chapters")
-            
+            chapter_files = glob.glob(os.path.join(chapters_dir, "*.json"))
+            if not chapter_files:
+                logger.error(f"No chapter files found in: {chapters_dir}")
+                return
+            for chapter_file in chapter_files:
+                with open(chapter_file, 'r') as f:
+                    chapter_data = json.load(f)
+                    chapter_id = chapter_data.get("id") or os.path.splitext(os.path.basename(chapter_file))[0]
+                    self.register_chapter(chapter_id, chapter_data)
+                    
+            # Load club-specific chapters
+            clubs_dir = os.path.join(self.data_dir, "..", "clubs")
+            if os.path.exists(clubs_dir):
+                for club_dir in os.listdir(clubs_dir):
+                    club_path = os.path.join(clubs_dir, club_dir)
+                    if os.path.isdir(club_path):
+                        club_files = glob.glob(os.path.join(club_path, "*.json"))
+                        for club_file in club_files:
+                            with open(club_file, 'r') as f:
+                                club_data = json.load(f)
+                                chapter_id = club_data.get("id") or os.path.splitext(os.path.basename(club_file))[0]
+                                
+                                # Add club-specific content
+                                club_name = club_dir.replace("_", " ").title()
+                                if "club_specific_content" not in club_data:
+                                    club_data["club_specific_content"] = {
+                                        club_name: club_data.get("content", ""),
+                                        "default": club_data.get("content", "")
+                                    }
+                                
+                                # Add club-specific effects
+                                if "effects" not in club_data:
+                                    club_data["effects"] = {
+                                        "club_specific": {
+                                            club_name: {
+                                                "club_experience": club_data.get("completion_exp", 0),
+                                                "club_reputation": club_data.get("club_reputation_gain", 0),
+                                                "skill_gains": club_data.get("skill_gains", {}),
+                                                "next_event": club_data.get("next_club_event")
+                                            },
+                                            "default": {
+                                                "club_experience": 0,
+                                                "club_reputation": 0,
+                                                "skill_gains": {},
+                                                "next_event": None
+                                            }
+                                        }
+                                    }
+                                
+                                # Add club-specific requirements
+                                if "requirements" not in club_data:
+                                    club_data["requirements"] = {
+                                        "club_specific": {
+                                            club_name: {
+                                                "level": "novice",
+                                                "attendance": 0,
+                                                "achievements": []
+                                            },
+                                            "default": {
+                                                "level": "novice",
+                                                "attendance": 0,
+                                                "achievements": []
+                                            }
+                                        }
+                                    }
+                                
+                                # Add club-specific dialogues
+                                if "dialogues" in club_data:
+                                    club_data["club_specific_dialogues"] = {
+                                        club_name: club_data["dialogues"],
+                                        "default": club_data["dialogues"]
+                                    }
+                                
+                                # Add club-specific choices
+                                if "choices" in club_data:
+                                    club_data["club_specific_choices"] = {
+                                        club_name: club_data["choices"],
+                                        "default": club_data["choices"]
+                                    }
+                                
+                                # Add club-specific additional dialogues
+                                if "additional_dialogues" in club_data:
+                                    club_data["club_specific_additional_dialogues"] = {
+                                        club_name: club_data["additional_dialogues"],
+                                        "default": club_data["additional_dialogues"]
+                                    }
+                                
+                                # Add club-specific shared dialogue
+                                if "shared_dialogue" in club_data:
+                                    club_data["club_specific_shared_dialogue"] = {
+                                        club_name: club_data["shared_dialogue"],
+                                        "default": club_data["shared_dialogue"]
+                                    }
+                                
+                                self.register_chapter(chapter_id, club_data)
+                                
+            logger.info(f"Loaded {len(self.chapters)} club arc chapters")
         except Exception as e:
             logger.error(f"Error loading club arc data: {e}")
     
@@ -95,7 +180,7 @@ class ClubArc(BaseArc):
         club_data = player_data.get("club_data", {})
         
         # Check if this is a club-specific chapter
-        club_id = chapter.chapter_data.get("club_id")
+        club_id = chapter.data.get("club_id")
         if club_id:
             club_progress = club_data.get(club_id, {})
             level = club_progress.get("level", "novice")
@@ -103,22 +188,22 @@ class ClubArc(BaseArc):
             achievements = club_progress.get("achievements", [])
             
             # Check level requirements
-            required_level = chapter.chapter_data.get("required_level", "novice")
+            required_level = chapter.data.get("required_level", "novice")
             if self.club_levels[level] < self.club_levels[required_level]:
                 return False
             
             # Check attendance requirements
-            required_attendance = chapter.chapter_data.get("required_attendance", 0)
+            required_attendance = chapter.data.get("required_attendance", 0)
             if attendance < required_attendance:
                 return False
             
             # Check achievement requirements
-            required_achievements = chapter.chapter_data.get("required_achievements", [])
+            required_achievements = chapter.data.get("required_achievements", [])
             if required_achievements and not all(a in achievements for a in required_achievements):
                 return False
         
         # Check prerequisites
-        prerequisites = chapter.chapter_data.get("prerequisites", [])
+        prerequisites = chapter.data.get("prerequisites", [])
         if prerequisites and not all(p in completed_chapters for p in prerequisites):
             return False
         

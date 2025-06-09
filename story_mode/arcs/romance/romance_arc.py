@@ -44,28 +44,24 @@ class RomanceArc(BaseArc):
     
     def _load_arc_data(self) -> None:
         """
-        Load romance arc data and chapters from structured_story.json.
+        Load romance arc data and chapters from the chapters directory.
         """
+        import glob
         try:
-            # Load the main structured story file
-            story_file = os.path.join(self.data_dir, "..", "..", "..", "data", "story_mode", "structured_story.json")
-            
-            if not os.path.exists(story_file):
-                logger.error(f"Structured story file not found: {story_file}")
+            chapters_dir = os.path.join(self.data_dir, "chapters")
+            if not os.path.exists(chapters_dir):
+                logger.error(f"Chapters directory not found: {chapters_dir}")
                 return
-                
-            with open(story_file, 'r') as f:
-                story_data = json.load(f)
-            
-            # Extract romance chapters
-            romance_chapters = story_data.get("romance_arc", {})
-            
-            # Register each chapter
-            for chapter_id, chapter_data in romance_chapters.items():
-                self.register_chapter(chapter_id, chapter_data)
-                
-            logger.info(f"Loaded {len(self.chapters)} romance chapters")
-            
+            chapter_files = glob.glob(os.path.join(chapters_dir, "*.json"))
+            if not chapter_files:
+                logger.error(f"No chapter files found in: {chapters_dir}")
+                return
+            for chapter_file in chapter_files:
+                with open(chapter_file, 'r') as f:
+                    chapter_data = json.load(f)
+                    chapter_id = chapter_data.get("id") or os.path.splitext(os.path.basename(chapter_file))[0]
+                    self.register_chapter(chapter_id, chapter_data)
+            logger.info(f"Loaded {len(self.chapters)} romance arc chapters from directory {chapters_dir}")
         except Exception as e:
             logger.error(f"Error loading romance arc data: {e}")
     

@@ -47,6 +47,7 @@ class BaseArc(ABC):
     def get_chapter(self, chapter_id: str) -> Optional[Chapter]:
         """
         Get a chapter by its ID.
+        Handles chapter suffixes (e.g., "chapter_1_a").
         
         Args:
             chapter_id: ID of the chapter to retrieve
@@ -54,7 +55,20 @@ class BaseArc(ABC):
         Returns:
             Chapter object if found, None otherwise
         """
-        return self.chapters.get(chapter_id)
+        # First try to get the exact chapter
+        if chapter_id in self.chapters:
+            return self.chapters[chapter_id]
+            
+        # If not found, try to find a chapter with the same base ID
+        base_id = chapter_id.rsplit('_', 1)[0] if '_' in chapter_id else chapter_id
+        if base_id in self.chapters:
+            # Create a new chapter instance with the suffixed ID
+            base_chapter = self.chapters[base_id]
+            chapter_data = base_chapter.chapter_data.copy()
+            chapter_data["chapter_id"] = chapter_id
+            return type(base_chapter)(chapter_id, chapter_data)
+            
+        return None
     
     def get_available_chapters(self, player_data: Dict[str, Any]) -> List[str]:
         """

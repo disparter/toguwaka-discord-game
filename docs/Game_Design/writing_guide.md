@@ -196,7 +196,6 @@ Este guia foi criado para ajudar novos colaboradores a criar conteúdo para a Ac
    - Git para controle de versão
 
 2. **Referências**
-   - `structured_story.json` para estrutura
    - `chapter_schema.json` para validação
    - Documentação dos sistemas
 
@@ -215,3 +214,5 @@ Este guia foi criado para ajudar novos colaboradores a criar conteúdo para a Ac
 ## Conclusão
 
 Este guia é um ponto de partida. Use-o como referência, mas não tenha medo de inovar e trazer novas ideias. O importante é manter a qualidade e a coerência com o universo da Academia Tokugawa. 
+
+A estrutura de capítulos agora é baseada em arquivos individuais em diretórios, como `data/story_mode/main/chapters/`, e não mais em structured_story.json. 

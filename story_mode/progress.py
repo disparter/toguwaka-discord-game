@@ -536,3 +536,9 @@ class DefaultStoryProgressManager(StoryProgressManager):
         """
         self._log_with_player_context(f"Added special item: {item_name}", player_data)
         return self._add_item_to_collection(player_data, "special_items", item_name, "special item")
+
+    def save_progress(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Stub method for saving player progress. Returns player_data unchanged.
+        """
+        return player_data

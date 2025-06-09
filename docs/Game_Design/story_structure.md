@@ -8,11 +8,7 @@ O sistema de história da Academia Tokugawa é baseado em uma estrutura modular 
 
 ```
 data/story_mode/
-├── structured_story.json      # Estrutura principal da história
-├── chapters/                  # Capítulos individuais
-│   ├── chapter_1_1.json      # Capítulo 1.1
-│   ├── chapter_1_2.json      # Capítulo 1.2
-│   └── ...
+├── main/chapters/           # Diretório com arquivos de capítulos individuais
 └── assets/
     └── images/
         └── story/            # Imagens da história
@@ -23,41 +19,8 @@ data/story_mode/
 
 ## Estrutura de Dados
 
-### structured_story.json
-
-O arquivo central que define a estrutura da história:
-
-```json
-{
-  "chapters": {
-    "chapter_1_1": {
-      "title": "Título do Capítulo",
-      "description": "Descrição do capítulo",
-      "requirements": {
-        "previous_chapters": ["chapter_1_0"],
-        "min_stats": {
-          "intelligence": 5
-        }
-      },
-      "next_chapters": ["chapter_1_2", "chapter_1_3"],
-      "club_requirements": {
-        "clube_das_chamas": 2
-      }
-    }
-  },
-  "arcs": {
-    "arc_1": {
-      "title": "Título do Arco",
-      "chapters": ["chapter_1_1", "chapter_1_2", "chapter_1_3"],
-      "requirements": {
-        "min_reputation": {
-          "clube_das_chamas": 50
-        }
-      }
-    }
-  }
-}
-```
+### Estrutura de capítulos
+A estrutura principal da história agora é composta por arquivos de capítulos individuais em diretórios, como `main/chapters/`, em vez de um único arquivo structured_story.json.
 
 ### chapter_X_Y.json
 
@@ -225,10 +188,9 @@ Estrutura de um capítulo individual:
 
 ### Adicionando um Novo Arco
 
-1. Atualize `structured_story.json`
-2. Crie os capítulos necessários
-3. Defina requisitos e recompensas
-4. Integre com sistemas existentes
+1. Crie os capítulos necessários
+2. Defina requisitos e recompensas
+3. Integre com sistemas existentes
 
 ## Boas Práticas
 
