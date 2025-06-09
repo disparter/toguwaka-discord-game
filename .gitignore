@@ -36,7 +36,7 @@ ENV/
 
 # Project specific
 .env
-data/tokugawa.db
+local/
 /function.zip
 /function_religar.zip
 /current-task-definition.json
