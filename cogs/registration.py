@@ -78,10 +78,15 @@ async def club_selection_autocomplete(
 ) -> List[app_commands.Choice[str]]:
     """Autocomplete for club selection."""
     try:
+        logger.info("Starting club selection autocomplete")
         # Get available clubs
         clubs = await get_clubs()
         logger.info(f"Retrieved clubs for autocomplete: {clubs}")
         
+        if not clubs:
+            logger.warning("No clubs retrieved from database")
+            return []
+            
         # Normalize the current input
         normalized_current = normalize_club_name(current)
         logger.info(f"Normalized current input: {normalized_current}")
@@ -90,8 +95,10 @@ async def club_selection_autocomplete(
         choices = []
         for club in clubs:
             normalized_name = normalize_club_name(club['name'])
+            logger.info(f"Checking club: {club['name']} (normalized: {normalized_name})")
             if normalized_current in normalized_name:
                 choices.append(app_commands.Choice(name=club['name'], value=club['club_id']))
+                logger.info(f"Added club to choices: {club['name']}")
         
         # Sort choices by name
         choices.sort(key=lambda x: x.name)
@@ -110,8 +117,17 @@ async def select_club(self, interaction: discord.Interaction, clube: str):
         logger.info(f"User {user_id} selected club_id: {clube}")
         
         # Get available clubs
+        logger.info("Attempting to get clubs from database")
         clubs = await get_clubs()
         logger.info(f"Retrieved clubs from database: {clubs}")
+        
+        if not clubs:
+            logger.error("No clubs retrieved from database")
+            await interaction.response.send_message(
+                "❌ Erro ao recuperar clubes. Por favor, tente novamente mais tarde.",
+                ephemeral=True
+            )
+            return
         
         # Normalize the selected club name
         normalized_selected = normalize_club_name(clube)
@@ -124,8 +140,11 @@ async def select_club(self, interaction: discord.Interaction, clube: str):
         # Find the matching club
         matching_club = None
         for club in clubs:
-            if normalize_club_name(club['club_id']) == normalized_selected:
+            normalized_name = normalize_club_name(club['club_id'])
+            logger.info(f"Checking club: {club['club_id']} (normalized: {normalized_name})")
+            if normalized_name == normalized_selected:
                 matching_club = club
+                logger.info(f"Found matching club: {club['name']}")
                 break
         
         if not matching_club:
@@ -137,14 +156,17 @@ async def select_club(self, interaction: discord.Interaction, clube: str):
             return
             
         # Update user's club
+        logger.info(f"Attempting to update user {user_id} to club {matching_club['club_id']}")
         success = await update_user_club(user_id, matching_club['club_id'])
         if not success:
+            logger.error(f"Failed to update user {user_id} to club {matching_club['club_id']}")
             await interaction.response.send_message(
                 "❌ Erro ao atualizar seu clube. Por favor, tente novamente.",
                 ephemeral=True
             )
             return
             
+        logger.info(f"Successfully updated user {user_id} to club {matching_club['name']}")
         await interaction.response.send_message(
             f"✅ Clube atualizado com sucesso! Você agora é membro do {matching_club['name']}.",
             ephemeral=True

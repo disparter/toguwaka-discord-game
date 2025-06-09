@@ -54,12 +54,16 @@ async def get_clubs() -> List[Dict[str, Any]]:
             logger.info("Using DynamoDB for club retrieval")
             clubs = await get_dynamodb_clubs()
             logger.info(f"Retrieved {len(clubs)} clubs from DynamoDB")
+            if not clubs:
+                logger.warning("No clubs retrieved from DynamoDB")
             return clubs
         else:
             logger.info("Using SQLite for club retrieval")
             async with get_db() as db:
                 clubs = await db.fetch("SELECT * FROM clubs ORDER BY name")
                 logger.info(f"Retrieved {len(clubs)} clubs from SQLite")
+                if not clubs:
+                    logger.warning("No clubs retrieved from SQLite")
                 return [dict(club) for club in clubs]
     except Exception as e:
         logger.error(f"Error getting clubs: {e}")
@@ -70,21 +74,27 @@ async def get_dynamodb_clubs() -> List[Dict[str, Any]]:
     try:
         logger.info("Attempting to scan clubs table")
         table = get_table(TABLES['CLUBES'])
+        logger.info(f"Got table reference: {table}")
+        
         response = table.scan()
         logger.info(f"Raw DynamoDB response: {response}")
         
         clubs = []
-        for item in response.get('Items', []):
-            logger.info(f"Processing club item: {item}")
-            club = {
-                'club_id': item['NomeClube'],
-                'name': item['NomeClube'],
-                'description': item['descricao'],
-                'leader_id': item.get('lider_id', ''),
-                'reputacao': item.get('reputacao', 0)
-            }
-            logger.info(f"Converted club object: {club}")
-            clubs.append(club)
+        if 'Items' in response:
+            logger.info(f"Found {len(response['Items'])} items in response")
+            for item in response['Items']:
+                logger.info(f"Processing club item: {item}")
+                club = {
+                    'club_id': item['NomeClube'],
+                    'name': item['NomeClube'],
+                    'description': item['descricao'],
+                    'leader_id': item.get('lider_id', ''),
+                    'reputacao': item.get('reputacao', 0)
+                }
+                logger.info(f"Converted club object: {club}")
+                clubs.append(club)
+        else:
+            logger.warning("No 'Items' found in DynamoDB response")
             
         # Sort clubs by name
         clubs.sort(key=lambda x: x['name'])
@@ -93,6 +103,28 @@ async def get_dynamodb_clubs() -> List[Dict[str, Any]]:
     except Exception as e:
         logger.error(f"Error getting clubs from DynamoDB: {e}")
         return []
+
+async def update_user_club(user_id: str, club_id: str) -> bool:
+    """Update a user's club."""
+    try:
+        logger.info(f"Attempting to update user {user_id} to club {club_id}")
+        if USE_DYNAMODB:
+            logger.info("Using DynamoDB for club update")
+            success = await update_dynamodb_user_club(user_id, club_id)
+            logger.info(f"Club update result: {success}")
+            return success
+        else:
+            logger.info("Using SQLite for club update")
+            async with get_db() as db:
+                success = await db.execute(
+                    "UPDATE players SET club_id = ? WHERE user_id = ?",
+                    (club_id, user_id)
+                )
+                logger.info(f"Club update result: {success}")
+                return success
+    except Exception as e:
+        logger.error(f"Error updating user club: {e}")
+        return False
 
 get_club = db_impl.get_club
 get_all_clubs = db_impl.get_all_clubs
