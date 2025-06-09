@@ -20,11 +20,13 @@ logger = logging.getLogger('tokugawa_bot')
 
 # Determine which database implementation to use
 USE_DYNAMODB = os.environ.get('USE_DYNAMODB', 'false').lower() == 'true'
+logger.info(f"Database configuration - USE_DYNAMODB: {USE_DYNAMODB}")
 
 if USE_DYNAMODB:
     logger.info("Using DynamoDB database implementation")
     try:
         from utils import dynamodb as db_impl
+        logger.info("Successfully imported DynamoDB implementation")
     except ImportError as e:
         logger.error(f"Error importing DynamoDB module: {e}")
         logger.warning("Falling back to SQLite database implementation")
@@ -86,3 +88,19 @@ init_db = db_impl.init_db
 
 # Call init_db to ensure the database is initialized
 init_db()
+
+# Add logging to track function calls
+def log_db_call(func_name):
+    def wrapper(*args, **kwargs):
+        logger.info(f"Calling {func_name} with args: {args}, kwargs: {kwargs}")
+        result = func_name(*args, **kwargs)
+        logger.info(f"{func_name} returned: {result}")
+        return result
+    return wrapper
+
+# Wrap all exported functions with logging
+for name in dir(db_impl):
+    if not name.startswith('_'):
+        func = getattr(db_impl, name)
+        if callable(func):
+            setattr(db_impl, name, log_db_call(func))

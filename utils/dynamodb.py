@@ -56,10 +56,16 @@ def get_dynamodb_client():
     try:
         # Create a session with the default credential provider chain
         session = boto3.Session(region_name=AWS_REGION)
+        logger.info(f"Created AWS session for region {AWS_REGION}")
         
         # Create DynamoDB client from the session
         dynamodb = session.resource('dynamodb')
-        logger.debug(f"DynamoDB client initialized for region {AWS_REGION}")
+        logger.info("Successfully created DynamoDB client")
+        
+        # Test the connection by listing tables
+        tables = list(dynamodb.tables.all())
+        logger.info(f"Successfully connected to DynamoDB. Available tables: {[table.name for table in tables]}")
+        
         return dynamodb
     except (NoCredentialsError, EndpointConnectionError) as e:
         error_msg = f"Failed to create DynamoDB client: {str(e)}"
@@ -73,8 +79,19 @@ def get_dynamodb_client():
 def get_table(table_name):
     """Get a DynamoDB table by name."""
     try:
+        logger.info(f"Attempting to get table: {table_name}")
         dynamodb = get_dynamodb_client()
-        return dynamodb.Table(table_name)
+        table = dynamodb.Table(table_name)
+        
+        # Test table access
+        try:
+            table.table_status
+            logger.info(f"Successfully accessed table {table_name}")
+        except Exception as e:
+            logger.error(f"Error accessing table {table_name}: {e}")
+            raise
+            
+        return table
     except Exception as e:
         logger.error(f"Error getting table {table_name}: {e}")
         raise DynamoDBConnectionError(f"Failed to get table {table_name}") from e
@@ -84,11 +101,13 @@ def init_db():
     Initialize the DynamoDB connection and create tables if they don't exist.
     """
     try:
+        logger.info("Initializing DynamoDB connection")
         dynamodb = get_dynamodb_client()
         
         # Check if tables exist and create them if they don't
         for table_name in TABLES.values():
             try:
+                logger.info(f"Checking table {table_name}")
                 table = dynamodb.Table(table_name)
                 # Wait for table to be active if it exists
                 table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
@@ -101,6 +120,7 @@ def init_db():
                     dynamodb.meta.client.get_waiter('table_exists').wait(TableName=table_name)
                     logger.info(f"Table {table_name} created and is active")
                 else:
+                    logger.error(f"Error checking table {table_name}: {e}")
                     raise
 
         logger.info("DynamoDB initialized successfully")
