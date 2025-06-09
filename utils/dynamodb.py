@@ -380,7 +380,8 @@ def get_club(club_id):
         table = get_table(TABLES['clubs'])
         response = table.get_item(
             Key={
-                'NomeClube': club_id
+                'PK': f'CLUB#{club_id}',
+                'SK': 'PROFILE'
             }
         )
 
@@ -393,14 +394,38 @@ def get_club(club_id):
         raise DynamoDBOperationError(f"Failed to get club: {e}")
 
 @handle_dynamo_error
+def get_all_clubs():
+    """Get all clubs from DynamoDB."""
+    try:
+        table = get_table(TABLES['clubs'])
+        response = table.scan(
+            FilterExpression='begins_with(PK, :prefix)',
+            ExpressionAttributeValues={
+                ':prefix': 'CLUB#'
+            }
+        )
+
+        clubs = []
+        if 'Items' in response:
+            for item in response['Items']:
+                if item['SK'] == 'PROFILE':
+                    clubs.append(json.loads(json.dumps(item, cls=DecimalEncoder)))
+        
+        return sorted(clubs, key=lambda x: x.get('reputacao', 0), reverse=True)
+    except Exception as e:
+        logger.error(f"Error getting all clubs: {e}")
+        raise DynamoDBOperationError(f"Failed to get all clubs: {e}")
+
+@handle_dynamo_error
 def create_club(club_id, name, description, leader_id):
     """Create a new club in DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
         table.put_item(
             Item={
-                'NomeClube': club_id,
-                'nome': name,
+                'PK': f'CLUB#{club_id}',
+                'SK': 'PROFILE',
+                'name': name,
                 'descricao': description,
                 'leader_id': leader_id,
                 'reputacao': 0,

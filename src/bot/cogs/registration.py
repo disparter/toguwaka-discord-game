@@ -113,7 +113,7 @@ class Registration(commands.Cog):
             clubs_embed = create_basic_embed(
                 title="Escolha de Clube",
                 description="Escolha um clube para se afiliar:\n\n" + 
-                            "\n".join([f"{club['club_id']}. **{club['name']}** - {club['description']}" for club in clubs]) +
+                            "\n".join([f"{club['PK'].split('#')[1]}. **{club['name']}** - {club['descricao']}" for club in clubs]) +
                             "\n\nDigite o número do clube escolhido:",
                 color=0x1E90FF
             )
@@ -123,7 +123,7 @@ class Registration(commands.Cog):
             while not valid_club:
                 club_msg = await self.bot.wait_for('message', check=check, timeout=60.0)
                 club_id = club_msg.content.strip()
-                if any(club['club_id'] == club_id for club in clubs):
+                if any(club['PK'].split('#')[1] == club_id for club in clubs):
                     valid_club = True
                 else:
                     await ctx.send("Por favor, escolha um clube válido da lista.")
@@ -140,7 +140,7 @@ class Registration(commands.Cog):
             if success:
                 # Get the created player and their club
                 player = get_player(ctx.author.id)
-                selected_club = next((club for club in clubs if club['club_id'] == club_id), None)
+                selected_club = next((club for club in clubs if club['PK'].split('#')[1] == club_id), None)
 
                 # Send welcome message
                 welcome_msg = create_basic_embed(

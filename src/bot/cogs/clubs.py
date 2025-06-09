@@ -89,10 +89,10 @@ class Clubs(commands.Cog):
             # Add each club to the embed
             for club in clubs:
                 embed.add_field(
-                    name=f"{club['club_id']}. {club['name']}",
-                    value=f"{club['description']}\n"
-                          f"**Membros:** {club['members_count']} 👥\n"
-                          f"**Reputação:** {club['reputation']} 🏆",
+                    name=f"{club['PK'].split('#')[1]}. {club['name']}",
+                    value=f"{club['descricao']}\n"
+                          f"**Membros:** {club.get('members_count', 0)} 👥\n"
+                          f"**Reputação:** {club.get('reputacao', 0)} 🏆",
                     inline=False
                 )
 
@@ -143,10 +143,10 @@ class Clubs(commands.Cog):
         # Add each club to the embed
         for club in clubs:
             embed.add_field(
-                name=f"{club['club_id']}. {club['name']}",
-                value=f"{club['description']}\n"
-                      f"**Membros:** {club['members_count']} 👥\n"
-                      f"**Reputação:** {club['reputation']} 🏆",
+                name=f"{club['PK'].split('#')[1]}. {club['name']}",
+                value=f"{club['descricao']}\n"
+                      f"**Membros:** {club.get('members_count', 0)} 👥\n"
+                      f"**Reputação:** {club.get('reputacao', 0)} 🏆",
                 inline=False
             )
 
