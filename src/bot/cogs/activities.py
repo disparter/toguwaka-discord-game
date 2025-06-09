@@ -74,7 +74,7 @@ class Activities(commands.Cog):
         """Slash command version of the train command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
@@ -95,7 +95,15 @@ class Activities(commands.Cog):
             attribute_gain = training_result.get("attribute_gain", random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
 
             # Check if player has equipped accessories that boost experience
-            inventory = player["inventory"]
+            inventory = player.get('inventory', {})
+            if isinstance(inventory, str):
+                try:
+                    inventory = json.loads(inventory)
+                except Exception:
+                    inventory = {}
+            if not isinstance(inventory, dict):
+                inventory = {}
+
             accessory_boost_applied = False
             accessory_name = ""
             original_exp = exp_gain
@@ -107,26 +115,26 @@ class Activities(commands.Cog):
                     exp_gain = int(exp_gain * exp_boost)
                     accessory_boost_applied = True
                     accessory_name = item["name"]
-                    logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+                    logger.info(f"Player {player.get('name', 'Unknown')} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
             # Update player data using the new ExperienceCalculator
-            new_exp = player["exp"] + exp_gain
+            new_exp = player.get("exp", 0) + exp_gain
             new_level = ExperienceCalculator.calculate_level(new_exp)
-            level_up = new_level > player["level"]
+            level_up = new_level > player.get("level", 1)
 
             # Prepare update data
             update_data = {
                 "exp": new_exp,
-                attribute_gain: player[attribute_gain] + 1,  # Increase the chosen attribute
-                "tusd": player["tusd"] + 10  # Add TUSD reward for training
+                attribute_gain: player.get(attribute_gain, 5) + 1,  # Increase the chosen attribute
+                "tusd": player.get("tusd", 0) + 10  # Add TUSD reward for training
             }
 
             if level_up:
                 update_data["level"] = new_level
                 # Full HP recovery on level up
-                update_data["hp"] = player["max_hp"]
+                update_data["hp"] = player.get("max_hp", 100)
                 # Bonus TUSD for level up
-                update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+                update_data["tusd"] = player.get("tusd", 0) + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
 
             # Apply HP loss for training (5-15% of max HP)
             if "hp" in player and "max_hp" in player:
@@ -136,7 +144,7 @@ class Activities(commands.Cog):
                 update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
             # Update player in database
-            success = update_player(interaction.user.id, **update_data)
+            success = await update_player(interaction.user.id, **update_data)
 
             if success:
                 # Set cooldown
@@ -191,17 +199,32 @@ class Activities(commands.Cog):
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade treinar")
         except Exception as e:
-            logger.error(f"Error in slash_train: {e}")
+            logger.error(f"Error in slash_train: {e}", exc_info=True)
+            try:
+                await interaction.response.send_message("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.", ephemeral=True)
+            except discord.errors.NotFound:
+                pass
 
     @activity_group.command(name="explorar", description="Explorar a academia em busca de eventos aleatórios")
     async def slash_explore(self, interaction: discord.Interaction):
         """Slash command version of the explore command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
+
+            # Garantir que o inventário é um dicionário
+            inventory = player.get('inventory', {})
+            if isinstance(inventory, str):
+                try:
+                    inventory = json.loads(inventory)
+                except Exception:
+                    inventory = {}
+            if not isinstance(inventory, dict):
+                inventory = {}
+            player['inventory'] = inventory
 
             # Check cooldown
             cooldowns = await get_cooldowns(str(interaction.user.id))
@@ -227,42 +250,45 @@ class Activities(commands.Cog):
 
             # Experience change
             if "exp_change" in event_result:
-                update_data["exp"] = player["exp"] + event_result["exp_change"]
+                update_data["exp"] = player.get("exp", 0) + event_result["exp_change"]
 
             # TUSD change
             if "tusd_change" in event_result:
-                update_data["tusd"] = max(0, player["tusd"] + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
+                update_data["tusd"] = max(0, player.get("tusd", 0) + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
 
             # Primary attribute change
             if "attribute_change" in event_result:
                 attribute = event_result["attribute_change"]
                 value = event_result["attribute_value"]
-                update_data[attribute] = player[attribute] + value
+                current_value = player.get(attribute, 5)  # Default to 5 if not found
+                update_data[attribute] = max(1, min(10, current_value + value))  # Keep between 1 and 10
 
             # Secondary attribute change (usually negative)
             if "secondary_attribute_change" in event_result:
                 attribute = event_result["secondary_attribute_change"]
                 value = event_result["secondary_attribute_value"]
-                update_data[attribute] = max(1, player[attribute] + value)  # Ensure attribute doesn't go below 1
+                current_value = player.get(attribute, 5)  # Default to 5 if not found
+                update_data[attribute] = max(1, min(10, current_value + value))  # Keep between 1 and 10
 
             # All attributes boost
             if "all_attributes_change" in event_result:
                 value = event_result["all_attributes_change"]
                 for attr in ["dexterity", "intellect", "charisma", "power_stat"]:
-                    update_data[attr] = player[attr] + value
+                    current_value = player.get(attr, 5)  # Default to 5 if not found
+                    update_data[attr] = max(1, min(10, current_value + value))  # Keep between 1 and 10
 
             # Check for level up
             if "exp" in update_data:
                 new_level = calculate_level_from_exp(update_data["exp"])
-                if new_level > player["level"]:
+                if new_level > player.get("level", 1):
                     update_data["level"] = new_level
                     # Full HP recovery on level up
-                    update_data["hp"] = player["max_hp"]
+                    update_data["hp"] = player.get("max_hp", 100)
                     # Bonus TUSD for level up
                     if "tusd" in update_data:
                         update_data["tusd"] += new_level * 50
                     else:
-                        update_data["tusd"] = player["tusd"] + (new_level * 50)
+                        update_data["tusd"] = player.get("tusd", 0) + (new_level * 50)
 
             # Apply HP loss for training (5-15% of max HP)
             if "hp" in player and "max_hp" in player:
@@ -271,13 +297,16 @@ class Activities(commands.Cog):
                 current_hp = player.get("hp", player["max_hp"])
                 update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
-            # Handle item rewards (placeholder - would need inventory system integration)
+            # Handle item rewards
             if "item_reward" in event_result:
-                logger.info(f"Player {player['name']} received item: {event_result['item_reward']}")
-                # Future: Add item to player's inventory
+                logger.info(f"Player {player.get('name', 'Unknown')} received item: {event_result['item_reward']}")
+                # Add item to inventory
+                item_id = f"item_{datetime.now().timestamp()}"
+                inventory[item_id] = event_result['item_reward']
+                update_data['inventory'] = json.dumps(inventory)
 
             # Update player in database
-            success = update_player(interaction.user.id, **update_data)
+            success = await update_player(interaction.user.id, **update_data)
 
             if success:
                 # Set cooldown
@@ -306,6 +335,10 @@ class Activities(commands.Cog):
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade explorar")
         except Exception as e:
             logger.error(f"Error in slash_explore: {e}", exc_info=True)
+            try:
+                await interaction.response.send_message("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
+            except discord.errors.NotFound:
+                pass
 
     async def handle_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
         """Handle duel logic for both slash_duel and slash_bet_duel commands."""
@@ -733,11 +766,22 @@ class Activities(commands.Cog):
                 await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
-            # LOG: Mostrar dados do player e inventário
-            logger.info(f"[TREINAR] Player lido: {player}")
-            logger.info(f"[TREINAR] Inventário lido: {player.get('inventory')}")
+            # Check cooldown
+            cooldown = self._check_cooldown(ctx.author.id, "treinar")
+            if cooldown:
+                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
+                return
 
-            # Garantir que o inventário é um dicionário
+            # Create a random training event using the new SOLID architecture
+            training_event = TrainingEvent.create_random_training_event()
+            training_result = training_event.trigger(player)
+
+            # Get the outcome, experience and attribute gains from the event
+            outcome = training_event.get_description()
+            exp_gain = training_result["exp_gain"]
+            attribute_gain = training_result.get("attribute_gain", random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
+
+            # Check if player has equipped accessories that boost experience
             inventory = player.get('inventory', {})
             if isinstance(inventory, str):
                 try:
@@ -747,20 +791,6 @@ class Activities(commands.Cog):
             if not isinstance(inventory, dict):
                 inventory = {}
 
-            # Check cooldown
-            cooldown = self._check_cooldown(ctx.author.id, "treinar")
-            if cooldown:
-                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
-                return
-
-            # Get a random training outcome
-            outcome = get_random_training_outcome()
-
-            # Calculate experience and attribute gains
-            exp_gain = random.randint(10, 30)
-            attribute_gain = random.choice(["dexterity", "intellect", "charisma", "power_stat"])
-
-            # Check if player has equipped accessories that boost experience
             accessory_boost_applied = False
             accessory_name = ""
             original_exp = exp_gain
@@ -772,26 +802,26 @@ class Activities(commands.Cog):
                     exp_gain = int(exp_gain * exp_boost)
                     accessory_boost_applied = True
                     accessory_name = item["name"]
-                    logger.info(f"Player {player['name']} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+                    logger.info(f"Player {player.get('name', 'Unknown')} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
             # Update player data using the new ExperienceCalculator
-            new_exp = player["exp"] + exp_gain
+            new_exp = player.get("exp", 0) + exp_gain
             new_level = ExperienceCalculator.calculate_level(new_exp)
-            level_up = new_level > player["level"]
+            level_up = new_level > player.get("level", 1)
 
             # Prepare update data
             update_data = {
                 "exp": new_exp,
-                attribute_gain: player[attribute_gain] + 1,  # Increase the chosen attribute
-                "tusd": player["tusd"] + 10  # Add TUSD reward for training
+                attribute_gain: player.get(attribute_gain, 5) + 1,  # Increase the chosen attribute
+                "tusd": player.get("tusd", 0) + 10  # Add TUSD reward for training
             }
 
             if level_up:
                 update_data["level"] = new_level
                 # Full HP recovery on level up
-                update_data["hp"] = player["max_hp"]
+                update_data["hp"] = player.get("max_hp", 100)
                 # Bonus TUSD for level up
-                update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+                update_data["tusd"] = player.get("tusd", 0) + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
 
             # Apply HP loss for training (5-15% of max HP)
             if "hp" in player and "max_hp" in player:
@@ -859,82 +889,87 @@ class Activities(commands.Cog):
     @commands.command(name="explorar")
     async def explore(self, ctx):
         """Explorar a academia em busca de eventos aleatórios."""
-        # Check if player exists
-        player = await get_player(ctx.author.id)
-        if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
-            return
+        try:
+            # Check if player exists
+            player = await get_player(ctx.author.id)
+            if not player:
+                await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                return
 
-        # LOG: Mostrar dados do player e inventário
-        logger.info(f"[EXPLORAR] Player lido: {player}")
-        logger.info(f"[EXPLORAR] Inventário lido: {player.get('inventory')}")
+            # LOG: Mostrar dados do player e inventário
+            logger.info(f"[EXPLORAR] Player lido: {player}")
 
-        # Garantir que o inventário é um dicionário
-        inventory = player.get('inventory', {})
-        if isinstance(inventory, str):
-            try:
-                inventory = json.loads(inventory)
-            except Exception:
+            # Garantir que o inventário é um dicionário
+            inventory = player.get('inventory', {})
+            if isinstance(inventory, str):
+                try:
+                    inventory = json.loads(inventory)
+                except Exception:
+                    inventory = {}
+            if not isinstance(inventory, dict):
                 inventory = {}
-        if not isinstance(inventory, dict):
-            inventory = {}
-        player['inventory'] = inventory
+            player['inventory'] = inventory
 
-        # Check cooldown
-        cooldown = self._check_cooldown(ctx.author.id, "explorar")
-        if cooldown:
-            await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
-            return
+            # Check cooldown
+            cooldown = self._check_cooldown(ctx.author.id, "explorar")
+            if cooldown:
+                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
+                return
 
-        # Create a random event using the enhanced RandomEvent class
-        from utils.game_mechanics.events.random_event import RandomEvent
-        random_event = RandomEvent.create_random_event()
+            # Create a random event using the enhanced RandomEvent class
+            random_event = RandomEvent.create_random_event()
 
-        # Trigger the event for the player
-        event_result = random_event.trigger(player)
+            # Trigger the event for the player
+            event_result = random_event.trigger(player)
 
-        # Process event effects
-        update_data = {}
+            # Process event effects
+            update_data = {}
 
-        # Experience change
-        if "exp_change" in event_result:
-            update_data["exp"] = player["exp"] + event_result["exp_change"]
+            # Experience change
+            if "exp_change" in event_result:
+                update_data["exp"] = player.get("exp", 0) + event_result["exp_change"]
 
-        # TUSD change
-        if "tusd_change" in event_result:
-            update_data["tusd"] = max(0, player["tusd"] + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
+            # TUSD change
+            if "tusd_change" in event_result:
+                update_data["tusd"] = max(0, player.get("tusd", 0) + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
 
-        # Attribute changes
-        if "attribute_changes" in event_result:
-            for attr, change in event_result["attribute_changes"].items():
-                current_value = player.get(attr, 5)  # Default to 5 if not found
-                update_data[attr] = max(1, min(10, current_value + change))  # Keep between 1 and 10
+            # Attribute changes
+            if "attribute_changes" in event_result:
+                for attr, change in event_result["attribute_changes"].items():
+                    current_value = player.get(attr, 5)  # Default to 5 if not found
+                    update_data[attr] = max(1, min(10, current_value + change))  # Keep between 1 and 10
 
-        # Handle item rewards (placeholder - would need inventory system integration)
-        if "item_reward" in event_result:
-            logger.info(f"Player {player['name']} received item: {event_result['item_reward']}")
-            # Future: Add item to player's inventory
+            # Handle item rewards
+            if "item_reward" in event_result:
+                logger.info(f"Player {player.get('name', 'Unknown')} received item: {event_result['item_reward']}")
+                # Add item to inventory
+                item_id = f"item_{datetime.now().timestamp()}"
+                inventory[item_id] = event_result['item_reward']
+                update_data['inventory'] = json.dumps(inventory)
 
-        # Update player in database
-        success = await update_player(ctx.author.id, **update_data)
+            # Update player in database
+            success = await update_player(ctx.author.id, **update_data)
 
-        if success:
-            # Set cooldown
-            self._set_cooldown(ctx.author.id, "explorar")
+            if success:
+                # Set cooldown
+                self._set_cooldown(ctx.author.id, "explorar")
 
-            # Create embed for event
-            embed = create_event_embed(event_result)
+                # Create embed for event
+                embed = create_event_embed(event_result)
 
-            # Add level up message if applicable
-            if "level" in update_data:
-                embed.add_field(
-                    name="Nível Aumentado!",
-                    value=f"Você subiu para o nível {update_data['level']}!\n+{update_data['level'] * 50} TUSD",
-                    inline=False
-                )
+                # Add level up message if applicable
+                if "level" in update_data:
+                    embed.add_field(
+                        name="Nível Aumentado!",
+                        value=f"Você subiu para o nível {update_data['level']}!\n+{update_data['level'] * 50} TUSD",
+                        inline=False
+                    )
 
-            await ctx.send(embed=embed)
-        else:
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
+        except Exception as e:
+            logger.error(f"Error in explore command: {e}", exc_info=True)
             await ctx.send("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
 
     @commands.command(name="duelar")
