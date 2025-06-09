@@ -1,7 +1,7 @@
 import discord
 from datetime import datetime
 import random
-from utils.database import get_player, get_club, get_top_players, get_top_players_by_reputation
+from utils.db_provider import get_player, get_club, get_top_players, get_top_players_by_reputation
 from utils.embeds import create_basic_embed
 
 class RankingFormatter:

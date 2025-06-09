@@ -30,10 +30,66 @@ TEST_CLUB = {
 
 @pytest.fixture
 def mock_dynamodb():
-    """Fixture to provide a mock DynamoDB client."""
-    with patch('utils.dynamodb.get_table') as mock_table:
-        mock_table.return_value = AsyncMock()
-        yield mock_table.return_value
+    with patch('utils.dynamodb.get_table') as mock_get_table:
+        # Cria um mock para o table
+        mock_table = MagicMock()
+        # get_item precisa ser AsyncMock
+        mock_table.get_item = AsyncMock(return_value={
+            'Item': {
+                'PK': 'PLAYER#123',
+                'SK': 'PROFILE',
+                'power_stat': 10,
+                'dexterity': 10,
+                'intellect': 10,
+                'charisma': 10,
+                'club_id': None,
+                'exp': 0,
+                'hp': 100,
+                'tusd': 1000,
+                'inventory': {},
+                'level': 1
+            }
+        })
+        # put_item precisa ser AsyncMock
+        mock_table.put_item = AsyncMock(return_value={})
+        # Cria um mock para o client
+        mock_client = MagicMock()
+        # O scan do client precisa ser um AsyncMock
+        mock_client.scan = AsyncMock(return_value={
+            'Items': [
+                {
+                    'PK': 'CLUB#club1',
+                    'SK': 'INFO',
+                    'name': 'Club 1',
+                    'description': 'First club',
+                    'leader_id': '123',
+                    'reputacao': 100
+                },
+                {
+                    'PK': 'CLUB#club2',
+                    'SK': 'INFO',
+                    'name': 'Club 2',
+                    'description': 'Second club',
+                    'leader_id': '456',
+                    'reputacao': 200
+                }
+            ]
+        })
+        # table.meta.client = mock_client
+        mock_table.meta.client = mock_client
+        # Também mocka get_item do client para testes de clubes
+        mock_client.get_item = AsyncMock(return_value={
+            'Item': {
+                'PK': 'CLUB#test_club',
+                'SK': 'INFO',
+                'name': 'Test Club',
+                'description': 'A test club',
+                'leader_id': '123',
+                'reputacao': 100
+            }
+        })
+        mock_get_table.return_value = mock_table
+        yield mock_table
 
 @pytest.mark.asyncio
 async def test_player_operations(mock_dynamodb):
@@ -96,36 +152,13 @@ async def test_club_operations(mock_dynamodb):
 @pytest.mark.asyncio
 async def test_get_all_clubs(mock_dynamodb):
     """Test getting all clubs."""
-    # Mock successful response
-    mock_dynamodb.scan.return_value = {
-        'Items': [
-            {
-                'PK': 'CLUB#club1',
-                'SK': 'INFO',
-                'name': 'Club 1',
-                'description': 'First club',
-                'leader_id': '123',
-                'reputacao': 100
-            },
-            {
-                'PK': 'CLUB#club2',
-                'SK': 'INFO',
-                'name': 'Club 2',
-                'description': 'Second club',
-                'leader_id': '456',
-                'reputacao': 200
-            }
-        ]
-    }
-
     # Test get_all_clubs
     clubs = await get_all_clubs()
     assert len(clubs) == 2
     assert clubs[0]['name'] == 'Club 1'
     assert clubs[1]['name'] == 'Club 2'
-
     # Verify DynamoDB call
-    mock_dynamodb.scan.assert_called_once()
+    mock_dynamodb.meta.client.scan.assert_called_once()
 
 @pytest.mark.skip(reason="Requires valid AWS credentials to test DynamoDB error handling")
 @pytest.mark.asyncio

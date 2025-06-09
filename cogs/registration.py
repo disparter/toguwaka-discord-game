@@ -4,7 +4,6 @@ from discord.ext import commands
 from discord import app_commands
 import logging
 import re
-from utils.db import get_clubs, update_user_club
 from utils.json_utils import dumps as json_dumps
 import asyncio
 import os
@@ -12,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional, Union
 import random
 
-from utils.database import get_player, update_player, get_club, get_all_clubs
+from utils.db_provider import get_all_clubs, update_player, get_player, get_club
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.game_mechanics import calculate_level_from_exp
 from utils.club_system import ClubSystem
@@ -244,7 +243,7 @@ class Registration(commands.Cog):
         """Provide club name suggestions for autocomplete."""
         try:
             # Get available clubs
-            clubs = await get_clubs()
+            clubs = await get_all_clubs()
             if not clubs:
                 return []
             
@@ -280,7 +279,7 @@ class Registration(commands.Cog):
             
             # Get available clubs
             logger.info("Attempting to get clubs from database")
-            clubs = await get_clubs()
+            clubs = await get_all_clubs()
             logger.info(f"Retrieved clubs from database: {clubs}")
             
             if not clubs:
@@ -319,7 +318,7 @@ class Registration(commands.Cog):
             
             # Update user's club
             logger.info(f"Attempting to update user {user_id} to club {matching_club['name']}")
-            success = await update_user_club(user_id, matching_club['name'])
+            success = await update_player(user_id, club=matching_club['name'])
             if not success:
                 logger.error(f"Failed to update user {user_id} to club {matching_club['name']}")
                 await ctx.send(
@@ -345,7 +344,7 @@ class Registration(commands.Cog):
         """Handle club selection with normalized comparison."""
         try:
             # Get available clubs
-            clubs = await get_clubs()
+            clubs = await get_all_clubs()
             logger.info(f"Retrieved clubs from database: {clubs}")
             
             if not clubs:
@@ -384,7 +383,7 @@ class Registration(commands.Cog):
             
             # Update user's club
             logger.info(f"Attempting to update user {user_id} to club {matching_club['name']}")
-            success = await update_user_club(user_id, matching_club['name'])
+            success = await update_player(user_id, club=matching_club['name'])
             if not success:
                 logger.error(f"Failed to update user {user_id} to club {matching_club['name']}")
                 await interaction.response.send_message(

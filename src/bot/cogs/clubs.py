@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.database import get_player, get_club, get_all_clubs, update_player
+from utils.db_provider import get_player, get_club, get_all_clubs, update_player, get_club_members, get_relevant_npcs
 from utils.embeds import create_basic_embed, create_club_embed
 from story_mode.club_system import ClubSystem
 
@@ -51,7 +51,6 @@ class Clubs(commands.Cog):
                 return
 
             # Get club members
-            from utils.database import get_club_members, get_relevant_npcs
             members = get_club_members(player['club_id'])
             npcs = get_relevant_npcs(player['club_id'])
 

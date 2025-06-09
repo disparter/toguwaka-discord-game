@@ -19,6 +19,13 @@ from utils.game_mechanics.events.training_event import TrainingEvent
 from utils.game_mechanics.events.random_event import RandomEvent
 from utils.game_mechanics.duel.duel_calculator import DuelCalculator
 from utils.game_mechanics.duel.duel_narrator import DuelNarrator
+from utils.db_provider import (
+    store_cooldown,
+    get_cooldowns,
+    clear_expired_cooldowns
+)
+from utils.command_registrar import CommandRegistrar
+from discord.ext import tasks
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -41,6 +48,23 @@ class Activities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.active_duels = {}  # {challenger_id: opponent_id}
+        self.clear_cooldowns.start()
+
+    def cog_unload(self):
+        self.clear_cooldowns.cancel()
+
+    @tasks.loop(minutes=5)
+    async def clear_cooldowns(self):
+        """Clear expired cooldowns."""
+        try:
+            await clear_expired_cooldowns()
+        except Exception as e:
+            logger.error(f"Error clearing cooldowns: {e}")
+
+    @clear_cooldowns.before_loop
+    async def before_clear_cooldowns(self):
+        """Wait for the bot to be ready before clearing cooldowns."""
+        await self.bot.wait_until_ready()
 
     # Group for activity commands
     activity_group = app_commands.Group(name="atividade", description="Comandos de atividades da Academia Tokugawa")
@@ -180,13 +204,19 @@ class Activities(commands.Cog):
                 return
 
             # Check cooldown
-            cooldown = self._check_cooldown(interaction.user.id, "explorar")
-            if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
-                return
+            cooldowns = await get_cooldowns(str(interaction.user.id))
+            for cooldown in cooldowns:
+                if cooldown['SK'] == 'COOLDOWN#explore':
+                    expiry = datetime.fromisoformat(cooldown['expiry'])
+                    if datetime.now() < expiry:
+                        remaining = expiry - datetime.now()
+                        await interaction.response.send_message(
+                            f"{interaction.user.mention}, você precisa esperar {int(remaining.total_seconds() / 60)} minutos antes de explorar novamente.",
+                            ephemeral=True
+                        )
+                        return
 
             # Create a random event using the enhanced RandomEvent class
-            from utils.game_mechanics.events.random_event import RandomEvent
             random_event = RandomEvent.create_random_event()
 
             # Trigger the event for the player
@@ -251,7 +281,11 @@ class Activities(commands.Cog):
 
             if success:
                 # Set cooldown
-                self._set_cooldown(interaction.user.id, "explorar")
+                await store_cooldown(
+                    str(interaction.user.id),
+                    'explore',
+                    datetime.now() + timedelta(minutes=30)
+                )
 
                 # Create embed for event
                 embed = create_event_embed(event_result)
@@ -685,7 +719,6 @@ class Activities(commands.Cog):
 
         # Store cooldown in database
         try:
-            from utils.database import store_cooldown
             store_cooldown(user_id, command, expiry_time)
         except Exception as e:
             logger.error(f"Error storing cooldown in database: {e}")
@@ -827,7 +860,7 @@ class Activities(commands.Cog):
     async def explore(self, ctx):
         """Explorar a academia em busca de eventos aleatórios."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await get_player(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -871,43 +904,11 @@ class Activities(commands.Cog):
         if "tusd_change" in event_result:
             update_data["tusd"] = max(0, player["tusd"] + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
 
-        # Primary attribute change
-        if "attribute_change" in event_result:
-            attribute = event_result["attribute_change"]
-            value = event_result["attribute_value"]
-            update_data[attribute] = player[attribute] + value
-
-        # Secondary attribute change (usually negative)
-        if "secondary_attribute_change" in event_result:
-            attribute = event_result["secondary_attribute_change"]
-            value = event_result["secondary_attribute_value"]
-            update_data[attribute] = max(1, player[attribute] + value)  # Ensure attribute doesn't go below 1
-
-        # All attributes boost
-        if "all_attributes_change" in event_result:
-            value = event_result["all_attributes_change"]
-            for attr in ["dexterity", "intellect", "charisma", "power_stat"]:
-                update_data[attr] = player[attr] + value
-
-        # Check for level up
-        if "exp" in update_data:
-            new_level = calculate_level_from_exp(update_data["exp"])
-            if new_level > player["level"]:
-                update_data["level"] = new_level
-                # Full HP recovery on level up
-                update_data["hp"] = player["max_hp"]
-                # Bonus TUSD for level up
-                if "tusd" in update_data:
-                    update_data["tusd"] += new_level * 50
-                else:
-                    update_data["tusd"] = player["tusd"] + (new_level * 50)
-
-        # Apply HP loss for training (5-15% of max HP)
-        if "hp" in player and "max_hp" in player:
-            hp_loss = random.randint(5, 15)
-            hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
-            current_hp = player.get("hp", player["max_hp"])
-            update_data["hp"] = max(1, current_hp - hp_loss_amount)
+        # Attribute changes
+        if "attribute_changes" in event_result:
+            for attr, change in event_result["attribute_changes"].items():
+                current_value = player.get(attr, 5)  # Default to 5 if not found
+                update_data[attr] = max(1, min(10, current_value + change))  # Keep between 1 and 10
 
         # Handle item rewards (placeholder - would need inventory system integration)
         if "item_reward" in event_result:
@@ -915,7 +916,7 @@ class Activities(commands.Cog):
             # Future: Add item to player's inventory
 
         # Update player in database
-        success = update_player(ctx.author.id, **update_data)
+        success = await update_player(ctx.author.id, **update_data)
 
         if success:
             # Set cooldown

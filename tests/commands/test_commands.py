@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from discord.ext import commands
 from commands.registration import RegistrationCommands
+from utils.db_provider import get_all_clubs, update_player
 from utils.normalization import normalize_club_name
 
 @pytest.fixture
@@ -35,10 +36,10 @@ async def test_club_selection_success(registration_commands, mock_context):
             {'name': 'Clube das Chamas', 'description': 'Clube de combate'},
             {'name': 'Ilusionistas Mentais', 'description': 'Clube de ilusões'}
         ]
-        with patch('commands.registration.update_user_club', new_callable=AsyncMock) as mock_update:
+        with patch('commands.registration.update_player', new_callable=AsyncMock) as mock_update:
             mock_update.return_value = True
             await registration_commands.select_club.callback(registration_commands, mock_context, "Clube das Chamas")
-            mock_update.assert_called_once_with(mock_context.author.id, "Clube das Chamas")
+            mock_update.assert_called_once_with(mock_context.author.id, club="Clube das Chamas")
             mock_context.send.assert_called_once_with(
                 "✅ Clube selecionado com sucesso!",
                 ephemeral=True
@@ -75,4 +76,17 @@ async def test_club_selection_no_clubs(registration_commands, mock_context):
         mock_context.send.assert_called_once_with(
             "❌ Não há clubes disponíveis no momento.",
             ephemeral=True
-        ) 
+        )
+
+def test_club_selection_success(mock_context, mock_db):
+    # Arrange
+    mock_context.author.id = 123
+    mock_context.author.name = "TestUser"
+    mock_db['update_player'].return_value = True
+
+    # Act
+    result = select_club(mock_context, "Clube das Chamas")
+
+    # Assert
+    assert result == "Você foi registrado no clube Clube das Chamas!"
+    mock_db['update_player'].assert_called_once_with(mock_context.author.id, club="Clube das Chamas") 

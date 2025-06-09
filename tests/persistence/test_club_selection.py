@@ -4,7 +4,7 @@ from decimal import Decimal
 import discord
 from discord import app_commands
 from cogs.registration import Registration, normalize_club_name
-from utils.db import get_clubs, update_user_club
+from utils.db_provider import get_all_clubs, update_player, get_player, get_club
 
 # Test data
 MOCK_CLUBS = [
@@ -147,7 +147,7 @@ class TestClubSelection:
     @pytest.mark.asyncio
     async def test_select_club_no_clubs(self, mock_ctx):
         """Test club selection when no clubs are available."""
-        with patch('utils.db.get_clubs', new_callable=AsyncMock) as mock_get_clubs:
+        with patch('utils.db_provider.get_clubs', new_callable=AsyncMock) as mock_get_clubs:
             mock_get_clubs.return_value = []
             
             # Test selecting a club

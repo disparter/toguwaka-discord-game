@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.database import get_player, get_club, get_top_players
+from utils.db_provider import get_player, get_club, get_top_players
 from utils.embeds import create_player_embed, create_inventory_embed, create_leaderboard_embed
 import json
 

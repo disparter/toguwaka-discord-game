@@ -1,6 +1,12 @@
+import os
 import pytest
 from unittest.mock import AsyncMock, patch
 from utils.dynamodb import get_all_clubs, update_player
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get('USE_DYNAMO', 'false').lower() == 'true',
+    reason="Testes SQLite desabilitados quando USE_DYNAMO=True"
+)
 
 @pytest.fixture
 def mock_dynamodb():
@@ -19,7 +25,7 @@ class TestDatabaseClubs:
     """Test suite for club database operations."""
 
     @pytest.mark.asyncio
-    async def test_get_clubs_dynamodb(self, mock_dynamodb):
+    async def test_get_all_clubs_dynamodb(self, mock_dynamodb):
         """Test getting clubs from DynamoDB."""
         mock_dynamodb.Table.return_value.scan.return_value = {
             'Items': [
@@ -33,21 +39,21 @@ class TestDatabaseClubs:
         assert clubs[1]['name'] == 'Club B'
 
     @pytest.mark.asyncio
-    async def test_get_clubs_empty(self, mock_dynamodb):
+    async def test_get_all_clubs_empty(self, mock_dynamodb):
         """Test getting clubs when none exist."""
         mock_dynamodb.Table.return_value.scan.return_value = {'Items': []}
         clubs = await get_all_clubs()
         assert len(clubs) == 0
 
     @pytest.mark.asyncio
-    async def test_get_clubs_error(self, mock_dynamodb):
+    async def test_get_all_clubs_error(self, mock_dynamodb):
         """Test error handling when getting clubs."""
         mock_dynamodb.Table.return_value.scan.side_effect = Exception("Test error")
         with pytest.raises(Exception):
             await get_all_clubs()
 
     @pytest.mark.asyncio
-    async def test_update_user_club_success(self, mock_dynamodb):
+    async def test_update_player_success(self, mock_dynamodb):
         """Test successful club update for user."""
         mock_dynamodb.Table.return_value.update_item.return_value = {
             'Attributes': {'club': 'Club A'}
@@ -57,7 +63,7 @@ class TestDatabaseClubs:
         mock_dynamodb.Table.return_value.update_item.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_update_user_club_error(self, mock_dynamodb):
+    async def test_update_player_error(self, mock_dynamodb):
         """Test error handling when updating user club."""
         mock_dynamodb.Table.return_value.update_item.side_effect = Exception("Update failed")
         result = await update_player("user123", club="Club A")

@@ -87,3 +87,19 @@ The following types of tests were removed during refactoring:
 - [ ] Add tests for attribute effects
 - [ ] Add tests for item combinations
 - [ ] Add tests for achievement system
+
+# Boas Práticas de Testes
+
+- **Nunca acesse banco real nos testes.** Sempre use mock do provider (`utils/db_provider.py`).
+- **Testes de banco (SQLite/DynamoDB) são unitários.** Eles só testam as funções do próprio backend, nunca o provider nem o resto do sistema.
+- **Testes SQLite são desabilitados se `USE_DYNAMO=True`.** Use o skip condicional:
+  ```python
+  import os
+  import pytest
+
+  pytestmark = pytest.mark.skipif(
+      os.environ.get('USE_DYNAMO', 'false').lower() == 'true',
+      reason="Testes SQLite desabilitados quando USE_DYNAMO=True"
+  )
+  ```
+- **Testes DynamoDB nunca acessam AWS real.** Use mocks ou `moto` para simular o DynamoDB.

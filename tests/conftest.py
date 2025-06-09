@@ -11,7 +11,6 @@ from unittest.mock import MagicMock, patch
 from tests.mocks.dynamodb_mock import MockDynamoDB
 from utils.dynamodb import init_db
 from datetime import datetime
-from utils.db_provider import db_provider, DatabaseType
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -151,10 +150,10 @@ def test_item():
 @pytest.fixture
 def mock_db():
     """Mock database operations."""
-    with patch.object(db_provider.get_db_implementation(), 'get_player') as mock_get_player, \
-         patch.object(db_provider.get_db_implementation(), 'update_player') as mock_update_player, \
-         patch.object(db_provider.get_db_implementation(), 'get_club') as mock_get_club, \
-         patch.object(db_provider.get_db_implementation(), 'get_item') as mock_get_item:
+    with patch('utils.db_provider.get_player') as mock_get_player, \
+         patch('utils.db_provider.update_player') as mock_update_player, \
+         patch('utils.db_provider.get_club') as mock_get_club, \
+         patch('utils.db_provider.get_item') as mock_get_item:
         
         mock_get_player.return_value = None
         mock_update_player.return_value = True

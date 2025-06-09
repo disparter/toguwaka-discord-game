@@ -1,224 +1,161 @@
 """
-Database provider interface for Academia Tokugawa.
+Database provider for Academia Tokugawa.
 
-This module provides a unified interface for database operations,
-handling the switching between DynamoDB and SQLite implementations
-with proper fallback mechanisms.
+Este módulo é a ÚNICA interface pública para acesso ao banco de dados.
+Ele delega para DynamoDB se USE_DYNAMO=True, ou para SQLite se USE_DYNAMO=False.
+Não há fallback automático. O resto do código deve importar APENAS deste provider.
 """
 
 import os
 import logging
-from typing import Optional, Dict, Any, Union
-from enum import Enum, auto
+from typing import Any, Dict, List, Optional
+from datetime import datetime
 
 logger = logging.getLogger('tokugawa_bot')
 
-# Determine which database implementation to use
-USE_DYNAMODB = os.environ.get('USE_DYNAMODB', 'false').lower() == 'true'
-FORCE_SQLITE = os.environ.get('DB_TYPE', '').upper() == 'SQLITE'
-IS_TESTING = os.environ.get('IS_TESTING', 'false').lower() == 'true'
+USE_DYNAMO = os.environ.get('USE_DYNAMO', 'false').lower() == 'true'
 
-class DatabaseType(Enum):
-    DYNAMODB = auto()
-    SQLITE = auto()
+if USE_DYNAMO:
+    from utils import dynamodb as db_impl
+    logger.info('Database provider: DynamoDB')
+else:
+    from utils import sqlite_queries as db_impl
+    logger.info('Database provider: SQLite')
 
-class DatabaseProvider:
-    """Database provider that manages database implementations."""
-    
-    def __init__(self):
-        self._current_db_type = DatabaseType.SQLITE  # Default to SQLite
-        self._dynamo_available = False
-        self._sqlite_available = False
-        if not IS_TESTING:
-            self._check_availability()
-        else:
-            # In testing mode, assume DynamoDB is available
-            self._dynamo_available = True
-            self._current_db_type = DatabaseType.DYNAMODB
-        
-    def _check_availability(self):
-        """Check which database implementations are available."""
-        try:
-            from utils import dynamodb as dynamo_db
-            if dynamo_db.init_db():
-                self._dynamo_available = True
-                logger.info("DynamoDB is available")
-        except Exception as e:
-            logger.warning(f"DynamoDB is not available: {e}")
-            
-        try:
-            from utils import database as sqlite_db
-            if sqlite_db.init_db():
-                self._sqlite_available = True
-                logger.info("SQLite is available")
-        except Exception as e:
-            logger.warning(f"SQLite is not available: {e}")
-            
-        # If DynamoDB is available, use it as the primary database
-        if self._dynamo_available:
-            self._current_db_type = DatabaseType.DYNAMODB
-        elif self._sqlite_available:
-            self._current_db_type = DatabaseType.SQLITE
-        else:
-            # Instead of raising an exception, default to SQLite
-            logger.warning("No database implementation is available, defaulting to SQLite")
-            self._current_db_type = DatabaseType.SQLITE
+# --- Player operations ---
+async def get_player(*args, **kwargs) -> Optional[Dict[str, Any]]:
+    return await db_impl.get_player(*args, **kwargs)
 
-    def get_db_implementation(self):
-        """Get the current database implementation module."""
-        if self._current_db_type == DatabaseType.DYNAMODB:
-            from utils import dynamodb as db_impl
-        else:
-            from utils import database as db_impl
-        return db_impl
+async def create_player(*args, **kwargs) -> bool:
+    return await db_impl.create_player(*args, **kwargs)
 
-    async def sync_to_dynamo_if_empty(self) -> bool:
-        """
-        Sync data from SQLite to DynamoDB if DynamoDB is empty.
-        Returns True if sync was successful or not needed, False otherwise.
-        """
-        if not self._dynamo_available:
-            logger.warning("Cannot sync to DynamoDB: DynamoDB is not available")
-            return False
+async def update_player(*args, **kwargs) -> bool:
+    return await db_impl.update_player(*args, **kwargs)
 
-        try:
-            from utils import dynamodb as dynamo_db
-            from utils import database as sqlite_db
+async def get_all_players(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_all_players(*args, **kwargs)
 
-            # Ensure DynamoDB is properly initialized first
-            if not dynamo_db.init_db():
-                logger.error("Failed to initialize DynamoDB before sync")
-                return False
+# --- Club operations ---
+async def get_club(*args, **kwargs) -> Optional[Dict[str, Any]]:
+    return await db_impl.get_club(*args, **kwargs)
 
-            # Check if DynamoDB is empty by querying the clubs table
-            try:
-                # Try to get all clubs as a test
-                clubs = await dynamo_db.get_all_clubs()
-                if clubs and len(clubs) > 0:
-                    logger.info("DynamoDB is not empty, skipping sync")
-                    return True
-            except Exception as e:
-                logger.error(f"Error checking DynamoDB emptiness: {e}")
-                return False
+async def get_all_clubs(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_all_clubs(*args, **kwargs)
 
-            logger.info("DynamoDB appears to be empty, starting sync from SQLite")
-            
-            # Ensure SQLite is initialized
-            if not sqlite_db.init_db():
-                logger.error("Failed to initialize SQLite before sync")
-                return False
+async def get_top_clubs_by_activity(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_top_clubs_by_activity(*args, **kwargs)
 
-            return True
+async def record_club_activity(*args, **kwargs) -> bool:
+    return await db_impl.record_club_activity(*args, **kwargs)
 
-        except Exception as e:
-            logger.error(f"Error during sync to DynamoDB: {e}")
-            return False
+# --- Event operations ---
+async def store_event(*args, **kwargs) -> bool:
+    return await db_impl.store_event(*args, **kwargs)
 
-    def fallback_to_sqlite(self) -> bool:
-        """
-        Switch to SQLite as the database implementation.
-        Returns True if successful, False otherwise.
-        """
-        if not self._sqlite_available:
-            logger.error("Cannot fallback to SQLite: SQLite is not available")
-            return False
+async def get_event(*args, **kwargs) -> Optional[Dict[str, Any]]:
+    return await db_impl.get_event(*args, **kwargs)
 
-        try:
-            from utils import database as sqlite_db
-            sqlite_db.init_db()
-            self._current_db_type = DatabaseType.SQLITE
-            logger.info("Successfully switched to SQLite")
-            return True
-        except Exception as e:
-            logger.error(f"Error falling back to SQLite: {e}")
-            return False
+async def get_events_by_date(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_events_by_date(*args, **kwargs)
 
-    def ensure_dynamo_available(self) -> bool:
-        """
-        Ensure DynamoDB is available and switch to it if possible.
-        Returns True if DynamoDB is available, False otherwise.
-        """
-        if self._current_db_type == DatabaseType.DYNAMODB:
-            return True
+async def update_event_status(*args, **kwargs) -> bool:
+    return await db_impl.update_event_status(*args, **kwargs)
 
-        if FORCE_SQLITE:
-            logger.info("SQLite is forced, not switching to DynamoDB")
-            return False
+async def get_active_events(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_active_events(*args, **kwargs)
 
-        try:
-            from utils import dynamodb as dynamo_db
-            if dynamo_db.init_db():
-                self._current_db_type = DatabaseType.DYNAMODB
-                self._dynamo_available = True
-                logger.info("Successfully switched to DynamoDB")
-                return True
-        except Exception as e:
-            logger.error(f"Error switching to DynamoDB: {e}")
-            return False
+# --- Cooldown operations ---
+async def store_cooldown(*args, **kwargs) -> bool:
+    return await db_impl.store_cooldown(*args, **kwargs)
 
-        return False
+async def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_cooldowns(*args, **kwargs)
 
-# Create a singleton instance
-db_provider = DatabaseProvider()
+async def clear_expired_cooldowns(*args, **kwargs) -> bool:
+    return await db_impl.clear_expired_cooldowns(*args, **kwargs)
 
-# Export functions that delegate to the current database implementation
-def get_club(*args, **kwargs):
-    return db_provider.get_db_implementation().get_club(*args, **kwargs)
+# --- System flag operations ---
+async def get_system_flag(*args, **kwargs) -> Optional[Any]:
+    return await db_impl.get_system_flag(*args, **kwargs)
 
-async def get_all_clubs(*args, **kwargs):
-    """Get all clubs from the database."""
-    return await db_provider.get_db_implementation().get_all_clubs(*args, **kwargs)
+async def set_system_flag(*args, **kwargs) -> bool:
+    return await db_impl.set_system_flag(*args, **kwargs)
 
-def get_club_members(*args, **kwargs):
-    return db_provider.get_db_implementation().get_club_members(*args, **kwargs)
+# --- Grade operations ---
+async def get_player_grades(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_player_grades(*args, **kwargs)
 
-def update_club_reputation_weekly(*args, **kwargs):
-    return db_provider.get_db_implementation().update_club_reputation_weekly(*args, **kwargs)
+async def update_player_grade(*args, **kwargs) -> bool:
+    return await db_impl.update_player_grade(*args, **kwargs)
 
-def get_top_clubs_by_activity(*args, **kwargs):
-    return db_provider.get_db_implementation().get_top_clubs_by_activity(*args, **kwargs)
+async def get_monthly_average_grades(*args, **kwargs) -> Dict[str, float]:
+    return await db_impl.get_monthly_average_grades(*args, **kwargs)
 
-def record_club_activity(*args, **kwargs):
-    return db_provider.get_db_implementation().record_club_activity(*args, **kwargs)
+# --- Voting operations ---
+async def add_vote(*args, **kwargs) -> bool:
+    return await db_impl.add_vote(*args, **kwargs)
 
-def store_event(*args, **kwargs):
-    return db_provider.get_db_implementation().store_event(*args, **kwargs)
+async def get_vote_results(*args, **kwargs) -> Dict[str, int]:
+    return await db_impl.get_vote_results(*args, **kwargs)
 
-def get_event(*args, **kwargs):
-    return db_provider.get_db_implementation().get_event(*args, **kwargs)
+async def update_player_reputation(*args, **kwargs) -> bool:
+    return await db_impl.update_player_reputation(*args, **kwargs)
 
-def get_events_by_date(*args, **kwargs):
-    return db_provider.get_db_implementation().get_events_by_date(*args, **kwargs)
+# --- Quiz operations ---
+async def get_quiz_questions(*args, **kwargs) -> List[Dict[str, Any]]:
+    return await db_impl.get_quiz_questions(*args, **kwargs)
 
-def update_event_status(*args, **kwargs):
-    return db_provider.get_db_implementation().update_event_status(*args, **kwargs)
+async def record_quiz_answer(*args, **kwargs) -> bool:
+    return await db_impl.record_quiz_answer(*args, **kwargs)
 
-async def get_player(*args, **kwargs):
-    """Get player data from the database."""
-    return await db_provider.get_db_implementation().get_player(*args, **kwargs)
+# --- Init ---
+async def init_db(*args, **kwargs) -> bool:
+    return await db_impl.init_db(*args, **kwargs)
 
-async def create_player(*args, **kwargs):
-    """Create a new player in the database."""
-    return await db_provider.get_db_implementation().create_player(*args, **kwargs)
-
-async def update_player(*args, **kwargs):
-    """Update player data in the database."""
-    return await db_provider.get_db_implementation().update_player(*args, **kwargs)
-
-async def get_all_players(*args, **kwargs):
-    """Get all players from the database."""
-    return await db_provider.get_db_implementation().get_all_players(*args, **kwargs)
-
-async def get_top_players(*args, **kwargs):
-    """Get top players from the database."""
-    return await db_provider.get_db_implementation().get_top_players(*args, **kwargs)
-
-def get_top_players_by_reputation(*args, **kwargs):
-    return db_provider.get_db_implementation().get_top_players_by_reputation(*args, **kwargs)
-
-def get_relevant_npcs(*args, **kwargs):
-    return db_provider.get_db_implementation().get_relevant_npcs(*args, **kwargs)
-
-def get_db_provider():
-    """Return the current database provider instance."""
-    return db_provider 
+# --- Club NPCs ---
+async def get_relevant_npcs(club_id: str) -> List[Dict[str, Any]]:
+    """Get NPCs relevant to a specific club."""
+    # Hardcoded NPCs for each club
+    club_npcs = {
+        "clube_das_chamas": [
+            {
+                "id": "kai_flameheart",
+                "name": "Kai Flameheart",
+                "role": "Líder",
+                "image": "kai_flameheart_intro.png"
+            }
+        ],
+        "clube_politico": [
+            {
+                "id": "alexander_strategos",
+                "name": "Alexander Strategos",
+                "role": "Líder",
+                "image": "lider_clube_conselho_politico_intro.png"
+            }
+        ],
+        "clube_de_combate": [
+            {
+                "id": "ryuji_battleborn",
+                "name": "Ryuji Battleborn",
+                "role": "Líder",
+                "image": "ryuji_battleborn_intro.png"
+            }
+        ],
+        "clube_dos_elementalistas": [
+            {
+                "id": "gaia_naturae",
+                "name": "Gaia Naturae",
+                "role": "Líder",
+                "image": "gaia_naturae_neutral.png"
+            }
+        ],
+        "clube_dos_ilusionistas": [
+            {
+                "id": "mina_starlight",
+                "name": "Mina Starlight",
+                "role": "Líder",
+                "image": "mina_starlight_intro.png"
+            }
+        ]
+    }
+    return club_npcs.get(club_id, []) 

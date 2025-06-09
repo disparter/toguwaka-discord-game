@@ -7,7 +7,7 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from utils.database import get_player, update_player, get_club
+from utils.db_provider import get_player, update_player, get_club, store_cooldown
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
 from src.bot.cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
@@ -554,7 +554,6 @@ class Economy(commands.Cog):
 
         # Store cooldown in database
         try:
-            from utils.database import store_cooldown
             store_cooldown(user_id, command, expiry_time)
         except Exception as e:
             logger.error(f"Error storing cooldown in database: {e}")

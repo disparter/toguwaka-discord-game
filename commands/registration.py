@@ -2,8 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.database import get_all_clubs
-from utils.db import update_user_club
+from utils.db_provider import get_all_clubs, update_player
 from utils.normalization import normalize_club_name
 
 logger = logging.getLogger('tokugawa_bot')
@@ -47,7 +46,7 @@ class RegistrationCommands(commands.Cog):
                 return
             
             # Update user's club
-            success = await update_user_club(ctx.author.id, matching_club['name'])
+            success = await update_player(ctx.author.id, club=matching_club['name'])
             if not success:
                 await ctx.send(
                     "❌ Erro ao selecionar clube. Tente novamente mais tarde.",

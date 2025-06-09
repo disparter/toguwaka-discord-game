@@ -57,3 +57,5 @@ scripts/attach_dynamo_permissions.sh
 ehthumbs.db
 Thumbs.db
 /.coverage
+
+tokugawa.db

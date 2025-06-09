@@ -12,6 +12,7 @@ import logging
 from datetime import datetime, time
 import decimal
 from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
+from typing import Dict, Any, Optional, List
 
 logger = logging.getLogger('tokugawa_bot')
 
