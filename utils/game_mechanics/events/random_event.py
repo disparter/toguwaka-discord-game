@@ -282,12 +282,15 @@ class RandomEvent(EventBase):
                 {"tusd": -30},
                 {"dexterity": -1},
                 {"intellect": -1},
-                {"charisma": -1}
+                {"charisma": -1},
+                {"hp_loss": 10}  # Add HP loss as a possible negative effect
             ]
             negative_effect = random.choice(negative_effects)
             for key, value in negative_effect.items():
                 if key == "tusd":
                     result["tusd_change"] = value
+                elif key == "hp_loss":
+                    result["hp_loss"] = value
                 else:
                     result["secondary_attribute_change"] = key
                     result["secondary_attribute_value"] = value
@@ -307,6 +310,12 @@ class RandomEvent(EventBase):
         # Duel trigger
         if "duel" in effect and effect["duel"]:
             result["trigger_duel"] = True
+
+        # Add base HP loss for exploration (5-10% of max HP)
+        if "hp" in player and "max_hp" in player:
+            hp_loss = random.randint(5, 10)
+            hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+            result["hp_loss"] = result.get("hp_loss", 0) + hp_loss_amount
 
         return result
 

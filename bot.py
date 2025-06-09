@@ -162,6 +162,16 @@ async def on_ready():
 
     logger.info(f'Bot is ready! Logged in as {bot.user.name}')
 
+    # Initialize database
+    try:
+        from utils.database import init_db
+        if init_db():
+            logger.info("Database initialized successfully")
+        else:
+            logger.error("Failed to initialize database")
+    except Exception as e:
+        logger.error(f"Error initializing database: {e}")
+
     # Initialize database provider and handle migration
     try:
         from utils.db_provider import db_provider

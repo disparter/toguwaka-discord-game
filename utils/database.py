@@ -4,6 +4,7 @@ import os
 import logging
 from pathlib import Path
 from datetime import datetime
+from utils.db_provider import db_provider, DatabaseType
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -50,109 +51,64 @@ def init_default_clubs():
         create_club(str(club_id), name, description, leader_id)
 
 def init_db():
-    """Initialize the database with required tables."""
+    """Initialize the database and create tables if they don't exist."""
     ensure_data_dir()
-
-    # Check if we should reset the database
-    if RESET_DATABASE:
-        logger.warning("RESET_DATABASE flag is set to true. Resetting SQLite database...")
-        if os.path.exists(DB_PATH):
-            try:
-                os.remove(DB_PATH)
-                logger.warning("SQLite database file has been reset")
-            except Exception as e:
-                logger.error(f"Error resetting SQLite database: {e}")
-                return False
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
 
     try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-
-        # Create tables if they don't exist
-        cursor.executescript('''
-            CREATE TABLE IF NOT EXISTS players (
-                user_id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                power INTEGER DEFAULT 0,
-                level INTEGER DEFAULT 1,
-                exp INTEGER DEFAULT 0,
-                tusd INTEGER DEFAULT 0,
-                club_id TEXT,
-                dexterity INTEGER DEFAULT 0,
-                intellect INTEGER DEFAULT 0,
-                charisma INTEGER DEFAULT 0,
-                power_stat INTEGER DEFAULT 0,
-                reputation INTEGER DEFAULT 0,
-                hp INTEGER DEFAULT 100,
-                max_hp INTEGER DEFAULT 100,
-                inventory TEXT DEFAULT '{}',
-                strength_level INTEGER DEFAULT 1,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE TABLE IF NOT EXISTS clubs (
-                club_id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                description TEXT,
-                leader_id TEXT NOT NULL,
-                reputation INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE TABLE IF NOT EXISTS events (
-                event_id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                description TEXT,
-                type TEXT NOT NULL,
-                channel_id TEXT NOT NULL,
-                message_id TEXT,
-                start_time TIMESTAMP NOT NULL,
-                end_time TIMESTAMP NOT NULL,
-                completed BOOLEAN DEFAULT FALSE,
-                participants TEXT DEFAULT '[]',
-                data TEXT DEFAULT '{}',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE TABLE IF NOT EXISTS cooldowns (
-                user_id TEXT NOT NULL,
-                command TEXT NOT NULL,
-                expiry_time TIMESTAMP NOT NULL,
-                PRIMARY KEY (user_id, command)
-            );
-
-            CREATE TABLE IF NOT EXISTS system_flags (
-                flag_name TEXT PRIMARY KEY,
-                flag_value TEXT NOT NULL,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-
-            CREATE TABLE IF NOT EXISTS items (
-                item_id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                description TEXT,
-                type TEXT NOT NULL,
-                rarity TEXT NOT NULL,
-                price INTEGER DEFAULT 0,
-                effects TEXT DEFAULT '{}',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
+        # Create players table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS players (
+            user_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            power TEXT,
+            level INTEGER DEFAULT 1,
+            exp INTEGER DEFAULT 0,
+            tusd INTEGER DEFAULT 1000,
+            club_id TEXT,
+            dexterity INTEGER DEFAULT 10,
+            intellect INTEGER DEFAULT 10,
+            charisma INTEGER DEFAULT 10,
+            power_stat INTEGER DEFAULT 10,
+            reputation INTEGER DEFAULT 0,
+            hp INTEGER DEFAULT 100,
+            max_hp INTEGER DEFAULT 100,
+            inventory TEXT DEFAULT '{}',
+            strength_level INTEGER DEFAULT 1,
+            created_at TEXT,
+            last_active TEXT
+        )
         ''')
-        
-        # Initialize default clubs
-        init_default_clubs()
-        
+
+        # Create clubs table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS clubs (
+            club_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            leader_id TEXT,
+            reputation INTEGER DEFAULT 0,
+            members_count INTEGER DEFAULT 0
+        )
+        ''')
+
+        # Create system_flags table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS system_flags (
+            flag_name TEXT PRIMARY KEY,
+            flag_value TEXT
+        )
+        ''')
+
         conn.commit()
-        logger.info("SQLite database initialized successfully")
+        logger.info("Database initialized successfully")
         return True
     except sqlite3.Error as e:
-        logger.error(f"Error initializing SQLite database: {e}")
+        logger.error(f"Error initializing database: {e}")
         return False
     finally:
-        if 'conn' in locals():
-            conn.close()
+        conn.close()
 
 def handle_db_error(func):
     """Decorator to handle database errors and attempt fallback to SQLite if needed."""
@@ -199,7 +155,6 @@ def get_player(user_id):
     finally:
         conn.close()
 
-# Apply the error handler to all other database functions
 @handle_db_error
 def create_player(user_id, name, **kwargs):
     """Create a new player in the database, supporting all fields."""
@@ -212,32 +167,62 @@ def create_player(user_id, name, **kwargs):
         cursor.execute('SELECT 1 FROM players WHERE user_id = ?', (str(user_id),))
         if cursor.fetchone():
             return False
+
         # Remove user_id and name from kwargs if present
         kwargs.pop('user_id', None)
         kwargs.pop('name', None)
+
         # Prepare columns and values
         columns = ['user_id', 'name']
         values = [str(user_id), str(name)]
+
         # List of all possible columns in the players table
         player_columns = [
             'power', 'level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma',
             'power_stat', 'reputation', 'hp', 'max_hp', 'inventory', 'strength_level', 'created_at', 'last_active'
         ]
+
+        # Add default values for required fields
+        defaults = {
+            'power': kwargs.get('power', ''),
+            'level': kwargs.get('level', 1),
+            'exp': kwargs.get('exp', 0),
+            'tusd': kwargs.get('tusd', 1000),
+            'club_id': kwargs.get('club_id', None),
+            'dexterity': kwargs.get('dexterity', 10),
+            'intellect': kwargs.get('intellect', 10),
+            'charisma': kwargs.get('charisma', 10),
+            'power_stat': kwargs.get('power_stat', 10),
+            'reputation': kwargs.get('reputation', 0),
+            'hp': kwargs.get('hp', 100),
+            'max_hp': kwargs.get('max_hp', 100),
+            'inventory': kwargs.get('inventory', '{}'),
+            'strength_level': kwargs.get('strength_level', 1),
+            'created_at': datetime.now().isoformat(),
+            'last_active': datetime.now().isoformat()
+        }
+
+        # Add all columns and their values
         for col in player_columns:
-            if col in kwargs:
-                columns.append(col)
-                if col == 'inventory' and isinstance(kwargs[col], dict):
-                    values.append(json.dumps(kwargs[col]))
-                else:
-                    values.append(kwargs[col])
-        # Fill missing columns with defaults if not provided
-        if 'inventory' not in columns:
-            columns.append('inventory')
-            values.append(json.dumps({}))
+            columns.append(col)
+            value = kwargs.get(col, defaults[col])
+            if col == 'inventory' and isinstance(value, dict):
+                values.append(json.dumps(value))
+            else:
+                values.append(value)
+
+        # Create the SQL query
         sql = f"INSERT INTO players ({', '.join(columns)}) VALUES ({', '.join(['?'] * len(values))})"
+        
+        # Execute the query
         cursor.execute(sql, values)
         conn.commit()
+        logger.info(f"Created new player: {name} (ID: {user_id})")
         return True
+    except Exception as e:
+        logger.error(f"Error creating player {user_id}: {e}")
+        conn.rollback()
+        return False
     finally:
         conn.close()
 
@@ -305,8 +290,7 @@ def update_player(user_id, **kwargs):
         return False
 
     # Skip if we're using DynamoDB
-    from utils.db_provider import db_provider
-    if db_provider.current_db_type == db_provider.DatabaseType.DYNAMODB:
+    if db_provider.current_db_type == DatabaseType.DYNAMODB:
         return True
 
     conn = sqlite3.connect(DB_PATH)

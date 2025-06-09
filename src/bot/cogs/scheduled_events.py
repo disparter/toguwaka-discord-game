@@ -3657,6 +3657,14 @@ class ScheduledEvents(commands.Cog):
                 # Add randomness
                 total_damage = int(total_damage * random.uniform(0.8, 1.2))
 
+                # Calculate HP loss for player (10-20% of max HP)
+                if 'hp' in player and 'max_hp' in player:
+                    hp_loss = random.randint(10, 20)
+                    hp_loss_amount = int(player['max_hp'] * (hp_loss / 100))
+                    current_hp = player.get('hp', player['max_hp'])
+                    new_hp = max(1, current_hp - hp_loss_amount)
+                    update_player(interaction.user.id, hp=new_hp)
+
                 # Update villain HP
                 active_villain['data']['current_hp'] -= total_damage
                 active_villain['participants'].append(interaction.user.id)

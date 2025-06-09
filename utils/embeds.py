@@ -54,6 +54,18 @@ def create_player_embed(player, club=None):
         inline=True
     )
 
+    # Add HP information
+    current_hp = player.get('hp', player.get('max_hp', 100))
+    max_hp = player.get('max_hp', 100)
+    hp_percentage = int((current_hp / max_hp) * 100)
+    hp_bar = "█" * (hp_percentage // 10) + "░" * (10 - (hp_percentage // 10))
+    embed.add_field(
+        name="Vida",
+        value=f"{hp_bar} {hp_percentage}%\n"
+              f"HP: {current_hp}/{max_hp} ❤️",
+        inline=True
+    )
+
     # Add experience progress
     exp_progress = calculate_exp_progress(player['exp'], player['level'])
     progress_bar = create_progress_bar(exp_progress)

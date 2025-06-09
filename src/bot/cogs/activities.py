@@ -99,8 +99,17 @@ class Activities(commands.Cog):
 
             if level_up:
                 update_data["level"] = new_level
+                # Full HP recovery on level up
+                update_data["hp"] = player["max_hp"]
                 # Bonus TUSD for level up
                 update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+
+            # Apply HP loss for training (5-15% of max HP)
+            if "hp" in player and "max_hp" in player:
+                hp_loss = random.randint(5, 15)
+                hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+                current_hp = player.get("hp", player["max_hp"])
+                update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
             # Update player in database
             success = update_player(interaction.user.id, **update_data)
@@ -217,11 +226,20 @@ class Activities(commands.Cog):
                 new_level = calculate_level_from_exp(update_data["exp"])
                 if new_level > player["level"]:
                     update_data["level"] = new_level
+                    # Full HP recovery on level up
+                    update_data["hp"] = player["max_hp"]
                     # Bonus TUSD for level up
                     if "tusd" in update_data:
                         update_data["tusd"] += new_level * 50
                     else:
                         update_data["tusd"] = player["tusd"] + (new_level * 50)
+
+            # Apply HP loss for training (5-15% of max HP)
+            if "hp" in player and "max_hp" in player:
+                hp_loss = random.randint(5, 15)
+                hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+                current_hp = player.get("hp", player["max_hp"])
+                update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
             # Handle item rewards (placeholder - would need inventory system integration)
             if "item_reward" in event_result:
@@ -341,6 +359,8 @@ class Activities(commands.Cog):
                 new_level = calculate_level_from_exp(winner_update["exp"])
                 if new_level > duel_result["winner"]["level"]:
                     winner_update["level"] = new_level
+                    # Full HP recovery on level up
+                    winner_update["hp"] = player["max_hp"]
                     # Add level up bonus
                     winner_update["tusd"] += new_level * 50
 
@@ -542,6 +562,8 @@ class Activities(commands.Cog):
                 new_level = ExperienceCalculator.calculate_level(new_exp)
                 if new_level > player["level"]:
                     update_data["level"] = new_level
+                    # Full HP recovery on level up
+                    update_data["hp"] = player["max_hp"]
                     # Bonus TUSD for level up
                     update_data["tusd"] = player.get("tusd", 0) + (new_level * 50)
 
@@ -719,8 +741,17 @@ class Activities(commands.Cog):
 
         if level_up:
             update_data["level"] = new_level
+            # Full HP recovery on level up
+            update_data["hp"] = player["max_hp"]
             # Bonus TUSD for level up
             update_data["tusd"] = player["tusd"] + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+
+        # Apply HP loss for training (5-15% of max HP)
+        if "hp" in player and "max_hp" in player:
+            hp_loss = random.randint(5, 15)
+            hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+            current_hp = player.get("hp", player["max_hp"])
+            update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
         # Update player in database
         success = update_player(ctx.author.id, **update_data)
@@ -832,11 +863,20 @@ class Activities(commands.Cog):
                 new_level = calculate_level_from_exp(update_data["exp"])
                 if new_level > player["level"]:
                     update_data["level"] = new_level
+                    # Full HP recovery on level up
+                    update_data["hp"] = player["max_hp"]
                     # Bonus TUSD for level up
                     if "tusd" in update_data:
                         update_data["tusd"] += new_level * 50
                     else:
                         update_data["tusd"] = player["tusd"] + (new_level * 50)
+
+            # Apply HP loss for training (5-15% of max HP)
+            if "hp" in player and "max_hp" in player:
+                hp_loss = random.randint(5, 15)
+                hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+                current_hp = player.get("hp", player["max_hp"])
+                update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
             # Handle item rewards (placeholder - would need inventory system integration)
             if "item_reward" in event_result:
@@ -961,6 +1001,8 @@ class Activities(commands.Cog):
                 new_level = ExperienceCalculator.calculate_level(winner_update["exp"])
                 if new_level > duel_result["winner"]["level"]:
                     winner_update["level"] = new_level
+                    # Full HP recovery on level up
+                    winner_update["hp"] = player["max_hp"]
                     # Add level up bonus
                     winner_update["tusd"] += new_level * 50
 
