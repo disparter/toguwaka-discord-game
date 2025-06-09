@@ -2,41 +2,43 @@
 Database provider for Academia Tokugawa.
 
 Este módulo é a ÚNICA interface pública para acesso ao banco de dados.
-Ele delega para DynamoDB se USE_DYNAMO=True, ou para SQLite se USE_DYNAMO=False.
-Não há fallback automático. O resto do código deve importar APENAS deste provider.
+Ele usa exclusivamente DynamoDB para todas as operações.
 """
 
 import os
 import logging
 from typing import Any, Dict, List, Optional, Union
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import boto3
 from botocore.exceptions import ClientError
 
+from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CLUBS_TABLE
+
 logger = logging.getLogger('tokugawa_bot')
 
 # Configuração do DynamoDB
-DYNAMODB = boto3.resource('dynamodb')
-PLAYERS_TABLE = DYNAMODB.Table('players')
-INVENTORY_TABLE = DYNAMODB.Table('inventory')
-CLUBS_TABLE = DYNAMODB.Table('clubs')
+dynamodb = boto3.resource('dynamodb')
+PLAYERS_TABLE = dynamodb.Table(DYNAMODB_PLAYERS_TABLE)
+INVENTORY_TABLE = dynamodb.Table(DYNAMODB_INVENTORY_TABLE)
+CLUBS_TABLE = dynamodb.Table(DYNAMODB_CLUBS_TABLE)
 
 # --- Player operations ---
 async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
-    """Get player data from DynamoDB."""
+    """Get player data from database."""
     try:
-        response = PLAYERS_TABLE.get_item(Key={'user_id': user_id})
+        response = PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
         return response.get('Item')
     except Exception as e:
         logger.error(f"Error getting player {user_id}: {str(e)}")
         return None
 
 async def create_player(user_id: str, name: str, **kwargs) -> bool:
-    """Create a new player in DynamoDB."""
+    """Create a new player in database."""
     try:
         player_data = {
-            'user_id': user_id,
+            'PK': f'PLAYER#{user_id}',
+            'SK': 'PROFILE',
             'name': name,
             'level': 1,
             'exp': 0,
@@ -61,21 +63,31 @@ async def create_player(user_id: str, name: str, **kwargs) -> bool:
         return False
 
 async def update_player(user_id: str, **kwargs) -> bool:
-    """Update player data in DynamoDB."""
+    """Update player data in database."""
     try:
+        # Get current player data
+        current_player = await get_player(user_id)
+        if not current_player:
+            return False
+
+        # Update fields
         update_expr = "SET "
         expr_attr_values = {}
         expr_attr_names = {}
-        
+
         for key, value in kwargs.items():
-            update_expr += f"#{key} = :{key}, "
-            expr_attr_values[f":{key}"] = value
-            expr_attr_names[f"#{key}"] = key
-        
-        update_expr = update_expr.rstrip(", ")
-        
+            if key in current_player or key in ['level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma', 'power_stat', 'reputation', 'hp', 'max_hp', 'strength_level']:
+                update_expr += f"#{key} = :{key}, "
+                expr_attr_values[f":{key}"] = value
+                expr_attr_names[f"#{key}"] = key
+
+        # Always update last_active
+        update_expr += "#last_active = :last_active"
+        expr_attr_values[":last_active"] = datetime.now().isoformat()
+        expr_attr_names["#last_active"] = "last_active"
+
         PLAYERS_TABLE.update_item(
-            Key={'user_id': user_id},
+            Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
             UpdateExpression=update_expr,
             ExpressionAttributeValues=expr_attr_values,
             ExpressionAttributeNames=expr_attr_names
@@ -96,18 +108,24 @@ async def get_all_players() -> List[Dict[str, Any]]:
 
 # --- Club operations ---
 async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
-    """Get club data from DynamoDB."""
+    """Get club data from database."""
     try:
-        response = CLUBS_TABLE.get_item(Key={'club_id': club_id})
+        response = CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
         return response.get('Item')
     except Exception as e:
         logger.error(f"Error getting club {club_id}: {str(e)}")
         return None
 
 async def get_all_clubs() -> List[Dict[str, Any]]:
-    """Get all clubs from DynamoDB."""
+    """Get all clubs from database."""
     try:
-        response = CLUBS_TABLE.scan()
+        response = CLUBS_TABLE.scan(
+            FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+            ExpressionAttributeValues={
+                ':pk': 'CLUB#',
+                ':sk': 'INFO'
+            }
+        )
         return response.get('Items', [])
     except Exception as e:
         logger.error(f"Error getting all clubs: {str(e)}")
@@ -130,14 +148,70 @@ async def get_active_events(*args, **kwargs) -> List[Dict[str, Any]]:
     return []
 
 # --- Cooldown operations ---
-async def store_cooldown(*args, **kwargs) -> bool:
-    return True
+async def store_cooldown(user_id: str, command: str, expiry_time: datetime) -> bool:
+    """Store command cooldown in database."""
+    try:
+        PLAYERS_TABLE.update_item(
+            Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
+            UpdateExpression='SET cooldowns.#command = :expiry',
+            ExpressionAttributeValues={':expiry': expiry_time.isoformat()},
+            ExpressionAttributeNames={'#command': command}
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Error storing cooldown for command {command} for player {user_id}: {str(e)}")
+        return False
+
+async def get_cooldown(user_id: str, command: str) -> Optional[datetime]:
+    """Get command cooldown from database."""
+    try:
+        response = PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
+        player = response.get('Item')
+        if player and 'cooldowns' in player and command in player['cooldowns']:
+            return datetime.fromisoformat(player['cooldowns'][command])
+        return None
+    except Exception as e:
+        logger.error(f"Error getting cooldown for command {command} for player {user_id}: {str(e)}")
+        return None
 
 async def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
     return []
 
-async def clear_expired_cooldowns(*args, **kwargs) -> bool:
-    return True
+async def clear_expired_cooldowns() -> int:
+    """Clear expired cooldowns from database."""
+    try:
+        # Scan all players
+        response = PLAYERS_TABLE.scan()
+        cleared = 0
+        now = datetime.now()
+
+        for player in response.get('Items', []):
+            if 'cooldowns' not in player:
+                continue
+
+            # Check each cooldown
+            expired_commands = []
+            for command, expiry_str in player['cooldowns'].items():
+                expiry = datetime.fromisoformat(expiry_str)
+                if expiry < now:
+                    expired_commands.append(command)
+                    cleared += 1
+
+            # Remove expired cooldowns
+            if expired_commands:
+                update_expr = "REMOVE " + ", ".join([f"cooldowns.#{cmd}" for cmd in expired_commands])
+                expr_attr_names = {f"#{cmd}": cmd for cmd in expired_commands}
+
+                PLAYERS_TABLE.update_item(
+                    Key={'PK': player['PK'], 'SK': player['SK']},
+                    UpdateExpression=update_expr,
+                    ExpressionAttributeNames=expr_attr_names
+                )
+
+        return cleared
+    except Exception as e:
+        logger.error(f"Error clearing expired cooldowns: {str(e)}")
+        return 0
 
 # --- System flag operations ---
 async def get_system_flag(*args, **kwargs) -> Optional[Any]:
@@ -174,8 +248,27 @@ async def record_quiz_answer(*args, **kwargs) -> bool:
     return True
 
 # --- Init ---
-async def init_db(*args, **kwargs) -> bool:
-    return True
+async def init_db() -> bool:
+    """Initialize the database."""
+    try:
+        from src.utils.persistence.dynamodb import init_db as dynamo_init_db
+        return dynamo_init_db()
+    except Exception as e:
+        logger.error(f"Error initializing DynamoDB: {str(e)}")
+        return False
+
+def ensure_dynamo_available() -> bool:
+    """Check if DynamoDB is available."""
+    try:
+        # Try to describe tables
+        dynamodb_client = boto3.client('dynamodb')
+        dynamodb_client.describe_table(TableName=DYNAMODB_PLAYERS_TABLE)
+        dynamodb_client.describe_table(TableName=DYNAMODB_INVENTORY_TABLE)
+        dynamodb_client.describe_table(TableName=DYNAMODB_CLUBS_TABLE)
+        return True
+    except Exception as e:
+        logger.error(f"DynamoDB is not available: {str(e)}")
+        return False
 
 # --- Club NPCs ---
 async def get_relevant_npcs(club_id: str) -> List[Dict[str, Any]]:
@@ -227,46 +320,54 @@ async def get_relevant_npcs(club_id: str) -> List[Dict[str, Any]]:
 
 # --- Inventory operations ---
 async def get_player_inventory(user_id: str) -> Dict[str, Any]:
-    """Get player's inventory from DynamoDB."""
-    try:
-        response = INVENTORY_TABLE.query(
-            KeyConditionExpression='user_id = :uid',
-            ExpressionAttributeValues={':uid': user_id}
-        )
-        items = response.get('Items', [])
-        return {item['item_id']: json.loads(item['item_data']) for item in items}
-    except Exception as e:
-        logger.error(f"Error getting inventory for player {user_id}: {str(e)}")
-        return {}
+    """Get player inventory from database."""
+    if USE_DYNAMO:
+        try:
+            response = INVENTORY_TABLE.query(
+                KeyConditionExpression='user_id = :uid',
+                ExpressionAttributeValues={':uid': user_id}
+            )
+            return {item['item_id']: json.loads(item['item_data']) for item in response.get('Items', [])}
+        except Exception as e:
+            logger.error(f"Error getting inventory for player {user_id}: {str(e)}")
+            return {}
+    else:
+        return _sqlite_get_player_inventory(user_id)
 
 async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
-    """Add item to player's inventory in DynamoDB."""
-    try:
-        INVENTORY_TABLE.put_item(Item={
-            'user_id': user_id,
-            'item_id': item_id,
-            'item_data': json.dumps(item_data),
-            'created_at': datetime.now().isoformat(),
-            'last_updated': datetime.now().isoformat()
-        })
-        return True
-    except Exception as e:
-        logger.error(f"Error adding item to inventory for player {user_id}: {str(e)}")
-        return False
+    """Add item to player inventory."""
+    if USE_DYNAMO:
+        try:
+            INVENTORY_TABLE.put_item(Item={
+                'user_id': user_id,
+                'item_id': item_id,
+                'item_data': json.dumps(item_data),
+                'created_at': datetime.now().isoformat(),
+                'last_updated': datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            logger.error(f"Error adding item {item_id} to inventory for player {user_id}: {str(e)}")
+            return False
+    else:
+        return _sqlite_add_item_to_inventory(user_id, item_id, item_data)
 
 async def remove_item_from_inventory(user_id: str, item_id: str) -> bool:
-    """Remove item from player's inventory in DynamoDB."""
-    try:
-        INVENTORY_TABLE.delete_item(
-            Key={
-                'user_id': user_id,
-                'item_id': item_id
-            }
-        )
-        return True
-    except Exception as e:
-        logger.error(f"Error removing item from inventory for player {user_id}: {str(e)}")
-        return False
+    """Remove item from player inventory."""
+    if USE_DYNAMO:
+        try:
+            INVENTORY_TABLE.delete_item(
+                Key={
+                    'user_id': user_id,
+                    'item_id': item_id
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error removing item {item_id} from inventory for player {user_id}: {str(e)}")
+            return False
+    else:
+        return _sqlite_remove_item_from_inventory(user_id, item_id)
 
 # --- Outros helpers ---
 async def get_top_players(*args, **kwargs) -> list:

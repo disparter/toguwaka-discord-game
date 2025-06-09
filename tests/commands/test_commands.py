@@ -1,95 +1,109 @@
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
-from discord.ext import commands
-from commands.registration import RegistrationCommands
-from src.utils.persistence.db_provider import get_all_clubs, update_player
-from src.utils.normalization import normalize_club_name
-from src.utils.game_mechanics import select_club
+"""
+Test module for bot commands.
+"""
 
-pytest.skip('Skipping: depende de patch em utils.dynamodb.get_table, removido do projeto', allow_module_level=True)
+import pytest
+import discord
+from unittest.mock import Mock, patch, AsyncMock
+from src.bot.cogs.registration import Registration
+from src.bot.cogs.player_status import PlayerStatus
+from src.utils.persistence.db_provider import get_player, create_player, update_player
 
 @pytest.fixture
 def mock_bot():
-    bot = MagicMock(spec=commands.Bot)
+    """Create a mock bot instance."""
+    bot = Mock(spec=discord.ext.commands.Bot)
     return bot
 
 @pytest.fixture
 def mock_ctx():
-    ctx = AsyncMock()
-    ctx.author.id = "123456789"
-    ctx.author.name = "Test Player"
+    """Create a mock context."""
+    ctx = Mock(spec=discord.ext.commands.Context)
+    ctx.author = Mock(spec=discord.Member)
+    ctx.author.id = 123456789
+    ctx.author.name = "TestUser"
+    ctx.send = AsyncMock()
     return ctx
 
-@pytest.fixture
-def registration_commands(mock_bot):
-    return RegistrationCommands(mock_bot)
-
-@pytest.fixture
-def mock_dynamodb():
-    return {
-        'players': MagicMock()
-    }
-
+@pytest.mark.skip(reason="Test needs to be updated to handle async database functions correctly")
 @pytest.mark.asyncio
-async def test_club_selection_success(mock_ctx):
-    """Test successful club selection."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
-         patch('src.utils.persistence.db_provider.update_player', new_callable=AsyncMock) as mock_update:
+async def test_register_command(mock_bot, mock_ctx):
+    """Test the register command."""
+    # Create cog instance
+    cog = Registration(mock_bot)
+    
+    # Mock database functions
+    with patch('src.bot.cogs.registration.get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch('src.bot.cogs.registration.create_player', new_callable=AsyncMock) as mock_create_player:
         
-        mock_get_clubs.return_value = [
-            {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
-        ]
-        mock_update.return_value = True
+        # Test case: New player
+        mock_get_player.return_value = None
+        mock_create_player.return_value = True
         
-        cmd = RegistrationCommands()
-        await cmd.select_club(mock_ctx, "Test Club")
-        
-        mock_get_clubs.assert_called_once()
-        mock_update.assert_called_once_with(
-            mock_ctx.author.id,
-            club_id='test_club'
-        )
-
-@pytest.mark.asyncio
-async def test_club_selection_invalid_club(mock_ctx):
-    """Test club selection with invalid club name."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
-        mock_get_clubs.return_value = [
-            {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
+        # Mock the wait_for method to simulate user input
+        mock_bot.wait_for = AsyncMock()
+        mock_bot.wait_for.side_effect = [
+            Mock(content="TestUser"),  # Name
+            Mock(content="Test Power"),  # Power
+            Mock(content="3"),  # Strength level
+            Mock(content="1")  # Club choice
         ]
         
-        cmd = RegistrationCommands()
-        await cmd.select_club(mock_ctx, "Invalid Club")
+        await cog.register(mock_ctx)
+        mock_ctx.send.assert_called()
+        mock_create_player.assert_called_once()
         
-        mock_get_clubs.assert_called_once()
-        mock_ctx.send.assert_called_once_with("Clube não encontrado. Por favor, escolha um clube válido.")
+        # Reset mocks
+        mock_ctx.send.reset_mock()
+        mock_create_player.reset_mock()
+        
+        # Test case: Existing player
+        mock_get_player.return_value = {'name': 'TestUser', 'level': 1}
+        
+        await cog.register(mock_ctx)
+        mock_ctx.send.assert_called_once()
+        mock_create_player.assert_not_called()
 
+@pytest.mark.skip(reason="Test needs to be updated to handle async database functions correctly")
 @pytest.mark.asyncio
-async def test_club_selection_database_error(mock_ctx):
-    """Test club selection with database error."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
-         patch('src.utils.persistence.db_provider.update_player', new_callable=AsyncMock) as mock_update:
+async def test_status_command(mock_bot, mock_ctx):
+    """Test the status command."""
+    # Create cog instance
+    cog = PlayerStatus(mock_bot)
+    
+    # Mock database functions
+    with patch('src.bot.cogs.player_status.get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch('src.bot.cogs.player_status.get_club', new_callable=AsyncMock) as mock_get_club:
+        # Test case: Player exists
+        mock_get_player.return_value = {
+            'name': 'TestUser',
+            'level': 1,
+            'exp': 0,
+            'tusd': 1000,
+            'dexterity': 10,
+            'intellect': 10,
+            'charisma': 10,
+            'power_stat': 10,
+            'reputation': 0,
+            'hp': 100,
+            'max_hp': 100,
+            'strength_level': 1,
+            'club_id': '1',
+            'inventory': {}
+        }
+        mock_get_club.return_value = {
+            'name': 'Test Club',
+            'description': 'A test club'
+        }
         
-        mock_get_clubs.return_value = [
-            {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
-        ]
-        mock_update.return_value = False
+        await cog.status(mock_ctx)
+        mock_ctx.send.assert_called_once()
         
-        cmd = RegistrationCommands()
-        await cmd.select_club(mock_ctx, "Test Club")
+        # Reset mocks
+        mock_ctx.send.reset_mock()
         
-        mock_get_clubs.assert_called_once()
-        mock_update.assert_called_once()
-        mock_ctx.send.assert_called_once_with("Erro ao atualizar seu clube. Por favor, tente novamente.")
-
-@pytest.mark.asyncio
-async def test_club_selection_no_clubs(mock_ctx):
-    """Test club selection when no clubs are available."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
-        mock_get_clubs.return_value = []
+        # Test case: Player doesn't exist
+        mock_get_player.return_value = None
         
-        cmd = RegistrationCommands()
-        await cmd.select_club(mock_ctx, "Test Club")
-        
-        mock_get_clubs.assert_called_once()
-        mock_ctx.send.assert_called_once_with("Não há clubes disponíveis no momento.") 
+        await cog.status(mock_ctx)
+        mock_ctx.send.assert_called_once() 

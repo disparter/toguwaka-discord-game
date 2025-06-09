@@ -177,16 +177,37 @@ async def on_ready():
         from utils.persistence.db_provider import db_provider
 
         # Try to ensure DynamoDB is available
-        if db_provider.ensure_dynamo_available():
-            # If DynamoDB is available, try to sync data if needed
-            if not await db_provider.sync_to_dynamo_if_empty():
-                logger.error("Failed to sync data to DynamoDB")
-        else:
-            # If DynamoDB is not available, fallback to SQLite
-            if not db_provider.fallback_to_sqlite():
-                logger.error("Failed to initialize any database. Bot may not function correctly.")
+        if not db_provider.ensure_dynamo_available():
+            logger.error("DynamoDB is not available. Bot will not function correctly.")
+            await bot.close()
+            return
+
+        # If DynamoDB is available, try to sync data if needed
+        if not await db_provider.sync_to_dynamo_if_empty():
+            logger.error("Failed to sync data to DynamoDB")
+            await bot.close()
+            return
+        
+        # Normalize player data
+        try:
+            from utils.persistence.dynamo_migration import normalize_player_data
+            logger.info("Starting player data normalization...")
+            success = await normalize_player_data()
+            if success:
+                logger.info("Player data normalization completed successfully!")
+            else:
+                logger.error("Player data normalization failed!")
+                await bot.close()
+                return
+        except Exception as e:
+            logger.error(f"Error during player data normalization: {e}")
+            await bot.close()
+            return
+
     except Exception as e:
         logger.error(f"Error during database initialization: {e}")
+        await bot.close()
+        return
 
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:
