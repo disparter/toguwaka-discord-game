@@ -13,6 +13,9 @@ from enum import Enum, auto
 
 logger = logging.getLogger('tokugawa_bot')
 
+# Determine which database implementation to use
+USE_DYNAMODB = os.environ.get('USE_DYNAMODB', 'false').lower() == 'true'
+
 class DatabaseType(Enum):
     DYNAMODB = auto()
     SQLITE = auto()
@@ -31,16 +34,17 @@ class DatabaseProvider:
 
     def _initialize(self):
         """Initialize the database provider and check availability of both databases."""
-        try:
-            # Try to import DynamoDB module
-            from utils import dynamodb as dynamo_db
-            self._dynamo_available = dynamo_db.init_db()
-            if self._dynamo_available:
-                logger.info("DynamoDB is available")
-                self._current_db_type = DatabaseType.DYNAMODB
-        except Exception as e:
-            logger.warning(f"DynamoDB initialization failed: {e}")
-            self._dynamo_available = False
+        if USE_DYNAMODB:
+            try:
+                # Try to import DynamoDB module
+                from utils import dynamodb as dynamo_db
+                self._dynamo_available = dynamo_db.init_db()
+                if self._dynamo_available:
+                    logger.info("DynamoDB is available")
+                    self._current_db_type = DatabaseType.DYNAMODB
+            except Exception as e:
+                logger.warning(f"DynamoDB initialization failed: {e}")
+                self._dynamo_available = False
 
         try:
             # Try to import SQLite module
