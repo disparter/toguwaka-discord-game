@@ -11,6 +11,17 @@ def distribute_data(table_name: str, items: List[Dict[str, Any]]) -> None:
         'errors': 0
     }
     
+    # First, create a mapping of club IDs to their names from PROFILE items
+    club_names = {}
+    for item in items:
+        if item.get('PK', '').endswith('#PROFILE'):
+            club_id = item['PK'].split('#')[1]
+            nome_clube = item.get('NomeClube')
+            if nome_clube and nome_clube.strip():
+                club_names[club_id] = nome_clube.strip()
+    
+    logger.info(f"Found {len(club_names)} club names from PROFILE items")
+    
     for item in items:
         try:
             # Extract the type from the primary key
@@ -33,17 +44,27 @@ def distribute_data(table_name: str, items: List[Dict[str, Any]]) -> None:
             
             # Validate required fields based on type
             if item_type == 'CLUBE':
-                nome_clube = item.get('NomeClube')
-                if not nome_clube or nome_clube.strip() == '':
-                    logger.warning(f"Skipping club with empty name. PK: {pk}, Full item: {item}")
-                    stats['skipped'] += 1
-                    continue
+                # For MEMBROS items, get the club name from our mapping
+                if pk.endswith('#MEMBROS'):
+                    club_id = pk.split('#')[1]
+                    nome_clube = club_names.get(club_id)
+                    if not nome_clube:
+                        logger.warning(f"Skipping MEMBROS item - no club name found for club ID {club_id}")
+                        stats['skipped'] += 1
+                        continue
+                else:
+                    nome_clube = item.get('NomeClube')
+                    if not nome_clube or nome_clube.strip() == '':
+                        logger.warning(f"Skipping club with empty name. PK: {pk}, Full item: {item}")
+                        stats['skipped'] += 1
+                        continue
+                    nome_clube = nome_clube.strip()
                     
                 target_table = 'Clubes'
                 new_item = {
                     'PK': pk,
                     'SK': item.get('SK', ''),
-                    'NomeClube': nome_clube.strip(),
+                    'NomeClube': nome_clube,
                     'Descricao': item.get('Descricao', ''),
                     'CriadoEm': item.get('CriadoEm', ''),
                     'AtualizadoEm': item.get('AtualizadoEm', '')
