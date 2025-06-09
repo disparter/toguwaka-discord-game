@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from utils.database import get_player, get_club, get_all_clubs
+from utils.database import get_player, get_club, get_all_clubs, update_player_club
 from utils.embeds import create_basic_embed, create_club_embed
 from story_mode.club_system import ClubSystem
 
@@ -145,6 +145,43 @@ class Clubs(commands.Cog):
                 inline=False
             )
 
+        await ctx.send(embed=embed)
+
+    @commands.command(name="ingressar")
+    async def join_club(self, ctx, *, club_name: str):
+        """Ingressa em um clube da academia."""
+        # Get player data
+        player = get_player(ctx.author.id)
+        if not player:
+            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
+            return
+
+        # Check if player is already in a club
+        if player.get('club'):
+            await ctx.send(f"Você já é membro do clube {player['club']}!")
+            return
+
+        # Validate club name
+        club_name = club_name.strip()
+        if club_name not in self.club_system.CLUBS.values():
+            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
+            return
+
+        # Update player's club
+        update_player_club(ctx.author.id, club_name)
+        
+        # Create embed
+        embed = create_basic_embed(
+            title="Ingresso no Clube",
+            description=f"Bem-vindo ao clube {club_name}!",
+            color=0x00FF00
+        )
+        embed.add_field(
+            name="Mensagem",
+            value=f"Você agora é um membro oficial do clube {club_name}!",
+            inline=False
+        )
+        
         await ctx.send(embed=embed)
 
 async def setup(bot):
