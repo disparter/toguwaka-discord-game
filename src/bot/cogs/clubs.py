@@ -13,6 +13,7 @@ class Clubs(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.club_system = ClubSystem()
 
     # Group for club commands
     club_group = app_commands.Group(name="clube", description="Comandos de clubes da Academia Tokugawa")
@@ -131,19 +132,19 @@ class Clubs(commands.Cog):
     @commands.command(name="clubes")
     async def all_clubs(self, ctx):
         """Exibe a lista de todos os clubes disponíveis."""
-        club_system = ClubSystem()
-        clubs = club_system.CLUBS.values()
         embed = create_basic_embed(
             title="Clubes da Academia Tokugawa",
             description="Aqui estão todos os clubes disponíveis na academia:",
             color=0x1E90FF
         )
-        for name in clubs:
+
+        for club_name in self.club_system.CLUBS.values():
             embed.add_field(
-                name=name,
-                value=f"O {name} é um dos clubes mais prestigiados da Academia Tokugawa.",
+                name=club_name,
+                value=f"O {club_name} é um dos clubes mais prestigiados da Academia Tokugawa.",
                 inline=False
             )
+
         await ctx.send(embed=embed)
 
 async def setup(bot):
