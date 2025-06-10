@@ -583,11 +583,17 @@ def get_player(user_id: str) -> Optional[Dict[str, Any]]:
         # If we're already in an event loop, use run_coroutine_threadsafe
         future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
         try:
-            # Add a timeout of 15 seconds to prevent deadlock
-            return future.result(timeout=15)
+            # Increased timeout to 30 seconds to prevent timeout errors
+            return future.result(timeout=30)
         except concurrent.futures.TimeoutError:
             logger.error(f"Timeout waiting for get_player({user_id})")
-            return None
+            # Try one more time with a longer timeout
+            try:
+                future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
+                return future.result(timeout=60)
+            except concurrent.futures.TimeoutError:
+                logger.error(f"Second timeout waiting for get_player({user_id})")
+                return None
     else:
         # Otherwise, use run_until_complete
         return loop.run_until_complete(db_provider.get_player(user_id))
@@ -776,6 +782,52 @@ def init_db() -> bool:
     else:
         return loop.run_until_complete(db_provider.init_db())
 
+async def get_top_players_async(limit: int = 10) -> list:
+    """Get top players by level (async version)."""
+    return await db_provider.get_top_players(limit)
+
+def get_top_players(limit: int = 10) -> list:
+    """Get top players by level (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_top_players(limit), loop)
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for get_top_players({limit})")
+            return []
+    else:
+        return loop.run_until_complete(db_provider.get_top_players(limit))
+
+async def get_top_players_by_reputation_async(limit: int = 10) -> list:
+    """Get top players by reputation (async version)."""
+    return await db_provider.get_top_players_by_reputation(limit)
+
+def get_top_players_by_reputation(limit: int = 10) -> list:
+    """Get top players by reputation (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_top_players_by_reputation(limit), loop)
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for get_top_players_by_reputation({limit})")
+            return []
+    else:
+        return loop.run_until_complete(db_provider.get_top_players_by_reputation(limit))
+
 # Export the singleton instance and all wrapper functions
 __all__ = [
     'db_provider',
@@ -798,5 +850,7 @@ __all__ = [
     'clear_expired_cooldowns_async',
     'init_db_async',
     'get_top_players',
-    'get_top_players_by_reputation'
+    'get_top_players_by_reputation',
+    'get_top_players_async',
+    'get_top_players_by_reputation_async'
 ]

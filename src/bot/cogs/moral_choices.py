@@ -659,53 +659,7 @@ class MoralChoices(commands.Cog):
         self.cooldowns[user_id][command] = datetime.now()
 
     # Command alianca moved to story_mode.py to avoid duplicate command registration
-
-    @commands.command(name="rivalidade")
-    async def declare_rivalry(self, ctx, *, club_name: str):
-        """Declara rivalidade com outro clube."""
-        # Get player data
-        player = await db_provider.get_player(ctx.author.id)
-        if not player:
-            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
-            return
-
-        # Check if player is in a club
-        if not player.get('club'):
-            await ctx.send("Você precisa estar em um clube para declarar rivalidades!")
-            return
-
-        # Find target club
-        target_club_id = None
-        for club_id, name in self.club_system.CLUBS.items():
-            if name.lower() == club_name.lower():
-                target_club_id = club_id
-                break
-
-        if not target_club_id:
-            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
-            return
-
-        # Declare rivalry
-        result = self.club_system.declare_rivalry(player, target_club_id)
-        if "error" in result:
-            await ctx.send(result["error"])
-            return
-
-        # Create embed
-        embed = create_basic_embed(
-            title="Rivalidade Declarada!",
-            description=f"Seu clube declarou rivalidade com o clube {club_name}!",
-            color=0xFF0000
-        )
-
-        # Add rivalry information
-        embed.add_field(
-            name="Detalhes da Rivalidade",
-            value=result["message"],
-            inline=False
-        )
-
-        await ctx.send(embed=embed)
+    # Command rivalidade moved to story_mode.py to avoid duplicate command registration
 
 async def setup(bot):
     """Adiciona o cog ao bot."""

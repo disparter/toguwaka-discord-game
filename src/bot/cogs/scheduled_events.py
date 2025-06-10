@@ -366,19 +366,21 @@ class ScheduledEvents(commands.Cog):
             recovered_count = 0
 
             for player in players:
-                user_id = player['user_id']
-                current_hp = player.get('hp', 100)
-                max_hp = player.get('max_hp', 100)
+                # Extract user_id from PK field (format: 'PLAYER#{user_id}')
+                if 'PK' in player and player['PK'].startswith('PLAYER#'):
+                    user_id = player['PK'].split('#')[1]
+                    current_hp = player.get('hp', 100)
+                    max_hp = player.get('max_hp', 100)
 
-                # Only update if HP is less than max_hp
-                if current_hp < max_hp:
-                    # Recover 10% of max_hp, rounded up
-                    recovery_amount = max(1, int(max_hp * 0.1))
-                    new_hp = min(max_hp, current_hp + recovery_amount)
+                    # Only update if HP is less than max_hp
+                    if current_hp < max_hp:
+                        # Recover 10% of max_hp, rounded up
+                        recovery_amount = max(1, int(max_hp * 0.1))
+                        new_hp = min(max_hp, current_hp + recovery_amount)
 
-                    # Update player HP
-                    await db_provider.update_player(user_id, hp=new_hp)
-                    recovered_count += 1
+                        # Update player HP
+                        await db_provider.update_player(user_id, hp=new_hp)
+                        recovered_count += 1
 
             if recovered_count > 0:
                 logger.info(f"Recovered HP for {recovered_count} players")
@@ -3019,8 +3021,8 @@ class ScheduledEvents(commands.Cog):
 
             # Calculate grade based on difficulty and correctness
             max_grade = 10.0
-            question_difficulty = question['difficulty']
-            subject_difficulty = quiz_event['data']['difficulty']
+            question_difficulty = float(question['difficulty'])  # Convert to float
+            subject_difficulty = float(quiz_event['data']['difficulty'])  # Convert to float
 
             # Base grade for participation
             base_grade = 5.0
@@ -3030,7 +3032,7 @@ class ScheduledEvents(commands.Cog):
             correct_bonus = (max_grade - base_grade) * (difficulty_multiplier / 3)
 
             # Get player's intellect value and calculate intellect bonus
-            player_intellect = player.get('intellect', 5)  # Default to 5 if not found
+            player_intellect = float(player.get('intellect', 5))  # Default to 5 if not found, convert to float
             intellect_bonus = (player_intellect - 5) * 0.2  # Each point above 5 gives 0.2 bonus
 
             final_grade = base_grade
@@ -3156,12 +3158,15 @@ class ScheduledEvents(commands.Cog):
             except Exception as e2:
                 logger.error(f"Error sending quiz result: {e2}")
 
-            logger.info(f"Player {player['name']} completed quiz with grade {final_grade}")
+            # Use player.get('name', 'Unknown') to avoid KeyError if name is missing
+            player_name = player.get('name', 'Unknown')
+            logger.info(f"Player {player_name} completed quiz with grade {final_grade}")
 
         except Exception as e:
             logger.error(f"Error evaluating quiz answer: {e}")
             try:
-                await interaction.response.send_message("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
+                # Use followup.send instead of response.send_message to avoid "already responded" error
+                await interaction.followup.send("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
             except discord.errors.NotFound:
                 logger.warning(f"Interaction expired for user {interaction.user.id} in evaluate_quiz_answer error handler")
             except Exception as e2:
@@ -4251,7 +4256,9 @@ class ScheduledEvents(commands.Cog):
                     view=view,
                     ephemeral=True
                 )
-                logger.info(f"Player {player['name']} started quiz for subject {subject}")
+                # Use player.get('name', 'Unknown') to avoid KeyError if name is missing
+                player_name = player.get('name', 'Unknown')
+                logger.info(f"Player {player_name} started quiz for subject {subject}")
             except discord.errors.NotFound:
                 logger.warning(f"Interaction expired for user {interaction.user.id} when sending quiz question")
                 return

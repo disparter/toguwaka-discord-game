@@ -47,6 +47,8 @@ local/
 data/logs/
 scripts/attach_dynamo_permissions.sh
 /scripts/attach_dynamodb_permissions.sh
+functional-tests/volume/
+resultados.txt
 
 # OS
 .DS_Store

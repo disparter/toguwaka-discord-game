@@ -1201,7 +1201,7 @@ class Economy(commands.Cog):
                 inline=False
             )
 
-        await ctx.send(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed)
 
     @commands.command(name="comprar")
     async def buy(self, ctx, item_id: int = None):

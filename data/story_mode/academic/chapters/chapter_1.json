@@ -1,6 +1,7 @@
 {
     "id": "chapter_1",
-    "name": "The Beginning",
+    "type": "story",
+    "title": "The Beginning",
     "description": "Your first day at Academia Tokugawa",
     "requirements": {
         "level": 1
@@ -37,4 +38,4 @@
             }
         }
     ]
-} 
+}
