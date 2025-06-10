@@ -456,7 +456,21 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
     leaderboard_text = ""
     for i, player in enumerate(players, 1):
         medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
-        club_name = player.get('club_name', 'Sem clube')
+
+        # Get club name based on club_id
+        club_name = 'Sem clube'
+        if player.get('club_id'):
+            # Try to get club name from player data first
+            if player.get('club_name'):
+                club_name = player.get('club_name')
+            # Otherwise fetch it from the database
+            else:
+                # Import here to avoid circular imports
+                from utils.persistence.db_provider import get_club
+                club = get_club(player.get('club_id'))
+                if club and club.get('name'):
+                    club_name = club.get('name')
+
         leaderboard_text += f"{medal} **{player.get('name', 'Desconhecido')}** (Nível {player.get('level', 1)}) - {club_name}\n"
 
     embed.description = leaderboard_text

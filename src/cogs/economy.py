@@ -1754,7 +1754,7 @@ class Economy(commands.Cog):
     async def use_item(self, ctx, item_id: int = None):
         """Usar um item do inventário."""
         # Check if player exists
-        player = await db_provider.get_player_async(ctx.author.id)
+        player = await get_player_async(ctx.author.id)
         if not player:
             await ctx.send(
                 f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")

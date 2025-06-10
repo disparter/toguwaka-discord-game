@@ -511,14 +511,14 @@ class DBProvider:
     async def add_item_to_inventory(self, user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
         """Add an item to a player's inventory."""
         try:
-            # Ensure JogadorID is included in the item data
+            # Ensure JogadorID is included in the item data and formatted as a string
             item_data_with_id = item_data.copy()
-            item_data_with_id['JogadorID'] = user_id
+            item_data_with_id['JogadorID'] = f'PLAYER#{user_id}'
 
             self.INVENTORY_TABLE.put_item(Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
-                'JogadorID': user_id,  # Add JogadorID at the top level as well
+                'JogadorID': f'PLAYER#{user_id}',  # Add JogadorID at the top level as well, formatted as a string
                 'item_data': item_data_with_id,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()

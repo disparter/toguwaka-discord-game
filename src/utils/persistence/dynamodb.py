@@ -63,11 +63,11 @@ def get_dynamodb_client():
         # Create a session with the default credential provider chain
         session = boto3.Session(region_name=AWS_REGION)
         logger.info(f"Created AWS session for region {AWS_REGION}")
-        
+
         # Create DynamoDB client from the session
         dynamodb = session.resource('dynamodb')
         logger.info("Successfully created DynamoDB client")
-        
+
         return dynamodb
     except (NoCredentialsError, EndpointConnectionError) as e:
         error_msg = f"Failed to create DynamoDB client: {str(e)}"
@@ -84,7 +84,7 @@ def get_table(table_name):
         logger.info(f"Attempting to get table: {table_name}")
         dynamodb = get_dynamodb_client()
         table = dynamodb.Table(table_name)
-        
+
         # Test table access by getting table description
         try:
             table.meta.client.describe_table(TableName=table_name)
@@ -92,7 +92,7 @@ def get_table(table_name):
         except Exception as e:
             logger.error(f"Error accessing table {table_name}: {e}")
             raise
-            
+
         return table
     except Exception as e:
         logger.error(f"Error getting table {table_name}: {e}")
@@ -102,10 +102,10 @@ def init_db() -> bool:
     """Initialize DynamoDB tables."""
     try:
         dynamodb = get_dynamodb_client()
-        
+
         # Check if tables exist
         tables = dynamodb.meta.client.list_tables()['TableNames']
-        
+
         # If tables don't exist, create them
         if 'Jogadores' not in tables:
             logger.info("Creating Jogadores table...")
@@ -124,7 +124,7 @@ def init_db() -> bool:
                     'WriteCapacityUnits': 5
                 }
             )
-        
+
         if 'Clubes' not in tables:
             logger.info("Creating Clubes table...")
             dynamodb.create_table(
@@ -142,7 +142,7 @@ def init_db() -> bool:
                     'WriteCapacityUnits': 5
                 }
             )
-        
+
         if 'Inventario' not in tables:
             logger.info("Creating Inventario table...")
             dynamodb.create_table(
@@ -160,10 +160,10 @@ def init_db() -> bool:
                     'WriteCapacityUnits': 5
                 }
             )
-        
+
         logger.info("DynamoDB tables initialized successfully")
         return True
-        
+
     except Exception as e:
         logger.error(f"Error initializing DynamoDB tables: {str(e)}")
         return False
@@ -369,7 +369,7 @@ def create_table(dynamodb, table_name):
             )
         else:
             raise DynamoDBOperationError(f"Unknown table name: {table_name}")
-            
+
         return table
     except Exception as e:
         logger.error(f"Error creating table {table_name}: {e}")
@@ -446,13 +446,13 @@ async def get_player_inventory(user_id):
                 ':pk': f'PLAYER#{user_id}'
             }
         )
-        
+
         # Convert items to inventory format
         inventory = {}
         for item in response.get('Items', []):
             item_id = item['SK'].replace('ITEM#', '')
             inventory[item_id] = item['item_data']
-        
+
         return inventory
     except Exception as e:
         logger.error(f"Error getting inventory for player {user_id}: {e}")
@@ -473,13 +473,13 @@ async def add_item_to_inventory(user_id, item_id, item_data):
             return obj
 
         item_data = convert_floats_to_decimal(item_data)
-        
+
         table = get_table(TABLES['inventory'])
         await table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
-                'JogadorID': user_id,  # Add the required primary key
+                'JogadorID': f'PLAYER#{user_id}',  # Add the required primary key as a string with PLAYER# prefix
                 'item_data': item_data
             }
         )
@@ -594,11 +594,11 @@ async def record_quiz_answer(user_id, question_id, is_correct):
 async def put_item(table_name, item):
     """
     Put an item into a DynamoDB table.
-    
+
     Args:
         table_name (str): The name of the table to put the item into
         item (dict): The item to put into the table
-        
+
     Returns:
         dict: The response from DynamoDB
     """
@@ -615,11 +615,11 @@ async def put_item(table_name, item):
 async def get_item(table_name, key):
     """
     Get an item from a DynamoDB table.
-    
+
     Args:
         table_name (str): The name of the table to get the item from
         key (dict): The key of the item to get
-        
+
     Returns:
         dict: The item from DynamoDB, or None if not found
     """
@@ -640,13 +640,13 @@ async def get_item(table_name, key):
 async def query_items(table_name, key_condition_expression, expression_attribute_values=None, filter_expression=None):
     """
     Query items from a DynamoDB table.
-    
+
     Args:
         table_name (str): The name of the table to query
         key_condition_expression (str): The key condition expression for the query
         expression_attribute_values (dict, optional): The expression attribute values
         filter_expression (str, optional): The filter expression for the query
-        
+
     Returns:
         list: The items from DynamoDB matching the query
     """
@@ -655,16 +655,16 @@ async def query_items(table_name, key_condition_expression, expression_attribute
         query_params = {
             'KeyConditionExpression': key_condition_expression
         }
-        
+
         if expression_attribute_values:
             query_params['ExpressionAttributeValues'] = expression_attribute_values
-            
+
         if filter_expression:
             query_params['FilterExpression'] = filter_expression
-            
+
         response = table.query(**query_params)
         items = response.get('Items', [])
-        
+
         logger.info(f"Successfully queried {len(items)} items from table {table_name}")
         return items
     except Exception as e:
@@ -675,28 +675,28 @@ async def query_items(table_name, key_condition_expression, expression_attribute
 async def scan_items(table_name, filter_expression=None, expression_attribute_values=None):
     """
     Scan items from a DynamoDB table.
-    
+
     Args:
         table_name (str): The name of the table to scan
         filter_expression (str, optional): The filter expression for the scan
         expression_attribute_values (dict, optional): The expression attribute values
-        
+
     Returns:
         list: The items from DynamoDB matching the scan criteria
     """
     try:
         table = get_table(table_name)
         scan_params = {}
-        
+
         if filter_expression:
             scan_params['FilterExpression'] = filter_expression
-            
+
         if expression_attribute_values:
             scan_params['ExpressionAttributeValues'] = expression_attribute_values
-            
+
         response = table.scan(**scan_params)
         items = response.get('Items', [])
-        
+
         logger.info(f"Successfully scanned {len(items)} items from table {table_name}")
         return items
     except Exception as e:
@@ -707,14 +707,14 @@ async def scan_items(table_name, filter_expression=None, expression_attribute_va
 async def update_item(table_name, key, update_expression, expression_attribute_values=None, expression_attribute_names=None):
     """
     Update an item in a DynamoDB table.
-    
+
     Args:
         table_name (str): The name of the table to update the item in
         key (dict): The key of the item to update
         update_expression (str): The update expression for the update
         expression_attribute_values (dict, optional): The expression attribute values
         expression_attribute_names (dict, optional): The expression attribute names
-        
+
     Returns:
         dict: The response from DynamoDB
     """
@@ -724,13 +724,13 @@ async def update_item(table_name, key, update_expression, expression_attribute_v
             'Key': key,
             'UpdateExpression': update_expression
         }
-        
+
         if expression_attribute_values:
             update_params['ExpressionAttributeValues'] = expression_attribute_values
-            
+
         if expression_attribute_names:
             update_params['ExpressionAttributeNames'] = expression_attribute_names
-            
+
         response = table.update_item(**update_params)
         logger.info(f"Successfully updated item in table {table_name}")
         return response
@@ -742,11 +742,11 @@ async def update_item(table_name, key, update_expression, expression_attribute_v
 async def delete_item(table_name, key):
     """
     Delete an item from a DynamoDB table.
-    
+
     Args:
         table_name (str): The name of the table to delete the item from
         key (dict): The key of the item to delete
-        
+
     Returns:
         dict: The response from DynamoDB
     """
