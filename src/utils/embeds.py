@@ -1,6 +1,6 @@
 import discord
 from datetime import datetime
-from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
+from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress, calculate_hp_factor
 import json
 from utils.persistence.db_provider import db_provider
 from utils.club_perks import get_club_perk_description
@@ -34,6 +34,15 @@ def create_player_embed(player: Dict[str, Any], club: Optional[Dict[str, Any]] =
     strength_level = player.get('strength_level', 1)
     power = player.get('power', 'no_power')
 
+    # Calculate HP factor and regeneration
+    hp_factor = calculate_hp_factor(hp, max_hp)
+    regeneration = player.get('regeneration', 0)
+    regeneration_text = f"🔄 +{regeneration}/hora" if regeneration > 0 else ""
+
+    # Calculate debuff percentage
+    debuff_percentage = int((1 - hp_factor) * 100) if hp_factor < 1 else 0
+    debuff_text = f"⚠️ -{debuff_percentage}% atributos" if debuff_percentage > 0 else ""
+
     # Get club color if available
     color = 0x1E90FF  # Default color
     if club and isinstance(club, dict) and 'club_id' in club:
@@ -46,11 +55,17 @@ def create_player_embed(player: Dict[str, Any], club: Optional[Dict[str, Any]] =
         color=color
     )
 
-    # Add stats
+    # Add stats with HP factor and regeneration info
+    hp_text = f"**HP:** {hp}/{max_hp} ❤️"
+    if regeneration > 0:
+        hp_text += f" {regeneration_text}"
+    if debuff_percentage > 0:
+        hp_text += f"\n{debuff_text}"
+
     embed.add_field(
         name="Atributos",
         value=(
-            f"**HP:** {hp}/{max_hp} ❤️\n"
+            f"{hp_text}\n"
             f"**Destreza:** {dexterity} 🏃‍♂️\n"
             f"**Intelecto:** {intellect} 🧠\n"
             f"**Carisma:** {charisma} 💬\n"
