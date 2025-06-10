@@ -26,19 +26,20 @@ original_import = builtins.__import__
 def patched_import(name, *args, **kwargs):
     # Lista de módulos que precisam do prefixo src
     src_modules = ['utils', 'cogs', 'story_mode', 'bot']
-    
+
     # Não modifica imports de bibliotecas externas ou imports relativos
     if (name.startswith(('discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore')) or
         name.startswith('.') or
-        name.startswith('src.')):
+        name.startswith('src.') or
+        '.' in name and name.split('.')[0] in ['discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore']):
         return original_import(name, *args, **kwargs)
-    
+
     # Verifica se o módulo está na lista e adiciona o prefixo src
     for module in src_modules:
         if name == module or name.startswith(f"{module}."):
             name = f"src.{name}"
             break
-    
+
     return original_import(name, *args, **kwargs)
 
 builtins.__import__ = patched_import
@@ -56,13 +57,13 @@ def mock_discord():
     with pytest.MonkeyPatch.context() as m:
         # Mock discord.Client
         m.setattr('discord.Client', MagicMock)
-        
+
         # Mock discord.Interaction
         m.setattr('discord.Interaction', MagicMock)
-        
+
         # Mock discord.app_commands
         m.setattr('discord.app_commands', MagicMock)
-        
+
         yield 
 
 @pytest.fixture
@@ -152,14 +153,14 @@ def mock_db():
          patch('utils.persistence.db_provider.get_player_inventory') as mock_get_inventory, \
          patch('utils.persistence.db_provider.add_item_to_inventory') as mock_add_item, \
          patch('utils.persistence.db_provider.remove_item_from_inventory') as mock_remove_item:
-        
+
         mock_get_player.return_value = None
         mock_update_player.return_value = True
         mock_get_club.return_value = None
         mock_get_inventory.return_value = {}
         mock_add_item.return_value = True
         mock_remove_item.return_value = True
-        
+
         yield {
             'get_player': mock_get_player,
             'update_player': mock_update_player,
