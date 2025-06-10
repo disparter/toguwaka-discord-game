@@ -412,7 +412,23 @@ def create_inventory_embed(player):
     if inventory:
         items_text = []
         for item_id, item in inventory.items():
-            items_text.append(f"🔹 **{item['name']}** - {item['description']}")
+            item_text = f"🔹 **{item['name']}** - {item['description']}"
+            
+            # Adiciona informações específicas para itens de suporte
+            if item.get('category') == 'support':
+                effects = item.get('effects', {})
+                if 'heal_amount' in effects:
+                    item_text += f"\n💚 Cura: {int(effects['heal_amount'] * 100)}% do HP"
+                if 'damage_reduction' in effects:
+                    item_text += f"\n🛡️ Redução de Dano: {int(effects['damage_reduction'] * 100)}%"
+                if 'regen_amount' in effects:
+                    item_text += f"\n🔄 Regeneração: {int(effects['regen_amount'] * 100)}% por minuto"
+                if 'turf_wars_usable' in effects:
+                    item_text += "\n⚔️ Usável em Turf Wars"
+                if 'daily_usage_limit' in effects:
+                    item_text += f"\n📅 Limite Diário: {effects['daily_usage_limit']} usos"
+
+            items_text.append(item_text)
 
         embed.add_field(
             name="Itens",
@@ -430,7 +446,23 @@ def create_inventory_embed(player):
     if player.get('techniques'):
         techniques_text = []
         for tech_id, tech in player['techniques'].items():
-            techniques_text.append(f"⚡ **{tech['name']}** - {tech['description']}")
+            tech_text = f"⚡ **{tech['name']}** - {tech['description']}"
+            
+            # Adiciona informações específicas para técnicas de suporte
+            if tech.get('type') == 'support':
+                effects = tech.get('effects', {})
+                if 'heal_amount' in effects:
+                    tech_text += f"\n💚 Cura: {int(effects['heal_amount'] * 100)}% do HP"
+                if 'damage_reduction' in effects:
+                    tech_text += f"\n🛡️ Redução de Dano: {int(effects['damage_reduction'] * 100)}%"
+                if 'regen_amount' in effects:
+                    tech_text += f"\n🔄 Regeneração: {int(effects['regen_amount'] * 100)}% por minuto"
+                if 'energy_cost' in tech:
+                    tech_text += f"\n⚡ Custo de Energia: {tech['energy_cost']}"
+                if 'cooldown' in effects:
+                    tech_text += f"\n⏱️ Cooldown: {effects['cooldown']//60} minutos"
+
+            techniques_text.append(tech_text)
 
         embed.add_field(
             name="Técnicas",

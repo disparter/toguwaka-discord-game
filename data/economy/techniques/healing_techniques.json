@@ -1,0 +1,152 @@
+[
+    {
+        "id": 20,
+        "name": "Toque Curativo",
+        "description": "Uma técnica básica de cura que recupera 15% do HP máximo de um aliado. Custo de energia: 20",
+        "type": "support",
+        "category": "healing",
+        "tier": "basic",
+        "level": 1,
+        "max_level": 3,
+        "energy_cost": 20,
+        "effects": {
+            "heal_amount": 0.15,
+            "heal_type": "percentage",
+            "target": "ally",
+            "turf_wars_usable": true
+        },
+        "evolution": {
+            "2": {
+                "name": "Toque Curativo Aprimorado",
+                "description": "Recupera 20% do HP máximo de um aliado. Custo de energia: 25",
+                "energy_cost": 25,
+                "effects": {
+                    "heal_amount": 0.2,
+                    "heal_type": "percentage",
+                    "target": "ally",
+                    "turf_wars_usable": true
+                }
+            },
+            "3": {
+                "name": "Toque Curativo Supremo",
+                "description": "Recupera 25% do HP máximo de um aliado e aplica regeneração de 2% por minuto por 2 minutos. Custo de energia: 30",
+                "energy_cost": 30,
+                "effects": {
+                    "heal_amount": 0.25,
+                    "heal_type": "percentage",
+                    "target": "ally",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.02,
+                    "regen_duration": 120
+                }
+            }
+        }
+    },
+    {
+        "id": 21,
+        "name": "Barreira Protetora",
+        "description": "Cria uma barreira que reduz o dano recebido por um aliado em 20% por 3 minutos. Custo de energia: 30",
+        "type": "support",
+        "category": "protection",
+        "tier": "advanced",
+        "level": 1,
+        "max_level": 3,
+        "energy_cost": 30,
+        "effects": {
+            "damage_reduction": 0.2,
+            "duration": 180,
+            "target": "ally",
+            "turf_wars_usable": true
+        },
+        "evolution": {
+            "2": {
+                "name": "Barreira Protetora Aprimorada",
+                "description": "Reduz o dano recebido em 25% e regenera 1% do HP por minuto por 3 minutos. Custo de energia: 35",
+                "energy_cost": 35,
+                "effects": {
+                    "damage_reduction": 0.25,
+                    "duration": 180,
+                    "target": "ally",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.01,
+                    "regen_duration": 180
+                }
+            },
+            "3": {
+                "name": "Barreira Protetora Suprema",
+                "description": "Reduz o dano recebido em 30% e regenera 2% do HP por minuto por 4 minutos. Custo de energia: 40",
+                "energy_cost": 40,
+                "effects": {
+                    "damage_reduction": 0.3,
+                    "duration": 240,
+                    "target": "ally",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.02,
+                    "regen_duration": 240
+                }
+            }
+        }
+    },
+    {
+        "id": 22,
+        "name": "Cura em Área",
+        "description": "Recupera 10% do HP máximo de todos os aliados em uma área. Custo de energia: 40",
+        "type": "support",
+        "category": "healing",
+        "tier": "advanced",
+        "level": 1,
+        "max_level": 3,
+        "energy_cost": 40,
+        "effects": {
+            "heal_amount": 0.1,
+            "heal_type": "percentage",
+            "target": "area",
+            "turf_wars_usable": true
+        },
+        "evolution": {
+            "2": {
+                "name": "Cura em Área Aprimorada",
+                "description": "Recupera 15% do HP máximo e aplica regeneração de 1% por minuto por 2 minutos em todos os aliados. Custo de energia: 45",
+                "energy_cost": 45,
+                "effects": {
+                    "heal_amount": 0.15,
+                    "heal_type": "percentage",
+                    "target": "area",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.01,
+                    "regen_duration": 120
+                }
+            },
+            "3": {
+                "name": "Cura em Área Suprema",
+                "description": "Recupera 20% do HP máximo e aplica regeneração de 2% por minuto por 3 minutos em todos os aliados. Custo de energia: 50",
+                "energy_cost": 50,
+                "effects": {
+                    "heal_amount": 0.2,
+                    "heal_type": "percentage",
+                    "target": "area",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.02,
+                    "regen_duration": 180
+                }
+            }
+        }
+    },
+    {
+        "id": 23,
+        "name": "Ressurreição",
+        "description": "Técnica exclusiva que permite reviver um aliado caído com 30% do HP máximo. Custo de energia: 100",
+        "type": "support",
+        "category": "healing",
+        "tier": "exclusive",
+        "level": 1,
+        "max_level": 1,
+        "energy_cost": 100,
+        "effects": {
+            "revive_amount": 0.3,
+            "target": "ally",
+            "turf_wars_usable": true,
+            "cooldown": 3600
+        }
+    }
+] 

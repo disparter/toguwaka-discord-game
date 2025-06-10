@@ -44,6 +44,7 @@ COMBAT_ITEMS = load_json('data/economy/items/combat_items.json')
 ENERGY_ITEMS = load_json('data/economy/items/energy_items.json')
 ATTRIBUTE_ITEMS = load_json('data/economy/items/attribute_items.json')
 SOCIAL_ITEMS = load_json('data/economy/items/social_items.json')
+SUPPORT_ITEMS = load_json('data/economy/items/support_items.json')
 
 # Itens sazonais (baseados na estação/bimestre)
 SEASONAL_ITEMS = load_json('data/economy/seasonal_items.json')
@@ -85,7 +86,8 @@ def get_available_shop_items(bimestre=1, active_events=None, player_level=1, pla
         "accessory": [],
         "equipment": [],
         "legendary": [],
-        "thematic": []
+        "thematic": [],
+        "support": []  # Nova categoria para itens de suporte
     }
 
     # Adiciona itens de treinamento
@@ -112,39 +114,18 @@ def get_available_shop_items(bimestre=1, active_events=None, player_level=1, pla
         if item_type in available_items:
             available_items[item_type].append(item)
 
-    # Adiciona itens sociais
-    for item in SOCIAL_ITEMS:
+    # Adiciona itens de suporte
+    for item in SUPPORT_ITEMS:
         item_type = item.get("type", "consumable")
         if item_type in available_items:
             available_items[item_type].append(item)
 
-    # Adiciona itens sazonais com base no bimestre atual
-    season = SEASONS.get(bimestre, "spring")
-    if season in SEASONAL_ITEMS:
-        for item in SEASONAL_ITEMS[season]:
-            item_type = item.get("type", "consumable")
-            if item_type in available_items:
-                available_items[item_type].append(item)
-
-    # Adiciona itens de eventos ativos
-    for event in active_events:
-        if event in EVENT_ITEMS:
-            for item in EVENT_ITEMS[event]:
-                item_type = item.get("type", "consumable")
-                if item_type in available_items:
-                    available_items[item_type].append(item)
-
-    # Adiciona itens lendários com base no nível do jogador
-    for item in LEGENDARY_ITEMS:
-        if player_level >= item.get("level_required", 1):
-            available_items["legendary"].append(item)
-
-    # Adiciona itens temáticos de clube se o jogador pertencer a um clube
-    if player_club and player_club in CLUB_ITEMS:
-        for item in CLUB_ITEMS[player_club]:
-            item_type = item.get("type", "consumable")
-            if item_type in available_items:
-                available_items["thematic"].append(item)
+    # Filtra itens por nível do jogador
+    for category in available_items:
+        available_items[category] = [
+            item for item in available_items[category]
+            if item.get("level_required", 1) <= player_level
+        ]
 
     return available_items
 
@@ -196,24 +177,155 @@ TECHNIQUES = [
                   "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.1}}
         }
     },
+    # Técnicas de Cura (novas)
     {
-        "id": 2,
-        "name": "Manipulação Mental",
-        "description": "Confunde a mente do oponente. +30% de chance de vencer duelos mentais.",
-        "type": "mental",
-        "category": "attack",
+        "id": 20,
+        "name": "Toque Curativo",
+        "description": "Uma técnica básica de cura que recupera 15% do HP máximo de um aliado. Custo de energia: 20",
+        "type": "support",
+        "category": "healing",
         "tier": "basic",
         "level": 1,
         "max_level": 3,
-        "club_required": None,
-        "effects": {"duel_boost": {"type": "mental", "amount": 0.3}},
+        "energy_cost": 20,
+        "effects": {
+            "heal_amount": 0.15,
+            "heal_type": "percentage",
+            "target": "ally",
+            "turf_wars_usable": true
+        },
         "evolution": {
-            "2": {"name": "Manipulação Mental Aprimorada",
-                  "description": "Confunde a mente do oponente com maior eficácia. +35% de chance de vencer duelos mentais.",
-                  "effects": {"duel_boost": {"type": "mental", "amount": 0.35}}},
-            "3": {"name": "Manipulação Mental Suprema",
-                  "description": "Confunde a mente do oponente com precisão mortal. +40% de chance de vencer duelos mentais e 10% de dano adicional.",
-                  "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "damage_boost": 0.1}}
+            "2": {
+                "name": "Toque Curativo Aprimorado",
+                "description": "Recupera 20% do HP máximo de um aliado. Custo de energia: 25",
+                "energy_cost": 25,
+                "effects": {
+                    "heal_amount": 0.2,
+                    "heal_type": "percentage",
+                    "target": "ally",
+                    "turf_wars_usable": true
+                }
+            },
+            "3": {
+                "name": "Toque Curativo Supremo",
+                "description": "Recupera 25% do HP máximo de um aliado e aplica regeneração de 2% por minuto por 2 minutos. Custo de energia: 30",
+                "energy_cost": 30,
+                "effects": {
+                    "heal_amount": 0.25,
+                    "heal_type": "percentage",
+                    "target": "ally",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.02,
+                    "regen_duration": 120
+                }
+            }
+        }
+    },
+    {
+        "id": 21,
+        "name": "Barreira Protetora",
+        "description": "Cria uma barreira que reduz o dano recebido por um aliado em 20% por 3 minutos. Custo de energia: 30",
+        "type": "support",
+        "category": "protection",
+        "tier": "advanced",
+        "level": 1,
+        "max_level": 3,
+        "energy_cost": 30,
+        "effects": {
+            "damage_reduction": 0.2,
+            "duration": 180,
+            "target": "ally",
+            "turf_wars_usable": true
+        },
+        "evolution": {
+            "2": {
+                "name": "Barreira Protetora Aprimorada",
+                "description": "Reduz o dano recebido em 25% e regenera 1% do HP por minuto por 3 minutos. Custo de energia: 35",
+                "energy_cost": 35,
+                "effects": {
+                    "damage_reduction": 0.25,
+                    "duration": 180,
+                    "target": "ally",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.01,
+                    "regen_duration": 180
+                }
+            },
+            "3": {
+                "name": "Barreira Protetora Suprema",
+                "description": "Reduz o dano recebido em 30% e regenera 2% do HP por minuto por 4 minutos. Custo de energia: 40",
+                "energy_cost": 40,
+                "effects": {
+                    "damage_reduction": 0.3,
+                    "duration": 240,
+                    "target": "ally",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.02,
+                    "regen_duration": 240
+                }
+            }
+        }
+    },
+    {
+        "id": 22,
+        "name": "Cura em Área",
+        "description": "Recupera 10% do HP máximo de todos os aliados em uma área. Custo de energia: 40",
+        "type": "support",
+        "category": "healing",
+        "tier": "advanced",
+        "level": 1,
+        "max_level": 3,
+        "energy_cost": 40,
+        "effects": {
+            "heal_amount": 0.1,
+            "heal_type": "percentage",
+            "target": "area",
+            "turf_wars_usable": true
+        },
+        "evolution": {
+            "2": {
+                "name": "Cura em Área Aprimorada",
+                "description": "Recupera 15% do HP máximo e aplica regeneração de 1% por minuto por 2 minutos em todos os aliados. Custo de energia: 45",
+                "energy_cost": 45,
+                "effects": {
+                    "heal_amount": 0.15,
+                    "heal_type": "percentage",
+                    "target": "area",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.01,
+                    "regen_duration": 120
+                }
+            },
+            "3": {
+                "name": "Cura em Área Suprema",
+                "description": "Recupera 20% do HP máximo e aplica regeneração de 2% por minuto por 3 minutos em todos os aliados. Custo de energia: 50",
+                "energy_cost": 50,
+                "effects": {
+                    "heal_amount": 0.2,
+                    "heal_type": "percentage",
+                    "target": "area",
+                    "turf_wars_usable": true,
+                    "regen_amount": 0.02,
+                    "regen_duration": 180
+                }
+            }
+        }
+    },
+    {
+        "id": 23,
+        "name": "Ressurreição",
+        "description": "Técnica exclusiva que permite reviver um aliado caído com 30% do HP máximo. Custo de energia: 100",
+        "type": "support",
+        "category": "healing",
+        "tier": "exclusive",
+        "level": 1,
+        "max_level": 1,
+        "energy_cost": 100,
+        "effects": {
+            "revive_amount": 0.3,
+            "target": "ally",
+            "turf_wars_usable": true,
+            "cooldown": 3600
         }
     }
 ]
@@ -718,7 +830,7 @@ class Economy(commands.Cog):
                     logger.error(f"Failed to send error message to player {interaction.user.id}")
 
     @economy_group.command(name="usar", description="Usar um item do inventário")
-    async def slash_use_item(self, interaction: discord.Interaction, item_id: int):
+    async def slash_use_item(self, interaction: discord.Interaction, item_id: int, target: discord.Member = None):
         """Use an item from the inventory."""
         try:
             # Check if player exists
@@ -758,6 +870,23 @@ class Economy(commands.Cog):
                                                         ephemeral=True)
                 return
 
+            # Check if target is required for support items
+            if item.get('category') == 'support' and not target:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, este item requer um alvo. Use /economia usar [item_id] [@alvo]",
+                    ephemeral=True)
+                return
+
+            # Get target player data if it's a support item
+            target_player = None
+            if target:
+                target_player = await db_provider.get_player(target.id)
+                if not target_player:
+                    await interaction.response.send_message(
+                        f"{interaction.user.mention}, o alvo {target.mention} não está registrado na Academia Tokugawa.",
+                        ephemeral=True)
+                    return
+
             # Apply item effects
             update_data = {}
             effects_applied = []
@@ -779,6 +908,30 @@ class Economy(commands.Cog):
                         current_value = player.get(attr, 5)
                         update_data[attr] = current_value + boost
                         effects_applied.append(f"+{boost} {attr.capitalize()}")
+                elif effect_type == 'heal_amount':
+                    if target_player:
+                        current_hp = target_player.get('hp', 100)
+                        max_hp = target_player.get('max_hp', 100)
+                        heal_amount = int(max_hp * effect_data)
+                        new_hp = min(max_hp, current_hp + heal_amount)
+                        update_data['target_hp'] = new_hp
+                        effects_applied.append(f"Curou {target.mention} em {heal_amount} HP")
+                elif effect_type == 'damage_reduction':
+                    if target_player:
+                        duration = item.get('effects', {}).get('duration', 180)
+                        update_data['target_damage_reduction'] = {
+                            'amount': effect_data,
+                            'duration': duration
+                        }
+                        effects_applied.append(f"Reduziu dano recebido por {target.mention} em {int(effect_data * 100)}% por {duration//60} minutos")
+                elif effect_type == 'regen_amount':
+                    if target_player:
+                        duration = item.get('effects', {}).get('regen_duration', 180)
+                        update_data['target_regen'] = {
+                            'amount': effect_data,
+                            'duration': duration
+                        }
+                        effects_applied.append(f"Aplicou regeneração de {int(effect_data * 100)}% por minuto em {target.mention} por {duration//60} minutos")
 
             # Remove item from inventory if it's consumable
             if item['type'] == 'consumable':
@@ -787,6 +940,19 @@ class Economy(commands.Cog):
 
             # Update player in database
             success = await db_provider.update_player(interaction.user.id, **update_data)
+
+            # Update target player if it's a support item
+            if target_player and success:
+                target_update = {}
+                if 'target_hp' in update_data:
+                    target_update['hp'] = update_data['target_hp']
+                if 'target_damage_reduction' in update_data:
+                    target_update['damage_reduction'] = update_data['target_damage_reduction']
+                if 'target_regen' in update_data:
+                    target_update['regen'] = update_data['target_regen']
+                
+                if target_update:
+                    await db_provider.update_player(target.id, **target_update)
 
             if success:
                 await interaction.response.send_message(

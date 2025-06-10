@@ -1,0 +1,79 @@
+[
+    {
+        "id": 401,
+        "name": "Poção de Cura Menor",
+        "description": "Recupera 20% do HP máximo de um aliado. Pode ser usada durante a Turf Wars.",
+        "price": 200,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "common",
+        "effects": {
+            "heal_amount": 0.2,
+            "heal_type": "percentage",
+            "target": "ally",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 3
+        }
+    },
+    {
+        "id": 402,
+        "name": "Poção de Cura Maior",
+        "description": "Recupera 40% do HP máximo de um aliado. Pode ser usada durante a Turf Wars.",
+        "price": 400,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "uncommon",
+        "effects": {
+            "heal_amount": 0.4,
+            "heal_type": "percentage",
+            "target": "ally",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 2
+        }
+    },
+    {
+        "id": 403,
+        "name": "Elixir de Regeneração",
+        "description": "Aplica regeneração de 5% do HP máximo por minuto em um aliado por 3 minutos. Pode ser usado durante a Turf Wars.",
+        "price": 600,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "rare",
+        "effects": {
+            "regen_amount": 0.05,
+            "regen_duration": 180,
+            "target": "ally",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 404,
+        "name": "Amuleto de Proteção",
+        "description": "Reduz o dano recebido por um aliado em 15% por 5 minutos. Pode ser usado durante a Turf Wars.",
+        "price": 500,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "rare",
+        "effects": {
+            "damage_reduction": 0.15,
+            "duration": 300,
+            "target": "ally",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 405,
+        "name": "Cajado de Cura",
+        "description": "Aumenta a eficácia de suas técnicas de cura em 25%. Equipamento permanente.",
+        "price": 1000,
+        "type": "equipment",
+        "category": "support",
+        "rarity": "epic",
+        "effects": {
+            "healing_boost": 0.25,
+            "permanent": true
+        }
+    }
+] 
