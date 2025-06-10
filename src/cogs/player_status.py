@@ -138,7 +138,7 @@ class PlayerStatus(commands.Cog):
             top_players = await db_provider.get_top_players(limit)
 
             # Create and send leaderboard embed
-            embed = create_leaderboard_embed(top_players)
+            embed = await create_leaderboard_embed(top_players)
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
@@ -234,7 +234,7 @@ class PlayerStatus(commands.Cog):
         top_players = await db_provider.get_top_players(limit)
 
         # Create and send leaderboard embed
-        embed = create_leaderboard_embed(top_players)
+        embed = await create_leaderboard_embed(top_players)
         await ctx.send(embed=embed, ephemeral=True)
 
     @commands.command(name="perfil")

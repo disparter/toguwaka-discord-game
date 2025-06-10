@@ -440,7 +440,7 @@ def create_progress_bar(percentage, length=10):
     bar = "█" * filled + "░" * (length - filled)
     return bar
 
-def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
+async def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
     """Create an embed displaying a leaderboard of players."""
     embed = discord.Embed(
         title=title,
@@ -451,6 +451,9 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
     if not players:
         embed.description = "Nenhum jogador encontrado."
         return embed
+
+    # Import here to avoid circular imports
+    from utils.persistence.db_provider import db_provider
 
     # Create leaderboard text
     leaderboard_text = ""
@@ -465,13 +468,12 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
                 club_name = player.get('club_name')
             # Otherwise fetch it from the database
             else:
-                # Import here to avoid circular imports
-                from utils.persistence.db_provider import get_club
-                club = get_club(player.get('club_id'))
+                # Use the async method directly from db_provider
+                club = await db_provider.get_club(str(player.get('club_id')))
                 if club and club.get('name'):
                     club_name = club.get('name')
 
-        leaderboard_text += f"{medal} **{player.get('name', 'Desconhecido')}** (Nível {player.get('level', 1)}) - {club_name}\n"
+        leaderboard_text += f"{medal} **{player.get('name', 'Desconhecido')}** | {club_name} | Nível: {player.get('level', 1)}\n"
 
     embed.description = leaderboard_text
 

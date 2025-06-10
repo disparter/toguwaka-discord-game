@@ -514,9 +514,23 @@ class StoryModeCog(commands.Cog):
             chapter_dict = {
                 'title': chapter_data.get_title() if hasattr(chapter_data, 'get_title') else "Unknown Title",
                 'description': chapter_data.get_description() if hasattr(chapter_data, 'get_description') else "No description available.",
-                'current_dialogue': chapter_data.dialogues[0] if hasattr(chapter_data, 'dialogues') and chapter_data.dialogues else None,
-                'choices': chapter_data.choices if hasattr(chapter_data, 'choices') else []
+                'current_dialogue': None,
+                'choices': []
             }
+
+            # Safely handle dialogues
+            if hasattr(chapter_data, 'dialogues'):
+                if isinstance(chapter_data.dialogues, list) and len(chapter_data.dialogues) > 0:
+                    chapter_dict['current_dialogue'] = chapter_data.dialogues[0]
+                elif hasattr(chapter_data.dialogues, 'get') and chapter_data.dialogues.get(0):
+                    chapter_dict['current_dialogue'] = chapter_data.dialogues.get(0)
+
+            # Safely handle choices
+            if hasattr(chapter_data, 'choices'):
+                if isinstance(chapter_data.choices, list):
+                    chapter_dict['choices'] = chapter_data.choices
+                elif hasattr(chapter_data.choices, 'get_available_choices'):
+                    chapter_dict['choices'] = chapter_data.choices.get_available_choices(result.get('player_data', {}))
 
             # Add any other attributes that might be accessed
             if hasattr(chapter_data, 'chapter_id'):
