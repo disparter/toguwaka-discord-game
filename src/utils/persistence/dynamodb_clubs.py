@@ -18,23 +18,7 @@ async def get_club(club_id):
     """Get club data from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
-        # Try first with NomeClube as the key
-        response = await table.get_item(
-            Key={
-                'NomeClube': str(club_id)
-            }
-        )
-        if 'Item' in response:
-            item = response['Item']
-            club = {
-                'name': item.get('NomeClube', ''),
-                'description': item.get('descricao', ''),
-                'leader_id': item.get('lider_id', ''),
-                'reputacao': item.get('reputacao', 0)
-            }
-            return club
-
-        # If not found, try with the PK/SK format as fallback
+        # Try first with the PK/SK format as it's the correct schema
         try:
             response = await table.get_item(
                 Key={
@@ -51,9 +35,29 @@ async def get_club(club_id):
                     'reputacao': item.get('reputacao', 0)
                 }
                 return club
-        except Exception:
+        except Exception as primary_error:
+            # Log error from primary attempt
+            logger.warning(f"Error getting club {club_id} with PK/SK format: {primary_error}")
+
+        # If not found or error occurred, try with NomeClube as fallback for backward compatibility
+        try:
+            response = await table.get_item(
+                Key={
+                    'NomeClube': str(club_id)
+                }
+            )
+            if 'Item' in response:
+                item = response['Item']
+                club = {
+                    'name': item.get('NomeClube', ''),
+                    'description': item.get('descricao', ''),
+                    'leader_id': item.get('lider_id', ''),
+                    'reputacao': item.get('reputacao', 0)
+                }
+                return club
+        except Exception as fallback_error:
             # Ignore errors from the fallback attempt
-            logger.warning(f"Error getting club {club_id}: {e}")
+            logger.warning(f"Error getting club {club_id} with NomeClube format: {fallback_error}")
             pass
 
 
@@ -93,16 +97,34 @@ async def create_club(club_id, name, description, leader_id):
     """Create a new club in DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
+        # Create club with the correct PK/SK schema
         club_item = {
-            'NomeClube': name,
-            'descricao': description,
-            'lider_id': leader_id,
+            'PK': f"CLUB#{club_id}",
+            'SK': 'INFO',
+            'name': name,
+            'description': description,
+            'leader_id': leader_id,
             'reputacao': 0,
             'created_at': datetime.now().isoformat(),
             'last_active': datetime.now().isoformat()
         }
         logger.info(f"Creating club with item: {club_item}")
         await table.put_item(Item=club_item)
+
+        # For backward compatibility, also create with the old schema
+        try:
+            old_format_item = {
+                'NomeClube': name,
+                'descricao': description,
+                'lider_id': leader_id,
+                'reputacao': 0,
+                'created_at': datetime.now().isoformat(),
+                'last_active': datetime.now().isoformat()
+            }
+            await table.put_item(Item=old_format_item)
+        except Exception as compat_error:
+            logger.warning(f"Error creating club with old format: {compat_error}")
+
         return True
     except Exception as e:
         logger.error(f"Error creating club: {e}")
@@ -136,16 +158,41 @@ async def get_top_clubs_by_activity(week=None, year=None, limit=3):
                     club_points[club_id] = points
         top_clubs = []
         for club_id, total_points in sorted(club_points.items(), key=lambda x: x[1], reverse=True)[:limit]:
-            club_response = await clubs_table.get_item(Key={'NomeClube': club_id})
-            if 'Item' in club_response:
-                club = club_response['Item']
-                top_clubs.append({
-                    'name': club.get('NomeClube', ''),
-                    'description': club.get('descricao', ''),
-                    'leader_id': club.get('lider_id', ''),
-                    'reputacao': club.get('reputacao', 0),
-                    'total_points': total_points
-                })
+            # Try with PK/SK format first
+            try:
+                club_response = await clubs_table.get_item(
+                    Key={
+                        'PK': f"CLUB#{club_id}",
+                        'SK': 'INFO'
+                    }
+                )
+                if 'Item' in club_response:
+                    club = club_response['Item']
+                    top_clubs.append({
+                        'name': club.get('name', ''),
+                        'description': club.get('description', ''),
+                        'leader_id': club.get('leader_id', ''),
+                        'reputacao': club.get('reputacao', 0),
+                        'total_points': total_points
+                    })
+                    continue
+            except Exception as e:
+                logger.warning(f"Error getting club {club_id} with PK/SK format in top clubs: {e}")
+
+            # Fallback to NomeClube format
+            try:
+                club_response = await clubs_table.get_item(Key={'NomeClube': club_id})
+                if 'Item' in club_response:
+                    club = club_response['Item']
+                    top_clubs.append({
+                        'name': club.get('NomeClube', ''),
+                        'description': club.get('descricao', ''),
+                        'leader_id': club.get('lider_id', ''),
+                        'reputacao': club.get('reputacao', 0),
+                        'total_points': total_points
+                    })
+            except Exception as e:
+                logger.warning(f"Error getting club {club_id} with NomeClube format in top clubs: {e}")
         return top_clubs
     except Exception as e:
         logger.error(f"Error getting top clubs by activity: {e}")

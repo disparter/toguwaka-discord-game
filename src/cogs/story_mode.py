@@ -511,7 +511,7 @@ class StoryModeCog(commands.Cog):
         chapter_data = result["chapter_data"]
 
         # Convert StoryChapter object to dictionary if needed
-        if hasattr(chapter_data, 'chapter_data') and not isinstance(chapter_data, dict):
+        if not isinstance(chapter_data, dict):
             # Create a dictionary with the same structure as expected
             chapter_dict = {
                 'title': chapter_data.get_title() if hasattr(chapter_data, 'get_title') else "Unknown Title",

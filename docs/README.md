@@ -1,59 +1,39 @@
 # Tokugawa Academy Documentation
 
-This documentation is organized into several main sections:
+Welcome to the official documentation for Tokugawa Academy, a Discord-based roleplaying game.
 
-## Game Design
-- Story structure and narrative design
-- Romance system and character relationships
-- Club system and activities
-- Writing guidelines and style guide
-- Game mechanics and systems
+## Table of Contents
 
-## Development
-- Development guidelines
-- Code standards
-- Testing procedures
-- Debugging guides
-- Performance optimization
+### Game Design
+- [Game Design Guide](Game_Design/README.md) - Core game design and mechanics
 
-## Implementation
-- System architecture
-- Database design
-- API documentation
-- Integration guides
-- Deployment procedures
+### Development
+- [Development Guide](Development/README.md) - Core development information
+- [Getting Started](Development/getting-started.md) - Setup your development environment
 
-## Guides
-- Player guides
-- Game mechanics
-- Tutorials
-- FAQ
-- Troubleshooting
+### Implementation
+- [Implementation Guide](Implementation/README.md) - Deployment and infrastructure
 
-## API
-- API endpoints
-- Authentication
-- Rate limiting
-- Error handling
-- Webhook documentation
+### Architecture
+- [System Overview](Architecture/README.md) - High-level system design
 
-## Architecture
-- System overview
-- Component diagrams
-- Data flow
-- Security measures
-- Scaling considerations
+### Guides
+- [Player Guide](Guides/README.md) - How to play the game
 
-## Contributing
-- How to contribute
-- Code of conduct
-- Pull request process
-- Issue reporting
-- Development setup
+### Contributing
+- [Contributing Guide](Contributing/CONTRIBUTING.md) - How to contribute
+- [Code of Conduct](Contributing/CODE_OF_CONDUCT.md) - Community guidelines
 
-## Additional Resources
-- Links to external resources
-- Community guidelines
-- Support channels
-- Version history
-- Roadmap 
+## Quick Links
+- [GitHub Repository](https://github.com/yourusername/tokugawa-discord-game)
+- [Issue Tracker](https://github.com/yourusername/tokugawa-discord-game/issues)
+- [Discord Server](https://discord.gg/your-invite-link)
+
+## Support
+If you need help:
+1. Check the [Player Guide](Guides/README.md)
+2. Search existing [issues](https://github.com/yourusername/tokugawa-discord-game/issues)
+3. Join our [Discord server](https://discord.gg/your-invite-link)
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details. 
