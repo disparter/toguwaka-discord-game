@@ -24,6 +24,18 @@ import builtins
 original_import = builtins.__import__
 
 def patched_import(name, *args, **kwargs):
+    # Special case for discord.ext.commands.src
+    if name == 'discord.ext.commands.src' or name.startswith('discord.ext.commands.src.'):
+        # Remove the .src part
+        name = name.replace('.src', '')
+        return original_import(name, *args, **kwargs)
+
+    # Special case for src.story_mode.src
+    if name == 'src.story_mode.src' or name.startswith('src.story_mode.src.'):
+        # Remove the .src part
+        name = name.replace('.src', '')
+        return original_import(name, *args, **kwargs)
+
     # Lista de módulos que precisam do prefixo src
     src_modules = ['utils', 'cogs', 'story_mode', 'bot']
 
@@ -38,16 +50,6 @@ def patched_import(name, *args, **kwargs):
         if name == module or name.startswith(f"{module}."):
             name = f"src.{name}"
             break
-
-    # Prevent adding 'src' to imports from external libraries with dots
-    if '.' in name and not name.startswith('src.'):
-        module_root = name.split('.')[0]
-        if module_root in ['discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore']:
-            return original_import(name, *args, **kwargs)
-
-    # Prevent adding 'src' to already prefixed imports
-    if name.startswith('src.') and '.src.' in name:
-        name = name.replace('.src.', '.')
 
     return original_import(name, *args, **kwargs)
 
