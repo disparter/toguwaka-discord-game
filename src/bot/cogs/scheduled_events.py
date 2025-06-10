@@ -2986,7 +2986,7 @@ class ScheduledEvents(commands.Cog):
                 return
 
             # Get player
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 try:
                     await interaction.response.send_message("Você precisa estar registrado para participar do quiz.", ephemeral=True)
@@ -3053,7 +3053,7 @@ class ScheduledEvents(commands.Cog):
 
             # Update player's grade in the database
             subject = quiz_event['data']['subject']
-            update_player_grade(interaction.user.id, subject, final_grade, current_month, current_year)
+            await db_provider.update_player_grade(interaction.user.id, subject, final_grade)
 
             # Add player to participants
             quiz_event['participants'].append(interaction.user.id)
@@ -3073,7 +3073,7 @@ class ScheduledEvents(commands.Cog):
                 xp_reward = int(xp_reward * xp_multiplier)
 
             # Update player XP
-            update_player(
+            await update_player(
                 interaction.user.id,
                 exp=player['exp'] + xp_reward
             )
@@ -4159,7 +4159,7 @@ class ScheduledEvents(commands.Cog):
                 return
 
             # Get player
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 try:
                     await interaction.response.send_message("Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.", ephemeral=True)
