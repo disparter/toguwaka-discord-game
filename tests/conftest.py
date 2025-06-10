@@ -24,17 +24,18 @@ import builtins
 original_import = builtins.__import__
 
 def patched_import(name, *args, **kwargs):
-    # Special case for discord.ext.commands.src
-    if name == 'discord.ext.commands.src' or name.startswith('discord.ext.commands.src.'):
-        # Remove the .src part
-        name = name.replace('.src', '')
-        return original_import(name, *args, **kwargs)
+    # Handle specific problematic imports
+    if name == 'discord.ext.commands.src':
+        # Create a mock module for discord.ext.commands.src
+        import types
+        mock_module = types.ModuleType('discord.ext.commands.src')
+        return mock_module
 
-    # Special case for src.story_mode.src
-    if name == 'src.story_mode.src' or name.startswith('src.story_mode.src.'):
-        # Remove the .src part
-        name = name.replace('.src', '')
-        return original_import(name, *args, **kwargs)
+    if name == 'src.story_mode.src':
+        # Create a mock module for src.story_mode.src
+        import types
+        mock_module = types.ModuleType('src.story_mode.src')
+        return mock_module
 
     # Lista de módulos que precisam do prefixo src
     src_modules = ['utils', 'cogs', 'story_mode', 'bot']
