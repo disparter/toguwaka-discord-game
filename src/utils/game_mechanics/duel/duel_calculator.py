@@ -41,7 +41,7 @@ class DuelCalculator(IDuelCalculator):
         Args:
             challenger (Dict[str, Any]): The challenger's data
             opponent (Dict[str, Any]): The opponent's data
-            duel_type (str): The type of duel (physical, mental, strategic, social)
+            duel_type (str): The type of duel (physical, mental, strategic, social, elemental)
 
         Returns:
             Dict[str, Any]: The result of the duel
@@ -57,23 +57,23 @@ class DuelCalculator(IDuelCalculator):
         challenger_hp_factor = self.hp_calculator.calculate_factor(challenger['hp'], challenger['max_hp'])
         opponent_hp_factor = self.hp_calculator.calculate_factor(opponent['hp'], opponent['max_hp'])
         
-        # Calcula a pontuação base do desafiante
+        # Calcula a pontuação base do desafiante usando os pesos do tipo de duelo
         challenger_score = (
-            challenger['power_stat'] * challenger_hp_factor +
-            challenger['dexterity'] * 0.5 +
-            challenger['intellect'] * 0.3 +
-            challenger['charisma'] * 0.2
+            challenger['power_stat'] * weights['power_stat'] * challenger_hp_factor +
+            challenger['dexterity'] * weights['dexterity'] +
+            challenger['intellect'] * weights['intellect'] +
+            challenger['charisma'] * weights['charisma']
         )
         
         # Adiciona um fator aleatório
         challenger_score *= random.uniform(0.8, 1.2)
         
-        # Calcula a pontuação base do oponente
+        # Calcula a pontuação base do oponente usando os pesos do tipo de duelo
         opponent_score = (
-            opponent['power_stat'] * opponent_hp_factor +
-            opponent['dexterity'] * 0.5 +
-            opponent['intellect'] * 0.3 +
-            opponent['charisma'] * 0.2
+            opponent['power_stat'] * weights['power_stat'] * opponent_hp_factor +
+            opponent['dexterity'] * weights['dexterity'] +
+            opponent['intellect'] * weights['intellect'] +
+            opponent['charisma'] * weights['charisma']
         )
         
         # Adiciona um fator aleatório
@@ -89,10 +89,23 @@ class DuelCalculator(IDuelCalculator):
             loser = challenger['name']
             win_margin = opponent_score - challenger_score
         
-        # Calcula as recompensas
+        # Calcula as recompensas baseadas no tipo de duelo
         exp_reward = int(win_margin * 10)
         tusd_reward = int(win_margin * 5)
-        hp_loss = int(win_margin * 2)
+        
+        # Calcula o dano de HP baseado no tipo de duelo
+        if duel_type == "magical":
+            # Magical duels cause more HP loss due to elemental damage
+            hp_loss = int(win_margin * 3)
+        elif duel_type == "physical":
+            # Physical duels cause moderate HP loss
+            hp_loss = int(win_margin * 2)
+        elif duel_type == "mental":
+            # Mental duels cause less HP loss but more mental strain
+            hp_loss = int(win_margin * 1.5)
+        else:
+            # Default HP loss for other types
+            hp_loss = int(win_margin * 2)
         
         return {
             "winner": winner,
