@@ -11,7 +11,7 @@ from .powers import PowerEvolutionSystem
 from .seasonal_events import SeasonalEventSystem
 from .companions import CompanionSystem
 from .narrative_logger import get_narrative_logger
-from .validation import get_story_validator
+from .validation import get_story_validator, validate_story_data
 from .arcs.arc_manager import ArcManager
 from .image_processor import ImageProcessor
 from pathlib import Path
@@ -20,253 +20,354 @@ from .club_rivalry_system import ClubSystem
 from .club_content import ClubContentManager
 from .player_manager import PlayerManager
 from .choice_processor import ChoiceProcessor
+from .image_manager import ImageManager
 
 logger = logging.getLogger('tokugawa_bot')
 
 class StoryMode:
     """
-    Main class for the story mode system.
-    Coordinates the interactions between the different components.
+    Main class for managing the story mode.
     """
 
-    def __init__(self, base_dir: str = "data"):
+    def __init__(self):
         """
-        Initialize the story mode system.
-
-        Args:
-            base_dir: Path to the base directory containing story mode data
+        Initialize the story mode.
         """
-        self.base_dir = Path(base_dir)
-        self.data_dir = self.base_dir / "story_mode"
-        self.logs_dir = self.base_dir / "logs"
+        self.story_data = self._load_story_data()
+        self.image_manager = ImageManager()
+        logger.info("StoryMode initialized")
 
-        # Create necessary directories
-        self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.logs_dir.mkdir(parents=True, exist_ok=True)
-
-        # Initialize components
-        self.arc_manager = ArcManager(str(self.data_dir))
-        self.event_manager = ConcreteEventManager()
-        self.npc_manager = NPCManager()
-        self.image_processor = ImageProcessor(str(self.base_dir / "assets"))
-        self.progress_manager = DefaultStoryProgressManager()
-        self.consequences_system = DynamicConsequencesSystem()
-        self.power_system = PowerEvolutionSystem()
-        self.seasonal_event_system = SeasonalEventSystem()
-        self.companion_system = CompanionSystem()
-        self.club_system = ClubSystem(self.consequences_system)
-        self.club_manager = ClubContentManager(base_dir)
-        
-        # Validate story structure
-        self._validate_story_structure()
-
-    def _validate_story_structure(self) -> None:
-        """Validate the story structure and log any issues."""
-        validator = get_story_validator(str(self.data_dir))
-        validation_results = validator.validate_story_structure()
-        
-        # Log errors
-        for error in validation_results.get("errors", []):
-            logger.error(f"Story validation error: {error}")
-            
-        # Log warnings
-        for warning in validation_results.get("warnings", []):
-            logger.warning(f"Story validation warning: {warning}")
-            
-        # Log dead ends
-        for dead_end in validation_results.get("dead_ends", []):
-            logger.error(f"Story dead end found: {dead_end}")
-            
-        # Log missing assets
-        for asset in validation_results.get("missing_assets", []):
-            logger.warning(f"Missing story asset: {asset}")
-            
-        # Raise exception if there are critical errors
-        if validation_results.get("errors"):
-            raise ValueError("Story validation failed. Check logs for details.")
-
-    def _load_story_structure(self) -> None:
-        """Load the story structure from configuration files."""
-        try:
-            # Load arcs
-            for arc_dir in self.arcs_dir.iterdir():
-                if arc_dir.is_dir():
-                    arc_name = arc_dir.name
-                    arc_config = arc_dir / "config.json"
-
-                    if arc_config.exists():
-                        with open(arc_config, 'r', encoding='utf-8') as f:
-                            arc_data = json.load(f)
-                            self.story_structure[arc_name] = {
-                                "name": arc_data.get("name", arc_name),
-                                "description": arc_data.get("description", ""),
-                                "chapters": []
-                            }
-
-                            # Load chapters for this arc
-                            arc_chapters_dir = self.chapters_dir / arc_name
-                            if arc_chapters_dir.exists():
-                                for chapter_file in sorted(arc_chapters_dir.glob("*.json")):
-                                    with open(chapter_file, 'r', encoding='utf-8') as cf:
-                                        chapter_data = json.load(cf)
-                                        self.story_structure[arc_name]["chapters"].append({
-                                            "id": chapter_data.get("id"),
-                                            "name": chapter_data.get("name", chapter_file.stem),
-                                            "description": chapter_data.get("description", ""),
-                                            "requirements": chapter_data.get("requirements", {}),
-                                            "choices": chapter_data.get("choices", [])
-                                        })
-
-            logger.info("Story structure loaded successfully")
-        except Exception as e:
-            logger.error(f"Error loading story structure: {e}")
-            self.story_structure = {}
-
-    def validate_story_structure(self) -> bool:
+    def _load_story_data(self) -> Dict:
         """
-        Validate the story structure.
+        Load the story data from the JSON file.
 
         Returns:
-            True if valid, False otherwise
+            Dict: The story data.
         """
         try:
-            if not self.story_structure:
-                logger.error("Story structure is empty")
-                return False
+            with open("data/story_mode/narrative/index.json", 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            logger.error("Story data file not found")
+            return {}
+        except json.JSONDecodeError:
+            logger.error("Error decoding story data file")
+            return {}
 
-            # Check each arc
-            for arc_name, arc_data in self.story_structure.items():
-                if not arc_data.get("chapters"):
-                    logger.error(f"Arc {arc_name} has no chapters")
-                    return False
-
-                # Check each chapter
-                for chapter in arc_data["chapters"]:
-                    if not chapter.get("id"):
-                        logger.error(f"Chapter in arc {arc_name} has no ID")
-                        return False
-                    if not chapter.get("choices"):
-                        logger.error(f"Chapter {chapter['id']} in arc {arc_name} has no choices")
-                        return False
-
-            return True
-        except Exception as e:
-            logger.error(f"Error validating story structure: {e}")
-            return False
-
-    def get_available_chapters(self, player_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def start_story(self, player_data: Dict) -> Dict:
         """
-        Get available chapters for the player's current state.
+        Start or continue the story for a player.
 
         Args:
-            player_data: The player's current data
+            player_data (Dict): The player's data.
 
         Returns:
-            List of available chapters
+            Dict: The result of starting the story.
         """
         try:
-            available_chapters = []
+            # Get the current chapter ID from the player's story progress
+            story_progress = player_data.get("story_progress", {})
+            current_chapter_id = story_progress.get("current_chapter")
 
-            for arc_name, arc_data in self.story_structure.items():
-                for chapter in arc_data["chapters"]:
-                    # Check if chapter requirements are met
-                    requirements_met = True
-                    for req_key, req_value in chapter.get("requirements", {}).items():
-                        if req_key not in player_data or player_data[req_key] < req_value:
-                            requirements_met = False
-                            break
+            # If no current chapter, start from the beginning
+            if not current_chapter_id:
+                current_chapter_id = "1_1_arrival"
 
-                    if requirements_met:
-                        available_chapters.append({
-                            "arc": arc_name,
-                            "chapter": chapter
-                        })
+            # Load the chapter
+            chapter = self._load_chapter(current_chapter_id)
+            if not chapter:
+                return {"error": f"Chapter {current_chapter_id} not found"}
 
-            return available_chapters
+            # Process the chapter
+            result = chapter.process(player_data)
+            if "error" in result:
+                return result
+
+            # Update the player's story progress
+            player_data["story_progress"] = result.get("player_data", {}).get("story_progress", {})
+
+            # Add the chapter data to the result
+            result["chapter_data"] = chapter
+
+            return result
+
         except Exception as e:
-            logger.error(f"Error getting available chapters: {e}")
-            return []
+            logger.error(f"Error starting story: {str(e)}")
+            return {"error": f"Error starting story: {str(e)}"}
 
-    def get_chapter_data(self, arc_name: str, chapter_id: str) -> Optional[Dict[str, Any]]:
+    def _load_chapter(self, chapter_id: str) -> Optional[StoryChapter]:
         """
-        Get chapter data by arc name and chapter ID.
+        Load a chapter from the JSON file.
 
         Args:
-            arc_name: Name of the arc
-            chapter_id: ID of the chapter
+            chapter_id (str): The ID of the chapter to load.
 
         Returns:
-            Chapter data if found, None otherwise
+            Optional[StoryChapter]: The loaded chapter, or None if not found.
         """
         try:
-            if arc_name not in self.story_structure:
+            # Get the chapter path from the story data
+            chapter_path = self.story_data.get("chapters", {}).get(chapter_id, {}).get("path")
+            if not chapter_path:
+                logger.error(f"Chapter path not found for chapter {chapter_id}")
                 return None
 
-            for chapter in self.story_structure[arc_name]["chapters"]:
-                if chapter["id"] == chapter_id:
-                    return chapter
+            # Load the chapter file
+            with open(chapter_path, 'r', encoding='utf-8') as f:
+                chapter_data = json.load(f)
 
+            # Create a new StoryChapter instance
+            return StoryChapter(chapter_id, chapter_data, self.image_manager)
+
+        except FileNotFoundError:
+            logger.error(f"Chapter file not found: {chapter_path}")
+            return None
+        except json.JSONDecodeError:
+            logger.error(f"Error decoding chapter file: {chapter_path}")
             return None
         except Exception as e:
-            logger.error(f"Error getting chapter data: {e}")
+            logger.error(f"Error loading chapter {chapter_id}: {str(e)}")
             return None
 
-    def start_story(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+    def process_choice(self, player_data: Dict, choice_index: int) -> Dict:
         """
-        Start or continue the story mode for a player.
+        Process a player's choice in the story.
 
         Args:
-            player_data: The player's current data
+            player_data (Dict): The player's data.
+            choice_index (int): The index of the choice made.
 
         Returns:
-            Dictionary containing updated player data and chapter information
+            Dict: The result of processing the choice.
         """
         try:
-            # Initialize story progress if not exists
-            if "story_progress" not in player_data:
-                player_data["story_progress"] = {
-                    "current_chapter": None,
-                    "completed_chapters": [],
-                    "story_choices": {},
-                    "flags": {}
-                }
+            # Get the current chapter ID from the player's story progress
+            story_progress = player_data.get("story_progress", {})
+            current_chapter_id = story_progress.get("current_chapter")
 
-            # Get current chapter
-            current_chapter = player_data["story_progress"].get("current_chapter")
-            
-            # If no current chapter, start from the beginning
-            if not current_chapter:
-                current_chapter = "1_1_arrival"  # First chapter ID
-                player_data["story_progress"]["current_chapter"] = current_chapter
+            # If no current chapter, return an error
+            if not current_chapter_id:
+                return {"error": "No current chapter found"}
 
-            # Get chapter data
-            chapter_data = self.arc_manager.get_chapter(current_chapter)
-            if not chapter_data:
-                return {
-                    "error": f"Chapter {current_chapter} not found",
-                    "player_data": player_data
-                }
+            # Load the chapter
+            chapter = self._load_chapter(current_chapter_id)
+            if not chapter:
+                return {"error": f"Chapter {current_chapter_id} not found"}
 
-            # Serialize chapter data to a dictionary
-            serialized_chapter = {
-                "id": chapter_data.chapter_id,
-                "title": chapter_data.title,
-                "description": chapter_data.description,
-                "type": chapter_data.type,
-                "phase": chapter_data.phase,
-                "scenes": chapter_data.scenes,
-                "completion_exp": chapter_data.completion_exp,
-                "completion_tusd": chapter_data.completion_tusd
-            }
+            # Process the choice
+            result = chapter.process_choice(player_data, choice_index)
+            if "error" in result:
+                return result
 
-            return {
-                "player_data": player_data,
-                "chapter_data": serialized_chapter
-            }
+            # Update the player's story progress
+            player_data["story_progress"] = result.get("player_data", {}).get("story_progress", {})
+
+            # Add the chapter data to the result
+            result["chapter_data"] = chapter
+
+            return result
 
         except Exception as e:
-            logger.error(f"Error in start_story: {e}")
-            return {
-                "error": str(e),
-                "player_data": player_data
-            } 
+            logger.error(f"Error processing choice: {str(e)}")
+            return {"error": f"Error processing choice: {str(e)}"}
+
+    def get_available_events(self, player_data: Dict) -> List[Dict]:
+        """
+        Get the available events for a player.
+
+        Args:
+            player_data (Dict): The player's data.
+
+        Returns:
+            List[Dict]: The list of available events.
+        """
+        try:
+            # Get the current chapter ID from the player's story progress
+            story_progress = player_data.get("story_progress", {})
+            current_chapter_id = story_progress.get("current_chapter")
+
+            # If no current chapter, return an empty list
+            if not current_chapter_id:
+                return []
+
+            # Load the chapter
+            chapter = self._load_chapter(current_chapter_id)
+            if not chapter:
+                return []
+
+            # Get the available events
+            return chapter.get_available_events(player_data)
+
+        except Exception as e:
+            logger.error(f"Error getting available events: {str(e)}")
+            return []
+
+    def validate_story(self) -> List[str]:
+        """
+        Validate the story data.
+
+        Returns:
+            List[str]: List of validation errors.
+        """
+        return validate_story_data(self.story_data)
+
+    def get_chapter_info(self, chapter_id: str) -> Optional[Dict]:
+        """
+        Get information about a chapter.
+
+        Args:
+            chapter_id (str): The ID of the chapter.
+
+        Returns:
+            Optional[Dict]: The chapter information, or None if not found.
+        """
+        return self.story_data.get("chapters", {}).get(chapter_id)
+
+    def get_next_chapter(self, current_chapter_id: str) -> Optional[str]:
+        """
+        Get the next chapter ID.
+
+        Args:
+            current_chapter_id (str): The current chapter ID.
+
+        Returns:
+            Optional[str]: The next chapter ID, or None if not found.
+        """
+        chapter_info = self.get_chapter_info(current_chapter_id)
+        if not chapter_info:
+            return None
+
+        return chapter_info.get("next_chapter")
+
+    def get_previous_chapter(self, current_chapter_id: str) -> Optional[str]:
+        """
+        Get the previous chapter ID.
+
+        Args:
+            current_chapter_id (str): The current chapter ID.
+
+        Returns:
+            Optional[str]: The previous chapter ID, or None if not found.
+        """
+        chapter_info = self.get_chapter_info(current_chapter_id)
+        if not chapter_info:
+            return None
+
+        return chapter_info.get("previous_chapter")
+
+    def get_chapter_requirements(self, chapter_id: str) -> Dict:
+        """
+        Get the requirements for a chapter.
+
+        Args:
+            chapter_id (str): The ID of the chapter.
+
+        Returns:
+            Dict: The chapter requirements.
+        """
+        chapter_info = self.get_chapter_info(chapter_id)
+        if not chapter_info:
+            return {}
+
+        return chapter_info.get("requirements", {})
+
+    def check_chapter_requirements(self, player_data: Dict, chapter_id: str) -> bool:
+        """
+        Check if a player meets the requirements for a chapter.
+
+        Args:
+            player_data (Dict): The player's data.
+            chapter_id (str): The ID of the chapter.
+
+        Returns:
+            bool: True if the player meets the requirements, False otherwise.
+        """
+        requirements = self.get_chapter_requirements(chapter_id)
+        if not requirements:
+            return True
+
+        # Check level requirement
+        if "level" in requirements:
+            if player_data.get("level", 0) < requirements["level"]:
+                return False
+
+        # Check element requirement
+        if "element" in requirements:
+            if player_data.get("element") != requirements["element"]:
+                return False
+
+        # Check completed chapters requirement
+        if "completed_chapters" in requirements:
+            story_progress = player_data.get("story_progress", {})
+            completed_chapters = story_progress.get("completed_chapters", [])
+            for required_chapter in requirements["completed_chapters"]:
+                if required_chapter not in completed_chapters:
+                    return False
+
+        return True
+
+    def get_available_chapters(self, player_data: Dict) -> List[str]:
+        """
+        Get the list of chapters available to a player.
+
+        Args:
+            player_data (Dict): The player's data.
+
+        Returns:
+            List[str]: The list of available chapter IDs.
+        """
+        available_chapters = []
+        for chapter_id in self.story_data.get("chapters", {}):
+            if self.check_chapter_requirements(player_data, chapter_id):
+                available_chapters.append(chapter_id)
+
+        return available_chapters
+
+    def get_chapter_progress(self, player_data: Dict, chapter_id: str) -> Dict:
+        """
+        Get the progress of a player in a chapter.
+
+        Args:
+            player_data (Dict): The player's data.
+            chapter_id (str): The ID of the chapter.
+
+        Returns:
+            Dict: The chapter progress.
+        """
+        story_progress = player_data.get("story_progress", {})
+        chapter_progress = story_progress.get("chapter_progress", {}).get(chapter_id, {})
+
+        return {
+            "completed": chapter_id in story_progress.get("completed_chapters", []),
+            "current_scene": chapter_progress.get("current_scene"),
+            "choices_made": chapter_progress.get("choices_made", []),
+            "events_completed": chapter_progress.get("events_completed", []),
+            "items_collected": chapter_progress.get("items_collected", []),
+            "npcs_met": chapter_progress.get("npcs_met", []),
+            "locations_visited": chapter_progress.get("locations_visited", [])
+        }
+
+    def get_story_progress(self, player_data: Dict) -> Dict:
+        """
+        Get the overall story progress of a player.
+
+        Args:
+            player_data (Dict): The player's data.
+
+        Returns:
+            Dict: The story progress.
+        """
+        story_progress = player_data.get("story_progress", {})
+        completed_chapters = story_progress.get("completed_chapters", [])
+        total_chapters = len(self.story_data.get("chapters", {}))
+
+        return {
+            "current_chapter": story_progress.get("current_chapter"),
+            "completed_chapters": completed_chapters,
+            "total_chapters": total_chapters,
+            "completion_percentage": (len(completed_chapters) / total_chapters * 100) if total_chapters > 0 else 0,
+            "chapter_progress": {
+                chapter_id: self.get_chapter_progress(player_data, chapter_id)
+                for chapter_id in self.story_data.get("chapters", {})
+            }
+        } 

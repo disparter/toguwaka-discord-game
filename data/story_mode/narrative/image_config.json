@@ -1,0 +1,105 @@
+{
+  "base_path": "assets/images",
+  "fallback_image": "image_not_found.png",
+  "categories": {
+    "characters": {
+      "path": "characters",
+      "expressions": {
+        "default": "default.png",
+        "happy": "happy.png",
+        "sad": "sad.png",
+        "angry": "angry.png",
+        "surprised": "surprised.png",
+        "thinking": "thinking.png"
+      },
+      "professors": {
+        "elementus": "professor_elementus_intro.png",
+        "quantum": "professor_quantum_intro.png",
+        "chronos": "professora_chronos_intro.png"
+      },
+      "students": {
+        "mei": "mei_student.png",
+        "kai": "kai_flameheart_intro.png",
+        "mina": "mina_starlight_intro.png"
+      }
+    },
+    "locations": {
+      "path": "locations",
+      "types": {
+        "academy": "academy_entrance.png",
+        "classroom": "classroom.png",
+        "dormitory": "dormitory.png",
+        "training_field": "training_field.png",
+        "library": "library.png",
+        "cafeteria": "cafeteria.png",
+        "garden": "garden.png",
+        "dojo": "dojo.png",
+        "headmaster_office": "headmaster_office.png"
+      },
+      "academy": {
+        "entrance": "tokugawa_academy_gate.png",
+        "classroom": "tokugawa_classroom_arrival.png",
+        "library": "library_entrance.png",
+        "courtyard": "tokugawa_academy_courtyard.png"
+      },
+      "special": {
+        "portal": "portal_chamber.png",
+        "hidden": "hidden_chamber.png",
+        "rift": "dimensional_rift.png"
+      }
+    },
+    "romance": {
+      "path": "romance",
+      "scenes": {
+        "first_kiss": "romantic_first_kiss_training_field_glow.png",
+        "date_tea_garden": "romantic_date_hidden_tea_garden.png",
+        "date_library": "romantic_date_library.png",
+        "date_cafeteria": "romantic_date_cafeteria.png",
+        "date_garden": "romantic_date_garden.png",
+        "date_dojo": "romantic_date_dojo.png",
+        "confession": "romantic_confession.png",
+        "gift": "romantic_gift.png",
+        "dance": "romantic_dance.png"
+      }
+    },
+    "battle": {
+      "path": "battle",
+      "elements": {
+        "fire": "battle_fire.png",
+        "water": "battle_water.png",
+        "earth": "battle_earth.png",
+        "air": "battle_air.png",
+        "lightning": "battle_lightning.png",
+        "ice": "battle_ice.png",
+        "light": "battle_light.png",
+        "dark": "battle_dark.png"
+      }
+    },
+    "events": {
+      "path": "events",
+      "types": {
+        "festival": "festival.png",
+        "ceremony": "ceremony.png",
+        "tournament": "tournament.png",
+        "graduation": "graduation.png",
+        "club_activity": "club_activity.png",
+        "training": "training.png",
+        "exam": "exam.png",
+        "party": "party.png"
+      }
+    },
+    "npcs": {
+      "path": "npcs",
+      "characters": {
+        "headmaster": "headmaster_proud.png",
+        "professor_elementus": "professor_elementus_intro.png",
+        "mysterious_figure": "mysterious_figure.png",
+        "student_council_president": "student_council_president.png",
+        "club_leader": "club_leader.png",
+        "rival": "rival.png",
+        "mentor": "mentor.png",
+        "friend": "friend.png"
+      }
+    }
+  }
+} 

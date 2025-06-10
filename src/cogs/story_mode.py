@@ -9,6 +9,7 @@ from story_mode.club_system import ClubSystem
 from story_mode.consequences import DynamicConsequencesSystem
 from story_mode.relationship_system import RelationshipSystem
 from story_mode.story_mode import StoryMode
+from story_mode.image_manager import ImageManager
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.json_utils import dumps as json_dumps
 from utils.persistence import db_provider
@@ -29,6 +30,7 @@ class StoryModeCog(commands.Cog):
         self.club_system = ClubSystem()
         self.consequences_system = DynamicConsequencesSystem()
         self.relationship_system = RelationshipSystem()
+        self.image_manager = ImageManager()
 
         logger.info("StoryModeCog initialized")
 
@@ -577,185 +579,62 @@ class StoryModeCog(commands.Cog):
             )
             await channel.send(embed=embed)
 
-        # Check if a challenge was just failed
-        if "challenge_failure" in result and result["challenge_failure"]:
-            embed = create_basic_embed(
-                title="Desafio Falhou",
-                description="Você falhou no desafio. Isso terá consequências para sua jornada.",
-                color=discord.Color.red()
-            )
-            await channel.send(embed=embed)
-
-        # If there's a current dialogue, send it
+        # Process dialogues
         if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
             dialogue = chapter_data["current_dialogue"]
-
-            # Format the dialogue
-            npc_name = dialogue.get("npc", "Narrador")
-            text = dialogue.get("text", "...")
-
-            # Replace placeholders in the text with player-specific information
-            player_data = await db_provider.get_player(user_id)
-            if player_data:
-                text = text.format(
-                    player_name=player_data["name"],
-                    player_level=player_data["level"],
-                    player_element=player_data.get("element", "desconhecido")
-                )
-
-            # Create embed for the dialogue
             embed = create_basic_embed(
-                title=npc_name,
-                description=text,
+                title=dialogue.get("title", "Diálogo"),
+                description=dialogue["text"],
                 color=discord.Color.blue()
             )
 
             # Add character intro images for first interactions
             if "image" in dialogue and dialogue["image"]:
-                image_filename = dialogue["image"]
-                image_path = f"assets/images/{image_filename}"
-                if os.path.exists(image_path):
+                image_path = self.image_manager.get_image_path(dialogue["image"])
+                if self.image_manager.validate_image(image_path):
                     try:
-                        # Check file size
-                        file_size = os.path.getsize(image_path)
-                        if file_size <= 8 * 1024 * 1024:  # 8MB limit
-                            embed.set_image(url=f"attachment://{image_filename}")
-                            file = discord.File(image_path, filename=image_filename)
-                            await channel.send(embed=embed, file=file)
-                        else:
-                            logger.warning(
-                                f"Image file {image_filename} is too large ({file_size / 1024 / 1024:.2f}MB) and couldn't be sent")
-                            await channel.send(embed=embed)
+                        embed.set_image(url=f"attachment://{os.path.basename(image_path)}")
+                        file = discord.File(image_path, filename=os.path.basename(image_path))
+                        await channel.send(embed=embed, file=file)
                     except Exception as e:
-                        logger.error(f"Error sending image {image_filename}: {str(e)}")
+                        logger.error(f"Error sending image {image_path}: {str(e)}")
                         await channel.send(embed=embed)
                 else:
-                    logger.warning(f"Image file {image_filename} not found at {image_path}")
+                    logger.warning(f"Image file {image_path} not found or too large")
                     await channel.send(embed=embed)
             else:
                 await channel.send(embed=embed)
 
-            # If the dialogue has choices, add buttons for those choices
-            if "choices" in dialogue and dialogue["choices"]:
-                view = discord.ui.View(timeout=300)
-
-                for i, choice in enumerate(dialogue["choices"]):
-                    # Ensure button label is not longer than 80 characters (Discord's limit)
-                    label = choice["text"]
-                    if len(label) > 80:
-                        label = label[:77] + "..."
-
-                    button = discord.ui.Button(
-                        style=discord.ButtonStyle.primary,
-                        label=label,
-                        custom_id=f"choice_{i}"
-                    )
-                    button.callback = self._create_choice_callback(user_id, i)
-                    view.add_item(button)
-
-                # Send choices
-                if file:
-                    message = await channel.send(file=file, embed=embed, view=view)
-                else:
-                    message = await channel.send(embed=embed, view=view)
-                return
-
-            # If there are choices in the chapter data but not in the dialogue, check if we should show them
-            elif "choices" in chapter_data and chapter_data["choices"]:
-                # This is a story event with choices
-                view = discord.ui.View(timeout=300)
-
-                for i, choice in enumerate(chapter_data["choices"]):
-                    # Ensure button label is not longer than 80 characters (Discord's limit)
-                    label = choice["text"]
-                    if len(label) > 80:
-                        label = label[:77] + "..."
-
-                    button = discord.ui.Button(
-                        style=discord.ButtonStyle.primary,
-                        label=label,
-                        custom_id=f"choice_{i}"
-                    )
-                    button.callback = self._create_choice_callback(user_id, i)
-                    view.add_item(button)
-
-                # Send choices
-                if file:
-                    message = await channel.send(file=file, embed=embed, view=view)
-                else:
-                    message = await channel.send(embed=embed, view=view)
-                return
-            else:
-                # If no choices, add a "Continue" button
-                view = discord.ui.View(timeout=300)
-                # "Continuar" is short enough, but adding the check for consistency
-                label = "Continuar"
-                if len(label) > 80:
-                    label = label[:77] + "..."
-
-                button = discord.ui.Button(
-                    style=discord.ButtonStyle.primary,
-                    label=label,
-                    custom_id="continue"
-                )
-                button.callback = self._create_continue_callback(user_id)
-                view.add_item(button)
-
-                # Send continue button
-                if file:
-                    message = await channel.send(file=file, embed=embed, view=view)
-                else:
-                    message = await channel.send(embed=embed, view=view)
-                return
-
-        # If there are choices but no current dialogue, send the choices
+        # Process choices
         if "choices" in chapter_data and chapter_data["choices"]:
-            # Check if this is a challenge chapter
-            challenge_type = chapter_data.get("challenge_type")
-            if challenge_type:
-                title = f"Desafio: {challenge_type.capitalize()}"
-                description = "Escolha como enfrentar este desafio:"
-                color = discord.Color.gold()
-            else:
-                title = "Escolha uma opção"
-                description = "O que você deseja fazer?"
-                color = discord.Color.blue()
-
+            choices = chapter_data["choices"]
             embed = create_basic_embed(
-                title=title,
-                description=description,
-                color=color
+                title="Escolhas Disponíveis",
+                description="Escolha uma opção:",
+                color=discord.Color.blue()
             )
 
-            view = discord.ui.View(timeout=300)
+            for i, choice in enumerate(choices):
+                embed.add_field(
+                    name=f"Opção {i+1}",
+                    value=choice["text"],
+                    inline=False
+                )
 
-            for i, choice in enumerate(chapter_data["choices"]):
-                # Ensure button label is not longer than 80 characters (Discord's limit)
-                label = choice["text"]
-                if len(label) > 80:
-                    label = label[:77] + "..."
+            await channel.send(embed=embed)
 
+            # Create view with choice buttons
+            view = discord.ui.View()
+            for i, choice in enumerate(choices):
                 button = discord.ui.Button(
-                    style=discord.ButtonStyle.primary,
-                    label=label,
-                    custom_id=f"choice_{i}"
+                    label=f"Opção {i+1}",
+                    custom_id=f"choice_{i}",
+                    style=discord.ButtonStyle.primary
                 )
                 button.callback = self._create_choice_callback(user_id, i)
                 view.add_item(button)
 
-            # Send choices
-            message = await channel.send(embed=embed, view=view)
-            return
-
-        # If no dialogue or choices, check if we have a current dialogue in the chapter data
-        chapter_data = result.get("chapter_data", {})
-
-        # Check if we have a current dialogue or choices in the chapter data
-        has_content = False
-        if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
-            has_content = True
-        elif "choices" in chapter_data and chapter_data["choices"]:
-            has_content = True
+            await channel.send("Escolha uma opção:", view=view)
 
         # If we have content but it's not being displayed, there's an issue
         if has_content:

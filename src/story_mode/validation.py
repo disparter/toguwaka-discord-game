@@ -4,6 +4,8 @@ import json
 import re
 from .narrative_logger import get_narrative_logger
 from pathlib import Path
+import os
+from story_mode.image_manager import ImageManager
 
 # Set up logging
 logger = logging.getLogger('tokugawa_bot')
@@ -526,3 +528,657 @@ def get_story_validator(data_dir: str = "data") -> StoryValidator:
     if _story_validator is None:
         _story_validator = StoryValidator(data_dir)
     return _story_validator
+
+def validate_story_data(story_data: Dict) -> List[str]:
+    """
+    Validate the story data.
+
+    Args:
+        story_data (Dict): The story data to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the story data is empty
+    if not story_data:
+        errors.append("Story data is empty")
+        return errors
+
+    # Check if the story data has the required fields
+    required_fields = ["chapters", "arcs", "romance_routes", "club_arcs"]
+    for field in required_fields:
+        if field not in story_data:
+            errors.append(f"Missing required field: {field}")
+
+    # Validate chapters
+    if "chapters" in story_data:
+        errors.extend(validate_chapters(story_data["chapters"]))
+
+    # Validate arcs
+    if "arcs" in story_data:
+        errors.extend(validate_arcs(story_data["arcs"]))
+
+    # Validate romance routes
+    if "romance_routes" in story_data:
+        errors.extend(validate_romance_routes(story_data["romance_routes"]))
+
+    # Validate club arcs
+    if "club_arcs" in story_data:
+        errors.extend(validate_club_arcs(story_data["club_arcs"]))
+
+    return errors
+
+def validate_chapters(chapters: Dict) -> List[str]:
+    """
+    Validate the chapters.
+
+    Args:
+        chapters (Dict): The chapters to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+    image_manager = ImageManager()
+
+    for chapter_id, chapter_data in chapters.items():
+        # Check if the chapter has the required fields
+        required_fields = ["title", "description", "type", "phase", "scenes"]
+        for field in required_fields:
+            if field not in chapter_data:
+                errors.append(f"Chapter {chapter_id} is missing required field: {field}")
+
+        # Validate scenes
+        if "scenes" in chapter_data:
+            errors.extend(validate_scenes(chapter_data["scenes"], image_manager))
+
+        # Validate requirements
+        if "requirements" in chapter_data:
+            errors.extend(validate_requirements(chapter_data["requirements"]))
+
+    return errors
+
+def validate_scenes(scenes: List[Dict], image_manager: ImageManager) -> List[str]:
+    """
+    Validate the scenes.
+
+    Args:
+        scenes (List[Dict]): The scenes to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    for i, scene in enumerate(scenes):
+        # Check if the scene has the required fields
+        required_fields = ["type"]
+        for field in required_fields:
+            if field not in scene:
+                errors.append(f"Scene {i} is missing required field: {field}")
+
+        # Validate scene type
+        scene_type = scene.get("type")
+        if scene_type == "dialogue":
+            errors.extend(validate_dialogue_scene(scene, image_manager))
+        elif scene_type == "choice":
+            errors.extend(validate_choice_scene(scene, image_manager))
+        elif scene_type == "event":
+            errors.extend(validate_event_scene(scene, image_manager))
+        elif scene_type == "battle":
+            errors.extend(validate_battle_scene(scene, image_manager))
+        elif scene_type == "romance":
+            errors.extend(validate_romance_scene(scene, image_manager))
+        else:
+            errors.append(f"Scene {i} has unknown type: {scene_type}")
+
+    return errors
+
+def validate_dialogue_scene(scene: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate a dialogue scene.
+
+    Args:
+        scene (Dict): The scene to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the scene has the required fields
+    if "dialogue" not in scene:
+        errors.append("Dialogue scene is missing required field: dialogue")
+        return errors
+
+    dialogue = scene["dialogue"]
+
+    # Check if the dialogue has the required fields
+    required_fields = ["character", "text"]
+    for field in required_fields:
+        if field not in dialogue:
+            errors.append(f"Dialogue is missing required field: {field}")
+
+    # Validate character
+    if "character" in dialogue:
+        character = dialogue["character"]
+        if "id" not in character:
+            errors.append("Character is missing required field: id")
+        elif "image" in character:
+            image_path = image_manager.get_character_image(
+                character["id"],
+                character.get("expression", "default")
+            )
+            if not image_manager.validate_image(image_path):
+                errors.append(f"Character image not found or invalid: {image_path}")
+
+    # Validate background
+    if "background" in scene:
+        background = scene["background"]
+        if "id" not in background:
+            errors.append("Background is missing required field: id")
+        else:
+            image_path = image_manager.get_location_image(
+                background["id"],
+                background.get("type", "default")
+            )
+            if not image_manager.validate_image(image_path):
+                errors.append(f"Background image not found or invalid: {image_path}")
+
+    # Validate choices
+    if "choices" in dialogue:
+        errors.extend(validate_choices(dialogue["choices"], image_manager))
+
+    return errors
+
+def validate_choice_scene(scene: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate a choice scene.
+
+    Args:
+        scene (Dict): The scene to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the scene has the required fields
+    required_fields = ["title", "description", "choices"]
+    for field in required_fields:
+        if field not in scene:
+            errors.append(f"Choice scene is missing required field: {field}")
+
+    # Validate background
+    if "background" in scene:
+        background = scene["background"]
+        if "id" not in background:
+            errors.append("Background is missing required field: id")
+        else:
+            image_path = image_manager.get_location_image(
+                background["id"],
+                background.get("type", "default")
+            )
+            if not image_manager.validate_image(image_path):
+                errors.append(f"Background image not found or invalid: {image_path}")
+
+    # Validate choices
+    if "choices" in scene:
+        errors.extend(validate_choices(scene["choices"], image_manager))
+
+    return errors
+
+def validate_event_scene(scene: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate an event scene.
+
+    Args:
+        scene (Dict): The scene to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the scene has the required fields
+    if "event" not in scene:
+        errors.append("Event scene is missing required field: event")
+        return errors
+
+    event = scene["event"]
+
+    # Check if the event has the required fields
+    required_fields = ["id", "type", "name", "description"]
+    for field in required_fields:
+        if field not in event:
+            errors.append(f"Event is missing required field: {field}")
+
+    # Validate event image
+    if "type" in event:
+        image_path = image_manager.get_event_image(event["type"])
+        if not image_manager.validate_image(image_path):
+            errors.append(f"Event image not found or invalid: {image_path}")
+
+    # Validate background
+    if "background" in scene:
+        background = scene["background"]
+        if "id" not in background:
+            errors.append("Background is missing required field: id")
+        else:
+            image_path = image_manager.get_location_image(
+                background["id"],
+                background.get("type", "default")
+            )
+            if not image_manager.validate_image(image_path):
+                errors.append(f"Background image not found or invalid: {image_path}")
+
+    # Validate choices
+    if "choices" in event:
+        errors.extend(validate_choices(event["choices"], image_manager))
+
+    return errors
+
+def validate_battle_scene(scene: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate a battle scene.
+
+    Args:
+        scene (Dict): The scene to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the scene has the required fields
+    if "battle" not in scene:
+        errors.append("Battle scene is missing required field: battle")
+        return errors
+
+    battle = scene["battle"]
+
+    # Check if the battle has the required fields
+    required_fields = ["id", "element", "name", "description"]
+    for field in required_fields:
+        if field not in battle:
+            errors.append(f"Battle is missing required field: {field}")
+
+    # Validate battle image
+    if "element" in battle:
+        image_path = image_manager.get_battle_image(battle["element"])
+        if not image_manager.validate_image(image_path):
+            errors.append(f"Battle image not found or invalid: {image_path}")
+
+    # Validate background
+    if "background" in scene:
+        background = scene["background"]
+        if "id" not in background:
+            errors.append("Background is missing required field: id")
+        else:
+            image_path = image_manager.get_location_image(
+                background["id"],
+                background.get("type", "default")
+            )
+            if not image_manager.validate_image(image_path):
+                errors.append(f"Background image not found or invalid: {image_path}")
+
+    # Validate choices
+    if "choices" in battle:
+        errors.extend(validate_choices(battle["choices"], image_manager))
+
+    return errors
+
+def validate_romance_scene(scene: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate a romance scene.
+
+    Args:
+        scene (Dict): The scene to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the scene has the required fields
+    if "romance" not in scene:
+        errors.append("Romance scene is missing required field: romance")
+        return errors
+
+    romance = scene["romance"]
+
+    # Check if the romance has the required fields
+    required_fields = ["id", "type", "name", "description"]
+    for field in required_fields:
+        if field not in romance:
+            errors.append(f"Romance is missing required field: {field}")
+
+    # Validate romance image
+    if "type" in romance:
+        image_path = image_manager.get_romance_image(romance["type"])
+        if not image_manager.validate_image(image_path):
+            errors.append(f"Romance image not found or invalid: {image_path}")
+
+    # Validate background
+    if "background" in scene:
+        background = scene["background"]
+        if "id" not in background:
+            errors.append("Background is missing required field: id")
+        else:
+            image_path = image_manager.get_location_image(
+                background["id"],
+                background.get("type", "default")
+            )
+            if not image_manager.validate_image(image_path):
+                errors.append(f"Background image not found or invalid: {image_path}")
+
+    # Validate choices
+    if "choices" in romance:
+        errors.extend(validate_choices(romance["choices"], image_manager))
+
+    return errors
+
+def validate_choices(choices: List[Dict], image_manager: ImageManager) -> List[str]:
+    """
+    Validate the choices.
+
+    Args:
+        choices (List[Dict]): The choices to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    for i, choice in enumerate(choices):
+        # Check if the choice has the required fields
+        required_fields = ["text", "type"]
+        for field in required_fields:
+            if field not in choice:
+                errors.append(f"Choice {i} is missing required field: {field}")
+
+        # Validate choice type
+        choice_type = choice.get("type")
+        if choice_type == "story":
+            errors.extend(validate_story_choice(choice))
+        elif choice_type == "battle":
+            errors.extend(validate_battle_choice(choice, image_manager))
+        elif choice_type == "romance":
+            errors.extend(validate_romance_choice(choice, image_manager))
+        elif choice_type == "event":
+            errors.extend(validate_event_choice(choice, image_manager))
+        else:
+            errors.append(f"Choice {i} has unknown type: {choice_type}")
+
+    return errors
+
+def validate_story_choice(choice: Dict) -> List[str]:
+    """
+    Validate a story choice.
+
+    Args:
+        choice (Dict): The choice to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the choice has effects
+    if "effects" not in choice:
+        errors.append("Story choice is missing required field: effects")
+
+    return errors
+
+def validate_battle_choice(choice: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate a battle choice.
+
+    Args:
+        choice (Dict): The choice to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the choice has the required fields
+    if "battle" not in choice:
+        errors.append("Battle choice is missing required field: battle")
+        return errors
+
+    battle = choice["battle"]
+
+    # Check if the battle has the required fields
+    required_fields = ["id", "element", "name", "description"]
+    for field in required_fields:
+        if field not in battle:
+            errors.append(f"Battle is missing required field: {field}")
+
+    # Validate battle image
+    if "element" in battle:
+        image_path = image_manager.get_battle_image(battle["element"])
+        if not image_manager.validate_image(image_path):
+            errors.append(f"Battle image not found or invalid: {image_path}")
+
+    # Check if the battle has effects
+    if "effects" not in battle:
+        errors.append("Battle is missing required field: effects")
+
+    return errors
+
+def validate_romance_choice(choice: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate a romance choice.
+
+    Args:
+        choice (Dict): The choice to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the choice has the required fields
+    if "romance" not in choice:
+        errors.append("Romance choice is missing required field: romance")
+        return errors
+
+    romance = choice["romance"]
+
+    # Check if the romance has the required fields
+    required_fields = ["id", "type", "name", "description"]
+    for field in required_fields:
+        if field not in romance:
+            errors.append(f"Romance is missing required field: {field}")
+
+    # Validate romance image
+    if "type" in romance:
+        image_path = image_manager.get_romance_image(romance["type"])
+        if not image_manager.validate_image(image_path):
+            errors.append(f"Romance image not found or invalid: {image_path}")
+
+    # Check if the romance has effects
+    if "effects" not in romance:
+        errors.append("Romance is missing required field: effects")
+
+    return errors
+
+def validate_event_choice(choice: Dict, image_manager: ImageManager) -> List[str]:
+    """
+    Validate an event choice.
+
+    Args:
+        choice (Dict): The choice to validate.
+        image_manager (ImageManager): The image manager.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the choice has the required fields
+    if "event" not in choice:
+        errors.append("Event choice is missing required field: event")
+        return errors
+
+    event = choice["event"]
+
+    # Check if the event has the required fields
+    required_fields = ["id", "type", "name", "description"]
+    for field in required_fields:
+        if field not in event:
+            errors.append(f"Event is missing required field: {field}")
+
+    # Validate event image
+    if "type" in event:
+        image_path = image_manager.get_event_image(event["type"])
+        if not image_manager.validate_image(image_path):
+            errors.append(f"Event image not found or invalid: {image_path}")
+
+    # Check if the event has effects
+    if "effects" not in event:
+        errors.append("Event is missing required field: effects")
+
+    return errors
+
+def validate_requirements(requirements: Dict) -> List[str]:
+    """
+    Validate the requirements.
+
+    Args:
+        requirements (Dict): The requirements to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    # Check if the requirements have valid fields
+    valid_fields = ["level", "element", "completed_chapters"]
+    for field in requirements:
+        if field not in valid_fields:
+            errors.append(f"Unknown requirement field: {field}")
+
+    # Validate level requirement
+    if "level" in requirements:
+        if not isinstance(requirements["level"], int) or requirements["level"] < 1:
+            errors.append("Level requirement must be a positive integer")
+
+    # Validate element requirement
+    if "element" in requirements:
+        valid_elements = ["fire", "water", "earth", "air", "lightning", "ice", "light", "dark"]
+        if requirements["element"] not in valid_elements:
+            errors.append(f"Invalid element requirement: {requirements['element']}")
+
+    # Validate completed chapters requirement
+    if "completed_chapters" in requirements:
+        if not isinstance(requirements["completed_chapters"], list):
+            errors.append("Completed chapters requirement must be a list")
+        else:
+            for chapter_id in requirements["completed_chapters"]:
+                if not isinstance(chapter_id, str):
+                    errors.append("Completed chapters requirement must contain string chapter IDs")
+
+    return errors
+
+def validate_arcs(arcs: Dict) -> List[str]:
+    """
+    Validate the arcs.
+
+    Args:
+        arcs (Dict): The arcs to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    for arc_id, arc_data in arcs.items():
+        # Check if the arc has the required fields
+        required_fields = ["name", "description", "chapters"]
+        for field in required_fields:
+            if field not in arc_data:
+                errors.append(f"Arc {arc_id} is missing required field: {field}")
+
+        # Validate chapters
+        if "chapters" in arc_data:
+            if not isinstance(arc_data["chapters"], list):
+                errors.append(f"Arc {arc_id} chapters must be a list")
+            else:
+                for chapter_id in arc_data["chapters"]:
+                    if not isinstance(chapter_id, str):
+                        errors.append(f"Arc {arc_id} chapters must contain string chapter IDs")
+
+    return errors
+
+def validate_romance_routes(romance_routes: Dict) -> List[str]:
+    """
+    Validate the romance routes.
+
+    Args:
+        romance_routes (Dict): The romance routes to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    for route_id, route_data in romance_routes.items():
+        # Check if the route has the required fields
+        required_fields = ["name", "description", "chapters"]
+        for field in required_fields:
+            if field not in route_data:
+                errors.append(f"Romance route {route_id} is missing required field: {field}")
+
+        # Validate chapters
+        if "chapters" in route_data:
+            if not isinstance(route_data["chapters"], list):
+                errors.append(f"Romance route {route_id} chapters must be a list")
+            else:
+                for chapter_id in route_data["chapters"]:
+                    if not isinstance(chapter_id, str):
+                        errors.append(f"Romance route {route_id} chapters must contain string chapter IDs")
+
+    return errors
+
+def validate_club_arcs(club_arcs: Dict) -> List[str]:
+    """
+    Validate the club arcs.
+
+    Args:
+        club_arcs (Dict): The club arcs to validate.
+
+    Returns:
+        List[str]: List of validation errors.
+    """
+    errors = []
+
+    for club_id, club_data in club_arcs.items():
+        # Check if the club has the required fields
+        required_fields = ["name", "description", "chapters"]
+        for field in required_fields:
+            if field not in club_data:
+                errors.append(f"Club arc {club_id} is missing required field: {field}")
+
+        # Validate chapters
+        if "chapters" in club_data:
+            if not isinstance(club_data["chapters"], list):
+                errors.append(f"Club arc {club_id} chapters must be a list")
+            else:
+                for chapter_id in club_data["chapters"]:
+                    if not isinstance(chapter_id, str):
+                        errors.append(f"Club arc {club_id} chapters must contain string chapter IDs")
+
+    return errors
