@@ -185,12 +185,25 @@ class DBProvider:
     async def store_cooldown(self, user_id: str, command: str, expiry_time: datetime) -> bool:
         """Store command cooldown in database."""
         try:
-            self.PLAYERS_TABLE.update_item(
-                Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
-                UpdateExpression='SET cooldowns.#command = :expiry',
-                ExpressionAttributeValues={':expiry': expiry_time.isoformat()},
-                ExpressionAttributeNames={'#command': command}
-            )
+            # First check if the player has a cooldowns field
+            response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
+            player = response.get('Item', {})
+
+            if 'cooldowns' not in player:
+                # If cooldowns doesn't exist, create it with the new command
+                self.PLAYERS_TABLE.update_item(
+                    Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
+                    UpdateExpression='SET cooldowns = :cooldowns',
+                    ExpressionAttributeValues={':cooldowns': {command: expiry_time.isoformat()}}
+                )
+            else:
+                # If cooldowns exists, update the specific command
+                self.PLAYERS_TABLE.update_item(
+                    Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
+                    UpdateExpression='SET cooldowns.#command = :expiry',
+                    ExpressionAttributeValues={':expiry': expiry_time.isoformat()},
+                    ExpressionAttributeNames={'#command': command}
+                )
             return True
         except Exception as e:
             logger.error(f"Error storing cooldown for command {command} for player {user_id}: {str(e)}")
@@ -208,8 +221,33 @@ class DBProvider:
             logger.error(f"Error getting cooldown for command {command} for player {user_id}: {str(e)}")
             return None
 
-    async def get_cooldowns(self, *args, **kwargs) -> List[Dict[str, Any]]:
-        return []
+    async def get_cooldowns(self, user_id: str = None) -> Dict[str, Dict[str, str]]:
+        """Get cooldowns for a user or all cooldowns if user_id is None."""
+        try:
+            if user_id:
+                # Get cooldowns for a specific user
+                response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
+                player = response.get('Item', {})
+                if player and 'cooldowns' in player:
+                    return {user_id: player['cooldowns']}
+                return {}
+            else:
+                # Get cooldowns for all users
+                response = self.PLAYERS_TABLE.scan(
+                    FilterExpression='attribute_exists(cooldowns)',
+                    ProjectionExpression='PK, cooldowns'
+                )
+
+                cooldowns = {}
+                for player in response.get('Items', []):
+                    if 'cooldowns' in player:
+                        user_id = player['PK'].split('#')[1]
+                        cooldowns[user_id] = player['cooldowns']
+
+                return cooldowns
+        except Exception as e:
+            logger.error(f"Error getting cooldowns: {str(e)}")
+            return {}
 
     async def clear_expired_cooldowns(self) -> int:
         """Clear expired cooldowns from database."""
@@ -545,8 +583,8 @@ def get_player(user_id: str) -> Optional[Dict[str, Any]]:
         # If we're already in an event loop, use run_coroutine_threadsafe
         future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
         try:
-            # Add a timeout of 5 seconds to prevent deadlock
-            return future.result(timeout=5)
+            # Add a timeout of 15 seconds to prevent deadlock
+            return future.result(timeout=15)
         except concurrent.futures.TimeoutError:
             logger.error(f"Timeout waiting for get_player({user_id})")
             return None

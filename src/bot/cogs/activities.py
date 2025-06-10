@@ -708,21 +708,12 @@ class Activities(commands.Cog):
     async def _check_cooldown(self, user_id, command):
         """Check if a command is on cooldown for a user."""
         try:
-            # Get cooldowns from database
-            cooldowns = await db_provider.get_cooldowns()
+            # Get cooldown directly for this user and command
+            cooldown = await db_provider.get_cooldown(str(user_id), command)
 
-            # Ensure cooldowns is a dictionary
-            if not isinstance(cooldowns, dict):
-                logger.warning(f"Cooldowns is not a dictionary: {type(cooldowns)}")
-                return None
-
-            user_cooldowns = cooldowns.get(str(user_id), {})
-            command_cooldown = user_cooldowns.get(command)
-
-            if command_cooldown:
-                expiry = datetime.fromtimestamp(command_cooldown)
-                if datetime.now() < expiry:
-                    remaining = expiry - datetime.now()
+            if cooldown:
+                if datetime.now() < cooldown:
+                    remaining = cooldown - datetime.now()
                     minutes = int(remaining.total_seconds() // 60)
                     seconds = int(remaining.total_seconds() % 60)
                     return f"{minutes}m {seconds}s"

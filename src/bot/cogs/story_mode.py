@@ -1034,7 +1034,7 @@ async def setup(bot):
     """
     Setup function for the cog.
     """
-    from utils.command_registrar import CommandRegistrar
+    from src.utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = StoryModeCog(bot)

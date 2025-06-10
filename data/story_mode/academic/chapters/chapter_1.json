@@ -1,0 +1,40 @@
+{
+    "id": "chapter_1",
+    "name": "The Beginning",
+    "description": "Your first day at Academia Tokugawa",
+    "requirements": {
+        "level": 1
+    },
+    "choices": [
+        {
+            "id": "choice_1",
+            "text": "Explore the campus",
+            "consequences": {
+                "stat_changes": {
+                    "dexterity": 1
+                },
+                "reputation_change": 5
+            }
+        },
+        {
+            "id": "choice_2",
+            "text": "Visit the library",
+            "consequences": {
+                "stat_changes": {
+                    "intellect": 1
+                },
+                "reputation_change": 5
+            }
+        },
+        {
+            "id": "choice_3",
+            "text": "Meet other students",
+            "consequences": {
+                "stat_changes": {
+                    "charisma": 1
+                },
+                "reputation_change": 5
+            }
+        }
+    ]
+} 
