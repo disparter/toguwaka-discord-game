@@ -167,7 +167,7 @@ async def on_ready():
 
     # Initialize database
     try:
-        if init_db():
+        if await init_db():
             logger.info("Database initialized successfully")
         else:
             logger.error("Failed to initialize database")
@@ -187,7 +187,7 @@ async def on_ready():
             logger.error("Failed to sync data to DynamoDB")
             await bot.close()
             return
-        
+
         # Normalize player data
         logger.info("Starting player data normalization...")
         success = await normalize_player_data()

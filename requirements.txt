@@ -5,3 +5,4 @@ boto3==1.28.38
 pytz==2023.3
 matplotlib==3.7.2
 numpy==1.25.2
+jsonschema==4.19.0
