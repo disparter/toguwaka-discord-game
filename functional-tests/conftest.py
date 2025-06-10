@@ -4,6 +4,14 @@ import boto3
 from localstack_client.config import Config
 from localstack_client.session import Session
 
+# Test channel configuration
+TEST_CHANNEL_NAME = "tokugawa-bot-tests"
+
+@pytest.fixture(scope="session")
+def test_channel():
+    """Provide the test channel name for all tests."""
+    return TEST_CHANNEL_NAME
+
 @pytest.fixture(scope="session")
 def localstack():
     """Initialize LocalStack services."""

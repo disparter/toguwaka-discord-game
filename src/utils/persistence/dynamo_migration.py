@@ -11,8 +11,9 @@ import boto3
 import json
 import logging
 import time
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 from datetime import datetime
+from decimal import Decimal
 from botocore.exceptions import ClientError
 
 # Configure logging
@@ -103,15 +104,29 @@ def wait_for_dynamodb():
     logger.error("Timeout waiting for DynamoDB tables")
     return False
 
+def convert_floats_to_decimal(obj: Any) -> Any:
+    """Recursively convert float values to Decimal for DynamoDB compatibility."""
+    if isinstance(obj, float):
+        return Decimal(str(obj))
+    elif isinstance(obj, dict):
+        return {k: convert_floats_to_decimal(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_floats_to_decimal(item) for item in obj]
+    return obj
+
 def migrate_inventory(inventory_str: str, user_id: str) -> List[Dict[str, Any]]:
     """Migrate inventory data to new format."""
     try:
         inventory = json.loads(inventory_str)
         items = []
         for item_id, item_data in inventory.items():
+            # Convert any float values to Decimal
+            item_data = convert_floats_to_decimal(item_data)
+
             items.append({
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
+                'JogadorID': user_id,  # Add the required JogadorID field
                 'item_data': item_data,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()
@@ -216,6 +231,9 @@ async def normalize_player_data() -> bool:
                 if 'created_at' not in player:
                     player['created_at'] = datetime.now().isoformat()
                     logger.info(f"Added missing created_at timestamp for player {player_id}")
+
+                # Convert float values to Decimal for DynamoDB compatibility
+                player = convert_floats_to_decimal(player)
 
                 # Write updated player data
                 logger.info(f"Writing updated data for player {player_id} to DynamoDB...")

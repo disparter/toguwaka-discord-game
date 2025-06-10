@@ -6,7 +6,7 @@ import json
 scenarios('../features/inventory_management.feature')
 
 @given(parsers.parse('a player with ID "{player_id}" exists'))
-def player_exists(player_id, localstack):
+def player_exists(player_id, test_channel, localstack):
     """Create a player record in DynamoDB."""
     dynamodb = localstack['dynamodb']
     
@@ -14,6 +14,7 @@ def player_exists(player_id, localstack):
     player_data = {
         'player_id': {'S': player_id},
         'name': {'S': 'TestPlayer'},
+        'channel_name': {'S': test_channel},
         'inventory': {'M': {}}
     }
     
@@ -22,7 +23,10 @@ def player_exists(player_id, localstack):
         Item=player_data
     )
     
-    return {'player_id': player_id}
+    return {
+        'player_id': player_id,
+        'channel_name': test_channel
+    }
 
 @when(parsers.parse('he receives a new item "{item_name}" with quantity {quantity:d}'))
 def receive_new_item(item_name, quantity, player_exists, localstack):
@@ -30,6 +34,7 @@ def receive_new_item(item_name, quantity, player_exists, localstack):
     dynamodb = localstack['dynamodb']
     cloudwatch = localstack['cloudwatch']
     player_id = player_exists['player_id']
+    channel_name = player_exists['channel_name']
     
     # Update inventory
     dynamodb.update_item(
@@ -49,7 +54,8 @@ def receive_new_item(item_name, quantity, player_exists, localstack):
             'Unit': 'Count',
             'Dimensions': [
                 {'Name': 'ItemName', 'Value': item_name},
-                {'Name': 'PlayerId', 'Value': player_id}
+                {'Name': 'PlayerId', 'Value': player_id},
+                {'Name': 'Channel', 'Value': channel_name}
             ]
         }]
     )
@@ -57,7 +63,8 @@ def receive_new_item(item_name, quantity, player_exists, localstack):
     return {
         'player_id': player_id,
         'item_name': item_name,
-        'quantity': quantity
+        'quantity': quantity,
+        'channel_name': channel_name
     }
 
 @then("the item should be added to his inventory in DynamoDB")
@@ -67,6 +74,7 @@ def verify_item_added(receive_new_item, localstack):
     player_id = receive_new_item['player_id']
     item_name = receive_new_item['item_name']
     quantity = receive_new_item['quantity']
+    channel_name = receive_new_item['channel_name']
     
     response = dynamodb.get_item(
         TableName='players',
@@ -74,6 +82,7 @@ def verify_item_added(receive_new_item, localstack):
     )
     
     assert 'Item' in response
+    assert response['Item']['channel_name']['S'] == channel_name
     assert item_name in response['Item']['inventory']['M']
     assert int(response['Item']['inventory']['M'][item_name]['N']) == quantity
 
@@ -81,6 +90,7 @@ def verify_item_added(receive_new_item, localstack):
 def verify_inventory_log(receive_new_item, localstack):
     """Verify that the inventory update was logged."""
     cloudwatch = localstack['cloudwatch']
+    channel_name = receive_new_item['channel_name']
     
     response = cloudwatch.get_metric_statistics(
         Namespace='Game/Inventory',
@@ -88,14 +98,17 @@ def verify_inventory_log(receive_new_item, localstack):
         StartTime='2024-03-19T00:00:00Z',
         EndTime='2024-03-21T00:00:00Z',
         Period=3600,
-        Statistics=['Sum']
+        Statistics=['Sum'],
+        Dimensions=[
+            {'Name': 'Channel', 'Value': channel_name}
+        ]
     )
     
     assert len(response['Datapoints']) > 0
     assert response['Datapoints'][0]['Sum'] == receive_new_item['quantity']
 
 @given(parsers.parse('a player with ID "{player_id}" has an item "{item_name}" with quantity {quantity:d}'))
-def player_has_item(player_id, item_name, quantity, localstack):
+def player_has_item(player_id, item_name, quantity, test_channel, localstack):
     """Set up a player with an existing item."""
     dynamodb = localstack['dynamodb']
     
@@ -103,6 +116,7 @@ def player_has_item(player_id, item_name, quantity, localstack):
     player_data = {
         'player_id': {'S': player_id},
         'name': {'S': 'TestPlayer'},
+        'channel_name': {'S': test_channel},
         'inventory': {
             'M': {
                 item_name: {'N': str(quantity)}
@@ -118,7 +132,8 @@ def player_has_item(player_id, item_name, quantity, localstack):
     return {
         'player_id': player_id,
         'item_name': item_name,
-        'quantity': quantity
+        'quantity': quantity,
+        'channel_name': test_channel
     }
 
 @when(parsers.parse('he receives {quantity:d} more "{item_name}" items'))
@@ -129,6 +144,7 @@ def receive_more_items(quantity, item_name, player_has_item, localstack):
     player_id = player_has_item['player_id']
     current_quantity = player_has_item['quantity']
     new_quantity = current_quantity + quantity
+    channel_name = player_has_item['channel_name']
     
     # Update inventory
     dynamodb.update_item(
@@ -148,7 +164,8 @@ def receive_more_items(quantity, item_name, player_has_item, localstack):
             'Unit': 'Count',
             'Dimensions': [
                 {'Name': 'ItemName', 'Value': item_name},
-                {'Name': 'PlayerId', 'Value': player_id}
+                {'Name': 'PlayerId', 'Value': player_id},
+                {'Name': 'Channel', 'Value': channel_name}
             ]
         }]
     )
@@ -156,7 +173,8 @@ def receive_more_items(quantity, item_name, player_has_item, localstack):
     return {
         'player_id': player_id,
         'item_name': item_name,
-        'quantity': new_quantity
+        'quantity': new_quantity,
+        'channel_name': channel_name
     }
 
 @then(parsers.parse('the item quantity should be updated to {expected_quantity:d} in DynamoDB'))
@@ -165,6 +183,7 @@ def verify_quantity_updated(receive_more_items, expected_quantity, localstack):
     dynamodb = localstack['dynamodb']
     player_id = receive_more_items['player_id']
     item_name = receive_more_items['item_name']
+    channel_name = receive_more_items['channel_name']
     
     response = dynamodb.get_item(
         TableName='players',
@@ -172,6 +191,7 @@ def verify_quantity_updated(receive_more_items, expected_quantity, localstack):
     )
     
     assert 'Item' in response
+    assert response['Item']['channel_name']['S'] == channel_name
     assert item_name in response['Item']['inventory']['M']
     assert int(response['Item']['inventory']['M'][item_name]['N']) == expected_quantity
 
@@ -183,6 +203,7 @@ def use_item(item_name, player_has_item, localstack):
     player_id = player_has_item['player_id']
     current_quantity = player_has_item['quantity']
     new_quantity = current_quantity - 1
+    channel_name = player_has_item['channel_name']
     
     # Update inventory
     dynamodb.update_item(
@@ -202,7 +223,8 @@ def use_item(item_name, player_has_item, localstack):
             'Unit': 'Count',
             'Dimensions': [
                 {'Name': 'ItemName', 'Value': item_name},
-                {'Name': 'PlayerId', 'Value': player_id}
+                {'Name': 'PlayerId', 'Value': player_id},
+                {'Name': 'Channel', 'Value': channel_name}
             ]
         }]
     )
@@ -210,7 +232,8 @@ def use_item(item_name, player_has_item, localstack):
     return {
         'player_id': player_id,
         'item_name': item_name,
-        'quantity': new_quantity
+        'quantity': new_quantity,
+        'channel_name': channel_name
     }
 
 @then(parsers.parse('the item quantity should be reduced to {expected_quantity:d} in DynamoDB'))
@@ -219,6 +242,7 @@ def verify_quantity_reduced(use_item, expected_quantity, localstack):
     dynamodb = localstack['dynamodb']
     player_id = use_item['player_id']
     item_name = use_item['item_name']
+    channel_name = use_item['channel_name']
     
     response = dynamodb.get_item(
         TableName='players',
@@ -226,5 +250,6 @@ def verify_quantity_reduced(use_item, expected_quantity, localstack):
     )
     
     assert 'Item' in response
+    assert response['Item']['channel_name']['S'] == channel_name
     assert item_name in response['Item']['inventory']['M']
     assert int(response['Item']['inventory']['M'][item_name]['N']) == expected_quantity 

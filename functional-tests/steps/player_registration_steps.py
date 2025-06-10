@@ -7,15 +7,19 @@ import json
 scenarios('../features/player_registration.feature')
 
 @given("a new user accesses the system")
-def new_user_accesses_system():
+def new_user_accesses_system(test_channel):
     """Initialize a new user session."""
-    return {"session_id": str(uuid.uuid4())}
+    return {
+        "session_id": str(uuid.uuid4()),
+        "channel_name": test_channel
+    }
 
 @when(parsers.parse('he sends his name "{name}", class "{player_class}" and club "{club}"'))
 def send_registration_data(name, player_class, club, new_user_accesses_system, localstack):
     """Send registration data to the system."""
     dynamodb = localstack['dynamodb']
     cloudwatch = localstack['cloudwatch']
+    channel_name = new_user_accesses_system['channel_name']
     
     # Create player record
     player_id = str(uuid.uuid4())
@@ -24,6 +28,7 @@ def send_registration_data(name, player_class, club, new_user_accesses_system, l
         'name': {'S': name},
         'class': {'S': player_class},
         'club': {'S': club},
+        'channel_name': {'S': channel_name},
         'created_at': {'S': '2024-03-20T00:00:00Z'}
     }
     
@@ -41,7 +46,8 @@ def send_registration_data(name, player_class, club, new_user_accesses_system, l
             'Unit': 'Count',
             'Dimensions': [
                 {'Name': 'PlayerClass', 'Value': player_class},
-                {'Name': 'Club', 'Value': club}
+                {'Name': 'Club', 'Value': club},
+                {'Name': 'Channel', 'Value': channel_name}
             ]
         }]
     )
@@ -50,7 +56,8 @@ def send_registration_data(name, player_class, club, new_user_accesses_system, l
         'player_id': player_id,
         'name': name,
         'class': player_class,
-        'club': club
+        'club': club,
+        'channel_name': channel_name
     }
 
 @then("he should be registered in the DynamoDB database")
@@ -58,6 +65,7 @@ def verify_player_registration(send_registration_data, localstack):
     """Verify that the player was registered in DynamoDB."""
     dynamodb = localstack['dynamodb']
     player_id = send_registration_data['player_id']
+    channel_name = send_registration_data['channel_name']
     
     response = dynamodb.get_item(
         TableName='players',
@@ -69,6 +77,7 @@ def verify_player_registration(send_registration_data, localstack):
     assert response['Item']['name']['S'] == send_registration_data['name']
     assert response['Item']['class']['S'] == send_registration_data['class']
     assert response['Item']['club']['S'] == send_registration_data['club']
+    assert response['Item']['channel_name']['S'] == channel_name
 
 @then("he should receive a success response with his ID")
 def verify_success_response(send_registration_data):
@@ -80,6 +89,7 @@ def verify_success_response(send_registration_data):
 def verify_cloudwatch_log(send_registration_data, localstack):
     """Verify that a welcome log was created in CloudWatch."""
     cloudwatch = localstack['cloudwatch']
+    channel_name = send_registration_data['channel_name']
     
     # Get the metric data
     response = cloudwatch.get_metric_statistics(
@@ -88,7 +98,10 @@ def verify_cloudwatch_log(send_registration_data, localstack):
         StartTime='2024-03-19T00:00:00Z',
         EndTime='2024-03-21T00:00:00Z',
         Period=3600,
-        Statistics=['Sum']
+        Statistics=['Sum'],
+        Dimensions=[
+            {'Name': 'Channel', 'Value': channel_name}
+        ]
     )
     
     assert len(response['Datapoints']) > 0
@@ -100,7 +113,8 @@ def send_invalid_registration_data(new_user_accesses_system):
     return {
         'name': '',
         'class': 'InvalidClass',
-        'club': ''
+        'club': '',
+        'channel_name': new_user_accesses_system['channel_name']
     }
 
 @then("he should receive an error response")
@@ -114,13 +128,20 @@ def verify_error_response(send_invalid_registration_data):
 def verify_no_player_record(send_invalid_registration_data, localstack):
     """Verify that no player record was created in DynamoDB."""
     dynamodb = localstack['dynamodb']
+    channel_name = send_invalid_registration_data['channel_name']
     
     # Scan the table to verify no records exist
     response = dynamodb.scan(
         TableName='players',
-        FilterExpression='#name = :name',
-        ExpressionAttributeNames={'#name': 'name'},
-        ExpressionAttributeValues={':name': {'S': send_invalid_registration_data['name']}}
+        FilterExpression='#name = :name AND #channel = :channel',
+        ExpressionAttributeNames={
+            '#name': 'name',
+            '#channel': 'channel_name'
+        },
+        ExpressionAttributeValues={
+            ':name': {'S': send_invalid_registration_data['name']},
+            ':channel': {'S': channel_name}
+        }
     )
     
     assert len(response['Items']) == 0 
