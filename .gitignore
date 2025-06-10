@@ -64,3 +64,5 @@ local/tokugawa.db
 /missing_assets.md
 /venvpy11/
 /htmlcov/
+/test_outputs/
+/pyvenv11/
