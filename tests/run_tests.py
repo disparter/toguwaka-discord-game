@@ -1,10 +1,25 @@
-import sys
 import os
+import sys
+from pathlib import Path
+
+# Adiciona o diretório raiz ao PYTHONPATH
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir))
+sys.path.insert(0, str(root_dir / "src"))
+sys.path.insert(0, str(root_dir / "tests"))
+
+# Configura variáveis de ambiente para testes
+os.environ["TESTING"] = "true"
+os.environ["ENVIRONMENT"] = "test"
+
+# Importa e executa os testes
 import pytest
 
-# Add the project root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
-if __name__ == '__main__':
-    # Run all tests using pytest
-    pytest.main(['tests/', '-v'])
+if __name__ == "__main__":
+    # Executa os testes com cobertura
+    pytest.main([
+        "--cov=.",
+        "--cov-report=term-missing",
+        "--cov-report=html",
+        "tests/"
+    ])
