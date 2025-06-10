@@ -2,6 +2,7 @@
 Implementation of the HP factor calculator.
 This class is responsible for calculating how a player's attributes are affected by their HP.
 """
+from decimal import Decimal
 from utils.game_mechanics.constants import HP_FACTOR_THRESHOLD, HP_FACTOR_MIN
 from utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPFactorCalculator
 
@@ -9,26 +10,26 @@ class HPFactorCalculator(IHPFactorCalculator):
     """Calculadora de fator de HP para eventos"""
     
     @staticmethod
-    def calculate_factor(current_hp, max_hp, threshold=0.5):
+    def calculate_factor(current_hp, max_hp, threshold=Decimal('0.5')):
         """Calcula o fator de HP para eventos
         
         Args:
-            current_hp (int): HP atual do personagem
-            max_hp (int): HP máximo do personagem
-            threshold (float): Threshold para cálculo do fator (default: 0.5)
+            current_hp (Decimal): HP atual do personagem
+            max_hp (Decimal): HP máximo do personagem
+            threshold (Decimal): Threshold para cálculo do fator (default: 0.5)
             
         Returns:
-            float: Fator de HP (entre 0.0 e 1.0)
+            Decimal: Fator de HP (entre 0.0 e 1.0)
         """
         if max_hp <= 0:
-            return 0.0
+            return Decimal('0.0')
             
         hp_percentage = current_hp / max_hp
         
         # Se HP está acima do threshold, aplica uma pequena redução
         if hp_percentage > threshold:
-            return 0.8
+            return Decimal('0.8')
             
         # Se HP está abaixo do threshold, calcula o fator proporcionalmente
         # Garante que o fator seja menor que 0.5 quando HP está abaixo do threshold
-        return hp_percentage * 0.4
+        return hp_percentage * Decimal('0.4')

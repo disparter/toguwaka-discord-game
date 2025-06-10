@@ -636,6 +636,12 @@ class StoryModeCog(commands.Cog):
 
             await channel.send("Escolha uma opção:", view=view)
 
+        # Check if we have any content to display
+        has_content = (
+            ("current_dialogue" in chapter_data and chapter_data["current_dialogue"]) or
+            ("choices" in chapter_data and chapter_data["choices"])
+        )
+
         # If we have content but it's not being displayed, there's an issue
         if has_content:
             logger.error(f"Chapter has content but it's not being displayed: {chapter_data}")
