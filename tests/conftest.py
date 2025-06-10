@@ -9,12 +9,26 @@ import os
 import sys
 from unittest.mock import MagicMock, patch, AsyncMock
 from datetime import datetime
+from pathlib import Path
 
-# Add the project root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Adiciona o diretório raiz ao PYTHONPATH
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir))
 
-# Set testing environment
-os.environ['IS_TESTING'] = 'true'
+# Configura variáveis de ambiente para testes
+os.environ["TESTING"] = "true"
+os.environ["ENVIRONMENT"] = "test"
+
+# Monkey patch para corrigir imports
+import builtins
+original_import = builtins.__import__
+
+def patched_import(name, *args, **kwargs):
+    if name.startswith('utils.'):
+        name = 'src.' + name
+    return original_import(name, *args, **kwargs)
+
+builtins.__import__ = patched_import
 
 @pytest.fixture(autouse=True)
 def mock_logging():
