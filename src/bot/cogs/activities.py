@@ -6,6 +6,7 @@ import random
 import asyncio
 import json
 from datetime import datetime, timedelta
+from decimal import Decimal
 from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed
 from src.utils.game_mechanics import (
@@ -709,6 +710,12 @@ class Activities(commands.Cog):
         try:
             # Get cooldowns from database
             cooldowns = await db_provider.get_cooldowns()
+
+            # Ensure cooldowns is a dictionary
+            if not isinstance(cooldowns, dict):
+                logger.warning(f"Cooldowns is not a dictionary: {type(cooldowns)}")
+                return None
+
             user_cooldowns = cooldowns.get(str(user_id), {})
             command_cooldown = user_cooldowns.get(command)
 
@@ -803,7 +810,8 @@ class Activities(commands.Cog):
             # Apply HP loss for training (5-15% of max HP)
             if "hp" in player and "max_hp" in player:
                 hp_loss = random.randint(5, 15)
-                hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+                hp_loss_percentage = Decimal(hp_loss) / Decimal(100)
+                hp_loss_amount = int(player["max_hp"] * hp_loss_percentage)
                 current_hp = player.get("hp", player["max_hp"])
                 update_data["hp"] = max(1, current_hp - hp_loss_amount)
 

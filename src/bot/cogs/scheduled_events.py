@@ -10,6 +10,16 @@ import os
 from datetime import datetime, timedelta, time
 import pytz
 from src.utils.persistence import db_provider
+
+# Helper functions to use db_provider
+async def get_player(user_id):
+    return await db_provider.get_player(user_id)
+
+async def update_player(user_id, **kwargs):
+    return await db_provider.update_player(user_id, **kwargs)
+
+async def get_all_players():
+    return await db_provider.get_all_players()
 from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from src.utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
 from src.utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
@@ -351,10 +361,8 @@ class ScheduledEvents(commands.Cog):
     async def recover_player_hp(self):
         """Recover HP for all players."""
         try:
-            from src.utils.database import get_all_players, update_player
-
             # Get all players
-            players = get_all_players()
+            players = await db_provider.get_all_players()
             recovered_count = 0
 
             for player in players:
@@ -369,7 +377,7 @@ class ScheduledEvents(commands.Cog):
                     new_hp = min(max_hp, current_hp + recovery_amount)
 
                     # Update player HP
-                    update_player(user_id, hp=new_hp)
+                    await db_provider.update_player(user_id, hp=new_hp)
                     recovered_count += 1
 
             if recovered_count > 0:
@@ -407,7 +415,7 @@ class ScheduledEvents(commands.Cog):
             # Check for daily events using the database flag
             today_date = now.strftime('%Y%m%d')
             daily_flag_name = f"daily_events_triggered_{today_date}"
-            daily_events_triggered = get_system_flag(daily_flag_name)
+            daily_events_triggered = await db_provider.get_system_flag(daily_flag_name)
 
             # Only check time conditions if daily events haven't been triggered yet
             if daily_events_triggered != "true":
@@ -418,7 +426,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Set the flag if it's time for morning announcements
                     if now.hour == 8:
-                        set_system_flag(daily_flag_name, "true")
+                        await db_provider.set_system_flag(daily_flag_name, "true")
                         logger.info(f"Set daily events triggered flag: {daily_flag_name}")
 
                 # Check for daily subject announcement (9:00)
@@ -428,7 +436,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Set the flag if it's time for subject announcement
                     if now.hour == 9:
-                        set_system_flag(daily_flag_name, "true")
+                        await db_provider.set_system_flag(daily_flag_name, "true")
                         logger.info(f"Set daily events triggered flag: {daily_flag_name}")
             else:
                 # Only log this message once per hour to reduce log clutter
@@ -459,7 +467,7 @@ class ScheduledEvents(commands.Cog):
             # Reset the daily events triggered flag for the new day
             today_date = datetime.now().strftime('%Y%m%d')
             daily_flag_name = f"daily_events_triggered_{today_date}"
-            set_system_flag(daily_flag_name, "false")
+            await db_provider.set_system_flag(daily_flag_name, "false")
             logger.info(f"Reset daily events triggered flag: {daily_flag_name}")
 
             # Reset daily player progress
@@ -771,15 +779,15 @@ class ScheduledEvents(commands.Cog):
 
                 # Update club reputation based on weekly activities
                 from src.utils.database import get_all_clubs, update_club_reputation_weekly, get_top_clubs_by_activity
-                
+
                 # Get all clubs and their weekly activities
                 clubs = get_all_clubs()
                 top_clubs = get_top_clubs_by_activity(limit=3)
-                
+
                 # Calculate reputation changes based on weekly rankings
                 for club in clubs:
                     reputation_change = 0
-                    
+
                     # Check if club is in top 3
                     for i, top_club in enumerate(top_clubs):
                         if top_club['club_id'] == club['club_id']:
@@ -791,7 +799,7 @@ class ScheduledEvents(commands.Cog):
                             elif i == 2:  # Third place
                                 reputation_change = 20
                             break
-                    
+
                     # Update club reputation
                     if reputation_change > 0:
                         if update_club_reputation_weekly(club['club_id'], reputation_change):
@@ -2521,7 +2529,7 @@ class ScheduledEvents(commands.Cog):
         """Trigger a dynamic narrative event for a random player."""
         try:
             # Get all players
-            players = get_all_players()
+            players = await db_provider.get_all_players()
             if not players:
                 logger.warning("No players found for narrative event")
                 return
@@ -2562,7 +2570,7 @@ class ScheduledEvents(commands.Cog):
                         return
 
                     # Get the player data again (it might have changed)
-                    player = get_player(player_id)
+                    player = await db_provider.get_player(player_id)
                     if not player:
                         await interaction.response.send_message("Jogador não encontrado.", ephemeral=True)
                         return
@@ -2574,7 +2582,7 @@ class ScheduledEvents(commands.Cog):
                     updates = apply_event_rewards(player, updated_event)
 
                     # Update the player in the database
-                    success = update_player(player_id, **updates)
+                    success = await db_provider.update_player(player_id, **updates)
 
                     if success:
                         # Create result embed

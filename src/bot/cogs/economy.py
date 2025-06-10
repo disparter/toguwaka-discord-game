@@ -216,8 +216,13 @@ class Economy(commands.Cog):
     async def _check_cooldown(self, user_id, command):
         """Check if a command is on cooldown for a user."""
         try:
-            # Get cooldowns from database
             cooldowns = await db_provider.get_cooldowns()
+
+            # Ensure cooldowns is a dictionary
+            if not isinstance(cooldowns, dict):
+                logger.warning(f"Cooldowns is not a dictionary: {type(cooldowns)}")
+                return None
+
             user_cooldowns = cooldowns.get(str(user_id), {})
             command_cooldown = user_cooldowns.get(command)
 

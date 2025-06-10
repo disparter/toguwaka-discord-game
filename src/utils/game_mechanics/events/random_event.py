@@ -6,6 +6,7 @@ import random
 import logging
 import json
 import os
+from decimal import Decimal
 from typing import Dict, Any, List, Optional
 from src.utils.game_mechanics.events.event_base import EventBase
 from src.utils.game_mechanics.constants import RANDOM_EVENTS
@@ -314,7 +315,8 @@ class RandomEvent(EventBase):
         # Add base HP loss for exploration (5-10% of max HP)
         if "hp" in player and "max_hp" in player:
             hp_loss = random.randint(5, 10)
-            hp_loss_amount = int(player["max_hp"] * (hp_loss / 100))
+            hp_loss_percentage = Decimal(hp_loss) / Decimal(100)
+            hp_loss_amount = int(player["max_hp"] * hp_loss_percentage)
             result["hp_loss"] = result.get("hp_loss", 0) + hp_loss_amount
 
         return result

@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 import logging
 from src.utils.persistence.db_provider import db_provider
-from src.utils.persistence.dynamo_migration import normalize_player_data
 
 # Set up logging
 logging.basicConfig(
@@ -194,22 +193,6 @@ async def on_ready():
             logger.error(f"Exception type: {type(e).__name__}")
             logger.warning("Continuing bot execution despite DynamoDB sync error")
 
-    # Normalize player data (regardless of database initialization status)
-    try:
-        logger.info("Starting player data normalization...")
-        logger.info("Calling normalize_player_data function...")
-        success = await normalize_player_data()
-        logger.info(f"normalize_player_data function returned: {success}")
-        if success:
-            logger.info("Player data normalization completed successfully!")
-        else:
-            logger.error("Player data normalization failed!")
-            logger.warning("Continuing bot execution despite player migration failure")
-    except Exception as e:
-        logger.error(f"Exception during player data normalization: {str(e)}")
-        logger.error(f"Exception type: {type(e).__name__}")
-        logger.error(f"Exception args: {e.args}")
-        logger.warning("Continuing bot execution despite player migration error")
 
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:
