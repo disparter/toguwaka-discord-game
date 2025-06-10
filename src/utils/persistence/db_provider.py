@@ -577,6 +577,8 @@ class DBProvider:
                     player['name'] = f"Player {player.get('user_id', 'Unknown')}"
                 if 'reputation' not in player:
                     player['reputation'] = 0
+                if 'level' not in player:
+                    player['level'] = 1
 
             return sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)[:limit]
         except Exception as e:

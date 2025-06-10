@@ -4,6 +4,7 @@ from src.utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_pr
 import json
 from src.utils.persistence.db_provider import db_provider
 from src.utils.club_perks import get_club_perk_description
+from typing import Dict, Optional
 
 def create_basic_embed(title, description=None, color=0x1E90FF):
     """Create a basic embed with the Academia Tokugawa theme."""
@@ -16,83 +17,67 @@ def create_basic_embed(title, description=None, color=0x1E90FF):
     embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
     return embed
 
-def create_player_embed(player, club=None):
-    """Create an embed displaying player information."""
-    # Determine color based on club
-    color = 0x1E90FF
-    if club:
-        # Each club could have its own color
-        club_colors = {
-            1: 0xFF0000,  # Clube das Chamas - Red
-            2: 0x800080,  # Ilusionistas Mentais - Purple
-            3: 0xFFD700,  # Conselho Político - Gold
-            4: 0x00FF00,  # Elementalistas - Green
-            5: 0x808080   # Clube de Combate - Gray
-        }
+def create_player_embed(player: Dict[str, Any], club: Optional[Dict[str, Any]] = None) -> discord.Embed:
+    """Create an embed for player status."""
+    # Get player's name and level
+    name = player.get('name', 'No Name')
+    level = player.get('level', 1)
+    exp = player.get('exp', 0)
+    tusd = player.get('tusd', 0)
+    hp = player.get('hp', 100)
+    max_hp = player.get('max_hp', 100)
+    dexterity = player.get('dexterity', 10)
+    intellect = player.get('intellect', 10)
+    charisma = player.get('charisma', 10)
+    power_stat = player.get('power_stat', 10)
+    reputation = player.get('reputation', 0)
+    strength_level = player.get('strength_level', 1)
+    power = player.get('power', 'no_power')
+
+    # Get club color if available
+    color = 0x1E90FF  # Default color
+    if club and isinstance(club, dict) and 'club_id' in club:
         color = club_colors.get(club['club_id'], 0x1E90FF)
 
     # Create embed
-    # Extract player name from PK if name is not available
-    player_name = player.get('name')
-    if not player_name and 'PK' in player:
-        # Extract player ID from PK (format: "PLAYER#123456789")
-        pk_parts = player['PK'].split('#')
-        if len(pk_parts) > 1:
-            player_name = f"Jogador {pk_parts[1]}"
-        else:
-            player_name = "Jogador Desconhecido"
-    elif not player_name:
-        player_name = "Jogador Desconhecido"
-
     embed = discord.Embed(
-        title=f"Perfil de {player_name}",
-        description=f"**Poder:** {player.get('power', 'N/A')}\n**Nível de Força:** {STRENGTH_LEVELS.get(player.get('strength_level', 0), 'Desconhecido')}",
-        color=color,
-        timestamp=datetime.utcnow()
+        title=f"{name} - Nível {level}",
+        description=f"**Experiência:** {exp}\n**TUSD:** {tusd} 💰",
+        color=color
     )
 
-    # Add club information if available
-    if club:
-        embed.add_field(
-            name="Clube",
-            value=f"**{club['name']}**\n{club['description']}",
-            inline=False
-        )
-
-    # Add attributes
+    # Add stats
     embed.add_field(
         name="Atributos",
-        value=f"**Destreza:** {player.get('dexterity', 0)} 🏃\n"
-              f"**Intelecto:** {player.get('intellect', 0)} 🧠\n"
-              f"**Carisma:** {player.get('charisma', 0)} 💫\n"
-              f"**Poder:** {player.get('power_stat', 0)} 💪",
+        value=(
+            f"**HP:** {hp}/{max_hp} ❤️\n"
+            f"**Destreza:** {dexterity} 🏃‍♂️\n"
+            f"**Intelecto:** {intellect} 🧠\n"
+            f"**Carisma:** {charisma} 💬\n"
+            f"**Poder:** {power_stat} ⚡\n"
+            f"**Reputação:** {reputation} 🌟\n"
+            f"**Nível de Força:** {strength_level} 💪"
+        ),
         inline=True
     )
 
-    # Add HP information
-    current_hp = player.get('hp', player.get('max_hp', 100))
-    max_hp = player.get('max_hp', 100)
-    hp_percentage = int((current_hp / max_hp) * 100)
-    hp_bar = "█" * (hp_percentage // 10) + "░" * (10 - (hp_percentage // 10))
-    embed.add_field(
-        name="Vida",
-        value=f"{hp_bar} {hp_percentage}%\n"
-              f"HP: {current_hp}/{max_hp} ❤️",
-        inline=True
-    )
+    # Add club info if available
+    if club and isinstance(club, dict):
+        club_name = club.get('name', 'Sem Clube')
+        club_description = club.get('description', 'Sem descrição')
+        embed.add_field(
+            name="Clube",
+            value=f"**{club_name}**\n{club_description}",
+            inline=True
+        )
 
-    # Add experience progress
-    exp_progress = calculate_exp_progress(player['exp'], player['level'])
-    progress_bar = create_progress_bar(exp_progress)
-    embed.add_field(
-        name="Experiência",
-        value=f"{progress_bar} {exp_progress}%\n"
-              f"EXP: {player['exp']}",
-        inline=True
-    )
-
-    # Add footer
-    embed.set_footer(text="Academia Tokugawa", icon_url="https://i.imgur.com/example.png")
+    # Add power info
+    if power != 'no_power':
+        embed.add_field(
+            name="Poder",
+            value=f"**{power}**",
+            inline=True
+        )
 
     return embed
 

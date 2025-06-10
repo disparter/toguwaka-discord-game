@@ -8,7 +8,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from src.utils.persistence import db_provider
-from src.utils.persistence.db_provider import get_player, update_player, get_club, get_player_async, get_club_async
+from src.utils.persistence.db_provider import get_player, update_player, get_club, get_player_async, get_club_async, get_player_inventory_async, add_item_to_inventory_async, update_player_async
 from src.utils.embeds import create_basic_embed
 from src.utils.game_mechanics import RARITIES
 from src.utils.club_perks import apply_shop_discount
@@ -1291,8 +1291,10 @@ class Economy(commands.Cog):
             await ctx.send(f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD", ephemeral=True)
             return
 
-        # Process the purchase
-        inventory = player["inventory"]
+        # Get player's inventory
+        inventory = await get_player_inventory_async(ctx.author.id)
+        if not inventory:
+            inventory = {}
 
         # Add item to inventory
         if str(item["id"]) in inventory:
@@ -1312,8 +1314,7 @@ class Economy(commands.Cog):
 
         # Update player data
         update_data = {
-            "tusd": player["tusd"] - item["price"],
-            "inventory": json.dumps(inventory)
+            "tusd": player["tusd"] - item["price"]
         }
 
         # Special handling for permanent attribute items
@@ -1327,13 +1328,11 @@ class Economy(commands.Cog):
             if inventory[str(item["id"])]["quantity"] <= 0:
                 del inventory[str(item["id"])]
 
-            update_data["inventory"] = json.dumps(inventory)
-
         # Special handling for technique scrolls
         if item["type"] == "consumable" and "learn_technique" in item["effects"]:
             # Choose a random technique
             technique = random.choice(TECHNIQUES)
-            techniques = player["techniques"]
+            techniques = player.get("techniques", {})
 
             if str(technique["id"]) not in techniques:
                 techniques[str(technique["id"])] = technique
@@ -1344,10 +1343,14 @@ class Economy(commands.Cog):
                 if inventory[str(item["id"])]["quantity"] <= 0:
                     del inventory[str(item["id"])]
 
-                update_data["inventory"] = json.dumps(inventory)
-
         # Update player in database
-        success = update_player(ctx.author.id, **update_data)
+        success = await update_player_async(ctx.author.id, **update_data)
+        
+        # Update inventory in database
+        if success:
+            inventory_success = await add_item_to_inventory_async(ctx.author.id, str(item["id"]), inventory[str(item["id"])])
+            if not inventory_success:
+                success = False
 
         if success:
             # Create purchase confirmation embed
@@ -1588,7 +1591,7 @@ class Economy(commands.Cog):
     async def equip_item(self, ctx, item_id: int = None):
         """Equipar um acessório do inventário."""
         # Check if player exists
-        player = await db_provider.get_player_async(ctx.author.id)
+        player = await get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -1598,8 +1601,13 @@ class Economy(commands.Cog):
             await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja equipar. Use `!inventario` para ver seus itens.", ephemeral=True)
             return
 
+        # Get player's inventory
+        inventory = await get_player_inventory_async(ctx.author.id)
+        if not inventory:
+            await ctx.send(f"{ctx.author.mention}, você não possui itens em seu inventário.", ephemeral=True)
+            return
+
         # Check if player has the item
-        inventory = player["inventory"]
         if str(item_id) not in inventory:
             await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.", ephemeral=True)
             return
@@ -1609,47 +1617,11 @@ class Economy(commands.Cog):
 
         # Check if item is an accessory
         if item_data["type"] != "accessory":
-            await ctx.send(f"{ctx.author.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.", ephemeral=True)
+            await ctx.send(f"{ctx.author.mention}, este item não é um acessório. Apenas acessórios podem ser equipados.", ephemeral=True)
             return
 
-        # Check if the item is already equipped
-        if item_data.get("equipped", False):
-            # Unequip the item
-            inventory[str(item_id)]["equipped"] = False
-            update_data = {"inventory": json.dumps(inventory)}
-            success = update_player(ctx.author.id, **update_data)
-
-            if success:
-                embed = create_basic_embed(
-                    title="Acessório Desequipado!",
-                    description=f"Você desequipou {item_data['name']}.",
-                    color=RARITIES.get(item_data["rarity"], RARITIES["common"])["color"]
-                )
-                await ctx.send(embed=embed, ephemeral=True)
-            else:
-                await ctx.send("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
-            return
-
-        # Check if there's a cooldown for this accessory
-        cooldown = self._check_cooldown(ctx.author.id, f"accessory_{item_id}")
-        if cooldown:
-            await ctx.send(f"{ctx.author.mention}, este acessório está em cooldown. Tempo restante: {cooldown}")
-            return
-
-        # Unequip any other equipped accessories of the same type
-        for inv_item_id, inv_item in inventory.items():
-            if inv_item["type"] == "accessory" and inv_item.get("equipped", False):
-                inventory[inv_item_id]["equipped"] = False
-
-        # Equip the new accessory
-        inventory[str(item_id)]["equipped"] = True
-
-        # Set cooldown for this accessory (4 hours)
-        self._set_cooldown(ctx.author.id, f"accessory_{item_id}", 14400)  # 4 hours in seconds
-
-        # Update player in database
-        update_data = {"inventory": json.dumps(inventory)}
-        success = update_player(ctx.author.id, **update_data)
+        # Update player's equipped item
+        success = await update_player_async(ctx.author.id, equipped_item=json.dumps(item_data))
 
         if success:
             # Create equip confirmation embed
