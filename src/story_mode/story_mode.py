@@ -39,18 +39,16 @@ class StoryMode:
         self.base_dir = Path(base_dir)
         self.data_dir = self.base_dir / "story_mode"
         self.logs_dir = self.base_dir / "logs"
-        self.images_dir = self.base_dir / "assets" / "images" / "story"
 
         # Create necessary directories
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.logs_dir.mkdir(parents=True, exist_ok=True)
-        self.images_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize components
         self.arc_manager = ArcManager(str(self.data_dir))
         self.event_manager = ConcreteEventManager()
         self.npc_manager = NPCManager()
-        self.image_processor = ImageProcessor(str(self.images_dir))
+        self.image_processor = ImageProcessor(str(self.base_dir / "assets"))
         self.progress_manager = DefaultStoryProgressManager()
         self.consequences_system = DynamicConsequencesSystem()
         self.power_system = PowerEvolutionSystem()
@@ -58,6 +56,34 @@ class StoryMode:
         self.companion_system = CompanionSystem()
         self.club_system = ClubSystem(self.consequences_system)
         self.club_manager = ClubContentManager(base_dir)
+        
+        # Validate story structure
+        self._validate_story_structure()
+
+    def _validate_story_structure(self) -> None:
+        """Validate the story structure and log any issues."""
+        validator = get_story_validator(str(self.data_dir))
+        validation_results = validator.validate_story_structure()
+        
+        # Log errors
+        for error in validation_results.get("errors", []):
+            logger.error(f"Story validation error: {error}")
+            
+        # Log warnings
+        for warning in validation_results.get("warnings", []):
+            logger.warning(f"Story validation warning: {warning}")
+            
+        # Log dead ends
+        for dead_end in validation_results.get("dead_ends", []):
+            logger.error(f"Story dead end found: {dead_end}")
+            
+        # Log missing assets
+        for asset in validation_results.get("missing_assets", []):
+            logger.warning(f"Missing story asset: {asset}")
+            
+        # Raise exception if there are critical errors
+        if validation_results.get("errors"):
+            raise ValueError("Story validation failed. Check logs for details.")
 
     def _load_story_structure(self) -> None:
         """Load the story structure from configuration files."""
@@ -221,9 +247,21 @@ class StoryMode:
                     "player_data": player_data
                 }
 
+            # Serialize chapter data to a dictionary
+            serialized_chapter = {
+                "id": chapter_data.chapter_id,
+                "title": chapter_data.title,
+                "description": chapter_data.description,
+                "type": chapter_data.type,
+                "phase": chapter_data.phase,
+                "scenes": chapter_data.scenes,
+                "completion_exp": chapter_data.completion_exp,
+                "completion_tusd": chapter_data.completion_tusd
+            }
+
             return {
                 "player_data": player_data,
-                "chapter_data": chapter_data
+                "chapter_data": serialized_chapter
             }
 
         except Exception as e:

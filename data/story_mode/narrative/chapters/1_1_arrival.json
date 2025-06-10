@@ -606,6 +606,47 @@
           }
         }
       ]
+    },
+    {
+      "scene_id": "classrooms_tour",
+      "title": "Salas de Aula",
+      "description": "Conhecendo as salas de aula",
+      "background": "classroom_front.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "curious",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "explaining",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "Estas são nossas salas de aula. Aqui você aprenderá teoria mágica, história, e os fundamentos do controle de poderes.",
+          "expression": "explaining"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Continuar o tour",
+          "next_scene": "academy_tour"
+        },
+        {
+          "text": "Ir para o próximo capítulo",
+          "next_scene": "chapter_end",
+          "effects": {
+            "chapter_complete": true,
+            "knowledge": 5
+          }
+        }
+      ]
     }
   ],
   "rewards": {

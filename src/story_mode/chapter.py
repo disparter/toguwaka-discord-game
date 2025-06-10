@@ -8,27 +8,85 @@ logger = logging.getLogger('tokugawa_bot')
 
 class BaseChapter(Chapter):
     """
-    Base implementation of the Chapter interface.
-    Provides common functionality for all chapter types.
+    Base class for all chapter types.
     """
-    def __init__(self, chapter_id: str, data: Dict[str, Any]):
+
+    def __init__(self, chapter_id: str, chapter_data: Dict[str, Any]):
         """
-        Initialize a chapter with its data.
+        Initialize a base chapter.
 
         Args:
-            chapter_id: Unique identifier for the chapter
-            data: Dictionary containing chapter data
+            chapter_id: The chapter's unique identifier
+            chapter_data: The chapter's data dictionary
         """
         self.chapter_id = chapter_id
-        self.data = data
-        self.title = data.get("title", "Untitled Chapter")
-        self.description = data.get("description", "No description available.")
-        self.dialogues = data.get("dialogues", [])
-        self.choices = data.get("choices", [])
-        self.completion_exp = data.get("completion_exp", 0)
-        self.completion_tusd = data.get("completion_tusd", 0)
-        self.next_chapter = data.get("next_chapter")
+        self.title = chapter_data.get("title", "")
+        self.description = chapter_data.get("description", "")
+        self.type = chapter_data.get("type", "story")
+        self.phase = chapter_data.get("phase", "")
+        self.completion_exp = chapter_data.get("completion_exp", 0)
+        self.completion_tusd = chapter_data.get("completion_tusd", 0)
+        self.dialogues = chapter_data.get("dialogues", [])
+        self.choices = chapter_data.get("choices", [])
+        self.next_chapter = chapter_data.get("next_chapter")
         self._parse_chapter_id()
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the chapter to a dictionary for serialization.
+
+        Returns:
+            Dictionary representation of the chapter
+        """
+        return {
+            "id": self.chapter_id,
+            "title": self.title,
+            "description": self.description,
+            "type": self.type,
+            "phase": self.phase,
+            "completion_exp": self.completion_exp,
+            "completion_tusd": self.completion_tusd
+        }
+
+    def process_choice(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
+        """
+        Process a player's choice and return updated player data and chapter information.
+
+        Args:
+            player_data: The player's current data
+            choice_index: The index of the chosen option
+
+        Returns:
+            Dictionary containing updated player data and chapter information
+        """
+        raise NotImplementedError("Subclasses must implement process_choice")
+
+    def complete(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Complete the chapter and return updated player data.
+
+        Args:
+            player_data: The player's current data
+
+        Returns:
+            Updated player data
+        """
+        story_progress = player_data.get("story_progress", {})
+
+        # Add chapter to completed chapters
+        completed_chapters = story_progress.get("completed_chapters", [])
+        if self.chapter_id not in completed_chapters:
+            completed_chapters.append(self.chapter_id)
+        story_progress["completed_chapters"] = completed_chapters
+
+        # Award completion rewards
+        player_data["exp"] = player_data.get("exp", 0) + self.completion_exp
+        player_data["tusd"] = player_data.get("tusd", 0) + self.completion_tusd
+
+        # Update player data
+        player_data["story_progress"] = story_progress
+
+        return player_data
 
     def get_available_choices(self, player_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -207,243 +265,6 @@ class BaseChapter(Chapter):
             }
         }
 
-    def process_choice(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
-        """
-        Processes a player's choice and returns the next state.
-        """
-        story_progress = player_data.get("story_progress", {})
-        current_dialogue_index = story_progress.get("current_dialogue_index", 0)
-
-        # Get current dialogue
-        if current_dialogue_index < len(self.dialogues):
-            current_dialogue = self.dialogues[current_dialogue_index]
-        else:
-            # If we're past the dialogues, check if there are indexed choices for this index
-            choice_key = f"choices_{current_dialogue_index}"
-            if hasattr(self, 'data') and choice_key in self.data:
-                current_dialogue = {"choices": self.data[choice_key]}
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using indexed choices for dialogue {current_dialogue_index}")
-            else:
-                # If no indexed choices, use chapter-level choices
-                current_dialogue = {"choices": self.choices}
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using chapter-level choices for dialogue {current_dialogue_index}")
-
-        # Debug log for current dialogue and choices
-        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - current_dialogue_index: {current_dialogue_index}")
-        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - current_dialogue: {current_dialogue}")
-
-        dialogue_choices = current_dialogue.get("choices", [])
-        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - dialogue_choices: {dialogue_choices}")
-        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - choice_index: {choice_index}")
-
-        # Check if the current dialogue has choices
-        if "choices" in current_dialogue and choice_index < len(current_dialogue["choices"]):
-            choice = current_dialogue["choices"][choice_index]
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - selected choice: {choice}")
-
-            # Record the choice
-            chapter_choices = story_progress.get("story_choices", {}).get(self.chapter_id, {})
-            choice_key = f"dialogue_{current_dialogue_index}_choice"
-            chapter_choices[choice_key] = choice_index
-
-            if "story_choices" not in story_progress:
-                story_progress["story_choices"] = {}
-            story_progress["story_choices"][self.chapter_id] = chapter_choices
-
-            # Process affinity changes if present
-            if "affinity_change" in choice:
-                character_relationships = story_progress.get("character_relationships", {})
-                for character, change in choice["affinity_change"].items():
-                    current_affinity = character_relationships.get(character, 0)
-                    character_relationships[character] = current_affinity + change
-                story_progress["character_relationships"] = character_relationships
-
-            # Handle attribute checks if present
-            if "attribute_check" in choice:
-                attribute = choice["attribute_check"]
-                threshold = choice.get("threshold", 0)
-                player_attribute_value = player_data.get(attribute, 0)
-
-                # Check if player meets the threshold
-                check_passed = player_attribute_value >= threshold
-                logger.info(f"Attribute check for {attribute}: player value {player_attribute_value}, threshold {threshold}, passed: {check_passed}")
-
-                # Set challenge result for conditional next chapter
-                if "challenge_result" not in story_progress:
-                    story_progress["challenge_result"] = {}
-
-                if check_passed:
-                    story_progress["challenge_result"] = {"result": "success"}
-                else:
-                    story_progress["challenge_result"] = {"result": "failure"}
-
-                # Store the next dialogue index based on attribute check result
-                next_dialogue = choice.get("next_dialogue")
-                if next_dialogue is not None:
-                    # If we have additional_dialogues with success/failure placeholders
-                    if hasattr(self, 'data') and 'additional_dialogues' in self.data:
-                        next_dialogue_str = str(next_dialogue)
-                        if next_dialogue_str in self.data['additional_dialogues']:
-                            additional_dialogue = self.data['additional_dialogues'][next_dialogue_str]
-
-                            # Check if there are success/failure placeholders
-                            for i, dialogue_item in enumerate(additional_dialogue):
-                                if isinstance(dialogue_item, dict) and "text" in dialogue_item:
-                                    if dialogue_item["text"] == "SUCCESS_PLACEHOLDER":
-                                        # Replace with success dialogue
-                                        success_key = f"success_{next_dialogue}"
-                                        if success_key in self.data['additional_dialogues']:
-                                            # Use the success dialogue
-                                            if check_passed:
-                                                additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][success_key][0]["text"]}
-                                            else:
-                                                # If check failed, use the failure dialogue
-                                                failure_key = f"failure_{next_dialogue}"
-                                                if failure_key in self.data['additional_dialogues']:
-                                                    additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][failure_key][0]["text"]}
-
-                                    elif dialogue_item["text"] == "FAILURE_PLACEHOLDER":
-                                        # Replace with failure dialogue
-                                        failure_key = f"failure_{next_dialogue}"
-                                        if failure_key in self.data['additional_dialogues']:
-                                            # Use the failure dialogue
-                                            if not check_passed:
-                                                additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][failure_key][0]["text"]}
-                                            else:
-                                                # If check passed, use the success dialogue
-                                                success_key = f"success_{next_dialogue}"
-                                                if success_key in self.data['additional_dialogues']:
-                                                    additional_dialogue[i] = {"npc": dialogue_item.get("npc", "Narrador"), "text": self.data['additional_dialogues'][success_key][0]["text"]}
-
-                    story_progress["current_dialogue_index"] = next_dialogue
-                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to specified dialogue after attribute check: {next_dialogue}")
-                else:
-                    # If no next_dialogue specified, move to the next dialogue
-                    story_progress["current_dialogue_index"] = current_dialogue_index + 1
-                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to next dialogue after attribute check: {current_dialogue_index + 1}")
-
-            # If no attribute check, just move to the next dialogue if specified
-            elif "next_dialogue" in choice:
-                story_progress["current_dialogue_index"] = choice["next_dialogue"]
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to specified dialogue: {choice['next_dialogue']}")
-            else:
-                # Otherwise, just move to the next dialogue
-                story_progress["current_dialogue_index"] = current_dialogue_index + 1
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - moving to next dialogue: {current_dialogue_index + 1}")
-        else:
-            # Check if this is a special case for club-specific dialogues
-            if hasattr(self, 'data') and (
-                'club_dialogues' in self.data or 
-                'club_specific_dialogues' in self.data
-            ):
-                # This is likely a chapter with club-specific dialogues
-                # Instead of warning, we'll handle this as a special case
-                # Just move to the next dialogue index
-                story_progress["current_dialogue_index"] = current_dialogue_index + 1
-                logger.info(f"Moving to next dialogue in chapter {self.chapter_id} with club-specific content")
-            else:
-                # If there are no choices and no special case, just move to the next dialogue
-                logger.warning(f"No valid choice found for index {choice_index} in chapter {self.chapter_id}, dialogue {current_dialogue_index}")
-                story_progress["current_dialogue_index"] = current_dialogue_index + 1
-
-        # Update player data
-        player_data["story_progress"] = story_progress
-
-        # Get the next dialogue
-        next_dialogue_index = story_progress["current_dialogue_index"]
-        next_dialogue = None
-
-        if next_dialogue_index < len(self.dialogues):
-            next_dialogue = self.dialogues[next_dialogue_index]
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - next_dialogue: {next_dialogue}")
-
-        # Get next dialogue choices if available
-        next_dialogue_choices = []
-        if next_dialogue and isinstance(next_dialogue, dict) and "choices" in next_dialogue:
-            next_dialogue_choices = next_dialogue.get("choices", [])
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - found dialogue-specific choices: {next_dialogue_choices}")
-
-        # Check if we need to use choices from additional_dialogues
-        elif hasattr(self, 'data') and 'additional_dialogues' in self.data:
-            # Convert next_dialogue_index to string for lookup in additional_dialogues
-            next_dialogue_index_str = str(next_dialogue_index)
-            if next_dialogue_index_str in self.data['additional_dialogues']:
-                additional_dialogue = self.data['additional_dialogues'][next_dialogue_index_str]
-                # Check if the last item in additional_dialogue contains choices
-                if isinstance(additional_dialogue[-1], dict) and "choices" in additional_dialogue[-1]:
-                    next_dialogue_choices = additional_dialogue[-1].get("choices", [])
-                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - found choices in additional_dialogues: {next_dialogue_choices}")
-
-        # Check if there are indexed choices for this dialogue
-        choice_key = f"choices_{next_dialogue_index}"
-        if not next_dialogue_choices and hasattr(self, 'data') and choice_key in self.data:
-            next_dialogue_choices = self.data[choice_key]
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - found indexed choices: {next_dialogue_choices}")
-
-        # Check if there are shared_dialogue_choices for this dialogue
-        if not next_dialogue_choices and hasattr(self, 'data') and 'shared_dialogue_choices' in self.data:
-            shared_dialogue_choices = self.data.get('shared_dialogue_choices', [])
-            if shared_dialogue_choices:
-                next_dialogue_choices = shared_dialogue_choices
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using shared_dialogue_choices")
-
-        # Use dialogue-specific choices if available, otherwise use chapter-level choices
-        # But only use chapter-level choices if we're at the beginning or if explicitly needed
-        if next_dialogue_choices:
-            choices_to_display = next_dialogue_choices
-        elif next_dialogue_index == 0:  # Only use chapter-level choices at the beginning
-            choices_to_display = self.choices
-        else:
-            # If no specific choices found, use chapter-level choices as fallback
-            choices_to_display = self.choices
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - using fallback chapter-level choices")
-
-        # Fallback message if no choices are available
-        if not choices_to_display and next_dialogue is not None:
-            logger.warning(f"No choices available for next dialogue in chapter {self.chapter_id}")
-            choices_to_display = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
-
-        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - choices_to_display: {choices_to_display}")
-
-        # Check if we need to include shared dialogue after the current dialogue
-        shared_dialogue = None
-        if hasattr(self, 'data') and 'shared_dialogue' in self.data:
-            shared_dialogue = self.data.get('shared_dialogue', [])
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} process_choice() - including shared_dialogue")
-
-        return {
-            "player_data": player_data,
-            "chapter_data": {
-                "id": self.chapter_id,
-                "title": self.title,
-                "description": self.description,
-                "current_dialogue": next_dialogue,
-                "shared_dialogue": shared_dialogue,
-                "choices": choices_to_display
-            }
-        }
-
-    def complete(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Completes the chapter and returns updated player data.
-        """
-        story_progress = player_data.get("story_progress", {})
-
-        # Add chapter to completed chapters
-        completed_chapters = story_progress.get("completed_chapters", [])
-        if self.chapter_id not in completed_chapters:
-            completed_chapters.append(self.chapter_id)
-        story_progress["completed_chapters"] = completed_chapters
-
-        # Award completion rewards
-        player_data["exp"] = player_data.get("exp", 0) + self.completion_exp
-        player_data["tusd"] = player_data.get("tusd", 0) + self.completion_tusd
-
-        # Update player data
-        player_data["story_progress"] = story_progress
-
-        return player_data
-
     def get_next_chapter(self, player_data: Dict[str, Any]) -> Optional[str]:
         """
         Returns the ID of the next chapter based on player choices and state.
@@ -536,22 +357,127 @@ class BaseChapter(Chapter):
 
 class StoryChapter(BaseChapter):
     """
-    Implementation of a standard story chapter.
+    A story chapter that contains narrative content and choices.
     """
-    def __init__(self, chapter_id: str, data: Dict[str, Any]):
-        super().__init__(chapter_id, data)
-        self.chapter_data = data
+
+    def __init__(self, chapter_id: str, chapter_data: Dict[str, Any]):
+        """
+        Initialize a story chapter.
+
+        Args:
+            chapter_id: The chapter's unique identifier
+            chapter_data: The chapter's data dictionary
+        """
+        super().__init__(chapter_id, chapter_data)
+        self.scenes = chapter_data.get("scenes", [])
+        self.current_scene_index = 0
+        self.current_dialogue_index = 0
+        self.shared_dialogue = []
+        self.choices = []
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the chapter to a dictionary for serialization.
+
+        Returns:
+            Dictionary representation of the chapter
+        """
+        return {
+            "id": self.chapter_id,
+            "title": self.title,
+            "description": self.description,
+            "type": self.type,
+            "phase": self.phase,
+            "scenes": self.scenes,
+            "completion_exp": self.completion_exp,
+            "completion_tusd": self.completion_tusd,
+            "current_scene_index": self.current_scene_index,
+            "current_dialogue_index": self.current_dialogue_index,
+            "shared_dialogue": self.shared_dialogue,
+            "choices": self.choices
+        }
 
     def process_choice(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
         """
-        Processes a player's choice in a story chapter.
-        May have special handling for story-specific choices.
+        Process a player's choice and return updated player data and chapter information.
+
+        Args:
+            player_data: The player's current data
+            choice_index: The index of the chosen option
+
+        Returns:
+            Dictionary containing updated player data and chapter information
         """
-        result = super().process_choice(player_data, choice_index)
+        if not self.choices or choice_index >= len(self.choices):
+            return {
+                "error": "Invalid choice",
+                "player_data": player_data
+            }
 
-        # Additional story-specific processing can be added here
+        choice = self.choices[choice_index]
+        next_scene = choice.get("next_scene")
 
-        return result
+        # Apply choice effects
+        effects = choice.get("effects", {})
+        for effect_type, effect_value in effects.items():
+            if effect_type == "reputation":
+                for npc_id, value in effect_value.items():
+                    player_data = self._update_reputation(player_data, npc_id, value)
+            elif effect_type == "elemental_affinity":
+                player_data = self._update_elemental_affinity(player_data, effect_value)
+            elif effect_type == "knowledge":
+                player_data = self._update_knowledge(player_data, effect_value)
+            elif effect_type == "club_interest":
+                player_data = self._update_club_interest(player_data, effect_value)
+
+        # Record the choice
+        story_progress = player_data.get("story_progress", {})
+        if "story_choices" not in story_progress:
+            story_progress["story_choices"] = {}
+        if self.chapter_id not in story_progress["story_choices"]:
+            story_progress["story_choices"][self.chapter_id] = {}
+        story_progress["story_choices"][self.chapter_id][str(choice_index)] = choice
+        player_data["story_progress"] = story_progress
+
+        # Move to next scene if specified
+        if next_scene:
+            self.current_scene_index = next_scene
+            self.current_dialogue_index = 0
+            self.shared_dialogue = []
+            self.choices = []
+
+        # Get next dialogue and choices
+        next_dialogue = self._get_next_dialogue()
+        choices_to_display = self._get_choices()
+
+        return {
+            "player_data": player_data,
+            "chapter_data": self.to_dict()
+        }
+
+    def _get_next_dialogue(self):
+        # Implementation of _get_next_dialogue method
+        pass
+
+    def _get_choices(self):
+        # Implementation of _get_choices method
+        pass
+
+    def _update_reputation(self, player_data: Dict[str, Any], npc_id: str, value: int) -> Dict[str, Any]:
+        # Implementation of _update_reputation method
+        pass
+
+    def _update_elemental_affinity(self, player_data: Dict[str, Any], effect_value: int) -> Dict[str, Any]:
+        # Implementation of _update_elemental_affinity method
+        pass
+
+    def _update_knowledge(self, player_data: Dict[str, Any], effect_value: int) -> Dict[str, Any]:
+        # Implementation of _update_knowledge method
+        pass
+
+    def _update_club_interest(self, player_data: Dict[str, Any], effect_value: int) -> Dict[str, Any]:
+        # Implementation of _update_club_interest method
+        pass
 
 
 class ChallengeChapter(BaseChapter):
