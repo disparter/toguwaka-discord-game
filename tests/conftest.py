@@ -27,8 +27,11 @@ def patched_import(name, *args, **kwargs):
     # Lista de módulos que precisam do prefixo src
     src_modules = ['utils', 'cogs', 'story_mode', 'bot']
     
+    # Lista de bibliotecas externas que não devem ser modificadas
+    external_libs = ['discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore']
+    
     # Não modifica imports de bibliotecas externas ou imports relativos
-    if (name.startswith(('discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore')) or
+    if (any(name.startswith(lib) for lib in external_libs) or  # bibliotecas externas
         name.startswith('.') or  # imports relativos
         name.startswith('src.')):  # já tem src
         return original_import(name, *args, **kwargs)
