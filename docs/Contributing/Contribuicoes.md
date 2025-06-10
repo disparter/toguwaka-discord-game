@@ -147,13 +147,13 @@ Para mais detalhes sobre como escrever testes, consulte o [guia de testes](./Des
 Para executar todos os testes:
 
 ```bash
-python run_tests.py
+python tests/run_tests.py
 ```
 
 Para executar um teste específico:
 
 ```bash
-python run_tests.py tests/caminho/para/test_arquivo.py
+python tests/test_arquivo.py
 ```
 
 ## 📚 Documentação

@@ -30,14 +30,21 @@ O bot Academia Tokugawa é construído usando Python e a biblioteca discord.py. 
 
 ### Diretório Raiz
 
-O diretório raiz contém os arquivos principais do projeto:
+O diretório raiz contém os arquivos de infraestrutura basica para repositorio:
 
-- **bot.py**: Ponto de entrada principal do bot
-- **run_tests.py**: Script para executar testes automatizados
 - **requirements.txt**: Lista de dependências do projeto
 - **.env**: Arquivo de configuração com variáveis de ambiente (não versionado)
 - **Dockerfile**: Configuração para construir a imagem Docker
 - **bot_execution.sh**: Script para iniciar o bot
+
+
+#### SRC
+
+Enquanto dentro de `src` fica toda a logica e 
+
+
+- **bot.py**: Ponto de entrada principal do bot
+
 
 ### Cogs
 
