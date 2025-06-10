@@ -65,8 +65,8 @@ class DuelCalculator(IDuelCalculator):
             challenger['charisma'] * weights['charisma']
         )
         
-        # Adiciona um fator aleatório
-        challenger_score *= random.uniform(0.8, 1.2)
+        # Adiciona um fator aleatório (reduzido para 0.9-1.1 para maior consistência)
+        challenger_score *= random.uniform(0.9, 1.1)
         
         # Calcula a pontuação base do oponente usando os pesos do tipo de duelo
         opponent_score = (
@@ -76,8 +76,8 @@ class DuelCalculator(IDuelCalculator):
             opponent['charisma'] * weights['charisma']
         )
         
-        # Adiciona um fator aleatório
-        opponent_score *= random.uniform(0.8, 1.2)
+        # Adiciona um fator aleatório (reduzido para 0.9-1.1 para maior consistência)
+        opponent_score *= random.uniform(0.9, 1.1)
         
         # Determina o vencedor
         if challenger_score > opponent_score:
@@ -89,6 +89,9 @@ class DuelCalculator(IDuelCalculator):
             loser = challenger['name']
             win_margin = opponent_score - challenger_score
         
+        # Garante uma margem mínima de vitória
+        win_margin = max(win_margin, 1.0)
+        
         # Calcula as recompensas baseadas no tipo de duelo
         exp_reward = int(win_margin * 10)
         tusd_reward = int(win_margin * 5)
@@ -96,16 +99,16 @@ class DuelCalculator(IDuelCalculator):
         # Calcula o dano de HP baseado no tipo de duelo
         if duel_type == "magical":
             # Magical duels cause more HP loss due to elemental damage
-            hp_loss = int(win_margin * 3)
+            hp_loss = max(int(win_margin * 3), 5)  # Mínimo de 5 HP
         elif duel_type == "physical":
             # Physical duels cause moderate HP loss
-            hp_loss = int(win_margin * 2)
+            hp_loss = max(int(win_margin * 2), 3)  # Mínimo de 3 HP
         elif duel_type == "mental":
             # Mental duels cause less HP loss but more mental strain
-            hp_loss = int(win_margin * 1.5)
+            hp_loss = max(int(win_margin * 1.5), 2)  # Mínimo de 2 HP
         else:
             # Default HP loss for other types
-            hp_loss = int(win_margin * 2)
+            hp_loss = max(int(win_margin * 2), 3)  # Mínimo de 3 HP
         
         return {
             "winner": winner,
