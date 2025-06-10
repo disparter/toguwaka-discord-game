@@ -3,6 +3,7 @@ import logging
 import json
 import re
 from .narrative_logger import get_narrative_logger
+from pathlib import Path
 
 # Set up logging
 logger = logging.getLogger('tokugawa_bot')
@@ -13,8 +14,16 @@ class StoryValidator:
     This helps ensure that the narrative flow is properly tracked and errors are minimized.
     """
 
-    def __init__(self):
-        """Initialize the story validator."""
+    def __init__(self, data_dir: str = "data"):
+        """
+        Initialize the story validator.
+
+        Args:
+            data_dir: Path to the data directory containing story mode files
+        """
+        self.data_dir = Path(data_dir)
+        self.narrative_dir = self.data_dir / "story_mode" / "narrative"
+        self.chapters_dir = self.narrative_dir / "chapters"
         self.narrative_logger = get_narrative_logger()
 
     def validate_chapter_id(self, chapter_id: str) -> bool:
@@ -302,17 +311,218 @@ class StoryValidator:
         
         return result
 
+    def validate_story_structure(self) -> Dict[str, Any]:
+        """
+        Validate the entire story structure.
+
+        Returns:
+            Dictionary containing validation results
+        """
+        results = {
+            "errors": [],
+            "warnings": [],
+            "dead_ends": [],
+            "missing_assets": []
+        }
+
+        try:
+            # Load story index
+            story_index = self._load_story_index()
+            if not story_index:
+                results["errors"].append("Failed to load story index")
+                return results
+
+            # Validate main arcs
+            self._validate_main_arcs(story_index, results)
+
+            # Validate romance routes
+            self._validate_romance_routes(story_index, results)
+
+            # Validate club arcs
+            self._validate_club_arcs(story_index, results)
+
+            # Check for dead ends
+            self._check_dead_ends(story_index, results)
+
+            # Check for missing assets
+            self._check_missing_assets(results)
+
+        except Exception as e:
+            results["errors"].append(f"Validation error: {str(e)}")
+
+        return results
+
+    def _load_story_index(self) -> Optional[Dict[str, Any]]:
+        """
+        Load the story index file.
+
+        Returns:
+            Story index dictionary or None if loading fails
+        """
+        try:
+            index_path = self.narrative_dir / "index.json"
+            if not index_path.exists():
+                return None
+
+            with open(index_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading story index: {e}")
+            return None
+
+    def _validate_main_arcs(self, story_index: Dict[str, Any], results: Dict[str, Any]) -> None:
+        """
+        Validate main story arcs.
+
+        Args:
+            story_index: Story index dictionary
+            results: Validation results dictionary
+        """
+        narrative_structure = story_index.get("narrative_structure", {})
+        
+        for year, year_data in narrative_structure.items():
+            for arc_name, arc_data in year_data.items():
+                if arc_name == "intro":
+                    continue  # Skip intro arcs as they're handled separately
+
+                # Check if all required chapters exist
+                chapters = arc_data.get("chapters", [])
+                for chapter_id in chapters:
+                    chapter_path = self.chapters_dir / f"{chapter_id}.json"
+                    if not chapter_path.exists():
+                        results["errors"].append(f"Missing chapter file: {chapter_id}")
+
+                # Check requirements
+                requirements = arc_data.get("requirements", {})
+                if "previous_arc" in requirements:
+                    prev_arc = requirements["previous_arc"]
+                    if not any(prev_arc in arc for arc in year_data.values()):
+                        results["errors"].append(f"Invalid previous arc reference: {prev_arc}")
+
+    def _validate_romance_routes(self, story_index: Dict[str, Any], results: Dict[str, Any]) -> None:
+        """
+        Validate romance routes.
+
+        Args:
+            story_index: Story index dictionary
+            results: Validation results dictionary
+        """
+        romance_routes = story_index.get("romance_routes", {})
+        
+        for route_id, route_data in romance_routes.items():
+            # Check if all chapters exist
+            chapters = route_data.get("chapters", [])
+            for chapter_id in chapters:
+                chapter_path = self.chapters_dir / f"{chapter_id}.json"
+                if not chapter_path.exists():
+                    results["errors"].append(f"Missing romance chapter: {chapter_id}")
+
+    def _validate_club_arcs(self, story_index: Dict[str, Any], results: Dict[str, Any]) -> None:
+        """
+        Validate club arcs.
+
+        Args:
+            story_index: Story index dictionary
+            results: Validation results dictionary
+        """
+        club_arcs = story_index.get("club_arcs", {})
+        
+        for club_id, club_data in club_arcs.items():
+            # Check if all chapters exist
+            chapters = club_data.get("chapters", [])
+            for chapter_id in chapters:
+                chapter_path = self.chapters_dir / f"{chapter_id}.json"
+                if not chapter_path.exists():
+                    results["errors"].append(f"Missing club chapter: {chapter_id}")
+
+    def _check_dead_ends(self, story_index: Dict[str, Any], results: Dict[str, Any]) -> None:
+        """
+        Check for dead ends in the story.
+
+        Args:
+            story_index: Story index dictionary
+            results: Validation results dictionary
+        """
+        # Get all chapter files
+        chapter_files = list(self.chapters_dir.glob("*.json"))
+        
+        for chapter_file in chapter_files:
+            try:
+                with open(chapter_file, 'r', encoding='utf-8') as f:
+                    chapter_data = json.load(f)
+                
+                # Check if chapter has any connections
+                has_connections = False
+                
+                # Check for next chapter references
+                if "next_chapter" in chapter_data:
+                    has_connections = True
+                
+                # Check for scene transitions
+                scenes = chapter_data.get("scenes", [])
+                for scene in scenes:
+                    choices = scene.get("choices", [])
+                    for choice in choices:
+                        if "next_scene" in choice:
+                            has_connections = True
+                            break
+                
+                if not has_connections:
+                    results["dead_ends"].append(f"Dead end found in chapter: {chapter_file.stem}")
+            
+            except Exception as e:
+                results["errors"].append(f"Error checking dead ends in {chapter_file.name}: {e}")
+
+    def _check_missing_assets(self, results: Dict[str, Any]) -> None:
+        """
+        Check for missing assets referenced in chapters.
+
+        Args:
+            results: Validation results dictionary
+        """
+        # Get all chapter files
+        chapter_files = list(self.chapters_dir.glob("*.json"))
+        
+        for chapter_file in chapter_files:
+            try:
+                with open(chapter_file, 'r', encoding='utf-8') as f:
+                    chapter_data = json.load(f)
+                
+                # Check backgrounds
+                scenes = chapter_data.get("scenes", [])
+                for scene in scenes:
+                    background = scene.get("background")
+                    if background:
+                        bg_path = self.data_dir / "assets" / "images" / "story" / "backgrounds" / background
+                        if not bg_path.exists():
+                            results["missing_assets"].append(f"Missing background: {background}")
+                    
+                    # Check character images
+                    characters = scene.get("characters", [])
+                    for character in characters:
+                        image = character.get("image")
+                        if image:
+                            char_path = self.data_dir / "assets" / "images" / "story" / "characters" / image
+                            if not char_path.exists():
+                                results["missing_assets"].append(f"Missing character image: {image}")
+            
+            except Exception as e:
+                results["errors"].append(f"Error checking assets in {chapter_file.name}: {e}")
+
 # Singleton instance
 _story_validator = None
 
-def get_story_validator() -> StoryValidator:
+def get_story_validator(data_dir: str = "data") -> StoryValidator:
     """
-    Get the singleton instance of the story validator.
+    Get a story validator instance.
+
+    Args:
+        data_dir: Path to the data directory containing story mode files
 
     Returns:
-        The story validator instance
+        A StoryValidator instance
     """
     global _story_validator
     if _story_validator is None:
-        _story_validator = StoryValidator()
+        _story_validator = StoryValidator(data_dir)
     return _story_validator
