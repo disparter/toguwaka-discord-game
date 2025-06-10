@@ -7,6 +7,7 @@ Ele usa exclusivamente DynamoDB para todas as operações.
 
 import os
 import logging
+import asyncio
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime, timedelta
 import json
@@ -521,41 +522,171 @@ class DBProvider:
 db_provider = DBProvider()
 
 # Create wrapper functions for all methods that need to be exported
-async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
-    """Get player data from database."""
+async def get_player_async(user_id: str) -> Optional[Dict[str, Any]]:
+    """Get player data from database (async version)."""
     return await db_provider.get_player(user_id)
 
-async def update_player(user_id: str, **kwargs) -> bool:
-    """Update player data in database."""
+def get_player(user_id: str) -> Optional[Dict[str, Any]]:
+    """Get player data from database (sync version)."""
+    # Create an event loop if one doesn't exist
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    # Run the async function in the event loop
+    if loop.is_running():
+        # If we're already in an event loop, use run_coroutine_threadsafe
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
+        return future.result()
+    else:
+        # Otherwise, use run_until_complete
+        return loop.run_until_complete(db_provider.get_player(user_id))
+
+async def update_player_async(user_id: str, **kwargs) -> bool:
+    """Update player data in database (async version)."""
     return await db_provider.update_player(user_id, **kwargs)
 
-async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
-    """Get club data from database."""
+def update_player(user_id: str, **kwargs) -> bool:
+    """Update player data in database (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.update_player(user_id, **kwargs), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.update_player(user_id, **kwargs))
+
+async def get_club_async(club_id: str) -> Optional[Dict[str, Any]]:
+    """Get club data from database (async version)."""
     return await db_provider.get_club(club_id)
 
-async def store_cooldown(user_id: str, command: str, expiry_time: datetime) -> bool:
-    """Store command cooldown in database."""
+def get_club(club_id: str) -> Optional[Dict[str, Any]]:
+    """Get club data from database (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_club(club_id), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.get_club(club_id))
+
+async def store_cooldown_async(user_id: str, command: str, expiry_time: datetime) -> bool:
+    """Store command cooldown in database (async version)."""
     return await db_provider.store_cooldown(user_id, command, expiry_time)
 
-async def get_player_inventory(user_id: str) -> Dict[str, Any]:
-    """Get a player's inventory."""
+def store_cooldown(user_id: str, command: str, expiry_time: datetime) -> bool:
+    """Store command cooldown in database (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.store_cooldown(user_id, command, expiry_time), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.store_cooldown(user_id, command, expiry_time))
+
+async def get_player_inventory_async(user_id: str) -> Dict[str, Any]:
+    """Get a player's inventory (async version)."""
     return await db_provider.get_player_inventory(user_id)
 
-async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
-    """Add an item to a player's inventory."""
+def get_player_inventory(user_id: str) -> Dict[str, Any]:
+    """Get a player's inventory (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_player_inventory(user_id), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.get_player_inventory(user_id))
+
+async def add_item_to_inventory_async(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
+    """Add an item to a player's inventory (async version)."""
     return await db_provider.add_item_to_inventory(user_id, item_id, item_data)
 
-async def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
-    """Get all cooldowns."""
+def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
+    """Add an item to a player's inventory (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.add_item_to_inventory(user_id, item_id, item_data), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.add_item_to_inventory(user_id, item_id, item_data))
+
+async def get_cooldowns_async(*args, **kwargs) -> List[Dict[str, Any]]:
+    """Get all cooldowns (async version)."""
     return await db_provider.get_cooldowns(*args, **kwargs)
 
-async def clear_expired_cooldowns() -> int:
-    """Clear expired cooldowns from database."""
+def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
+    """Get all cooldowns (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_cooldowns(*args, **kwargs), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.get_cooldowns(*args, **kwargs))
+
+async def clear_expired_cooldowns_async() -> int:
+    """Clear expired cooldowns from database (async version)."""
     return await db_provider.clear_expired_cooldowns()
 
-async def init_db() -> bool:
-    """Initialize the database."""
+def clear_expired_cooldowns() -> int:
+    """Clear expired cooldowns from database (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.clear_expired_cooldowns(), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.clear_expired_cooldowns())
+
+async def init_db_async() -> bool:
+    """Initialize the database (async version)."""
     return await db_provider.init_db()
+
+def init_db() -> bool:
+    """Initialize the database (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.init_db(), loop)
+        return future.result()
+    else:
+        return loop.run_until_complete(db_provider.init_db())
 
 # Export the singleton instance and all wrapper functions
 __all__ = [
@@ -568,5 +699,14 @@ __all__ = [
     'add_item_to_inventory',
     'get_cooldowns',
     'clear_expired_cooldowns',
-    'init_db'
+    'init_db',
+    'get_player_async',
+    'update_player_async',
+    'get_club_async',
+    'store_cooldown_async',
+    'get_player_inventory_async',
+    'add_item_to_inventory_async',
+    'get_cooldowns_async',
+    'clear_expired_cooldowns_async',
+    'init_db_async'
 ]
