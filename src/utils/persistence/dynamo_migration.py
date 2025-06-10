@@ -23,12 +23,29 @@ logging.basicConfig(
 logger = logging.getLogger('tokugawa_bot')
 
 # Initialize DynamoDB client
-dynamodb = boto3.resource('dynamodb')
-dynamodb_client = boto3.client('dynamodb')
+try:
+    logger.info("Initializing DynamoDB resource and client...")
+    from config import AWS_REGION
+    logger.info(f"Using AWS region: {AWS_REGION}")
 
-# Get table names from environment variables
-PLAYERS_TABLE = os.getenv('DYNAMODB_PLAYERS_TABLE', 'tokugawa-players')
-INVENTORY_TABLE = os.getenv('DYNAMODB_INVENTORY_TABLE', 'tokugawa-inventory')
+    dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+    dynamodb_client = boto3.client('dynamodb', region_name=AWS_REGION)
+
+    logger.info("DynamoDB resource and client initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing DynamoDB clients: {str(e)}")
+    logger.error(f"Exception type: {type(e).__name__}")
+    # Re-raise to ensure the error is properly handled
+    raise
+
+# Import table names from config
+from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE
+
+# Get table names from config
+PLAYERS_TABLE = DYNAMODB_PLAYERS_TABLE
+INVENTORY_TABLE = DYNAMODB_INVENTORY_TABLE
+
+logger.info(f"Using DynamoDB tables: Players={PLAYERS_TABLE}, Inventory={INVENTORY_TABLE}")
 
 # Default values for player attributes
 DEFAULT_PLAYER_VALUES = {
@@ -48,23 +65,34 @@ DEFAULT_PLAYER_VALUES = {
 
 def wait_for_dynamodb():
     """Wait for DynamoDB tables to be ready."""
-    logger.info("Waiting for DynamoDB tables to be ready...")
+    logger.info(f"Waiting for DynamoDB tables to be ready: {PLAYERS_TABLE} and {INVENTORY_TABLE}...")
     max_retries = 30
     retry_delay = 2
 
     for i in range(max_retries):
         try:
             # Check if tables exist and are active
+            logger.info(f"Checking if table {PLAYERS_TABLE} exists and is active...")
             players_table = dynamodb_client.describe_table(TableName=PLAYERS_TABLE)
+            logger.info(f"Table {PLAYERS_TABLE} status: {players_table['Table']['TableStatus']}")
+
+            logger.info(f"Checking if table {INVENTORY_TABLE} exists and is active...")
             inventory_table = dynamodb_client.describe_table(TableName=INVENTORY_TABLE)
+            logger.info(f"Table {INVENTORY_TABLE} status: {inventory_table['Table']['TableStatus']}")
 
             if (players_table['Table']['TableStatus'] == 'ACTIVE' and 
                 inventory_table['Table']['TableStatus'] == 'ACTIVE'):
                 logger.info("DynamoDB tables are ready!")
                 return True
+            else:
+                logger.warning(f"Tables not yet active. Retry {i+1}/{max_retries}")
 
         except ClientError as e:
-            if e.response['Error']['Code'] == 'ResourceNotFoundException':
+            error_code = e.response.get('Error', {}).get('Code', 'Unknown')
+            error_message = e.response.get('Error', {}).get('Message', 'Unknown error')
+            logger.error(f"ClientError: {error_code} - {error_message}")
+
+            if error_code == 'ResourceNotFoundException':
                 logger.warning(f"Tables not found yet. Retry {i+1}/{max_retries}")
             else:
                 logger.error(f"Error checking tables: {str(e)}")
@@ -100,6 +128,17 @@ async def normalize_player_data() -> bool:
         bool: True if normalization was successful, False otherwise
     """
     logger.info("Starting player data normalization process...")
+
+    # Check if DynamoDB is enabled
+    from config import USE_DYNAMO, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+    logger.info(f"DynamoDB configuration: USE_DYNAMO={USE_DYNAMO}, AWS_REGION={AWS_REGION}")
+    logger.info(f"AWS credentials: ACCESS_KEY_ID={'*****' if AWS_ACCESS_KEY_ID else 'Not set'}, SECRET_ACCESS_KEY={'*****' if AWS_SECRET_ACCESS_KEY else 'Not set'}")
+
+    if not USE_DYNAMO:
+        logger.warning("DynamoDB is disabled (USE_DYNAMO=false). Skipping player data normalization.")
+        return True
+
+    logger.info("DynamoDB is enabled (USE_DYNAMO=true). Proceeding with normalization.")
 
     # Wait for DynamoDB to be ready
     if not wait_for_dynamodb():

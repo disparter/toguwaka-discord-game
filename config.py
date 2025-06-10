@@ -17,7 +17,7 @@ STORY_MODE_DIR.mkdir(exist_ok=True)
 LOGS_DIR.mkdir(exist_ok=True)
 
 # Database settings
-USE_DYNAMO = os.getenv('USE_DYNAMO', 'false').lower() == 'true'
+USE_DYNAMO = os.getenv('USE_DYNAMODB', 'false').lower() == 'true'
 DYNAMODB_TABLE = os.getenv('DYNAMODB_TABLE', 'AcademiaTokugawa')
 DYNAMODB_CLUBS_TABLE = os.getenv('DYNAMODB_CLUBS_TABLE', 'Clubes')
 DYNAMODB_EVENTS_TABLE = os.getenv('DYNAMODB_EVENTS_TABLE', 'Eventos')
