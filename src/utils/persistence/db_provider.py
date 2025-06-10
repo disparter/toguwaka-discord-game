@@ -19,7 +19,7 @@ logger = logging.getLogger('tokugawa_bot')
 
 class DBProvider:
     """Database provider class that encapsulates all database operations."""
-    
+
     def __init__(self):
         # Configurar região padrão para o DynamoDB
         self.AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
@@ -286,7 +286,7 @@ class DBProvider:
         try:
             # Get current grades
             grades = await self.get_player_grades(user_id)
-            
+
             # Update grade
             if subject not in grades:
                 grades[subject] = {}
@@ -309,7 +309,7 @@ class DBProvider:
         try:
             grades = await self.get_player_grades(user_id)
             averages = {}
-            
+
             for subject, monthly_grades in grades.items():
                 if monthly_grades:
                     total = sum(monthly_grades.values())
@@ -343,7 +343,7 @@ class DBProvider:
                 FilterExpression='begins_with(PK, :pk)',
                 ExpressionAttributeValues={':pk': f'VOTE#{vote_id}'}
             )
-            
+
             results = {}
             for item in response.get('Items', []):
                 candidate_id = item['candidate_id']
@@ -433,12 +433,12 @@ class DBProvider:
                 FilterExpression='begins_with(PK, :pk)',
                 ExpressionAttributeValues={':pk': f'PLAYER#{user_id}'}
             )
-            
+
             inventory = {}
             for item in response.get('Items', []):
                 item_id = item['SK'].split('#')[1]
                 inventory[item_id] = item['item_data']
-            
+
             return inventory
         except Exception as e:
             logger.error(f"Error getting inventory for player {user_id}: {str(e)}")
@@ -482,7 +482,7 @@ class DBProvider:
                 ExpressionAttributeValues={':pk': 'PLAYER#'},
                 Limit=limit
             )
-            
+
             players = response.get('Items', [])
             return sorted(players, key=lambda x: x.get('level', 0), reverse=True)[:limit]
         except Exception as e:
@@ -497,7 +497,7 @@ class DBProvider:
                 ExpressionAttributeValues={':pk': 'PLAYER#'},
                 Limit=limit
             )
-            
+
             players = response.get('Items', [])
             return sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)[:limit]
         except Exception as e:
@@ -520,5 +520,53 @@ class DBProvider:
 # Create a singleton instance of DBProvider
 db_provider = DBProvider()
 
-# Export the singleton instance
-__all__ = ['db_provider'] 
+# Create wrapper functions for all methods that need to be exported
+async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
+    """Get player data from database."""
+    return await db_provider.get_player(user_id)
+
+async def update_player(user_id: str, **kwargs) -> bool:
+    """Update player data in database."""
+    return await db_provider.update_player(user_id, **kwargs)
+
+async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
+    """Get club data from database."""
+    return await db_provider.get_club(club_id)
+
+async def store_cooldown(user_id: str, command: str, expiry_time: datetime) -> bool:
+    """Store command cooldown in database."""
+    return await db_provider.store_cooldown(user_id, command, expiry_time)
+
+async def get_player_inventory(user_id: str) -> Dict[str, Any]:
+    """Get a player's inventory."""
+    return await db_provider.get_player_inventory(user_id)
+
+async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
+    """Add an item to a player's inventory."""
+    return await db_provider.add_item_to_inventory(user_id, item_id, item_data)
+
+async def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
+    """Get all cooldowns."""
+    return await db_provider.get_cooldowns(*args, **kwargs)
+
+async def clear_expired_cooldowns() -> int:
+    """Clear expired cooldowns from database."""
+    return await db_provider.clear_expired_cooldowns()
+
+async def init_db() -> bool:
+    """Initialize the database."""
+    return await db_provider.init_db()
+
+# Export the singleton instance and all wrapper functions
+__all__ = [
+    'db_provider',
+    'get_player',
+    'update_player',
+    'get_club',
+    'store_cooldown',
+    'get_player_inventory',
+    'add_item_to_inventory',
+    'get_cooldowns',
+    'clear_expired_cooldowns',
+    'init_db'
+]
