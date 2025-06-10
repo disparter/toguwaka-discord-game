@@ -24,8 +24,15 @@ import builtins
 original_import = builtins.__import__
 
 def patched_import(name, *args, **kwargs):
-    if name.startswith('utils.'):
-        name = 'src.' + name
+    # Lista de módulos que precisam do prefixo src
+    src_modules = ['utils', 'cogs', 'story_mode', 'bot']
+    
+    # Verifica se o módulo está na lista e adiciona o prefixo src
+    for module in src_modules:
+        if name == module or name.startswith(f"{module}."):
+            name = f"src.{name}"
+            break
+    
     return original_import(name, *args, **kwargs)
 
 builtins.__import__ = patched_import
