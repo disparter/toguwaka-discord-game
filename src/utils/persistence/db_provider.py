@@ -146,10 +146,29 @@ class DBProvider:
         """Get club data from database."""
         try:
             response = self.CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
-            return response.get('Item')
+            club_data = response.get('Item')
+            if club_data:
+                # Ensure required fields exist
+                if 'name' not in club_data:
+                    club_data['name'] = f"Club {club_id}"
+                if 'description' not in club_data:
+                    club_data['description'] = "No description available"
+                if 'members' not in club_data:
+                    club_data['members'] = []
+                if 'reputation' not in club_data:
+                    club_data['reputation'] = 0
+            return club_data
         except Exception as e:
             logger.error(f"Error getting club {club_id}: {str(e)}")
-            return None
+            # Return a default club object with minimal required fields
+            return {
+                'PK': f'CLUB#{club_id}',
+                'SK': 'INFO',
+                'name': f"Club {club_id}",
+                'description': "No description available",
+                'members': [],
+                'reputation': 0
+            }
 
     async def get_all_clubs(self) -> List[Dict[str, Any]]:
         """Get all clubs from database."""
@@ -552,6 +571,12 @@ class DBProvider:
                     pk_parts = player['PK'].split('#')
                     if len(pk_parts) > 1:
                         player['user_id'] = pk_parts[1]
+
+                # Ensure required fields exist
+                if 'name' not in player:
+                    player['name'] = f"Player {player.get('user_id', 'Unknown')}"
+                if 'reputation' not in player:
+                    player['reputation'] = 0
 
             return sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)[:limit]
         except Exception as e:
