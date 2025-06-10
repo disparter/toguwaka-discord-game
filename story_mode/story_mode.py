@@ -1,19 +1,15 @@
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Optional
 import json
 import logging
 import os
-from .interfaces import Chapter, Event, NPC, ChapterLoader, EventManager, StoryProgressManager
-from .chapter import BaseChapter, StoryChapter, ChallengeChapter, BranchingChapter
-from .event import BaseEvent, ClimacticEvent, RandomEvent, SeasonalEvent, DefaultEventManager
-from src.utils.game_mechanics.events.event_interface import IEvent
-from src.utils.game_mechanics.events.random_event import RandomEvent as GameRandomEvent
-from .npc import BaseNPC, StudentNPC, FacultyNPC, NPCManager
+from .interfaces import Chapter
+from .chapter import StoryChapter, ChallengeChapter, BranchingChapter
+from .npc import NPCManager
 from .progress import DefaultStoryProgressManager
 from .consequences import DynamicConsequencesSystem
 from .powers import PowerEvolutionSystem
 from .seasonal_events import SeasonalEventSystem
 from .companions import CompanionSystem
-from .chapter_validator import ChapterValidator
 from .narrative_logger import get_narrative_logger
 from .validation import get_story_validator
 from .arcs.arc_manager import ArcManager
@@ -22,7 +18,6 @@ from pathlib import Path
 from story_mode.event_manager import ConcreteEventManager
 from .club_system import ClubSystem
 from .club_content import ClubContentManager
-from .chapter_loader import FileChapterLoader
 from .player_manager import PlayerManager
 from .choice_processor import ChoiceProcessor
 
@@ -33,7 +28,7 @@ class StoryMode:
     Main class for the story mode system.
     Coordinates the interactions between the different components.
     """
-    
+
     def __init__(self, base_dir: str = "data"):
         """
         Initialize the story mode system.
@@ -45,7 +40,7 @@ class StoryMode:
         self.data_dir = self.base_dir / "story_mode"
         self.logs_dir = self.base_dir / "logs"
         self.images_dir = self.base_dir / "assets" / "images" / "story"
-        
+
         # Create necessary directories
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.logs_dir.mkdir(parents=True, exist_ok=True)
@@ -73,10 +68,10 @@ class StoryMode:
         # Load and validate story structure
         self.story_data = self._load_story_data()
         self._validate_story_structure()
-        
+
         # Initialize player data
         self.player_data = PlayerManager.initialize_player_data(self.arc_manager, self.narrative_logger)
-        
+
         # Preload images for current chapter
         self._preload_current_images()
 
@@ -119,17 +114,17 @@ class StoryMode:
     def get_chapter_image(self, chapter_id: str) -> str:
         """
         Get the background image for a chapter.
-        
+
         Args:
             chapter_id: Chapter identifier
-            
+
         Returns:
             Path to the chapter's background image
         """
         chapter = self.arc_manager.get_chapter(chapter_id)
         if not chapter or "background_image" not in chapter:
             return self.image_processor.get_image_path("image_not_found")
-        
+
         return self.image_processor.get_image_path(
             chapter["background_image"].replace(".png", "")
         )
@@ -137,10 +132,10 @@ class StoryMode:
     def get_character_image(self, character_id: str) -> str:
         """
         Get the image for a character.
-        
+
         Args:
             character_id: Character identifier
-            
+
         Returns:
             Path to the character's image
         """
@@ -152,10 +147,10 @@ class StoryMode:
     def get_location_image(self, location_id: str) -> str:
         """
         Get the image for a location.
-        
+
         Args:
             location_id: Location identifier
-            
+
         Returns:
             Path to the location's image
         """
@@ -167,7 +162,7 @@ class StoryMode:
     def validate_story_images(self) -> List[str]:
         """
         Validate all image references in the story.
-        
+
         Returns:
             List of missing image references
         """
@@ -175,10 +170,10 @@ class StoryMode:
 
     def start_story(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """Start the story mode for a player.
-        
+
         Args:
             player_data: The player's data including user_id, name, power, level, exp
-            
+
         Returns:
             Dict containing:
             - player_data: Updated player data
@@ -191,14 +186,14 @@ class StoryMode:
                 "completed_chapters": [],
                 "available_chapters": ["1_1"]  # Set initial chapter
             }
-            
+
         # Get available chapters
         available_chapters = self.get_available_chapters(player_data)
         player_data["story_progress"]["available_chapters"] = available_chapters
-        
+
         # Log story start
         logger.info(f"Starting story for player {player_data['user_id']}")
-        
+
         # Get the first available chapter
         if available_chapters:
             chapter_id = available_chapters[0]
@@ -221,7 +216,7 @@ class StoryMode:
                 "description": "There are no available chapters.",
                 "choices": []
             }
-        
+
         return {
             "player_data": player_data,
             "chapter_data": chapter_data
@@ -270,16 +265,16 @@ class StoryMode:
     def _create_chapter(self, chapter_data: Dict[str, Any]) -> Chapter:
         """
         Create a chapter instance based on its type.
-        
+
         Args:
             chapter_data: Chapter data dictionary
-            
+
         Returns:
             Chapter instance
         """
         chapter_type = chapter_data.get("type", "story")
         chapter_id = chapter_data.get("chapter_id", "unknown")
-        
+
         if chapter_type == "story":
             return StoryChapter(chapter_id, chapter_data)
         elif chapter_type == "challenge":
@@ -289,29 +284,29 @@ class StoryMode:
         else:
             logger.warning(f"Unknown chapter type: {chapter_type}")
             return StoryChapter(chapter_id, chapter_data)
-            
+
     def process_choice(self, player_data: Dict[str, Any], choice_index: int) -> Dict[str, Any]:
         """
         Process a player's choice and update player data accordingly.
-        
+
         Args:
             player_data: Player data dictionary
             choice_index: Index of the chosen option
-            
+
         Returns:
             Updated player data
         """
         current_chapter = self.get_current_chapter(player_data)
         if not current_chapter:
             return player_data
-            
+
         # Get available choices
         choices = current_chapter.get_available_choices(player_data)
         if not choices or choice_index >= len(choices):
             return player_data
-            
+
         choice = choices[choice_index]
-        
+
         # Check if this is a club chapter
         club_data = player_data.get("club", {})
         if club_data:
@@ -321,23 +316,23 @@ class StoryMode:
         else:
             # Apply regular story effects
             ChoiceProcessor.apply_effects(player_data, choice.get("effects", {}))
-            
+
         # Update next chapter/event
         if "next_chapter" in choice.get("effects", {}):
             player_data["story_progress"]["current_chapter"] = choice["effects"]["next_chapter"]
-            
+
         # Save progress
         self.progress_manager.save_progress(player_data)
-            
+
         return player_data
 
     def get_story_status(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Get the current status of the story.
-        
+
         Args:
             player_data: Current player data
-            
+
         Returns:
             Dictionary containing story status information
         """
@@ -346,11 +341,11 @@ class StoryMode:
     def get_faction_reputation(self, player_data: Dict[str, Any], faction_id: str) -> int:
         """
         Get player's reputation with a faction.
-        
+
         Args:
             player_data: Current player data
             faction_id: ID of the faction
-            
+
         Returns:
             Reputation value
         """
@@ -360,16 +355,16 @@ class StoryMode:
     def get_faction_reputation_level(self, player_data: Dict[str, Any], faction_id: str) -> str:
         """
         Get player's reputation level with a faction.
-        
+
         Args:
             player_data: Current player data
             faction_id: ID of the faction
-            
+
         Returns:
             Reputation level name
         """
         reputation = self.get_faction_reputation(player_data, faction_id)
-        
+
         if reputation >= 80:
             return "exalted"
         elif reputation >= 60:
@@ -384,57 +379,57 @@ class StoryMode:
     def get_all_faction_reputations(self, player_data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         """
         Get player's reputation with all factions.
-        
+
         Args:
             player_data: Current player data
-            
+
         Returns:
             Dictionary mapping faction IDs to reputation information
         """
         factions = player_data.get("factions", {})
         result = {}
-        
+
         for faction_id, faction_data in factions.items():
             reputation = faction_data.get("reputation", 0)
             result[faction_id] = {
                 "reputation": reputation,
                 "level": self.get_faction_reputation_level(player_data, faction_id)
             }
-        
+
         return result
 
     def update_faction_reputation(self, player_data: Dict[str, Any], faction_id: str, change: int) -> Dict[str, Any]:
         """
         Update player's reputation with a faction.
-        
+
         Args:
             player_data: Current player data
             faction_id: ID of the faction
             change: Amount to change reputation by
-            
+
         Returns:
             Updated player data
         """
         factions = player_data.get("factions", {})
         faction_data = factions.get(faction_id, {})
-        
+
         current_reputation = faction_data.get("reputation", 0)
         new_reputation = max(0, min(100, current_reputation + change))
-        
+
         faction_data["reputation"] = new_reputation
         factions[faction_id] = faction_data
         player_data["factions"] = factions
-        
+
         return player_data
 
     def initialize_player_power(self, player_data: Dict[str, Any], power_id: str) -> Dict[str, Any]:
         """
         Initialize a power for the player.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power to initialize
-            
+
         Returns:
             Updated player data
         """
@@ -443,11 +438,11 @@ class StoryMode:
     def get_player_power(self, player_data: Dict[str, Any], power_id: str) -> Optional[Dict[str, Any]]:
         """
         Get information about a player's power.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power to get
-            
+
         Returns:
             Power information if found, None otherwise
         """
@@ -456,11 +451,11 @@ class StoryMode:
     def get_power_status(self, player_data: Dict[str, Any], power_id: str) -> Dict[str, Any]:
         """
         Get detailed status of a player's power.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power to get status for
-            
+
         Returns:
             Dictionary containing power status information
         """
@@ -469,12 +464,12 @@ class StoryMode:
     def unlock_skill_node(self, player_data: Dict[str, Any], power_id: str, node_id: str) -> Dict[str, Any]:
         """
         Unlock a skill node in a power.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power
             node_id: ID of the node to unlock
-            
+
         Returns:
             Updated player data
         """
@@ -483,12 +478,12 @@ class StoryMode:
     def perform_awakening_ritual(self, player_data: Dict[str, Any], power_id: str, ritual_id: str) -> Dict[str, Any]:
         """
         Perform an awakening ritual for a power.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power
             ritual_id: ID of the ritual to perform
-            
+
         Returns:
             Updated player data
         """
@@ -497,12 +492,12 @@ class StoryMode:
     def complete_power_challenge(self, player_data: Dict[str, Any], power_id: str, challenge_id: str) -> Dict[str, Any]:
         """
         Complete a power challenge.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power
             challenge_id: ID of the challenge to complete
-            
+
         Returns:
             Updated player data
         """
@@ -511,11 +506,11 @@ class StoryMode:
     def get_available_skill_nodes(self, player_data: Dict[str, Any], power_id: str) -> List[Dict[str, Any]]:
         """
         Get list of available skill nodes for a power.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power
-            
+
         Returns:
             List of available skill nodes
         """
@@ -524,11 +519,11 @@ class StoryMode:
     def get_available_awakening_rituals(self, player_data: Dict[str, Any], power_id: str) -> List[Dict[str, Any]]:
         """
         Get list of available awakening rituals for a power.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power
-            
+
         Returns:
             List of available awakening rituals
         """
@@ -537,11 +532,11 @@ class StoryMode:
     def get_available_power_challenges(self, player_data: Dict[str, Any], power_id: str) -> List[Dict[str, Any]]:
         """
         Get list of available power challenges.
-        
+
         Args:
             player_data: Current player data
             power_id: ID of the power
-            
+
         Returns:
             List of available power challenges
         """
@@ -550,10 +545,10 @@ class StoryMode:
     def get_current_season_events(self, player_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
         """
         Get current seasonal events.
-        
+
         Args:
             player_data: Current player data
-            
+
         Returns:
             Dictionary mapping event types to lists of available events
         """
@@ -562,11 +557,11 @@ class StoryMode:
     def participate_in_seasonal_event(self, player_data: Dict[str, Any], event_id: str) -> Dict[str, Any]:
         """
         Participate in a seasonal event.
-        
+
         Args:
             player_data: Current player data
             event_id: ID of the event to participate in
-            
+
         Returns:
             Updated player data
         """
@@ -575,12 +570,12 @@ class StoryMode:
     def participate_in_mini_game(self, player_data: Dict[str, Any], festival_id: str, mini_game_id: str) -> Dict[str, Any]:
         """
         Participate in a festival mini-game.
-        
+
         Args:
             player_data: Current player data
             festival_id: ID of the festival
             mini_game_id: ID of the mini-game to play
-            
+
         Returns:
             Updated player data
         """
@@ -589,12 +584,12 @@ class StoryMode:
     def attempt_festival_challenge(self, player_data: Dict[str, Any], festival_id: str, challenge_id: str) -> Dict[str, Any]:
         """
         Attempt a festival challenge.
-        
+
         Args:
             player_data: Current player data
             festival_id: ID of the festival
             challenge_id: ID of the challenge to attempt
-            
+
         Returns:
             Updated player data
         """
@@ -603,10 +598,10 @@ class StoryMode:
     def get_seasonal_event_status(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Get status of current seasonal events.
-        
+
         Args:
             player_data: Current player data
-            
+
         Returns:
             Dictionary containing seasonal event status information
         """
@@ -615,11 +610,11 @@ class StoryMode:
     def get_available_companions(self, player_data: Dict[str, Any], chapter_id: str) -> List[Dict[str, Any]]:
         """
         Get list of available companions for a chapter.
-        
+
         Args:
             player_data: Current player data
             chapter_id: ID of the chapter
-            
+
         Returns:
             List of available companions
         """
@@ -628,10 +623,10 @@ class StoryMode:
     def get_recruited_companions(self, player_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Get list of recruited companions.
-        
+
         Args:
             player_data: Current player data
-            
+
         Returns:
             List of recruited companions
         """
@@ -640,10 +635,10 @@ class StoryMode:
     def get_active_companion(self, player_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Get the currently active companion.
-        
+
         Args:
             player_data: Current player data
-            
+
         Returns:
             Active companion data if any, None otherwise
         """
@@ -652,11 +647,11 @@ class StoryMode:
     def recruit_companion(self, player_data: Dict[str, Any], companion_id: str) -> Dict[str, Any]:
         """
         Recruit a new companion.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion to recruit
-            
+
         Returns:
             Updated player data
         """
@@ -665,11 +660,11 @@ class StoryMode:
     def activate_companion(self, player_data: Dict[str, Any], companion_id: str) -> Dict[str, Any]:
         """
         Activate a companion.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion to activate
-            
+
         Returns:
             Updated player data
         """
@@ -678,11 +673,11 @@ class StoryMode:
     def deactivate_companion(self, player_data: Dict[str, Any], companion_id: str) -> Dict[str, Any]:
         """
         Deactivate a companion.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion to deactivate
-            
+
         Returns:
             Updated player data
         """
@@ -691,12 +686,12 @@ class StoryMode:
     def advance_companion_arc(self, player_data: Dict[str, Any], companion_id: str, progress_amount: int) -> Dict[str, Any]:
         """
         Advance a companion's story arc.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion
             progress_amount: Amount of progress to add
-            
+
         Returns:
             Updated player data
         """
@@ -705,12 +700,12 @@ class StoryMode:
     def complete_companion_mission(self, player_data: Dict[str, Any], companion_id: str, mission_id: str) -> Dict[str, Any]:
         """
         Complete a companion mission.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion
             mission_id: ID of the mission to complete
-            
+
         Returns:
             Updated player data
         """
@@ -719,12 +714,12 @@ class StoryMode:
     def perform_sync_ability(self, player_data: Dict[str, Any], companion_id: str, ability_id: str) -> Dict[str, Any]:
         """
         Perform a sync ability with a companion.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion
             ability_id: ID of the ability to perform
-            
+
         Returns:
             Updated player data
         """
@@ -733,11 +728,11 @@ class StoryMode:
     def get_companion_status(self, player_data: Dict[str, Any], companion_id: str) -> Dict[str, Any]:
         """
         Get detailed status of a companion.
-        
+
         Args:
             player_data: Current player data
             companion_id: ID of the companion
-            
+
         Returns:
             Dictionary containing companion status information
         """
@@ -746,7 +741,7 @@ class StoryMode:
     def get_all_power_types(self) -> Dict[str, Any]:
         """
         Get information about all available power types.
-        
+
         Returns:
             Dictionary containing power type information
         """

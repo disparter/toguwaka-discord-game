@@ -14,7 +14,7 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CLUBS_TABLE
+from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CLUBS_TABLE, DYNAMODB_TABLE
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -28,6 +28,7 @@ class DBProvider:
         self.PLAYERS_TABLE = self.dynamodb.Table(DYNAMODB_PLAYERS_TABLE)
         self.INVENTORY_TABLE = self.dynamodb.Table(DYNAMODB_INVENTORY_TABLE)
         self.CLUBS_TABLE = self.dynamodb.Table(DYNAMODB_CLUBS_TABLE)
+        self.MAIN_TABLE = self.dynamodb.Table(DYNAMODB_TABLE)
 
     def ensure_dynamo_available(self) -> bool:
         """Check if DynamoDB is available."""
@@ -36,6 +37,7 @@ class DBProvider:
             self.PLAYERS_TABLE.table_status
             self.INVENTORY_TABLE.table_status
             self.CLUBS_TABLE.table_status
+            self.MAIN_TABLE.table_status
             return True
         except Exception as e:
             logger.error(f"Error checking DynamoDB availability: {e}")
@@ -252,7 +254,8 @@ class DBProvider:
     async def get_system_flag(self, flag_name: str) -> Optional[str]:
         """Get a system flag value."""
         try:
-            response = self.PLAYERS_TABLE.get_item(Key={'PK': 'SYSTEM', 'SK': f'FLAG#{flag_name}'})
+            # Use the main table for system flags
+            response = self.MAIN_TABLE.get_item(Key={'PK': 'SYSTEM', 'SK': f'FLAG#{flag_name}'})
             return response.get('Item', {}).get('value')
         except Exception as e:
             logger.error(f"Error getting system flag {flag_name}: {str(e)}")
@@ -261,7 +264,8 @@ class DBProvider:
     async def set_system_flag(self, flag_name: str, value: str) -> bool:
         """Set a system flag value."""
         try:
-            self.PLAYERS_TABLE.put_item(Item={
+            # Use the main table for system flags
+            self.MAIN_TABLE.put_item(Item={
                 'PK': 'SYSTEM',
                 'SK': f'FLAG#{flag_name}',
                 'value': value,
