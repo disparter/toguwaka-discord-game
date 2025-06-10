@@ -140,15 +140,17 @@ class DBProvider:
             return []
 
     # --- Club operations ---
-    async def get_club(self, club_id: str) -> Optional[Dict[str, Any]]:
+    async def get_club(self, club_id) -> Optional[Dict[str, Any]]:
         """Get club data from database."""
         try:
-            response = self.CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
+            # Ensure club_id is a string to match DynamoDB schema
+            club_id_str = str(club_id)
+            response = self.CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id_str}', 'SK': 'INFO'})
             club_data = response.get('Item')
             if club_data:
                 # Ensure required fields exist
                 if 'name' not in club_data:
-                    club_data['name'] = f"Club {club_id}"
+                    club_data['name'] = f"Club {club_id_str}"
                 if 'description' not in club_data:
                     club_data['description'] = "No description available"
                 if 'members' not in club_data:
@@ -160,9 +162,9 @@ class DBProvider:
             logger.error(f"Error getting club {club_id}: {str(e)}")
             # Return a default club object with minimal required fields
             return {
-                'PK': f'CLUB#{club_id}',
+                'PK': f'CLUB#{club_id_str}',
                 'SK': 'INFO',
-                'name': f"Club {club_id}",
+                'name': f"Club {club_id_str}",
                 'description': "No description available",
                 'members': [],
                 'reputation': 0
@@ -509,10 +511,15 @@ class DBProvider:
     async def add_item_to_inventory(self, user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
         """Add an item to a player's inventory."""
         try:
+            # Ensure JogadorID is included in the item data
+            item_data_with_id = item_data.copy()
+            item_data_with_id['JogadorID'] = user_id
+
             self.INVENTORY_TABLE.put_item(Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
-                'item_data': item_data,
+                'JogadorID': user_id,  # Add JogadorID at the top level as well
+                'item_data': item_data_with_id,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()
             })
@@ -656,11 +663,11 @@ def update_player(user_id: str, **kwargs) -> bool:
     else:
         return loop.run_until_complete(db_provider.update_player(user_id, **kwargs))
 
-async def get_club_async(club_id: str) -> Optional[Dict[str, Any]]:
+async def get_club_async(club_id) -> Optional[Dict[str, Any]]:
     """Get club data from database (async version)."""
     return await db_provider.get_club(club_id)
 
-def get_club(club_id: str) -> Optional[Dict[str, Any]]:
+def get_club(club_id) -> Optional[Dict[str, Any]]:
     """Get club data from database (sync version)."""
     try:
         loop = asyncio.get_event_loop()

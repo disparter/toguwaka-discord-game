@@ -10,6 +10,7 @@ from discord.ext import commands
 from cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
+from utils.json_utils import dumps as json_dumps
 from utils.persistence import db_provider
 from utils.persistence.db_provider import update_player, get_player_async, get_club_async, \
     get_player_inventory_async, add_item_to_inventory_async, update_player_async
@@ -1733,7 +1734,7 @@ class Economy(commands.Cog):
             return
 
         # Update player's equipped item
-        success = await update_player_async(ctx.author.id, equipped_item=json.dumps(item_data))
+        success = await update_player_async(ctx.author.id, equipped_item=json_dumps(item_data))
 
         if success:
             # Create equip confirmation embed

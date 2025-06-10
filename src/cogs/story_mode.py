@@ -83,9 +83,20 @@ class StoryModeCog(commands.Cog):
         chapter_data = result["chapter_data"]
         if isinstance(chapter_data, dict) and "chapter_data" in chapter_data:
             chapter_data = chapter_data["chapter_data"]
+
+        # Handle StoryChapter object or dictionary
+        if hasattr(chapter_data, 'get_title') and hasattr(chapter_data, 'get_description'):
+            # It's a StoryChapter object
+            title = chapter_data.get_title()
+            description = chapter_data.get_description()
+        else:
+            # It's a dictionary
+            title = chapter_data['title']
+            description = chapter_data['description']
+
         embed = create_basic_embed(
-            title=f"Capítulo: {chapter_data['title']}",
-            description=chapter_data['description'],
+            title=f"Capítulo: {title}",
+            description=description,
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
@@ -151,9 +162,20 @@ class StoryModeCog(commands.Cog):
         chapter_data = result["chapter_data"]
         if isinstance(chapter_data, dict) and "chapter_data" in chapter_data:
             chapter_data = chapter_data["chapter_data"]
+
+        # Handle StoryChapter object or dictionary
+        if hasattr(chapter_data, 'get_title') and hasattr(chapter_data, 'get_description'):
+            # It's a StoryChapter object
+            title = chapter_data.get_title()
+            description = chapter_data.get_description()
+        else:
+            # It's a dictionary
+            title = chapter_data['title']
+            description = chapter_data['description']
+
         embed = create_basic_embed(
-            title=f"Capítulo: {chapter_data['title']}",
-            description=chapter_data['description'],
+            title=f"Capítulo: {title}",
+            description=description,
             color=discord.Color.blue()
         )
         await interaction.followup.send(embed=embed, ephemeral=True)
@@ -485,6 +507,23 @@ class StoryModeCog(commands.Cog):
         Sends the current dialogue or choices to the channel.
         """
         chapter_data = result["chapter_data"]
+
+        # Convert StoryChapter object to dictionary if needed
+        if hasattr(chapter_data, 'chapter_data') and not isinstance(chapter_data, dict):
+            # Create a dictionary with the same structure as expected
+            chapter_dict = {
+                'title': chapter_data.get_title() if hasattr(chapter_data, 'get_title') else "Unknown Title",
+                'description': chapter_data.get_description() if hasattr(chapter_data, 'get_description') else "No description available.",
+                'current_dialogue': chapter_data.dialogues[0] if hasattr(chapter_data, 'dialogues') and chapter_data.dialogues else None,
+                'choices': chapter_data.choices if hasattr(chapter_data, 'choices') else []
+            }
+
+            # Add any other attributes that might be accessed
+            if hasattr(chapter_data, 'chapter_id'):
+                chapter_dict['id'] = chapter_data.chapter_id
+
+            # Replace the StoryChapter object with our dictionary
+            chapter_data = chapter_dict
 
         # Check if this is a challenge that has already been completed or failed
         if "already_completed" in chapter_data and chapter_data["already_completed"]:
