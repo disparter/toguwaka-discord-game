@@ -14,7 +14,7 @@ DEFAULT_S3_BUCKET = 'tokugawa-db-storage'
 S3_BUCKET = os.environ.get('S3_DB_BUCKET', DEFAULT_S3_BUCKET)
 
 # Local database path
-LOCAL_DB_PATH = Path('data/tokugawa.db')
+LOCAL_DB_PATH = Path('local/tokugawa.db')
 
 # Default database key in S3
 DEFAULT_DB_KEY = 'tokugawa.db'

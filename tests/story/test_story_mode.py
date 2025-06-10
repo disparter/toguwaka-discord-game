@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from discord.ext import commands
 from story_mode.story_mode import StoryMode
 from story_mode.chapter import StoryChapter, ChallengeChapter, BranchingChapter
-from src.bot.cogs.story_mode import StoryModeCog
+from cogs.story_mode import StoryModeCog
 from utils.persistence.db_provider import db_provider
 
 @pytest.fixture

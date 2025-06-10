@@ -2,9 +2,13 @@
 # Script to run the Tokugawa Discord Bot
 
 # Activate virtual environment if it exists
-if [ -d "venv" ]; then
+if [ -d "venvpy11" ]; then
     echo "Activating virtual environment..."
-    source venv/bin/activate
+    source venvpy11/bin/activate
+
+    # Install required packages
+    echo "Installing required packages..."
+    pip install -r requirements.txt
 fi
 
 # Load environment variables from .env file
@@ -13,11 +17,15 @@ if [ -f ".env" ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-# Run the bot
-echo "Starting Tokugawa Discord Bot..."
-python bot.py
+# Run the bot for 30 seconds, then kill it (for testing)
+echo "Starting Tokugawa Discord Bot for 30 seconds..."
+python src/bot.py &
+BOT_PID=$!
+sleep 10
+echo "Stopping Tokugawa Discord Bot (PID $BOT_PID) after 30 seconds."
+kill $BOT_PID
 
 # Deactivate virtual environment
-if [ -d "venv" ]; then
+if [ -d "venvpy11" ]; then
     deactivate
 fi

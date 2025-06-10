@@ -1,8 +1,8 @@
 import discord
 from datetime import datetime
 import random
-from src.utils.persistence.db_provider import get_player, get_club, get_top_players, get_top_players_by_reputation
-from src.utils.embeds import create_basic_embed
+from utils.persistence.db_provider import get_player, get_club, get_top_players, get_top_players_by_reputation
+from utils.embeds import create_basic_embed
 
 class RankingFormatter:
     """Class for formatting ranking and news messages for the Academia Tokugawa Discord bot."""

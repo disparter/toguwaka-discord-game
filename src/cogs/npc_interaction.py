@@ -3,12 +3,12 @@ from discord.ext import commands
 from discord import app_commands
 import logging
 import os
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any
 
-from src.utils.persistence import db_provider
-from src.utils.embeds import create_basic_embed
+from utils.persistence import db_provider
+from utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
-from src.utils.command_registrar import CommandRegistrar
+from utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -195,32 +195,32 @@ class NPCInteractionCog(commands.Cog):
             # Check if the player has already seen the welcome image
             story_progress = player_data.get("story_progress", {})
             seen_images = story_progress.get("seen_images", {})
-            
+
             if "welcome" not in seen_images:
                 # Player hasn't seen the welcome image yet, show it
                 image_path = "assets/images/welcome.png"
-                
+
                 # Check if the image exists
                 if os.path.exists(image_path):
                     # Send the image
                     await interaction.followup.send(file=discord.File(image_path), ephemeral=False)
-                    
+
                     # Record that the player has seen the image
                     if "seen_images" not in story_progress:
                         story_progress["seen_images"] = {}
-                    
+
                     story_progress["seen_images"]["welcome"] = True
-                    
+
                     # Add the image to the player's image registry
                     if "image_registry" not in story_progress:
                         story_progress["image_registry"] = {}
-                    
+
                     story_progress["image_registry"]["welcome.png"] = {
                         "path": image_path,
                         "description": "Imagem de boas-vindas do Diretor",
                         "seen_at": discord.utils.utcnow().isoformat()
                     }
-                    
+
                     # Update player data
                     await db_provider.update_player(user_id, story_progress=story_progress)
                 else:
@@ -231,32 +231,32 @@ class NPCInteractionCog(commands.Cog):
             # Check if the player has already seen the professor_quantum_intro image
             story_progress = player_data.get("story_progress", {})
             seen_images = story_progress.get("seen_images", {})
-            
+
             if "professor_quantum_intro" not in seen_images:
                 # Player hasn't seen the professor_quantum_intro image yet, show it
                 image_path = "assets/images/professor_quantum_intro.png"
-                
+
                 # Check if the image exists
                 if os.path.exists(image_path):
                     # Send the image
                     await interaction.followup.send(file=discord.File(image_path), ephemeral=False)
-                    
+
                     # Record that the player has seen the image
                     if "seen_images" not in story_progress:
                         story_progress["seen_images"] = {}
-                    
+
                     story_progress["seen_images"]["professor_quantum_intro"] = True
-                    
+
                     # Add the image to the player's image registry
                     if "image_registry" not in story_progress:
                         story_progress["image_registry"] = {}
-                    
+
                     story_progress["image_registry"]["professor_quantum_intro.png"] = {
                         "path": image_path,
                         "description": "Introdução do Professor Quantum",
                         "seen_at": discord.utils.utcnow().isoformat()
                     }
-                    
+
                     # Update player data
                     await db_provider.update_player(user_id, story_progress=story_progress)
                 else:

@@ -1,21 +1,15 @@
 import discord
-from typing import List
 from discord.ext import commands
 from discord import app_commands
-import logging
-import re
-from src.utils.json_utils import dumps as json_dumps
 import asyncio
-import os
-from datetime import datetime
-from typing import Dict, Any, Optional, Union
+import logging
 import random
-
-from src.utils.persistence.db_provider import get_all_clubs, update_player, get_player, get_club
-from src.utils.embeds import create_basic_embed, create_event_embed
-from src.utils.game_mechanics import calculate_level_from_exp
-from src.utils.club_system import ClubSystem
-from src.utils.normalization import normalize_club_name
+from typing import Any
+from utils.persistence.db_provider import db_provider
+from utils.embeds import create_basic_embed, create_player_embed
+from utils.game_mechanics import STRENGTH_LEVELS
+from utils.command_registrar import CommandRegistrar
+from story_mode.club_rivalry_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -34,7 +28,7 @@ class Registration(commands.Cog):
         """Slash command version of the register command."""
         try:
             # Check if player already exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
                 return
@@ -54,11 +48,11 @@ class Registration(commands.Cog):
     async def register(self, ctx):
         """Iniciar o processo de registro na Academia Tokugawa."""
         logger.info(f"Register command called by user {ctx.author.id} ({ctx.author.name})")
-        
+
         # Check if player already exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         logger.info(f"Player lookup result for {ctx.author.id}: {player}")
-        
+
         if player:
             logger.info(f"Player {ctx.author.id} already registered")
             await ctx.send(f"{ctx.author.mention}, você já está registrado na Academia Tokugawa!")
@@ -94,11 +88,11 @@ class Registration(commands.Cog):
             strength_embed = create_basic_embed(
                 title="Nível de Força",
                 description="Escolha o nível de força do seu poder (1-5):\n\n" +
-                            "1. Fraco - Poderes básicos e limitados - ⭐\n" +
-                            "2. Moderado - Poderes com algumas limitações - ⭐⭐\n" +
-                            "3. Forte - Poderes significativos - ⭐⭐⭐\n" +
-                            "4. Muito Forte - Poderes excepcionais - ⭐⭐⭐⭐\n" +
-                            "5. Extremamente Forte - Poderes raros e poderosos - ⭐⭐⭐⭐⭐\n\n" +
+                            "1. Fraco - Poderes básicos e limitados\n" +
+                            "2. Moderado - Poderes com algumas limitações\n" +
+                            "3. Forte - Poderes significativos\n" +
+                            "4. Muito Forte - Poderes excepcionais\n" +
+                            "5. Extremamente Forte - Poderes raros e poderosos\n\n" +
                             "Digite o número correspondente ao nível escolhido:",
                 color=0x1E90FF
             )
@@ -153,7 +147,7 @@ class Registration(commands.Cog):
                     await ctx.send("Por favor, digite apenas o número do clube escolhido.")
 
             # Create the player
-            success = create_player(
+            success = await db_provider.create_player(
                 ctx.author.id,
                 character_name,
                 power=character_power,
@@ -163,7 +157,7 @@ class Registration(commands.Cog):
 
             if success:
                 # Get the created player and their club
-                player = get_player(ctx.author.id)
+                player = await db_provider.get_player(ctx.author.id)
 
                 # Send welcome message
                 welcome_msg = create_basic_embed(
@@ -239,174 +233,51 @@ class Registration(commands.Cog):
 
         await ctx.send(embed=help_embed)
 
-    async def club_selection_autocomplete(self, interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
-        """Provide club name suggestions for autocomplete."""
-        try:
-            # Get available clubs
-            clubs = await get_all_clubs()
-            if not clubs:
-                return []
-            
-            # Normalize the current input
-            normalized_current = normalize_club_name(current)
-            
-            # Filter and sort clubs based on the current input
-            choices = []
-            for club in clubs:
-                normalized_name = normalize_club_name(club['name'])
-                if normalized_current in normalized_name:
-                    choices.append(app_commands.Choice(
-                        name=club['name'],
-                        value=club['name']
-                    ))
-                
-            # Sort choices by name
-            choices.sort(key=lambda x: x.name)
-            
-            # Return top 25 choices (Discord's limit)
-            return choices[:25]
-        except Exception as e:
-            logger.error(f"Error in club_selection_autocomplete: {e}")
-            return []
+async def setup(bot):
+    """Add the cog to the bot."""
+    from utils.command_registrar import CommandRegistrar
 
-    @commands.hybrid_command(name="selecionar", description="Selecione um clube para se afiliar")
-    @app_commands.autocomplete(clube=club_selection_autocomplete)
-    async def select_club(self, ctx: commands.Context, clube: str):
-        """Select a club to join."""
-        try:
-            user_id = str(ctx.author.id)
-            logger.info(f"User {user_id} selected club: {clube}")
-            
-            # Get available clubs
-            logger.info("Attempting to get clubs from database")
-            clubs = await get_all_clubs()
-            logger.info(f"Retrieved clubs from database: {clubs}")
-            
-            if not clubs:
-                logger.error("No clubs retrieved from database")
-                await ctx.send(
-                    "❌ Erro ao recuperar clubes. Por favor, tente novamente mais tarde.",
-                    ephemeral=True
-                )
-                return
-            
-            # Normalize the selected club name
-            normalized_selected = normalize_club_name(clube)
-            logger.info(f"Normalized selected club: {normalized_selected}")
-            
-            # Get available club names (normalized)
-            available_club_names = [normalize_club_name(club['name']) for club in clubs]
-            logger.info(f"Available club names (normalized): {available_club_names}")
-            
-            # Find the matching club
-            matching_club = None
-            for club in clubs:
-                normalized_name = normalize_club_name(club['name'])
-                logger.info(f"Checking club: {club['name']} (normalized: {normalized_name})")
-                if normalized_name == normalized_selected:
-                    matching_club = club
-                    logger.info(f"Found matching club: {club['name']}")
-                    break
-            
-            if not matching_club:
-                logger.warning(f"Invalid club selection: {clube}")
-                await ctx.send(
-                    "❌ Clube inválido. Por favor, selecione um dos clubes disponíveis.",
-                    ephemeral=True
-                )
-                return
-            
-            # Update user's club
-            logger.info(f"Attempting to update user {user_id} to club {matching_club['name']}")
-            success = await update_player(user_id, club=matching_club['name'])
-            if not success:
-                logger.error(f"Failed to update user {user_id} to club {matching_club['name']}")
-                await ctx.send(
-                    "❌ Erro ao atualizar seu clube. Por favor, tente novamente.",
-                    ephemeral=True
-                )
-                return
-            
-            logger.info(f"Successfully updated user {user_id} to club {matching_club['name']}")
-            await ctx.send(
-                f"✅ Clube atualizado com sucesso! Você agora é membro do {matching_club['name']}.",
-                ephemeral=True
-            )
-            
-        except Exception as e:
-            logger.error(f"Error in select_club: {e}")
-            await ctx.send(
-                "❌ Ocorreu um erro ao processar sua seleção. Por favor, tente novamente.",
-                ephemeral=True
-            )
+    # Create and add the cog
+    cog = Registration(bot)
+    await bot.add_cog(cog)
+    logger.info("Registration cog loaded")
 
-    async def handle_club_selection(self, interaction: discord.Interaction, user_id: int, selected_club: str) -> bool:
-        """Handle club selection with normalized comparison."""
+    # Register commands using the CommandRegistrar
+    await CommandRegistrar.register_commands(bot, cog)
+
+    # Add the registration_group to the bot's command tree
+    try:
+        bot.tree.add_command(cog.registration_group)
+        logger.info(f"Added registration_group to command tree: /{cog.registration_group.name}")
+    except discord.app_commands.errors.CommandAlreadyRegistered:
+        logger.info(f"Registration_group already registered: /{cog.registration_group.name}")
+
+    # Add the slash_register command directly to the bot's command tree
+    @bot.tree.command(name="registrar", description="Iniciar o processo de registro na Academia Tokugawa")
+    async def direct_slash_register(interaction: discord.Interaction):
+        """Direct slash command for registration."""
         try:
-            # Get available clubs
-            clubs = await get_all_clubs()
-            logger.info(f"Retrieved clubs from database: {clubs}")
-            
-            if not clubs:
-                logger.error("No clubs retrieved from database")
-                await interaction.response.send_message(
-                    "❌ Erro ao recuperar clubes. Por favor, tente novamente mais tarde.",
-                    ephemeral=True
-                )
-                return False
-            
-            # Normalize the selected club name
-            normalized_selected = normalize_club_name(selected_club)
-            logger.info(f"Normalized selected club: {normalized_selected}")
-            
-            # Get available club names (normalized)
-            available_club_names = [normalize_club_name(club['name']) for club in clubs]
-            logger.info(f"Available club names (normalized): {available_club_names}")
-            
-            # Find the matching club
-            matching_club = None
-            for club in clubs:
-                normalized_name = normalize_club_name(club['name'])
-                logger.info(f"Checking club: {club['name']} (normalized: {normalized_name})")
-                if normalized_name == normalized_selected:
-                    matching_club = club
-                    logger.info(f"Found matching club: {club['name']}")
-                    break
-            
-            if not matching_club:
-                logger.warning(f"Invalid club selection: {selected_club}")
-                await interaction.response.send_message(
-                    "❌ Clube inválido. Por favor, selecione um dos clubes disponíveis.",
-                    ephemeral=True
-                )
-                return False
-            
-            # Update user's club
-            logger.info(f"Attempting to update user {user_id} to club {matching_club['name']}")
-            success = await update_player(user_id, club=matching_club['name'])
-            if not success:
-                logger.error(f"Failed to update user {user_id} to club {matching_club['name']}")
-                await interaction.response.send_message(
-                    "❌ Erro ao atualizar seu clube. Por favor, tente novamente.",
-                    ephemeral=True
-                )
-                return False
-            
-            logger.info(f"Successfully updated user {user_id} to club {matching_club['name']}")
+            # Check if player already exists
+            from utils.persistence.db_provider import get_player
+            player = get_player(interaction.user.id)
+            if player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
+                return
+
+            # For slash commands, we'll use a simplified registration process
             await interaction.response.send_message(
-                f"✅ Clube atualizado com sucesso! Você agora é membro do {matching_club['name']}.",
-                ephemeral=True
+                "Para iniciar o processo de registro completo, use o comando de texto `!ingressar`.\n"
+                "O processo de registro interativo requer múltiplas etapas que funcionam melhor com comandos de texto."
             )
-            return True
-            
+        except discord.errors.NotFound:
+            # If the interaction has expired, log it but don't try to respond
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /registrar")
         except Exception as e:
-            logger.error(f"Error in handle_club_selection: {e}")
-            await interaction.response.send_message(
-                "❌ Ocorreu um erro ao processar sua seleção. Por favor, tente novamente.",
-                ephemeral=True
-            )
-            return False
+            logger.error(f"Error in direct_slash_register: {e}")
 
-# @club_selection.error
-# def club_selection_error(...):
-#     pass 
+    # Log the slash commands that were added
+    for cmd in cog.__cog_app_commands__:
+        logger.info(f"Registration cog added slash command: /{cmd.name}")
+
+    # Log the direct slash command that was added
+    logger.info(f"Added direct slash command: /registrar")

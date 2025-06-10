@@ -8,8 +8,8 @@ import json
 import os
 from decimal import Decimal
 from typing import Dict, Any, List, Optional
-from src.utils.game_mechanics.events.event_base import EventBase
-from src.utils.game_mechanics.constants import RANDOM_EVENTS
+from utils.game_mechanics.events.event_base import EventBase
+from utils.game_mechanics.constants import RANDOM_EVENTS
 
 # Get logger
 logger = logging.getLogger('tokugawa_bot')

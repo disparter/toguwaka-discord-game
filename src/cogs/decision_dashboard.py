@@ -9,8 +9,8 @@ import io
 import numpy as np
 from collections import Counter, defaultdict
 
-from src.utils.persistence import db_provider
-from src.utils.embeds import create_basic_embed
+from utils.persistence import db_provider
+from utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
 from story_mode.narrative_logger import get_narrative_logger
 

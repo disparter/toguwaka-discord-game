@@ -4,7 +4,7 @@ Following the Interface Segregation Principle, this provides a specific interfac
 for HP factor-related calculations.
 """
 from abc import ABC, abstractmethod
-from src.utils.game_mechanics.calculators.calculator_interface import ICalculator
+from utils.game_mechanics.calculators.calculator_interface import ICalculator
 
 class IHPFactorCalculator(ICalculator):
     """Interface for HP factor calculators."""

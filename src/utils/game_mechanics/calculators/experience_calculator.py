@@ -3,8 +3,8 @@ Implementation of the experience calculator.
 This class is responsible for all experience-related calculations in the game.
 """
 import math
-from src.utils.game_mechanics.constants import BASE_EXP, EXP_LEVELS
-from src.utils.game_mechanics.calculators.experience_calculator_interface import IExperienceCalculator
+from utils.game_mechanics.constants import BASE_EXP, EXP_LEVELS
+from utils.game_mechanics.calculators.experience_calculator_interface import IExperienceCalculator
 
 class ExperienceCalculator(IExperienceCalculator):
     """Calculator for experience-related calculations."""

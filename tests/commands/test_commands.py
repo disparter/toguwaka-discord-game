@@ -5,8 +5,8 @@ Test module for bot commands.
 import pytest
 import discord
 from unittest.mock import Mock, patch, AsyncMock
-from src.bot.cogs.registration import Registration
-from src.bot.cogs.player_status import PlayerStatus
+from cogs.registration import Registration
+from cogs.player_status import PlayerStatus
 from src.utils.persistence.db_provider import db_provider
 
 @pytest.fixture

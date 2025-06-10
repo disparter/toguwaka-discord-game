@@ -7,7 +7,7 @@ of player choices and actions in the story mode.
 
 import logging
 from typing import Dict, Any, Optional, List
-from .consequences import Consequences
+from .story_consequences import Consequences
 
 logger = logging.getLogger('tokugawa_bot')
 

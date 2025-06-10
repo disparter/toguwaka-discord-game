@@ -9,14 +9,12 @@ import os
 import logging
 import asyncio
 import concurrent.futures
-from typing import Any, Dict, List, Optional, Union
-from datetime import datetime, timedelta
-import json
+from typing import Any, Dict, List, Optional
+from datetime import datetime
 import boto3
-from botocore.exceptions import ClientError
 from decimal import Decimal
 
-from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CLUBS_TABLE, DYNAMODB_TABLE
+from utils.config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CLUBS_TABLE, DYNAMODB_TABLE
 
 logger = logging.getLogger('tokugawa_bot')
 

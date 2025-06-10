@@ -16,25 +16,25 @@
       "scene_id": "rift_discovery",
       "title": "Descoberta do Portal",
       "description": "O momento em que o portal dimensional é descoberto",
-      "background": "hidden_chamber.jpg",
+      "background": "hidden_chamber.png",
       "characters": [
         {
           "id": "player",
           "position": "center",
           "expression": "shocked",
-          "image": "player_shocked.jpg"
+          "image": "player_shocked.png"
         },
         {
           "id": "headmaster",
           "position": "right",
           "expression": "serious",
-          "image": "headmaster_serious.jpg"
+          "image": "headmaster_serious.png"
         },
         {
           "id": "mysterious_figure",
           "position": "left",
           "expression": "mysterious",
-          "image": "mysterious_figure.jpg"
+          "image": "mysterious_figure.png"
         }
       ],
       "dialogue": [
@@ -74,19 +74,19 @@
       "scene_id": "portal_investigation",
       "title": "Investigações Iniciais",
       "description": "O início das investigações sobre o portal",
-      "background": "portal_chamber.jpg",
+      "background": "portal_chamber.png",
       "characters": [
         {
           "id": "player",
           "position": "center",
           "expression": "focused",
-          "image": "player_focused.jpg"
+          "image": "player_focused.png"
         },
         {
           "id": "headmaster",
           "position": "right",
           "expression": "concerned",
-          "image": "headmaster_concerned.jpg"
+          "image": "headmaster_concerned.png"
         }
       ],
       "dialogue": [

@@ -20,25 +20,25 @@
       "scene_id": "rift_confrontation",
       "title": "Confronto no Portal",
       "description": "O momento decisivo no portal dimensional",
-      "background": "dimensional_rift.jpg",
+      "background": "dimensional_rift.png",
       "characters": [
         {
           "id": "player",
           "position": "center",
           "expression": "determined",
-          "image": "player_determined.jpg"
+          "image": "player_determined.png"
         },
         {
           "id": "headmaster",
           "position": "right",
           "expression": "serious",
-          "image": "headmaster_serious.jpg"
+          "image": "headmaster_serious.png"
         },
         {
           "id": "dimensional_entity",
           "position": "left",
           "expression": "threatening",
-          "image": "dimensional_entity.jpg"
+          "image": "dimensional_entity.png"
         }
       ],
       "dialogue": [

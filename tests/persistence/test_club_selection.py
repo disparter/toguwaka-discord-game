@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch, Mock
 from decimal import Decimal
 import discord
 from discord import app_commands
-from src.bot.cogs.registration import Registration
+from cogs.registration import Registration
 from src.utils.normalization import normalize_club_name
 import src.utils.game_mechanics
 from src.utils.persistence.db_provider import db_provider
@@ -110,7 +110,7 @@ async def test_club_selection_success(mock_ctx):
         ]
         mock_update.return_value = True
         
-        from src.bot.cogs.registration import RegistrationCommands
+        from cogs.registration import RegistrationCommands
         cmd = RegistrationCommands(Mock())
         await cmd.select_club(mock_ctx, "Test Club")
         
@@ -128,7 +128,7 @@ async def test_club_selection_invalid_club(mock_ctx):
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
         ]
         
-        from src.bot.cogs.registration import RegistrationCommands
+        from cog.registration import RegistrationCommands
         cmd = RegistrationCommands(Mock())
         await cmd.select_club(mock_ctx, "Invalid Club")
         
@@ -146,7 +146,7 @@ async def test_club_selection_database_error(mock_ctx):
         ]
         mock_update.return_value = False
         
-        from src.bot.cogs.registration import RegistrationCommands
+        from cogs.registration import RegistrationCommands
         cmd = RegistrationCommands(Mock())
         await cmd.select_club(mock_ctx, "Test Club")
         
@@ -160,7 +160,7 @@ async def test_club_selection_no_clubs(mock_ctx):
     with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
         mock_get_clubs.return_value = []
         
-        from src.bot.cogs.registration import RegistrationCommands
+        from cogs.registration import RegistrationCommands
         cmd = RegistrationCommands(Mock())
         await cmd.select_club(mock_ctx, "Test Club")
         

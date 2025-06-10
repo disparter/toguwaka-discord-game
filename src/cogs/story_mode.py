@@ -2,23 +2,22 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from src.utils.json_utils import dumps as json_dumps
+from utils.json_utils import dumps as json_dumps
 import asyncio
 import os
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Union
 import random
 
-from src.utils.persistence import db_provider
-from src.utils.embeds import create_basic_embed, create_event_embed
-from src.utils.game_mechanics import calculate_level_from_exp
+from utils.persistence import db_provider
+from utils.embeds import create_basic_embed, create_event_embed
+from utils.game_mechanics import calculate_level_from_exp
 
-from src.story_mode.story_mode import StoryMode
-from src.story_mode.club_system import ClubSystem
-from src.story_mode.consequences import Consequences
-from src.story_mode.relationship_system import RelationshipSystem
+from story_mode.story_mode import StoryMode
+from story_mode.club_system import ClubSystem
+from story_mode.consequences import Consequences
+from story_mode.relationship_system import RelationshipSystem
 
-from src.utils.command_registrar import CommandRegistrar
+from utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -480,7 +479,7 @@ class StoryModeCog(commands.Cog):
         except Exception as e:
             logger.error(f"Erro ao enviar resposta: {e}")
 
-    async def _send_dialogue_or_choices(self, channel, user_id: int, result: Dict[str, Any]):
+    async def _send_dialogue_or_choices(self, channel, user_id: int, result):
         """
         Sends the current dialogue or choices to the channel.
         """
@@ -847,7 +846,7 @@ class StoryModeCog(commands.Cog):
 
         return continue_callback
 
-    async def _notify_about_events(self, channel, user_id: int, available_events: List[Dict[str, Any]]):
+    async def _notify_about_events(self, channel, user_id: int, available_events):
         """
         Notifies the user about available events.
         """
@@ -1034,7 +1033,7 @@ async def setup(bot):
     """
     Setup function for the cog.
     """
-    from src.utils.command_registrar import CommandRegistrar
+    from utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = StoryModeCog(bot)

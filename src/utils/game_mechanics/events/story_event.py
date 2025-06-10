@@ -4,7 +4,7 @@ This class is responsible for handling events that occur during the story mode.
 """
 import random
 from typing import Dict, Any, List, Optional
-from src.utils.game_mechanics.events.event_base import EventBase
+from utils.game_mechanics.events.event_base import EventBase
 
 class StoryEvent(EventBase):
     """Class for story events."""

@@ -15,19 +15,19 @@
       "scene_id": "year_3_start",
       "title": "Início do Último Ano",
       "description": "O momento em que o último ano começa",
-      "background": "academy_entrance.jpg",
+      "background": "academy_entrance.png",
       "characters": [
         {
           "id": "player",
           "position": "center",
           "expression": "determined",
-          "image": "player_determined.jpg"
+          "image": "player_determined.png"
         },
         {
           "id": "headmaster",
           "position": "right",
           "expression": "proud",
-          "image": "headmaster_proud.jpg"
+          "image": "headmaster_proud.png"
         }
       ],
       "dialogue": [

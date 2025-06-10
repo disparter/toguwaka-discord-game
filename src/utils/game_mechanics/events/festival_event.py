@@ -4,7 +4,7 @@ This class is responsible for handling special events that occur during festival
 """
 import random
 from typing import Dict, Any, List
-from src.utils.game_mechanics.events.event_base import EventBase
+from utils.game_mechanics.events.event_base import EventBase
 
 class FestivalEvent(EventBase):
     """Class for festival events."""

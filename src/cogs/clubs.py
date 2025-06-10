@@ -3,10 +3,10 @@ from discord.ext import commands
 from discord import app_commands
 import logging
 from typing import Any
-from src.utils.persistence.db_provider import db_provider
-from src.utils.embeds import create_basic_embed, create_club_embed
-from story_mode.club_system import ClubSystem
-from src.utils.command_registrar import CommandRegistrar
+from utils.persistence.db_provider import db_provider
+from utils.embeds import create_basic_embed, create_club_embed
+from story_mode.club_rivalry_system import ClubSystem
+from utils.command_registrar import CommandRegistrar
 
 logger = logging.getLogger('tokugawa_bot')
 

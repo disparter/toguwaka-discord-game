@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import logging
 import re
-from src.utils.persistence import db_provider
+from utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
 

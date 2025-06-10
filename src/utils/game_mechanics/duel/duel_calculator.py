@@ -5,9 +5,9 @@ This class is responsible for calculating the outcome of duels between players.
 import random
 import logging
 from typing import Dict, Any
-from src.utils.game_mechanics.duel.duel_calculator_interface import IDuelCalculator
-from src.utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
-from src.utils.club_perks import (
+from utils.game_mechanics.duel.duel_calculator_interface import IDuelCalculator
+from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
+from utils.club_perks import (
     CLUBE_DAS_CHAMAS, ILUSIONISTAS_MENTAIS, ELEMENTALISTAS, CLUBE_DE_COMBATE,
     apply_physical_damage_boost, apply_mental_energy_reduction, 
     should_generate_weather_effect, apply_tusd_reward_boost,

@@ -250,8 +250,8 @@ O sistema de clubes expandido adiciona rivalidades, alianças, competições e p
 #### Como Usar
 
 ```python
-from story_mode.club_system import get_club_system
-from story_mode.consequences import DynamicConsequencesSystem
+from story_mode.club_rivalry_system import get_club_system
+from story_mode.story_consequences import DynamicConsequencesSystem
 
 # Obter o sistema de consequências (opcional)
 consequences_system = DynamicConsequencesSystem()

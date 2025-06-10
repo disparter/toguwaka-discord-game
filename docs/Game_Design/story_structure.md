@@ -31,9 +31,9 @@ Estrutura de um capítulo individual:
   "id": "chapter_1_1",
   "title": "Título do Capítulo",
   "text": "Texto do capítulo...",
-  "background_image": "images/story/backgrounds/chapter_1_1.jpg",
+  "background_image": "images/story/backgrounds/chapter_1_1.png",
   "character_images": {
-    "npc_1": "images/story/characters/npc_1/normal.jpg",
+    "npc_1": "images/story/characters/npc_1/normal.png",
     "npc_2": "images/story/characters/npc_2/happy.jpg"
   },
   "location_image": "images/story/locations/classroom.jpg",

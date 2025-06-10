@@ -22,11 +22,11 @@ logger = logging.getLogger('content_manager')
 
 # Import our JSON tools
 try:
-    from src.utils.json_tools import JSONValidator, JSONGenerator, load_json_config, merge_json_files
+    from utils.json_tools import JSONValidator, JSONGenerator, load_json_config, merge_json_files
 except ImportError:
     # If running as a standalone script
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from src.utils.json_tools import JSONValidator, JSONGenerator, load_json_config, merge_json_files
+    from utils.json_tools import JSONValidator, JSONGenerator, load_json_config, merge_json_files
 
 class ContentManager:
     """

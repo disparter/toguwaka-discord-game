@@ -1,9 +1,9 @@
 import discord
 from datetime import datetime
-from src.utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
+from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
 import json
-from src.utils.persistence.db_provider import db_provider
-from src.utils.club_perks import get_club_perk_description
+from utils.persistence.db_provider import db_provider
+from utils.club_perks import get_club_perk_description
 from typing import Dict, Optional
 
 def create_basic_embed(title, description=None, color=0x1E90FF):

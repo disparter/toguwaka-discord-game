@@ -19,7 +19,7 @@ Este guia foi criado para ajudar novos colaboradores a criar conteúdo para a Ac
      "id": "chapter_1_1",
      "title": "Título do Capítulo",
      "text": "Texto do capítulo...",
-     "background_image": "images/story/chapter_1_1.jpg"
+     "background_image": "images/story/chapter_1_1.png"
    }
    ```
 
@@ -100,7 +100,7 @@ Este guia foi criado para ajudar novos colaboradores a criar conteúdo para a Ac
   "id": "chapter_1_1",
   "title": "Primeiro Dia",
   "text": "O sol nasce sobre a Academia Tokugawa...",
-  "background_image": "images/story/chapter_1_1.jpg",
+  "background_image": "images/story/chapter_1_1.png",
   "choices": [
     {
       "text": "Explorar o campus",

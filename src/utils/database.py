@@ -5,7 +5,7 @@ This module serves as the main interface for database operations,
 re-exporting functions from the persistence modules.
 """
 
-from src.utils.persistence.db_provider import (
+from utils.persistence.db_provider import (
     get_player,
     update_player,
     get_club,

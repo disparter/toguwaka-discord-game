@@ -60,5 +60,7 @@ ehthumbs.db
 Thumbs.db
 /.coverage
 
-tokugawa.db
+local/tokugawa.db
 /missing_assets.md
+/venvpy11/
+/htmlcov/

@@ -9,8 +9,8 @@ import sqlite3
 import os
 from datetime import datetime, timedelta, time
 import pytz
-from typing import Any
-from src.utils.persistence import db_provider
+from typing import Any, Dict, List, Optional, Union
+from utils.persistence import db_provider
 
 # Helper functions to use db_provider
 async def get_player(user_id):
@@ -24,10 +24,10 @@ async def get_all_players():
 
 async def get_all_clubs():
     return await db_provider.get_all_clubs()
-from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
-from src.utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
-from src.utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
-from story_mode.club_system import ClubSystem
+from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
+from utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
+from utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
+from story_mode.club_rivalry_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -294,7 +294,7 @@ class ScheduledEvents(commands.Cog):
             db_cooldowns = await db_provider.get_cooldowns()
             if db_cooldowns:
                 # Update the COOLDOWNS dictionary with cooldowns from the database
-                from src.bot.cogs.activities import COOLDOWNS
+                from cogs.activities import COOLDOWNS
 
                 for user_id, commands in db_cooldowns.items():
                     if user_id not in COOLDOWNS:
@@ -784,7 +784,7 @@ class ScheduledEvents(commands.Cog):
                 logger.info("Weekly reset completed")
 
                 # Update club reputation based on weekly activities
-                from src.utils.database import get_all_clubs, update_club_reputation_weekly, get_top_clubs_by_activity
+                from utils.database import get_all_clubs, update_club_reputation_weekly, get_top_clubs_by_activity
 
                 # Get all clubs and their weekly activities
                 clubs = get_all_clubs()
@@ -822,7 +822,7 @@ class ScheduledEvents(commands.Cog):
         """Announce the top three clubs of the week."""
         try:
             # Get top clubs by activity
-            from src.utils.database import get_top_clubs_by_activity
+            from utils.database import get_top_clubs_by_activity
             top_clubs = get_top_clubs_by_activity(limit=3)
 
             if not top_clubs:
@@ -1615,7 +1615,7 @@ class ScheduledEvents(commands.Cog):
                 club = get_club(winning_club_id)
                 if club:
                     # Update club reputation
-                    conn = sqlite3.connect('data/tokugawa.db')
+                    conn = sqlite3.connect('local/tokugawa.db')
                     cursor = conn.cursor()
                     cursor.execute(
                         "UPDATE clubs SET reputation = reputation + 50 WHERE club_id = ?",
@@ -1655,7 +1655,7 @@ class ScheduledEvents(commands.Cog):
     async def send_daily_announcements(self):
         """Send daily announcements, rankings, and news."""
         try:
-            from src.utils.ranking_formatter import RankingFormatter, ClubEffectEngine
+            from utils.ranking_formatter import RankingFormatter, ClubEffectEngine
 
             logger.info("Preparing to send daily announcements")
 
@@ -1920,7 +1920,7 @@ class ScheduledEvents(commands.Cog):
         """
         try:
             # Import ClubEffectEngine for formatting buff descriptions
-            from src.utils.ranking_formatter import ClubEffectEngine
+            from utils.ranking_formatter import ClubEffectEngine
 
             # Get all clubs
             clubs = await get_all_clubs()
@@ -2306,7 +2306,7 @@ class ScheduledEvents(commands.Cog):
 
             # Store in database
             try:
-                from src.utils.database import store_event
+                from utils.database import store_event
 
                 # Extract data for database storage
                 store_event(
@@ -2514,7 +2514,7 @@ class ScheduledEvents(commands.Cog):
 
             # Try to store in database if available
             try:
-                from src.utils.database import store_event
+                from utils.database import store_event
                 store_event(
                     event_id=event_id,
                     event_type='villain',
@@ -2685,7 +2685,7 @@ class ScheduledEvents(commands.Cog):
             }
 
             # Store in database
-            from src.utils.database import store_event
+            from utils.database import store_event
             store_event(
                 event_id=event_id,
                 name=event["title"],
@@ -3187,7 +3187,7 @@ class ScheduledEvents(commands.Cog):
                 logger.info("End of month detected, evaluating monthly grades")
 
                 # Get all players
-                conn = sqlite3.connect('data/tokugawa.db')
+                conn = sqlite3.connect('local/tokugawa.db')
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
 
@@ -3411,7 +3411,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Update in database
                     try:
-                        from src.utils.database import update_event_status
+                        from utils.database import update_event_status
 
                         # Mark as completed in database
                         update_event_status(
@@ -3448,7 +3448,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Update in database
                     try:
-                        from src.utils.database import update_event_status
+                        from utils.database import update_event_status
 
                         # Mark as completed in database
                         update_event_status(
@@ -4351,7 +4351,7 @@ class ScheduledEvents(commands.Cog):
     async def slash_ranking(self, interaction: discord.Interaction, tipo: str = "overall"):
         """View daily, weekly, overall, and reputation rankings with improved visuals."""
         try:
-            from src.utils.ranking_formatter import RankingFormatter
+            from utils.ranking_formatter import RankingFormatter
 
             if tipo == "daily":
                 # Get daily rankings
@@ -4586,8 +4586,8 @@ class ScheduledEvents(commands.Cog):
         """View today's events at Tokugawa Academy."""
         try:
             # Import the necessary function
-            from src.utils.database import get_events_by_date
-            from src.utils.embeds import create_db_event_embed
+            from utils.database import get_events_by_date
+            from utils.embeds import create_db_event_embed
 
             # Get today's events
             today_events = get_events_by_date(include_completed=mostrar_concluidos)
@@ -4654,7 +4654,7 @@ class ScheduledEvents(commands.Cog):
 async def setup(bot):
     """Add the cog to the bot."""
     import json
-    from src.utils.command_registrar import CommandRegistrar
+    from utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = ScheduledEvents(bot)

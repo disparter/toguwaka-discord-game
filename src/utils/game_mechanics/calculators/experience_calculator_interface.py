@@ -4,7 +4,7 @@ Following the Interface Segregation Principle, this provides a specific interfac
 for experience-related calculations.
 """
 from abc import ABC, abstractmethod
-from src.utils.game_mechanics.calculators.calculator_interface import ICalculator
+from utils.game_mechanics.calculators.calculator_interface import ICalculator
 
 class IExperienceCalculator(ICalculator):
     """Interface for experience calculators."""

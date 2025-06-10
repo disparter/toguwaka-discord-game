@@ -5,10 +5,10 @@ This package provides various utility functions and classes used throughout
 the Academia Tokugawa Discord bot.
 """
 
-from src.utils.club_system import ClubSystem
-from src.utils.json_utils import dumps as json_dumps
-from src.utils.content_validator import ContentValidator
-from src.utils.persistence import db_provider, init_db
+from utils.club_system import ClubSystem
+from utils.json_utils import dumps as json_dumps
+from utils.content_validator import ContentValidator
+from utils.persistence import db_provider, init_db
 
 __all__ = [
     'ClubSystem',

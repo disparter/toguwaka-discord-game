@@ -5,12 +5,12 @@ import logging
 import random
 import asyncio
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any
 
-from src.utils.persistence import db_provider
-from src.utils.embeds import create_basic_embed, create_event_embed
-from src.utils.game_mechanics import calculate_level_from_exp
-from story_mode.club_system import ClubSystem
+from utils.persistence import db_provider
+from utils.embeds import create_basic_embed, create_event_embed
+from utils.game_mechanics import calculate_level_from_exp
+from story_mode.club_rivalry_system import ClubSystem
 
 class MoralChoices(commands.Cog):
     """Cog para gerenciar dilemas morais e eventos coletivos na Academia Tokugawa."""

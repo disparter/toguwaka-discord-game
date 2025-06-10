@@ -2,7 +2,7 @@ import decimal
 import json
 import logging
 from datetime import datetime
-from src.utils.persistence.dynamodb import (
+from utils.persistence.dynamodb import (
     get_table,
     put_item,
     get_item,
