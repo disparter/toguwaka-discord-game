@@ -549,6 +549,7 @@ class DBProvider:
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
                 'JogadorID': f'PLAYER#{user_id}',  # Add JogadorID at the top level as well, formatted as a string
+                'ItemID': item_id,  # Add the required ItemID field
                 'item_data': item_data_with_id,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()
