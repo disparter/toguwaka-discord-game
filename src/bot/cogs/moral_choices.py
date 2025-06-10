@@ -658,52 +658,7 @@ class MoralChoices(commands.Cog):
 
         self.cooldowns[user_id][command] = datetime.now()
 
-    @commands.command(name="alianca")
-    async def form_alliance(self, ctx, *, club_name: str):
-        """Forma uma aliança com outro clube."""
-        # Get player data
-        player = await db_provider.get_player(ctx.author.id)
-        if not player:
-            await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
-            return
-
-        # Check if player is in a club
-        if not player.get('club'):
-            await ctx.send("Você precisa estar em um clube para formar alianças!")
-            return
-
-        # Find target club
-        target_club_id = None
-        for club_id, name in self.club_system.CLUBS.items():
-            if name.lower() == club_name.lower():
-                target_club_id = club_id
-                break
-
-        if not target_club_id:
-            await ctx.send(f"Clube '{club_name}' não encontrado. Use `!clubes` para ver a lista de clubes disponíveis.")
-            return
-
-        # Form alliance
-        result = self.club_system.form_alliance(player, target_club_id)
-        if "error" in result:
-            await ctx.send(result["error"])
-            return
-
-        # Create embed
-        embed = create_basic_embed(
-            title="Aliança Formada!",
-            description=f"Seu clube formou uma aliança com o clube {club_name}!",
-            color=0x00FF00
-        )
-
-        # Add alliance information
-        embed.add_field(
-            name="Detalhes da Aliança",
-            value=result["message"],
-            inline=False
-        )
-
-        await ctx.send(embed=embed)
+    # Command alianca moved to story_mode.py to avoid duplicate command registration
 
     @commands.command(name="rivalidade")
     async def declare_rivalry(self, ctx, *, club_name: str):

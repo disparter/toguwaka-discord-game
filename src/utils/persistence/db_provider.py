@@ -796,5 +796,7 @@ __all__ = [
     'add_item_to_inventory_async',
     'get_cooldowns_async',
     'clear_expired_cooldowns_async',
-    'init_db_async'
+    'init_db_async',
+    'get_top_players',
+    'get_top_players_by_reputation'
 ]

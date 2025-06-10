@@ -290,7 +290,7 @@ class ScheduledEvents(commands.Cog):
             db_cooldowns = await db_provider.get_cooldowns()
             if db_cooldowns:
                 # Update the COOLDOWNS dictionary with cooldowns from the database
-                from cogs.activities import COOLDOWNS
+                from src.bot.cogs.activities import COOLDOWNS
 
                 for user_id, commands in db_cooldowns.items():
                     if user_id not in COOLDOWNS:
@@ -1708,13 +1708,13 @@ class ScheduledEvents(commands.Cog):
                     })
 
             # Get overall top players
-            overall_players = get_top_players(10)
+            overall_players = await db_provider.get_top_players(10)
 
             # Get top players by reputation from database
             reputation_players = []
             try:
                 # Use the database function to get top players by reputation
-                top_by_reputation = get_top_players_by_reputation(10)
+                top_by_reputation = await db_provider.get_top_players_by_reputation(10)
                 for player in top_by_reputation:
                     reputation_players.append({
                         'user_id': player['user_id'],
@@ -4483,7 +4483,7 @@ class ScheduledEvents(commands.Cog):
                 reputation_players = []
                 try:
                     # Use the database function to get top players by reputation
-                    top_by_reputation = get_top_players_by_reputation(10)
+                    top_by_reputation = await db_provider.get_top_players_by_reputation(10)
                     for player in top_by_reputation:
                         reputation_players.append({
                             'user_id': player['user_id'],
@@ -4502,7 +4502,7 @@ class ScheduledEvents(commands.Cog):
 
             else:  # overall
                 # Get top players
-                top_players = get_top_players(10)
+                top_players = await db_provider.get_top_players(10)
 
                 # Create ranking embed using RankingFormatter
                 embed = RankingFormatter.format_geral(top_players)
