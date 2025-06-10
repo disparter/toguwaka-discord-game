@@ -127,6 +127,7 @@ def migrate_inventory(inventory_str: str, user_id: str) -> List[Dict[str, Any]]:
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
                 'JogadorID': user_id,  # Add the required JogadorID field
+                'ItemID': item_id,     # Add the required ItemID field
                 'item_data': item_data,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()

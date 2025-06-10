@@ -8,10 +8,7 @@ NC='\033[0m' # No Color
 # Function to handle script termination
 cleanup() {
     echo -e "\n${GREEN}Cleaning up...${NC}"
-    if [ ! -z "$LOCALSTACK_CONTAINER" ]; then
-        docker stop $LOCALSTACK_CONTAINER
-        echo "Stopped LocalStack container"
-    fi
+    docker-compose down
     exit 0
 }
 
@@ -21,47 +18,15 @@ trap cleanup SIGINT SIGTERM
 # Create reports directory if it doesn't exist
 mkdir -p reports
 
-# Start LocalStack
-echo -e "${GREEN}Starting LocalStack...${NC}"
-LOCALSTACK_CONTAINER=$(docker run -d \
-    -p 4566:4566 \
-    -p 4571:4571 \
-    -e SERVICES=dynamodb,s3,cloudwatch \
-    -e DEBUG=1 \
-    -e DATA_DIR=/tmp/localstack/data \
-    localstack/localstack)
+# Create volume directory for LocalStack if it doesn't exist
+mkdir -p volume
 
-echo "LocalStack container ID: $LOCALSTACK_CONTAINER"
+# Export the test channel
+export TOKUGAWA_CHANNEL=tokugawa-bot-tests
 
-# Wait for LocalStack to be ready
-echo "Waiting for LocalStack to be ready..."
-sleep 10
-
-# Create virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
-    echo -e "${GREEN}Creating virtual environment...${NC}"
-    python3 -m venv venv
-fi
-
-# Activate virtual environment
-source venv/bin/activate
-
-# Install/upgrade pip
-python -m pip install --upgrade pip
-
-# Install requirements
-echo -e "${GREEN}Installing requirements...${NC}"
-pip install -r requirements.txt
-
-# Run tests with coverage and generate HTML report
-echo -e "${GREEN}Running tests...${NC}"
-pytest \
-    --cov=. \
-    --cov-report=html:reports/coverage \
-    --cov-report=term-missing \
-    --junitxml=reports/junit.xml \
-    --html=reports/report.html \
-    --self-contained-html
+# Start services using docker-compose
+echo -e "${GREEN}Starting test environment...${NC}"
+docker-compose up --build --abort-on-container-exit
 
 # Check if tests were successful
 if [ $? -eq 0 ]; then
