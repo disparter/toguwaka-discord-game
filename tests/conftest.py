@@ -30,10 +30,16 @@ def patched_import(name, *args, **kwargs):
     # Lista de bibliotecas externas que não devem ser modificadas
     external_libs = ['discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore']
     
-    # Não modifica imports de bibliotecas externas ou imports relativos
-    if (any(name.startswith(lib) for lib in external_libs) or  # bibliotecas externas
-        name.startswith('.') or  # imports relativos
-        name.startswith('src.')):  # já tem src
+    # Não modifica imports de bibliotecas externas
+    if any(name.startswith(lib) for lib in external_libs):
+        return original_import(name, *args, **kwargs)
+    
+    # Não modifica imports relativos (que começam com .)
+    if name.startswith('.'):
+        return original_import(name, *args, **kwargs)
+    
+    # Não modifica imports que já começam com src.
+    if name.startswith('src.'):
         return original_import(name, *args, **kwargs)
     
     # Verifica se o módulo está na lista e adiciona o prefixo src
