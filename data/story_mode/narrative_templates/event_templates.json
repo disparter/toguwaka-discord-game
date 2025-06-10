@@ -1,0 +1,126 @@
+{
+  "event_templates": [
+    {
+      "title": "Desafio Acadêmico",
+      "description_template": "Durante uma aula, você se depara com um desafio acadêmico difícil. {outcome}",
+      "type": "academic",
+      "attribute_check": "intellect",
+      "difficulty": 6,
+      "dynamic_elements": {
+        "outcome": {
+          "success": "Você consegue resolver o problema com facilidade, impressionando seus colegas e o professor.",
+          "failure": "Apesar de seus esforços, você não consegue resolver o problema a tempo."
+        }
+      },
+      "rewards": {
+        "success": {
+          "exp": 20,
+          "tusd": 15,
+          "intellect": 1
+        },
+        "failure": {
+          "exp": 5,
+          "tusd": -5
+        }
+      }
+    },
+    {
+      "title": "Debate Acalorado",
+      "description_template": "Um debate acalorado surge durante uma discussão em grupo. {outcome}",
+      "type": "social",
+      "attribute_check": "charisma",
+      "difficulty": 5,
+      "dynamic_elements": {
+        "outcome": {
+          "success": "Você articula seus argumentos com clareza e convence os outros de seu ponto de vista.",
+          "failure": "Seus argumentos não são bem recebidos e você acaba perdendo o debate."
+        }
+      },
+      "rewards": {
+        "success": {
+          "exp": 15,
+          "tusd": 10,
+          "charisma": 1
+        },
+        "failure": {
+          "exp": 5,
+          "tusd": 0
+        }
+      }
+    },
+    {
+      "title": "Competição Esportiva",
+      "description_template": "Você é desafiado para uma competição esportiva improvisada. {outcome}",
+      "type": "physical",
+      "attribute_check": "dexterity",
+      "difficulty": 6,
+      "dynamic_elements": {
+        "outcome": {
+          "success": "Sua agilidade e coordenação te levam à vitória, para o espanto dos espectadores.",
+          "failure": "Você dá o seu melhor, mas acaba perdendo a competição."
+        }
+      },
+      "rewards": {
+        "success": {
+          "exp": 20,
+          "tusd": 15,
+          "dexterity": 1
+        },
+        "failure": {
+          "exp": 5,
+          "tusd": 0
+        }
+      }
+    },
+    {
+      "title": "Demonstração de Poder",
+      "description_template": "Uma situação surge onde você precisa demonstrar seu poder. {outcome}",
+      "type": "power",
+      "attribute_check": "power_stat",
+      "difficulty": 7,
+      "dynamic_elements": {
+        "outcome": {
+          "success": "Você canaliza seu poder com precisão, criando um espetáculo impressionante.",
+          "failure": "Seu poder falha no momento crucial, deixando você em uma situação embaraçosa."
+        }
+      },
+      "rewards": {
+        "success": {
+          "exp": 25,
+          "tusd": 20,
+          "power_stat": 1
+        },
+        "failure": {
+          "exp": 5,
+          "tusd": -10,
+          "hp_loss": 10
+        }
+      }
+    },
+    {
+      "title": "Confronto com Valentão",
+      "description_template": "Você presencia um valentão intimidando um estudante mais fraco. {outcome}",
+      "type": "moral",
+      "attribute_check": "charisma",
+      "difficulty": 6,
+      "dynamic_elements": {
+        "outcome": {
+          "success": "Você intervém com autoridade, fazendo o valentão recuar e ganhando o respeito dos presentes.",
+          "failure": "Sua tentativa de intervir não surte efeito, e o valentão continua com seu comportamento."
+        }
+      },
+      "rewards": {
+        "success": {
+          "exp": 20,
+          "tusd": 10,
+          "reputation": 5
+        },
+        "failure": {
+          "exp": 5,
+          "tusd": 0,
+          "reputation": -2
+        }
+      }
+    }
+  ]
+}

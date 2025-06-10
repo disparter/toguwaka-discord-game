@@ -1,0 +1,168 @@
+{
+  "chapter_id": "academic_1_1_first_class",
+  "type": "academic",
+  "title": "Primeira Aula",
+  "description": "Sua primeira aula na Academia Tokugawa",
+  "phase": "year_1_academic",
+  "scenes": [
+    {
+      "scene_id": "classroom_entrance",
+      "title": "Entrada na Sala de Aula",
+      "description": "Você entra na sua primeira aula na Academia Tokugawa",
+      "background": "classroom_entrance.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "nervous",
+          "image": "student_uniform.png"
+        },
+        {
+          "id": "professor_arcana",
+          "position": "right",
+          "expression": "welcoming",
+          "image": "professor_arcana.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_arcana",
+          "text": "Bem-vindos à primeira aula de Teoria Elemental. Hoje vamos aprender os fundamentos dos elementos.",
+          "expression": "welcoming"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Sentar na frente para prestar mais atenção",
+          "next_scene": "front_row",
+          "effects": {
+            "intellect": 1,
+            "reputation": {
+              "professor_arcana": 5
+            }
+          }
+        },
+        {
+          "text": "Sentar no meio da sala para observar melhor",
+          "next_scene": "middle_row",
+          "effects": {
+            "observation": 1
+          }
+        },
+        {
+          "text": "Sentar no fundo para não chamar atenção",
+          "next_scene": "back_row",
+          "effects": {
+            "stealth": 1
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "front_row",
+      "title": "Primeira Fileira",
+      "description": "Você se senta na primeira fileira",
+      "background": "classroom_front.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "attentive",
+          "image": "student_uniform.png"
+        },
+        {
+          "id": "professor_arcana",
+          "position": "right",
+          "expression": "teaching",
+          "image": "professor_arcana.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_arcana",
+          "text": "Os quatro elementos básicos - Fogo, Água, Terra e Ar - formam a base de toda magia elemental. Cada um tem suas próprias propriedades e afinidades.",
+          "expression": "teaching"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Fazer uma pergunta sobre seu elemento",
+          "next_scene": "ask_question",
+          "effects": {
+            "knowledge": 2,
+            "reputation": {
+              "professor_arcana": 3
+            }
+          }
+        },
+        {
+          "text": "Tomar notas detalhadas",
+          "next_scene": "take_notes",
+          "effects": {
+            "intellect": 2
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "ask_question",
+      "title": "Pergunta ao Professor",
+      "description": "Você levanta a mão para fazer uma pergunta",
+      "background": "classroom_front.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "curious",
+          "image": "student_uniform.png"
+        },
+        {
+          "id": "professor_arcana",
+          "position": "right",
+          "expression": "interested",
+          "image": "professor_arcana.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "player",
+          "text": "Professor, como podemos descobrir nossa afinidade elemental natural?",
+          "expression": "curious"
+        },
+        {
+          "speaker": "professor_arcana",
+          "text": "Excelente pergunta! Nas próximas aulas, faremos testes práticos para determinar suas afinidades. Alguns já nascem com uma afinidade forte, enquanto outros desenvolvem com o tempo e prática.",
+          "expression": "pleased"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Agradecer e continuar ouvindo a aula",
+          "next_scene": "class_continues",
+          "effects": {
+            "satisfaction": 2
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 50,
+    "skills": {
+      "elemental_theory": 1,
+      "academic_knowledge": 1
+    },
+    "unlocks": ["elemental_affinity_test"]
+  },
+  "next_chapter": "academic_1_2_study_group",
+  "flags": {
+    "first_class_completed": true,
+    "elemental_theory_introduced": true
+  },
+  "metadata": {
+    "location": "main_classroom",
+    "time_of_day": "morning",
+    "weather": "clear",
+    "season": "spring"
+  }
+}

@@ -14,7 +14,7 @@ logger = logging.getLogger('tokugawa_bot')
 # Load event templates from JSON file
 def load_event_templates():
     try:
-        file_path = os.path.join("data", "story_mode", "events", "event_templates.json")
+        file_path = os.path.join("data", "story_mode", "narrative_templates", "event_templates.json")
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             return data.get("event_templates", [])
@@ -142,7 +142,7 @@ def apply_event_rewards(player: Dict[str, Any], event: Dict[str, Any]) -> Dict[s
 # Load event choices from JSON file
 def load_event_choices():
     try:
-        file_path = os.path.join("data", "story_mode", "events", "event_choices.json")
+        file_path = os.path.join("data", "story_mode", "narrative_templates", "choices.json")
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             return data.get("event_choices", {})

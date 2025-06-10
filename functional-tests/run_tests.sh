@@ -33,7 +33,6 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}Tests completed successfully!${NC}"
     echo "Reports generated in the 'reports' directory:"
     echo "- HTML Coverage Report: reports/coverage/index.html"
-    echo "- JUnit XML Report: reports/junit.xml"
     echo "- HTML Test Report: reports/report.html"
 else
     echo -e "${RED}Tests failed!${NC}"

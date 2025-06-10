@@ -32,9 +32,21 @@ def create_player_embed(player, club=None):
         color = club_colors.get(club['club_id'], 0x1E90FF)
 
     # Create embed
+    # Extract player name from PK if name is not available
+    player_name = player.get('name')
+    if not player_name and 'PK' in player:
+        # Extract player ID from PK (format: "PLAYER#123456789")
+        pk_parts = player['PK'].split('#')
+        if len(pk_parts) > 1:
+            player_name = f"Jogador {pk_parts[1]}"
+        else:
+            player_name = "Jogador Desconhecido"
+    elif not player_name:
+        player_name = "Jogador Desconhecido"
+
     embed = discord.Embed(
-        title=f"Perfil de {player['name']}",
-        description=f"**Poder:** {player['power']}\n**Nível de Força:** {STRENGTH_LEVELS.get(player['strength_level'], 'Desconhecido')}",
+        title=f"Perfil de {player_name}",
+        description=f"**Poder:** {player.get('power', 'N/A')}\n**Nível de Força:** {STRENGTH_LEVELS.get(player.get('strength_level', 0), 'Desconhecido')}",
         color=color,
         timestamp=datetime.utcnow()
     )
@@ -50,10 +62,10 @@ def create_player_embed(player, club=None):
     # Add attributes
     embed.add_field(
         name="Atributos",
-        value=f"**Destreza:** {player['dexterity']} 🏃\n"
-              f"**Intelecto:** {player['intellect']} 🧠\n"
-              f"**Carisma:** {player['charisma']} 💫\n"
-              f"**Poder:** {player['power_stat']} 💪",
+        value=f"**Destreza:** {player.get('dexterity', 0)} 🏃\n"
+              f"**Intelecto:** {player.get('intellect', 0)} 🧠\n"
+              f"**Carisma:** {player.get('charisma', 0)} 💫\n"
+              f"**Poder:** {player.get('power_stat', 0)} 💪",
         inline=True
     )
 
@@ -460,7 +472,7 @@ def create_leaderboard_embed(players, title="Ranking da Academia Tokugawa"):
     for i, player in enumerate(players, 1):
         medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
         club_name = player.get('club_name', 'Sem clube')
-        leaderboard_text += f"{medal} **{player['name']}** (Nível {player['level']}) - {club_name}\n"
+        leaderboard_text += f"{medal} **{player.get('name', 'Desconhecido')}** (Nível {player.get('level', 1)}) - {club_name}\n"
 
     embed.description = leaderboard_text
 

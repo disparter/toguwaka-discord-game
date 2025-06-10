@@ -736,7 +736,7 @@ class Activities(commands.Cog):
         try:
             duration = custom_duration or COOLDOWN_DURATIONS.get(command, 3600)
             expiry = datetime.now() + timedelta(seconds=duration)
-            await db_provider.store_cooldown(str(user_id), command, int(expiry.timestamp()))
+            await db_provider.store_cooldown(str(user_id), command, expiry)
         except Exception as e:
             logger.error(f"Error setting cooldown: {e}")
 

@@ -36,7 +36,7 @@ class PlayerStatus(commands.Cog):
             # Get club data
             club = None
             if player['club_id']:
-                club = await db_provider.get_club(player['club_id'])
+                club = await db_provider.get_club(str(player['club_id']))
 
             # Create and send player embed
             embed = create_player_embed(player, club)
@@ -170,7 +170,7 @@ class PlayerStatus(commands.Cog):
         # Get club data
         club = None
         if player['club_id']:
-            club = await db_provider.get_club(player['club_id'])
+            club = await db_provider.get_club(str(player['club_id']))
 
         # Create and send player embed
         embed = create_player_embed(player, club)

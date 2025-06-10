@@ -8,6 +8,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from src.utils.persistence import db_provider
+from src.utils.persistence.db_provider import get_player, update_player, get_club
 from src.utils.embeds import create_basic_embed
 from src.utils.game_mechanics import RARITIES
 from src.utils.club_perks import apply_shop_discount
@@ -1653,7 +1654,7 @@ class Economy(commands.Cog):
                 return
 
             # Get club data
-            club = get_club(player["club_id"])
+            club = get_club(str(player["club_id"]))
             if not club:
                 await ctx.send(f"{ctx.author.mention}, seu clube não existe mais.", ephemeral=True)
                 return

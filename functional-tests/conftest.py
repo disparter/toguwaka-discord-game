@@ -1,7 +1,6 @@
 import os
 import pytest
 import boto3
-from localstack_client.config import Config
 from localstack_client.session import Session
 
 # Test channel configuration
@@ -15,12 +14,13 @@ def test_channel():
 @pytest.fixture(scope="session")
 def localstack():
     """Initialize LocalStack services."""
+    # Create a LocalStack session
     session = Session()
     
     # Configure AWS clients to use LocalStack
-    dynamodb = session.client('dynamodb', endpoint_url='http://localhost:4566')
-    s3 = session.client('s3', endpoint_url='http://localhost:4566')
-    cloudwatch = session.client('cloudwatch', endpoint_url='http://localhost:4566')
+    dynamodb = session.client('dynamodb')
+    s3 = session.client('s3')
+    cloudwatch = session.client('cloudwatch')
     
     # Create DynamoDB tables
     dynamodb.create_table(

@@ -114,8 +114,8 @@ Um novo capítulo completo foi implementado, inspirado em histórias como Unordi
 Para melhorar o desempenho e a manutenção do código:
 
 - Dados JSON estáticos foram movidos de arrays codificados para arquivos JSON externos
-- Criado `data/story_mode/events/event_templates.json` para armazenar modelos de eventos
-- Criado `data/story_mode/events/event_choices.json` para armazenar escolhas de eventos
+- Criado `data/story_mode/narrative_templates/eventemplates.json` para armazenar modelos de eventos
+- Criado `data/story_mode/narrative_templates/choices.json` para armazenar escolhas de eventos
 - Modificado `utils/narrative_events.py` para carregar dados desses arquivos JSON
 - Adicionados novos modelos de eventos para enriquecer a experiência do jogador
 

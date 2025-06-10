@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Command to run tests
-CMD ["pytest", "--cov=.", "--cov-report=html:reports/coverage", "--cov-report=term-missing", "--junitxml=reports/junit.xml", "--html=reports/report.html", "--self-contained-html"] 
+CMD ["pytest", "--cov=.", "--cov-report=html:reports/coverage", "--cov-report=term-missing", "--html=reports/report.html", "--self-contained-html"] 
