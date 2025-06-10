@@ -3,7 +3,6 @@ import asyncio
 import discord
 from discord.ext import commands
 import logging
-from src.utils.database import init_db
 from src.utils.persistence.db_provider import db_provider
 from src.utils.persistence.dynamo_migration import normalize_player_data
 
@@ -166,51 +165,51 @@ async def on_ready():
     logger.info(f'Bot is ready! Logged in as {bot.user.name}')
 
     # Initialize database
+    db_initialized = False
     try:
-        if await init_db():
+        # Use init_db directly from db_provider to avoid circular dependencies
+        logger.info("Initializing database...")
+        db_initialized = await db_provider.init_db()
+        if db_initialized:
             logger.info("Database initialized successfully")
         else:
             logger.error("Failed to initialize database")
+            logger.warning("Continuing bot execution despite database initialization failure")
     except Exception as e:
         logger.error(f"Error initializing database: {e}")
+        logger.error(f"Exception type: {type(e).__name__}")
+        logger.error(f"Exception args: {e.args}")
+        logger.warning("Continuing bot execution despite database initialization error")
 
-    # Initialize database provider and handle migration
-    try:
-        # Try to ensure DynamoDB is available
-        if not db_provider.ensure_dynamo_available():
-            logger.error("DynamoDB is not available. Bot will not function correctly.")
-            await bot.close()
-            return
-
-        # If DynamoDB is available, try to sync data if needed
-        if not await db_provider.sync_to_dynamo_if_empty():
-            logger.error("Failed to sync data to DynamoDB")
-            await bot.close()
-            return
-
-        # Normalize player data
-        logger.info("Starting player data normalization...")
+    # Try to sync data if needed (only if database initialization failed)
+    if not db_initialized:
         try:
-            logger.info("Calling normalize_player_data function...")
-            success = await normalize_player_data()
-            logger.info(f"normalize_player_data function returned: {success}")
-            if success:
-                logger.info("Player data normalization completed successfully!")
-            else:
-                logger.error("Player data normalization failed!")
+            logger.info("Attempting to sync data to DynamoDB...")
+            if not await db_provider.sync_to_dynamo_if_empty():
+                logger.error("Failed to sync data to DynamoDB")
                 # Don't close the bot, just log the error and continue
-                logger.warning("Continuing bot execution despite player migration failure")
+                logger.warning("Continuing bot execution despite DynamoDB sync failure")
         except Exception as e:
-            logger.error(f"Exception during player data normalization: {str(e)}")
+            logger.error(f"Error syncing data to DynamoDB: {e}")
             logger.error(f"Exception type: {type(e).__name__}")
-            logger.error(f"Exception args: {e.args}")
-            # Continue execution despite the error
-            logger.warning("Continuing bot execution despite player migration error")
+            logger.warning("Continuing bot execution despite DynamoDB sync error")
 
+    # Normalize player data (regardless of database initialization status)
+    try:
+        logger.info("Starting player data normalization...")
+        logger.info("Calling normalize_player_data function...")
+        success = await normalize_player_data()
+        logger.info(f"normalize_player_data function returned: {success}")
+        if success:
+            logger.info("Player data normalization completed successfully!")
+        else:
+            logger.error("Player data normalization failed!")
+            logger.warning("Continuing bot execution despite player migration failure")
     except Exception as e:
-        logger.error(f"Error during database initialization: {e}")
-        await bot.close()
-        return
+        logger.error(f"Exception during player data normalization: {str(e)}")
+        logger.error(f"Exception type: {type(e).__name__}")
+        logger.error(f"Exception args: {e.args}")
+        logger.warning("Continuing bot execution despite player migration error")
 
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:

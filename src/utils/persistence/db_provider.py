@@ -8,6 +8,7 @@ Ele usa exclusivamente DynamoDB para todas as operações.
 import os
 import logging
 import asyncio
+import concurrent.futures
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime, timedelta
 import json
@@ -543,7 +544,12 @@ def get_player(user_id: str) -> Optional[Dict[str, Any]]:
     if loop.is_running():
         # If we're already in an event loop, use run_coroutine_threadsafe
         future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for get_player({user_id})")
+            return None
     else:
         # Otherwise, use run_until_complete
         return loop.run_until_complete(db_provider.get_player(user_id))
@@ -562,7 +568,12 @@ def update_player(user_id: str, **kwargs) -> bool:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.update_player(user_id, **kwargs), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for update_player({user_id})")
+            return False
     else:
         return loop.run_until_complete(db_provider.update_player(user_id, **kwargs))
 
@@ -580,7 +591,12 @@ def get_club(club_id: str) -> Optional[Dict[str, Any]]:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.get_club(club_id), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for get_club({club_id})")
+            return None
     else:
         return loop.run_until_complete(db_provider.get_club(club_id))
 
@@ -598,7 +614,12 @@ def store_cooldown(user_id: str, command: str, expiry_time: datetime) -> bool:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.store_cooldown(user_id, command, expiry_time), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for store_cooldown({user_id}, {command})")
+            return False
     else:
         return loop.run_until_complete(db_provider.store_cooldown(user_id, command, expiry_time))
 
@@ -616,7 +637,12 @@ def get_player_inventory(user_id: str) -> Dict[str, Any]:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.get_player_inventory(user_id), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for get_player_inventory({user_id})")
+            return {}
     else:
         return loop.run_until_complete(db_provider.get_player_inventory(user_id))
 
@@ -634,7 +660,12 @@ def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any])
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.add_item_to_inventory(user_id, item_id, item_data), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for add_item_to_inventory({user_id}, {item_id})")
+            return False
     else:
         return loop.run_until_complete(db_provider.add_item_to_inventory(user_id, item_id, item_data))
 
@@ -652,7 +683,12 @@ def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.get_cooldowns(*args, **kwargs), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error("Timeout waiting for get_cooldowns")
+            return []
     else:
         return loop.run_until_complete(db_provider.get_cooldowns(*args, **kwargs))
 
@@ -670,7 +706,12 @@ def clear_expired_cooldowns() -> int:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.clear_expired_cooldowns(), loop)
-        return future.result()
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error("Timeout waiting for clear_expired_cooldowns")
+            return 0
     else:
         return loop.run_until_complete(db_provider.clear_expired_cooldowns())
 
@@ -688,7 +729,12 @@ def init_db() -> bool:
 
     if loop.is_running():
         future = asyncio.run_coroutine_threadsafe(db_provider.init_db(), loop)
-        return future.result()
+        try:
+            # Add a timeout of 10 seconds to prevent deadlock
+            return future.result(timeout=10)
+        except concurrent.futures.TimeoutError:
+            logger.error("Timeout waiting for database initialization")
+            return False
     else:
         return loop.run_until_complete(db_provider.init_db())
 
