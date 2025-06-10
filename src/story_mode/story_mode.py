@@ -183,4 +183,52 @@ class StoryMode:
             return None
         except Exception as e:
             logger.error(f"Error getting chapter data: {e}")
-            return None 
+            return None
+
+    def start_story(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Start or continue the story mode for a player.
+
+        Args:
+            player_data: The player's current data
+
+        Returns:
+            Dictionary containing updated player data and chapter information
+        """
+        try:
+            # Initialize story progress if not exists
+            if "story_progress" not in player_data:
+                player_data["story_progress"] = {
+                    "current_chapter": None,
+                    "completed_chapters": [],
+                    "story_choices": {},
+                    "flags": {}
+                }
+
+            # Get current chapter
+            current_chapter = player_data["story_progress"].get("current_chapter")
+            
+            # If no current chapter, start from the beginning
+            if not current_chapter:
+                current_chapter = "1_1_arrival"  # First chapter ID
+                player_data["story_progress"]["current_chapter"] = current_chapter
+
+            # Get chapter data
+            chapter_data = self.arc_manager.get_chapter(current_chapter)
+            if not chapter_data:
+                return {
+                    "error": f"Chapter {current_chapter} not found",
+                    "player_data": player_data
+                }
+
+            return {
+                "player_data": player_data,
+                "chapter_data": chapter_data
+            }
+
+        except Exception as e:
+            logger.error(f"Error in start_story: {e}")
+            return {
+                "error": str(e),
+                "player_data": player_data
+            } 

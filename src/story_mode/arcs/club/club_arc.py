@@ -58,8 +58,8 @@ class ClubArc(BaseArc):
         """
         import glob
         try:
-            # Load general club chapters
-            chapters_dir = os.path.join(self.data_dir, "chapters")
+            # Load club chapters from the narrative/club directory
+            chapters_dir = os.path.join("data", "story_mode", "narrative", "club")
             if not os.path.exists(chapters_dir):
                 logger.error(f"Chapters directory not found: {chapters_dir}")
                 return
@@ -72,16 +72,6 @@ class ClubArc(BaseArc):
                     chapter_data = json.load(f)
                     chapter_id = chapter_data.get("id") or os.path.splitext(os.path.basename(chapter_file))[0]
                     self.register_chapter(chapter_id, chapter_data)
-
-            # Load club-specific chapters from the new narrative/clubs directory (flat, no subfolders)
-            clubs_dir = os.path.join("data", "story_mode", "narrative", "clubs")
-            if os.path.exists(clubs_dir):
-                club_files = glob.glob(os.path.join(clubs_dir, "*.json"))
-                for club_file in club_files:
-                    with open(club_file, 'r') as f:
-                        club_data = json.load(f)
-                        chapter_id = club_data.get("chapter_id") or os.path.splitext(os.path.basename(club_file))[0]
-                        self.register_chapter(chapter_id, club_data)
 
             logger.info(f"Loaded {len(self.chapters)} club arc chapters")
         except Exception as e:

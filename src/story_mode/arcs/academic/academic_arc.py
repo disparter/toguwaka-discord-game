@@ -45,7 +45,7 @@ class AcademicArc(BaseArc):
         """
         import glob
         try:
-            chapters_dir = os.path.join(self.data_dir, "chapters")
+            chapters_dir = os.path.join("data", "story_mode", "narrative", "academic")
             if not os.path.exists(chapters_dir):
                 logger.error(f"Chapters directory not found: {chapters_dir}")
                 return

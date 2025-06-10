@@ -462,11 +462,24 @@ async def get_player_inventory(user_id):
 async def add_item_to_inventory(user_id, item_id, item_data):
     """Add item to player's inventory."""
     try:
+        # Convert float values to Decimal
+        def convert_floats_to_decimal(obj):
+            if isinstance(obj, float):
+                return decimal.Decimal(str(obj))
+            elif isinstance(obj, dict):
+                return {k: convert_floats_to_decimal(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_floats_to_decimal(v) for v in obj]
+            return obj
+
+        item_data = convert_floats_to_decimal(item_data)
+        
         table = get_table(TABLES['inventory'])
         await table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
+                'JogadorID': user_id,  # Add the required primary key
                 'item_data': item_data
             }
         )

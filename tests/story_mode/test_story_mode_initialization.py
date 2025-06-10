@@ -10,7 +10,7 @@ class TestStoryModeInitialization(unittest.TestCase):
         self.story_mode = StoryMode()
         self.validator = ChapterValidator()
         self.base_path = "data/story_mode/narrative"
-        self.clubs_path = os.path.join(self.base_path, "clubs")
+        self.clubs_path = os.path.join(self.base_path, "club")
 
     def test_club_chapters_exist(self):
         """Test that all club chapter files exist and are valid"""

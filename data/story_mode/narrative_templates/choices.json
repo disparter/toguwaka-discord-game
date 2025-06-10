@@ -1,4 +1,62 @@
 {
+  "academic": [
+    {
+      "id": "study_hard",
+      "description": "Dedicar-se intensamente aos estudos",
+      "consequences": {
+        "intellect_bonus": 2,
+        "exp": 15,
+        "tusd": 10
+      }
+    },
+    {
+      "id": "ask_help",
+      "description": "Pedir ajuda aos colegas",
+      "consequences": {
+        "charisma_bonus": 1,
+        "exp": 10,
+        "tusd": 5
+      }
+    },
+    {
+      "id": "innovate",
+      "description": "Tentar uma abordagem inovadora",
+      "consequences": {
+        "intellect_bonus": 1,
+        "charisma_bonus": 1,
+        "exp": 20,
+        "tusd": 15,
+        "risk": "medium"
+      }
+    }
+  ],
+  "default": [
+    {
+      "id": "careful",
+      "description": "Ser cauteloso e metódico",
+      "consequences": {
+        "exp": 10,
+        "tusd": 5
+      }
+    },
+    {
+      "id": "balanced",
+      "description": "Manter um equilíbrio",
+      "consequences": {
+        "exp": 15,
+        "tusd": 10
+      }
+    },
+    {
+      "id": "risky",
+      "description": "Arriscar-se por uma recompensa maior",
+      "consequences": {
+        "exp": 25,
+        "tusd": 20,
+        "risk": "high"
+      }
+    }
+  ],
   "origin": {
     "Bairro Popular": [
       {"text": "Usar sua experiência de rua para encontrar uma solução alternativa.", "attribute_bonus": {"charisma": 1}},

@@ -68,8 +68,9 @@ DEFAULT_PLAYER_VALUES = {
 
 # Story mode paths
 STORY_MODE_PATHS = {
-    'arcs': STORY_MODE_DIR / 'arcs',
-    'chapters': STORY_MODE_DIR / 'chapters',
+    'narrative': STORY_MODE_DIR / 'narrative',
+    'events': STORY_MODE_DIR / 'events',
+    'npcs': STORY_MODE_DIR / 'npcs',
     'logs': STORY_MODE_DIR / 'logs',
     'analytics': STORY_MODE_DIR / 'analytics'
 }

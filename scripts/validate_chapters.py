@@ -56,8 +56,8 @@ def validate_chapter(chapter_data, file_path):
 def main():
     # Set up paths
     chapter_files = [
-        "data/story_mode/chapters/academic/academic_1_1_first_class.json",
-        "data/story_mode/chapters/academic/academic_1_2_study_group.json"
+        "data/story_mode/narrative/academic/academic_1_1_first_class.json",
+        "data/story_mode/narrative/academic/academic_1_2_study_group.json"
     ]
 
     # Validate each chapter file

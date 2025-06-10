@@ -2572,6 +2572,10 @@ class ScheduledEvents(commands.Cog):
 
             # Select a random player
             player = random.choice(players)
+            user_id = player.get('user_id')
+            if not user_id:
+                logger.error("Selected player has no user_id")
+                return
 
             # Generate a dynamic event for the player
             event = generate_dynamic_event(player)

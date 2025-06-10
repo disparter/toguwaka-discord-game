@@ -35,14 +35,14 @@ if ! command_exists git; then
 fi
 
 # Create and activate virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
+if [ ! -d "pyvenv11" ]; then
     print_section "Creating virtual environment"
-    python3 -m venv venv
+    python3 -m venv pyvenv11
 fi
 
 # Activate virtual environment
 print_section "Activating virtual environment"
-source venv/bin/activate
+source pyvenv11/bin/activate
 
 # Install/upgrade pip
 print_section "Upgrading pip"
@@ -58,7 +58,7 @@ pip install -r requirements.txt
 
 # Run tests with coverage
 print_section "Running tests with coverage"
-pytest --cov=. --cov-report=term-missing --cov-report=html
+python tests/run_tests.py
 
 # Check if tests passed
 if [ $? -eq 0 ]; then

@@ -8,7 +8,7 @@ class TestStoryModeClubIntegration(unittest.TestCase):
     def setUp(self):
         self.story_mode = StoryMode()
         self.base_path = "data/story_mode/narrative"
-        self.clubs_path = os.path.join(self.base_path, "clubs")
+        self.clubs_path = os.path.join(self.base_path, "club")
 
     def test_club_chapter_sequence(self):
         """Test that club chapters follow the correct sequence"""

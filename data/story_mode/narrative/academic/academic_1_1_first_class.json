@@ -1,0 +1,80 @@
+{
+    "chapter_id": "academic_1_1_first_class",
+    "type": "story",
+    "title": "Primeira Aula",
+    "description": "O início da jornada acadêmica na Academia Tokugawa",
+    "phase": "year_1_academic",
+    "requirements": {
+        "previous_chapter": "1_1_arrival",
+        "level": 1
+    },
+    "scenes": [
+        {
+            "scene_id": "classroom_intro",
+            "title": "Sala de Aula",
+            "description": "Uma sala de aula moderna e bem equipada",
+            "background": "classroom_intro.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "position": "center",
+                    "expression": "curious",
+                    "image": "student_room_reflection_night.png"
+                },
+                {
+                    "id": "professor",
+                    "position": "right",
+                    "expression": "welcoming",
+                    "image": "professor_intro.png"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "professor",
+                    "text": "Bem-vindos à primeira aula do semestre. Hoje vamos começar nossa jornada de aprendizado."
+                },
+                {
+                    "speaker": "player",
+                    "text": "Estou ansioso para aprender."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Fazer uma pergunta sobre o curso",
+                    "effects": {
+                        "knowledge": 5,
+                        "reputation": {
+                            "professor": 3
+                        }
+                    }
+                },
+                {
+                    "text": "Observar a aula em silêncio",
+                    "effects": {
+                        "knowledge": 3
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 50,
+        "skills": [
+            "basic_study",
+            "classroom_etiquette"
+        ],
+        "items": ["student_handbook"],
+        "unlocks": ["academic_events", "study_groups"]
+    },
+    "next_chapter": "academic_1_2_study_group",
+    "flags": {
+        "first_class": true,
+        "academic_start": true
+    },
+    "metadata": {
+        "location": "main_classroom",
+        "time_of_day": "morning",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 

@@ -1,0 +1,80 @@
+{
+    "chapter_id": "academic_1_2_study_group",
+    "type": "story",
+    "title": "Grupo de Estudos",
+    "description": "Formando um grupo de estudos para melhorar o aprendizado",
+    "phase": "year_1_academic",
+    "requirements": {
+        "previous_chapter": "academic_1_1_first_class",
+        "level": 1
+    },
+    "scenes": [
+        {
+            "scene_id": "library_intro",
+            "title": "Biblioteca",
+            "description": "A biblioteca da academia, um lugar tranquilo para estudos",
+            "background": "library_intro.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "position": "center",
+                    "expression": "focused",
+                    "image": "student_room_reflection_night.png"
+                },
+                {
+                    "id": "study_partner",
+                    "position": "right",
+                    "expression": "friendly",
+                    "image": "student_study.png"
+                }
+            ],
+            "dialogue": [
+                {
+                    "speaker": "study_partner",
+                    "text": "Olá! Estou procurando alguém para formar um grupo de estudos. Você está interessado?"
+                },
+                {
+                    "speaker": "player",
+                    "text": "Sim, seria ótimo estudar em grupo."
+                }
+            ],
+            "choices": [
+                {
+                    "text": "Aceitar o convite",
+                    "effects": {
+                        "knowledge": 8,
+                        "reputation": {
+                            "study_partner": 5
+                        }
+                    }
+                },
+                {
+                    "text": "Sugerir estudar sozinho primeiro",
+                    "effects": {
+                        "knowledge": 5,
+                        "independence": 3
+                    }
+                }
+            ]
+        }
+    ],
+    "rewards": {
+        "experience": 75,
+        "skills": [
+            "group_study",
+            "collaboration"
+        ],
+        "items": ["study_group_invitation"],
+        "unlocks": ["advanced_study_groups"]
+    },
+    "next_chapter": "academic_1_3_exam_prep",
+    "flags": {
+        "study_group_formed": true
+    },
+    "metadata": {
+        "location": "library",
+        "time_of_day": "afternoon",
+        "weather": "clear",
+        "season": "spring"
+    }
+} 
