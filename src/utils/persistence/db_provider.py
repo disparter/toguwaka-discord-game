@@ -186,8 +186,32 @@ class DBProvider:
             return []
 
     # --- Event operations ---
-    async def store_event(self, *args, **kwargs) -> bool:
-        return True
+    async def store_event(self, event_id: str, name: str, description: str, event_type: str, 
+                      channel_id: str, message_id: str, start_time: datetime, 
+                      end_time: datetime, participants: List[str], data: Dict[str, Any], 
+                      completed: bool = False) -> bool:
+        """Store event data in database."""
+        try:
+            self.MAIN_TABLE.put_item(Item={
+                'PK': f'EVENT#{event_id}',
+                'SK': 'INFO',
+                'name': name,
+                'description': description,
+                'event_type': event_type,
+                'channel_id': channel_id,
+                'message_id': message_id,
+                'start_time': start_time.isoformat(),
+                'end_time': end_time.isoformat(),
+                'participants': participants,
+                'data': data,
+                'completed': completed,
+                'created_at': datetime.now().isoformat(),
+                'last_updated': datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            logger.error(f"Error storing event {event_id}: {str(e)}")
+            return False
 
     async def get_event(self, *args, **kwargs) -> Optional[Dict[str, Any]]:
         return None
@@ -870,6 +894,46 @@ def get_top_players_by_reputation(limit: int = 10) -> list:
     else:
         return loop.run_until_complete(db_provider.get_top_players_by_reputation(limit))
 
+async def store_event_async(event_id: str, name: str, description: str, event_type: str, 
+                     channel_id: str, message_id: str, start_time: datetime, 
+                     end_time: datetime, participants: List[str], data: Dict[str, Any], 
+                     completed: bool = False) -> bool:
+    """Store event data in database (async version)."""
+    return await db_provider.store_event(event_id, name, description, event_type, 
+                                        channel_id, message_id, start_time, 
+                                        end_time, participants, data, completed)
+
+def store_event(event_id: str, name: str, description: str, event_type: str, 
+               channel_id: str, message_id: str, start_time: datetime, 
+               end_time: datetime, participants: List[str], data: Dict[str, Any], 
+               completed: bool = False) -> bool:
+    """Store event data in database (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(
+            db_provider.store_event(event_id, name, description, event_type, 
+                                   channel_id, message_id, start_time, 
+                                   end_time, participants, data, completed), 
+            loop
+        )
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Timeout waiting for store_event({event_id})")
+            return False
+    else:
+        return loop.run_until_complete(
+            db_provider.store_event(event_id, name, description, event_type, 
+                                   channel_id, message_id, start_time, 
+                                   end_time, participants, data, completed)
+        )
+
 # Export the singleton instance and all wrapper functions
 __all__ = [
     'db_provider',
@@ -894,5 +958,7 @@ __all__ = [
     'get_top_players',
     'get_top_players_by_reputation',
     'get_top_players_async',
-    'get_top_players_by_reputation_async'
+    'get_top_players_by_reputation_async',
+    'store_event',
+    'store_event_async'
 ]

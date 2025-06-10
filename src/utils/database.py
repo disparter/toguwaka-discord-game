@@ -15,7 +15,8 @@ from utils.persistence.db_provider import (
     get_cooldowns,
     clear_expired_cooldowns,
     init_db,
-    db_provider
+    db_provider,
+    store_event
 )
 
 # Re-export all database functions
@@ -29,5 +30,6 @@ __all__ = [
     'get_cooldowns',
     'clear_expired_cooldowns',
     'init_db',
-    'db_provider'
-] 
+    'db_provider',
+    'store_event'
+]

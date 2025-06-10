@@ -28,13 +28,13 @@ def patched_import(name, *args, **kwargs):
     if name == 'discord.ext.commands.src':
         # Create a mock module for discord.ext.commands.src
         import types
-        mock_module = types.ModuleType('discord.ext.commands.src')
+        mock_module = types.ModuleType('discord.ext.commands')
         return mock_module
 
     if name == 'src.story_mode.src':
         # Create a mock module for src.story_mode.src
         import types
-        mock_module = types.ModuleType('src.story_mode.src')
+        mock_module = types.ModuleType('src.story_mode')
         return mock_module
 
     # Lista de módulos que precisam do prefixo src

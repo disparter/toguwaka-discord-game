@@ -532,7 +532,7 @@ class StoryModeCog(commands.Cog):
                 description="Você já completou este desafio com sucesso. Não é possível refazê-lo.",
                 color=discord.Color.gold()
             )
-            await channel.send(embed=embed, ephemeral=True)
+            await channel.send(embed=embed)
             return
 
         if "already_failed" in chapter_data and chapter_data["already_failed"]:
@@ -541,7 +541,7 @@ class StoryModeCog(commands.Cog):
                 description="Você já falhou neste desafio. Não é possível tentá-lo novamente.",
                 color=discord.Color.red()
             )
-            await channel.send(embed=embed, ephemeral=True)
+            await channel.send(embed=embed)
             return
 
         # Check if a path is blocked due to previous failures
@@ -551,7 +551,7 @@ class StoryModeCog(commands.Cog):
                 description="Devido a falhas anteriores, este caminho da história está bloqueado para você.",
                 color=discord.Color.red()
             )
-            await channel.send(embed=embed, ephemeral=True)
+            await channel.send(embed=embed)
             return
 
         # Check if a challenge was just completed successfully
@@ -561,7 +561,7 @@ class StoryModeCog(commands.Cog):
                 description="Parabéns! Você completou o desafio com sucesso e recebeu recompensas.",
                 color=discord.Color.green()
             )
-            await channel.send(embed=embed, ephemeral=True)
+            await channel.send(embed=embed)
 
         # Check if a challenge was just failed
         if "challenge_failure" in result and result["challenge_failure"]:
@@ -570,7 +570,7 @@ class StoryModeCog(commands.Cog):
                 description="Você falhou no desafio. Isso terá consequências para sua jornada.",
                 color=discord.Color.red()
             )
-            await channel.send(embed=embed, ephemeral=True)
+            await channel.send(embed=embed)
 
         # If there's a current dialogue, send it
         if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
@@ -607,19 +607,19 @@ class StoryModeCog(commands.Cog):
                         if file_size <= 8 * 1024 * 1024:  # 8MB limit
                             embed.set_image(url=f"attachment://{image_filename}")
                             file = discord.File(image_path, filename=image_filename)
-                            await channel.send(embed=embed, file=file, ephemeral=True)
+                            await channel.send(embed=embed, file=file)
                         else:
                             logger.warning(
                                 f"Image file {image_filename} is too large ({file_size / 1024 / 1024:.2f}MB) and couldn't be sent")
-                            await channel.send(embed=embed, ephemeral=True)
+                            await channel.send(embed=embed)
                     except Exception as e:
                         logger.error(f"Error sending image {image_filename}: {str(e)}")
-                        await channel.send(embed=embed, ephemeral=True)
+                        await channel.send(embed=embed)
                 else:
                     logger.warning(f"Image file {image_filename} not found at {image_path}")
-                    await channel.send(embed=embed, ephemeral=True)
+                    await channel.send(embed=embed)
             else:
-                await channel.send(embed=embed, ephemeral=True)
+                await channel.send(embed=embed)
 
             # If the dialogue has choices, add buttons for those choices
             if "choices" in dialogue and dialogue["choices"]:
@@ -639,11 +639,11 @@ class StoryModeCog(commands.Cog):
                     button.callback = self._create_choice_callback(user_id, i)
                     view.add_item(button)
 
-                # Send choices as ephemeral
+                # Send choices
                 if file:
-                    message = await channel.send(file=file, embed=embed, view=view, ephemeral=True)
+                    message = await channel.send(file=file, embed=embed, view=view)
                 else:
-                    message = await channel.send(embed=embed, view=view, ephemeral=True)
+                    message = await channel.send(embed=embed, view=view)
                 return
 
             # If there are choices in the chapter data but not in the dialogue, check if we should show them
@@ -665,11 +665,11 @@ class StoryModeCog(commands.Cog):
                     button.callback = self._create_choice_callback(user_id, i)
                     view.add_item(button)
 
-                # Send choices as ephemeral
+                # Send choices
                 if file:
-                    message = await channel.send(file=file, embed=embed, view=view, ephemeral=True)
+                    message = await channel.send(file=file, embed=embed, view=view)
                 else:
-                    message = await channel.send(embed=embed, view=view, ephemeral=True)
+                    message = await channel.send(embed=embed, view=view)
                 return
             else:
                 # If no choices, add a "Continue" button
@@ -687,11 +687,11 @@ class StoryModeCog(commands.Cog):
                 button.callback = self._create_continue_callback(user_id)
                 view.add_item(button)
 
-                # Send continue button as ephemeral
+                # Send continue button
                 if file:
-                    message = await channel.send(file=file, embed=embed, view=view, ephemeral=True)
+                    message = await channel.send(file=file, embed=embed, view=view)
                 else:
-                    message = await channel.send(embed=embed, view=view, ephemeral=True)
+                    message = await channel.send(embed=embed, view=view)
                 return
 
         # If there are choices but no current dialogue, send the choices
@@ -729,8 +729,8 @@ class StoryModeCog(commands.Cog):
                 button.callback = self._create_choice_callback(user_id, i)
                 view.add_item(button)
 
-            # Send choices as ephemeral
-            message = await channel.send(embed=embed, view=view, ephemeral=True)
+            # Send choices
+            message = await channel.send(embed=embed, view=view)
             return
 
         # If no dialogue or choices, the chapter is complete
@@ -754,8 +754,8 @@ class StoryModeCog(commands.Cog):
             color=color
         )
 
-        # Send chapter completion message as ephemeral
-        await channel.send(embed=embed, ephemeral=True)
+        # Send chapter completion message
+        await channel.send(embed=embed)
 
     def _create_choice_callback(self, user_id: int, choice_index: int):
         """
@@ -812,14 +812,14 @@ class StoryModeCog(commands.Cog):
                         description="Parabéns! Você concluiu a história principal do jogo.",
                         color=discord.Color.gold()
                     )
-                    await interaction.channel.send(embed=embed, ephemeral=True)
+                    await interaction.channel.send(embed=embed)
                 elif "next_chapter_id" in result:
                     embed = create_basic_embed(
                         title="Capítulo Concluído",
                         description=f"Você concluiu este capítulo da história. O próximo capítulo está disponível.",
                         color=discord.Color.green()
                     )
-                    await interaction.channel.send(embed=embed, ephemeral=True)
+                    await interaction.channel.send(embed=embed)
 
         return choice_callback
 

@@ -480,6 +480,7 @@ async def add_item_to_inventory(user_id, item_id, item_data):
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
                 'JogadorID': f'PLAYER#{user_id}',  # Add the required primary key as a string with PLAYER# prefix
+                'ItemID': item_id,  # Add the required ItemID field
                 'item_data': item_data
             }
         )

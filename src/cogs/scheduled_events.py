@@ -3567,7 +3567,7 @@ class ScheduledEvents(commands.Cog):
         """Interact with minions that appear in the Academy."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
@@ -3671,7 +3671,7 @@ class ScheduledEvents(commands.Cog):
         """Combat villains that invade the Academy."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
