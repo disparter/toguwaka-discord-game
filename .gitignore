@@ -61,3 +61,4 @@ Thumbs.db
 /.coverage
 
 tokugawa.db
+/missing_assets.md

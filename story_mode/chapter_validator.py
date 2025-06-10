@@ -24,23 +24,13 @@ class ChapterValidator:
         """
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                chapters_data = json.load(f)
+                chapter_data = json.load(f)
 
-            if not isinstance(chapters_data, dict):
+            if not isinstance(chapter_data, dict):
                 logger.error(f"Invalid chapter file format: {file_path}. Expected a dictionary.")
                 return False
 
-            # Check if it's a single chapter or multiple chapters
-            if "chapter_id" in chapters_data:
-                # Single chapter
-                return ChapterValidator.validate_chapter(chapters_data, file_path)
-            else:
-                # Multiple chapters
-                all_valid = True
-                for chapter_id, chapter_data in chapters_data.items():
-                    if not ChapterValidator.validate_chapter(chapter_data, file_path, chapter_id):
-                        all_valid = False
-                return all_valid
+            return ChapterValidator.validate_chapter(chapter_data, file_path)
 
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON in file {file_path}: {e}")
@@ -50,74 +40,79 @@ class ChapterValidator:
             return False
 
     @staticmethod
-    def validate_chapter(chapter_data: Dict[str, Any], file_path: str, chapter_id: str = None) -> bool:
+    def validate_chapter(chapter_data: Dict[str, Any], file_path: str) -> bool:
         """
         Validates a single chapter.
 
         Args:
             chapter_data: Chapter data dictionary
             file_path: Path to the chapter file (for error reporting)
-            chapter_id: ID of the chapter (if known)
 
         Returns:
             True if the chapter is valid, False otherwise
         """
-        # Get chapter ID from data or use provided ID
-        chapter_id = chapter_data.get("chapter_id", chapter_id)
+        # Get chapter ID from data
+        chapter_id = chapter_data.get("id")
         if not chapter_id:
-            logger.error(f"Chapter in {file_path} is missing chapter_id")
+            logger.error(f"Chapter in {file_path} is missing id")
             return False
 
         # Check required fields
-        required_fields = ["type", "title", "description"]
+        required_fields = ["type", "title", "description", "scenes"]
         for field in required_fields:
             if field not in chapter_data:
                 logger.error(f"Chapter {chapter_id} in {file_path} is missing required field: {field}")
                 return False
 
-        # Check choices
-        if "choices" not in chapter_data:
-            logger.warning(f"Chapter {chapter_id} in {file_path} is missing 'choices' field")
-            # Don't fail validation, but log a warning
-        else:
-            choices = chapter_data.get("choices", [])
-            if not isinstance(choices, list):
-                logger.error(f"Chapter {chapter_id} in {file_path}: 'choices' must be a list")
+        # Validate scenes
+        scenes = chapter_data.get("scenes", [])
+        if not isinstance(scenes, list):
+            logger.error(f"Chapter {chapter_id} in {file_path}: 'scenes' must be a list")
+            return False
+
+        for i, scene in enumerate(scenes):
+            if not isinstance(scene, dict):
+                logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} must be a dictionary")
                 return False
 
-            # Validate each choice if there are any
-            for i, choice in enumerate(choices):
-                if not isinstance(choice, dict):
-                    logger.error(f"Chapter {chapter_id} in {file_path}: choice {i} must be a dictionary")
+            # Check required scene fields
+            scene_required_fields = ["scene_id", "title", "description"]
+            for field in scene_required_fields:
+                if field not in scene:
+                    logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} is missing required field: {field}")
                     return False
 
-                if "text" not in choice:
-                    logger.error(f"Chapter {chapter_id} in {file_path}: choice {i} is missing required field 'text'")
+            # Validate scene choices if present
+            choices = scene.get("choices", [])
+            if choices:
+                if not isinstance(choices, list):
+                    logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} 'choices' must be a list")
                     return False
 
-        # Validate dialogues if present
-        dialogues = chapter_data.get("dialogues", [])
-        if dialogues and isinstance(dialogues, list):
-            for i, dialogue in enumerate(dialogues):
-                if not isinstance(dialogue, dict):
-                    logger.error(f"Chapter {chapter_id} in {file_path}: dialogue {i} must be a dictionary")
-                    return False
-
-                # Check for nested choices in dialogues
-                if "choices" in dialogue:
-                    dialogue_choices = dialogue["choices"]
-                    if not isinstance(dialogue_choices, list):
-                        logger.error(f"Chapter {chapter_id} in {file_path}: dialogue {i} 'choices' must be a list")
+                for j, choice in enumerate(choices):
+                    if not isinstance(choice, dict):
+                        logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} choice {j} must be a dictionary")
                         return False
 
-                    for j, choice in enumerate(dialogue_choices):
-                        if not isinstance(choice, dict):
-                            logger.error(f"Chapter {chapter_id} in {file_path}: dialogue {i} choice {j} must be a dictionary")
-                            return False
+                    if "text" not in choice:
+                        logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} choice {j} is missing required field 'text'")
+                        return False
 
-                        if "text" not in choice:
-                            logger.error(f"Chapter {chapter_id} in {file_path}: dialogue {i} choice {j} is missing required field 'text'")
-                            return False
+            # Validate scene dialogue if present
+            dialogue = scene.get("dialogue", [])
+            if dialogue:
+                if not isinstance(dialogue, list):
+                    logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} 'dialogue' must be a list")
+                    return False
+
+                for j, dialogue_entry in enumerate(dialogue):
+                    if not isinstance(dialogue_entry, dict):
+                        logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} dialogue entry {j} must be a dictionary")
+                        return False
+
+                    if "speaker" not in dialogue_entry or "text" not in dialogue_entry:
+                        logger.error(f"Chapter {chapter_id} in {file_path}: scene {i} dialogue entry {j} is missing required fields 'speaker' or 'text'")
+                        return False
 
         return True
 

@@ -747,7 +747,7 @@ class Economy(commands.Cog):
         """Slash command version of the market command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player_async(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
@@ -792,7 +792,7 @@ class Economy(commands.Cog):
         """Slash command version of the sell command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player_async(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
@@ -854,7 +854,7 @@ class Economy(commands.Cog):
         """Slash command version of the buy_market command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player_async(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
@@ -878,7 +878,7 @@ class Economy(commands.Cog):
                 return
 
             # Get seller data
-            seller = get_player(listing["seller_id"])
+            seller = await db_provider.get_player_async(listing["seller_id"])
             if not seller:
                 await interaction.response.send_message(f"{interaction.user.mention}, o vendedor não existe mais. A listagem será removida.")
                 del self.market_listings[listing_id]
@@ -954,7 +954,7 @@ class Economy(commands.Cog):
     async def slash_exchange(self, interaction: discord.Interaction, exchange_id: int):
         """Permite trocar itens por outros itens ou moedas especiais."""
         # Check if player exists
-        player = get_player(interaction.user.id)
+        player = await db_provider.get_player_async(interaction.user.id)
         if not player:
             await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
             return
@@ -1162,7 +1162,7 @@ class Economy(commands.Cog):
         """Slash command to equip an accessory item."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player_async(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
@@ -1242,7 +1242,7 @@ class Economy(commands.Cog):
     async def shop(self, ctx):
         """Acessar a loja da Academia Tokugawa."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -1270,7 +1270,7 @@ class Economy(commands.Cog):
     async def buy(self, ctx, item_id: int = None):
         """Comprar um item da loja."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -1388,7 +1388,7 @@ class Economy(commands.Cog):
     async def market(self, ctx):
         """Acessar o mercado de itens entre jogadores."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -1427,7 +1427,7 @@ class Economy(commands.Cog):
     async def sell(self, ctx, item_id: int = None, price: int = None):
         """Vender um item no mercado."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
             return
@@ -1488,7 +1488,7 @@ class Economy(commands.Cog):
     async def buy_market(self, ctx, listing_id: int = None):
         """Comprar um item do mercado."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
             return
@@ -1517,7 +1517,7 @@ class Economy(commands.Cog):
             return
 
         # Get seller data
-        seller = get_player(listing["seller_id"])
+        seller = await db_provider.get_player_async(listing["seller_id"])
         if not seller:
             await ctx.send(f"{ctx.author.mention}, o vendedor não existe mais. A listagem será removida.")
             del self.market_listings[listing_id]
@@ -1588,7 +1588,7 @@ class Economy(commands.Cog):
     async def equip_item(self, ctx, item_id: int = None):
         """Equipar um acessório do inventário."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -1668,7 +1668,7 @@ class Economy(commands.Cog):
     async def use_item(self, ctx, item_id: int = None):
         """Usar um item do inventário."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player_async(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -1717,7 +1717,7 @@ class Economy(commands.Cog):
                 return
 
             # Get club data
-            club = get_club(str(player["club_id"]))
+            club = await db_provider.get_club_async(str(player["club_id"]))
             if not club:
                 await ctx.send(f"{ctx.author.mention}, seu clube não existe mais.", ephemeral=True)
                 return
