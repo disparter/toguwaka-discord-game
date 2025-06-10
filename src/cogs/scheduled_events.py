@@ -1,32 +1,38 @@
-import discord
-from discord.ext import commands, tasks
-from discord import app_commands
-import logging
-import random
 import asyncio
+import discord
 import json
-import sqlite3
+import logging
 import os
+import random
+import sqlite3
 from datetime import datetime, timedelta, time
-import pytz
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+from discord import app_commands
+from discord.ext import commands, tasks
+
 from utils.persistence import db_provider
+
 
 # Helper functions to use db_provider
 async def get_player(user_id):
     return await db_provider.get_player(user_id)
 
+
 async def update_player(user_id, **kwargs):
     return await db_provider.update_player(user_id, **kwargs)
+
 
 async def get_all_players():
     return await db_provider.get_all_players()
 
+
 async def get_all_clubs():
     return await db_provider.get_all_clubs()
-from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
-from utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
-from utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
+
+
+from utils.embeds import create_basic_embed
+from utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, \
+    apply_choice_consequences
 from story_mode.club_rivalry_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
@@ -163,6 +169,7 @@ WEEKLY_THEME = {
     #     'exp_multiplier': 1.5
     # }
 }
+
 
 class ScheduledEvents(commands.Cog):
     """Cog for scheduled and automated events."""
@@ -322,30 +329,33 @@ class ScheduledEvents(commands.Cog):
                 tokugawa_channel = discord.utils.get(guild.text_channels, name=tokugawa_channel_name)
                 if tokugawa_channel:
                     self.announcement_channel_id = tokugawa_channel.id
-                    logger.info(f"Set announcement channel to TOKUGAWA_CHANNEL: {tokugawa_channel.name} ({tokugawa_channel.id})")
+                    logger.info(
+                        f"Set announcement channel to TOKUGAWA_CHANNEL: {tokugawa_channel.name} ({tokugawa_channel.id})")
                 else:
                     # Fallback to default channels if TOKUGAWA_CHANNEL not found
                     announcement_channel = discord.utils.get(guild.text_channels, name="anúncios") or \
-                                          discord.utils.get(guild.text_channels, name="announcements") or \
-                                          discord.utils.get(guild.text_channels, name="geral") or \
-                                          discord.utils.get(guild.text_channels, name="general")
+                                           discord.utils.get(guild.text_channels, name="announcements") or \
+                                           discord.utils.get(guild.text_channels, name="geral") or \
+                                           discord.utils.get(guild.text_channels, name="general")
                     if announcement_channel:
                         self.announcement_channel_id = announcement_channel.id
-                        logger.info(f"TOKUGAWA_CHANNEL not found, using fallback: {announcement_channel.name} ({announcement_channel.id})")
+                        logger.info(
+                            f"TOKUGAWA_CHANNEL not found, using fallback: {announcement_channel.name} ({announcement_channel.id})")
             else:
                 # No TOKUGAWA_CHANNEL set, use default channels
                 announcement_channel = discord.utils.get(guild.text_channels, name="anúncios") or \
-                                      discord.utils.get(guild.text_channels, name="announcements") or \
-                                      discord.utils.get(guild.text_channels, name="geral") or \
-                                      discord.utils.get(guild.text_channels, name="general")
+                                       discord.utils.get(guild.text_channels, name="announcements") or \
+                                       discord.utils.get(guild.text_channels, name="geral") or \
+                                       discord.utils.get(guild.text_channels, name="general")
                 if announcement_channel:
                     self.announcement_channel_id = announcement_channel.id
                     logger.info(f"Set announcement channel to: {announcement_channel.name} ({announcement_channel.id})")
 
             # Try to find tournament channel (can be the same as announcement channel)
             tournament_channel = discord.utils.get(guild.text_channels, name="torneios") or \
-                               discord.utils.get(guild.text_channels, name="tournaments") or \
-                               self.bot.get_channel(self.announcement_channel_id) if self.announcement_channel_id else None
+                                 discord.utils.get(guild.text_channels, name="tournaments") or \
+                                 self.bot.get_channel(
+                                     self.announcement_channel_id) if self.announcement_channel_id else None
 
             if tournament_channel:
                 self.tournament_channel_id = tournament_channel.id
@@ -569,7 +579,8 @@ class ScheduledEvents(commands.Cog):
                         },
                         {
                             'question': 'O que é um quantum?',
-                            'options': ['Uma partícula subatômica', 'Uma quantidade discreta de energia', 'Um tipo de onda', 'Um campo magnético'],
+                            'options': ['Uma partícula subatômica', 'Uma quantidade discreta de energia',
+                                        'Um tipo de onda', 'Um campo magnético'],
                             'correct': 1,  # Uma quantidade discreta de energia
                             'difficulty': 3
                         }
@@ -595,7 +606,8 @@ class ScheduledEvents(commands.Cog):
                         },
                         {
                             'question': 'O que é um alelo?',
-                            'options': ['Um tipo de célula', 'Uma forma alternativa de um gene', 'Um tipo de proteína', 'Um organismo unicelular'],
+                            'options': ['Um tipo de célula', 'Uma forma alternativa de um gene', 'Um tipo de proteína',
+                                        'Um organismo unicelular'],
                             'correct': 1,  # Uma forma alternativa de um gene
                             'difficulty': 2
                         }
@@ -673,7 +685,8 @@ class ScheduledEvents(commands.Cog):
                         },
                         {
                             'question': 'Qual destes não é um evento de atletismo nas Olimpíadas?',
-                            'options': ['Lançamento de dardo', 'Salto com vara', 'Corrida de obstáculos', 'Levantamento de peso'],
+                            'options': ['Lançamento de dardo', 'Salto com vara', 'Corrida de obstáculos',
+                                        'Levantamento de peso'],
                             'correct': 3,  # Levantamento de peso
                             'difficulty': 2
                         }
@@ -1108,9 +1121,11 @@ class ScheduledEvents(commands.Cog):
 
                     # Track progress for rankings
                     if winner['user_id'] not in PLAYER_PROGRESS['daily']:
-                        PLAYER_PROGRESS['daily'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                        PLAYER_PROGRESS['daily'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0,
+                                                                       'events_completed': 0}
                     if winner['user_id'] not in PLAYER_PROGRESS['weekly']:
-                        PLAYER_PROGRESS['weekly'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                        PLAYER_PROGRESS['weekly'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0,
+                                                                        'events_completed': 0}
 
                     PLAYER_PROGRESS['daily'][winner['user_id']]['exp_gained'] += exp_reward
                     PLAYER_PROGRESS['daily'][winner['user_id']]['duels_won'] += 1
@@ -1409,7 +1424,8 @@ class ScheduledEvents(commands.Cog):
                                     if member_player:
                                         update_player(member['user_id'], exp=member_player['exp'] + 10)
 
-                            democracy_messages.append(f"O Monarca de {team1_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
+                            democracy_messages.append(
+                                f"O Monarca de {team1_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
 
                     if team2_democracy:
                         # Get monarch player
@@ -1425,7 +1441,8 @@ class ScheduledEvents(commands.Cog):
                                     if member_player:
                                         update_player(member['user_id'], exp=member_player['exp'] + 10)
 
-                            democracy_messages.append(f"O Monarca de {team2_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
+                            democracy_messages.append(
+                                f"O Monarca de {team2_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
 
                     # Monarchs select fighters (democracy mode means random selection)
                     fighter1 = random.choice(team1_fighters)
@@ -1498,9 +1515,11 @@ class ScheduledEvents(commands.Cog):
 
                     # Track progress for rankings
                     if winner['user_id'] not in PLAYER_PROGRESS['daily']:
-                        PLAYER_PROGRESS['daily'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                        PLAYER_PROGRESS['daily'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0,
+                                                                       'events_completed': 0}
                     if winner['user_id'] not in PLAYER_PROGRESS['weekly']:
-                        PLAYER_PROGRESS['weekly'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                        PLAYER_PROGRESS['weekly'][winner['user_id']] = {'exp_gained': 0, 'duels_won': 0,
+                                                                        'events_completed': 0}
 
                     PLAYER_PROGRESS['daily'][winner['user_id']]['exp_gained'] += exp_reward
                     PLAYER_PROGRESS['daily'][winner['user_id']]['duels_won'] += 1
@@ -1601,9 +1620,11 @@ class ScheduledEvents(commands.Cog):
 
                         # Track progress for rankings
                         if member['user_id'] not in PLAYER_PROGRESS['daily']:
-                            PLAYER_PROGRESS['daily'][member['user_id']] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                            PLAYER_PROGRESS['daily'][member['user_id']] = {'exp_gained': 0, 'duels_won': 0,
+                                                                           'events_completed': 0}
                         if member['user_id'] not in PLAYER_PROGRESS['weekly']:
-                            PLAYER_PROGRESS['weekly'][member['user_id']] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                            PLAYER_PROGRESS['weekly'][member['user_id']] = {'exp_gained': 0, 'duels_won': 0,
+                                                                            'events_completed': 0}
 
                         PLAYER_PROGRESS['daily'][member['user_id']]['exp_gained'] += exp_reward
                         PLAYER_PROGRESS['daily'][member['user_id']]['events_completed'] += 1
@@ -1636,11 +1657,12 @@ class ScheduledEvents(commands.Cog):
                 embed=create_basic_embed(
                     title="🏆 Campeão das Turf Wars! 🏆",
                     description=(
-                        f"O time **{overall_winner}** é o grande campeão das Turf Wars Dominicais!\n\n"
-                        f"**Recompensas:**\n"
-                        f"- Cada membro recebeu EXP e TUSD bônus\n"
-                        f"- O time dominará a Academia por esta semana!\n"
-                        + (f"- O clube {get_club(winning_club_id)['name']} ganhou +50 de Reputação e terá +10% de EXP por 24 horas!" if winning_club_id else "")
+                            f"O time **{overall_winner}** é o grande campeão das Turf Wars Dominicais!\n\n"
+                            f"**Recompensas:**\n"
+                            f"- Cada membro recebeu EXP e TUSD bônus\n"
+                            f"- O time dominará a Academia por esta semana!\n"
+                            + (
+                                f"- O clube {get_club(winning_club_id)['name']} ganhou +50 de Reputação e terá +10% de EXP por 24 horas!" if winning_club_id else "")
                     ),
                     color=0xFF5733
                 )
@@ -1752,10 +1774,10 @@ class ScheduledEvents(commands.Cog):
 
             # Create daily summary embed (combines rankings and news in one embed)
             daily_summary = RankingFormatter.create_daily_summary(
-                daily_players, 
-                reputation_players, 
-                featured_club, 
-                buff_description, 
+                daily_players,
+                reputation_players,
+                featured_club,
+                buff_description,
                 news_items
             )
 
@@ -1826,7 +1848,8 @@ class ScheduledEvents(commands.Cog):
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                 except Exception as e:
                     logger.error(f"Error in previous_rankings_callback: {e}")
-                    await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.", ephemeral=True)
+                    await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.",
+                                                            ephemeral=True)
 
             previous_button.callback = previous_rankings_callback
             view.add_item(previous_button)
@@ -1847,11 +1870,13 @@ class ScheduledEvents(commands.Cog):
                         club_buff = CLUB_BUFFS.get(featured_club['club_id'])
 
                         if not club_buff:
-                            await interaction.response.send_message("Não há recompensas disponíveis para este clube no momento.", ephemeral=True)
+                            await interaction.response.send_message(
+                                "Não há recompensas disponíveis para este clube no momento.", ephemeral=True)
                             return
 
                         # Format the buff description
-                        buff_description = ClubEffectEngine.format_buff_description(club_buff['type'], club_buff['value'])
+                        buff_description = ClubEffectEngine.format_buff_description(club_buff['type'],
+                                                                                    club_buff['value'])
 
                         # Calculate expiration time
                         now = datetime.now()
@@ -1888,7 +1913,8 @@ class ScheduledEvents(commands.Cog):
                         await interaction.response.send_message(embed=embed, ephemeral=True)
                     except Exception as e:
                         logger.error(f"Error in rewards_callback: {e}")
-                        await interaction.response.send_message("Ocorreu um erro ao exibir as recompensas do clube.", ephemeral=True)
+                        await interaction.response.send_message("Ocorreu um erro ao exibir as recompensas do clube.",
+                                                                ephemeral=True)
 
                 rewards_button.callback = rewards_callback
                 view.add_item(rewards_button)
@@ -1902,7 +1928,7 @@ class ScheduledEvents(commands.Cog):
 
             # Send the individual ranking embeds in groups of 2 to avoid Discord's embed limit
             for i in range(0, len(embeds), 2):
-                group = embeds[i:i+2]
+                group = embeds[i:i + 2]
                 await channel.send(embeds=group)
 
             logger.info("Daily announcements sent with improved formatting")
@@ -2040,10 +2066,10 @@ class ScheduledEvents(commands.Cog):
             current_hour = now.hour
 
             # Count active events (excluding special events like tournaments and turf wars)
-            active_event_count = sum(1 for event_id in ACTIVE_EVENTS 
-                                    if not event_id.startswith('wednesday_tournament') 
-                                    and not event_id.startswith('turf_wars')
-                                    and not event_id.startswith('dia_de_materia'))
+            active_event_count = sum(1 for event_id in ACTIVE_EVENTS
+                                     if not event_id.startswith('wednesday_tournament')
+                                     and not event_id.startswith('turf_wars')
+                                     and not event_id.startswith('dia_de_materia'))
 
             # If we already have 3 or more active events, don't create a new one
             if active_event_count >= 3:
@@ -2085,14 +2111,17 @@ class ScheduledEvents(commands.Cog):
             activity_multiplier = min(4.0, max(0.5, 1.0 + (current_activity / 5) + (recent_activity / 20)))
 
             # If there's been a sudden spike in activity, increase chance significantly
-            if current_activity > 0 and current_activity > sum(data.get('count', 0) for h, data in PLAYER_ACTIVITY.items() if h != current_hour) / max(1, len(PLAYER_ACTIVITY) - 1) * 2:
+            if current_activity > 0 and current_activity > sum(
+                    data.get('count', 0) for h, data in PLAYER_ACTIVITY.items() if h != current_hour) / max(1,
+                                                                                                            len(PLAYER_ACTIVITY) - 1) * 2:
                 activity_multiplier *= 1.5
                 logger.info(f"Activity spike detected! Multiplier increased to {activity_multiplier}")
 
             final_chance = base_chance * hour_multiplier * activity_multiplier
 
             # Log the chance calculation for debugging
-            logger.info(f"Event chance: {final_chance:.4f} (base: {base_chance}, hour: {hour_multiplier}, activity: {activity_multiplier})")
+            logger.info(
+                f"Event chance: {final_chance:.4f} (base: {base_chance}, hour: {hour_multiplier}, activity: {activity_multiplier})")
 
             # Roll for event
             if random.random() < final_chance:
@@ -2104,8 +2133,8 @@ class ScheduledEvents(commands.Cog):
                 base_weights = [0.4, 0.2, 0.1, 0.3]  # 40% minion, 20% villain, 10% collectible, 30% narrative
 
                 # Adjust weights based on recent events (last 10 events)
-                recent_events = [event['data']['type'] for event_id, event in ACTIVE_EVENTS.items() 
-                                if 'data' in event and 'type' in event['data']][-10:]
+                recent_events = [event['data']['type'] for event_id, event in ACTIVE_EVENTS.items()
+                                 if 'data' in event and 'type' in event['data']][-10:]
 
                 adjusted_weights = base_weights.copy()
                 if recent_events:
@@ -2155,7 +2184,8 @@ class ScheduledEvents(commands.Cog):
                 suitable_channels = [
                     channel for channel in guild.text_channels
                     if channel.permissions_for(guild.me).send_messages
-                    and not any(name in channel.name for name in ['anúncio', 'announcement', 'rule', 'regra', 'bem-vindo', 'welcome'])
+                       and not any(name in channel.name for name in
+                                   ['anúncio', 'announcement', 'rule', 'regra', 'bem-vindo', 'welcome'])
                 ]
 
                 if not suitable_channels:
@@ -2190,8 +2220,8 @@ class ScheduledEvents(commands.Cog):
 
             # Select rarity with weighted probability
             rarity_weights = {'common': 0.6, 'uncommon': 0.25, 'rare': 0.1, 'epic': 0.04, 'legendary': 0.01}
-            rarity = random.choices(list(rarity_weights.keys()), 
-                                   weights=list(rarity_weights.values()), k=1)[0]
+            rarity = random.choices(list(rarity_weights.keys()),
+                                    weights=list(rarity_weights.values()), k=1)[0]
 
             # Select minion from the chosen rarity
             minion_name = random.choice(minion_types[rarity])
@@ -2339,7 +2369,7 @@ class ScheduledEvents(commands.Cog):
             villain_tiers = {
                 'tier1': {
                     'names': [
-                        'Lorde das Sombras', 'Mestre do Caos', 'Imperador do Gelo', 
+                        'Lorde das Sombras', 'Mestre do Caos', 'Imperador do Gelo',
                         'Rainha das Chamas', 'Senhor dos Pesadelos', 'Caçador de Almas',
                         'Espectro Noturno', 'Dama da Dor', 'Arauto do Fim'
                     ],
@@ -2381,8 +2411,8 @@ class ScheduledEvents(commands.Cog):
 
             # Higher tier chance during peak hours and with more activity
             activity_count = sum(data.get('count', 0) for hour, data in PLAYER_ACTIVITY.items())
-            recent_activity = sum(data.get('count', 0) for hour, data in PLAYER_ACTIVITY.items() 
-                                if (current_hour - hour) % 24 <= 3)  # Last 3 hours
+            recent_activity = sum(data.get('count', 0) for hour, data in PLAYER_ACTIVITY.items()
+                                  if (current_hour - hour) % 24 <= 3)  # Last 3 hours
 
             # Base chances for each tier
             tier_chances = {'tier1': 0.7, 'tier2': 0.25, 'tier3': 0.05}
@@ -2572,7 +2602,8 @@ class ScheduledEvents(commands.Cog):
                 async def button_callback(interaction, choice_id=choice_id, player_id=player['user_id']):
                     # Only allow interactions from guild members
                     if not interaction.guild:
-                        await interaction.response.send_message("Este comando só pode ser usado em um servidor.", ephemeral=True)
+                        await interaction.response.send_message("Este comando só pode ser usado em um servidor.",
+                                                                ephemeral=True)
                         return
 
                     # Get the player data again (it might have changed)
@@ -2661,7 +2692,9 @@ class ScheduledEvents(commands.Cog):
                         # Send the result
                         await interaction.response.send_message(embed=result_embed)
                     else:
-                        await interaction.response.send_message("Ocorreu um erro ao processar sua escolha. Por favor, tente novamente mais tarde.", ephemeral=True)
+                        await interaction.response.send_message(
+                            "Ocorreu um erro ao processar sua escolha. Por favor, tente novamente mais tarde.",
+                            ephemeral=True)
 
                 button.callback = button_callback
                 view.add_item(button)
@@ -2712,7 +2745,7 @@ class ScheduledEvents(commands.Cog):
             collectible_categories = {
                 'ancient': {
                     'items': [
-                        'Pergaminho Antigo', 'Tomo Ancestral', 'Relíquia Histórica', 
+                        'Pergaminho Antigo', 'Tomo Ancestral', 'Relíquia Histórica',
                         'Manuscrito Arcano', 'Artefato Perdido', 'Inscrição Rúnica'
                     ],
                     'emoji': '📜',
@@ -2721,7 +2754,7 @@ class ScheduledEvents(commands.Cog):
                 },
                 'magical': {
                     'items': [
-                        'Cristal Misterioso', 'Amuleto Encantado', 'Orbe Arcano', 
+                        'Cristal Misterioso', 'Amuleto Encantado', 'Orbe Arcano',
                         'Poção Brilhante', 'Essência Mágica', 'Pedra Elemental'
                     ],
                     'emoji': '✨',
@@ -2730,7 +2763,7 @@ class ScheduledEvents(commands.Cog):
                 },
                 'artifact': {
                     'items': [
-                        'Fragmento de Artefato', 'Engrenagem Misteriosa', 'Dispositivo Estranho', 
+                        'Fragmento de Artefato', 'Engrenagem Misteriosa', 'Dispositivo Estranho',
                         'Componente Tecnológico', 'Mecanismo Antigo', 'Núcleo Energético'
                     ],
                     'emoji': '⚙️',
@@ -2739,7 +2772,7 @@ class ScheduledEvents(commands.Cog):
                 },
                 'spiritual': {
                     'items': [
-                        'Amuleto Espiritual', 'Talismã Protetor', 'Símbolo Sagrado', 
+                        'Amuleto Espiritual', 'Talismã Protetor', 'Símbolo Sagrado',
                         'Ícone Abençoado', 'Medalhão Divino', 'Selo Celestial'
                     ],
                     'emoji': '🔮',
@@ -2762,11 +2795,11 @@ class ScheduledEvents(commands.Cog):
 
             # Rarity colors
             rarity_colors = {
-                'common': 0x808080,      # Gray
-                'uncommon': 0x00FF00,    # Green
-                'rare': 0x0000FF,        # Blue
-                'epic': 0x800080,        # Purple
-                'legendary': 0xFFA500    # Orange
+                'common': 0x808080,  # Gray
+                'uncommon': 0x00FF00,  # Green
+                'rare': 0x0000FF,  # Blue
+                'epic': 0x800080,  # Purple
+                'legendary': 0xFFA500  # Orange
             }
 
             # Rarity indicators
@@ -2988,16 +3021,19 @@ class ScheduledEvents(commands.Cog):
                 try:
                     await interaction.response.send_message("Não há nenhum quiz ativo hoje.", ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz availability in evaluate_quiz_answer")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking quiz availability in evaluate_quiz_answer")
                 return
 
             # Get player
             player = await get_player(interaction.user.id)
             if not player:
                 try:
-                    await interaction.response.send_message("Você precisa estar registrado para participar do quiz.", ephemeral=True)
+                    await interaction.response.send_message("Você precisa estar registrado para participar do quiz.",
+                                                            ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking player registration in evaluate_quiz_answer")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking player registration in evaluate_quiz_answer")
                 return
 
             # Check if player already participated
@@ -3005,7 +3041,8 @@ class ScheduledEvents(commands.Cog):
                 try:
                     await interaction.response.send_message("Você já participou do quiz de hoje.", ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking participation in evaluate_quiz_answer")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking participation in evaluate_quiz_answer")
                 return
 
             # Get question and correct answer
@@ -3014,7 +3051,8 @@ class ScheduledEvents(commands.Cog):
                 try:
                     await interaction.response.send_message("Pergunta inválida.", ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking question validity in evaluate_quiz_answer")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking question validity in evaluate_quiz_answer")
                 return
 
             question = questions[question_index]
@@ -3074,7 +3112,8 @@ class ScheduledEvents(commands.Cog):
                     xp_reward = int(xp_reward * (1 + buff['value'] / 100))
 
             # Apply weekly theme buff if applicable
-            if WEEKLY_THEME and 'subjects' in WEEKLY_THEME.get('buffs', {}) and subject in WEEKLY_THEME['buffs']['subjects']:
+            if WEEKLY_THEME and 'subjects' in WEEKLY_THEME.get('buffs', {}) and subject in WEEKLY_THEME['buffs'][
+                'subjects']:
                 xp_multiplier = WEEKLY_THEME['buffs'].get('exp_multiplier', 1.0)
                 xp_reward = int(xp_reward * xp_multiplier)
 
@@ -3088,7 +3127,8 @@ class ScheduledEvents(commands.Cog):
             if interaction.user.id not in PLAYER_PROGRESS['daily']:
                 PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
             if interaction.user.id not in PLAYER_PROGRESS['weekly']:
-                PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                  'events_completed': 0}
 
             PLAYER_PROGRESS['daily'][interaction.user.id]['exp_gained'] += xp_reward
             PLAYER_PROGRESS['daily'][interaction.user.id]['events_completed'] += 1
@@ -3172,7 +3212,8 @@ class ScheduledEvents(commands.Cog):
                 # Use followup.send instead of response.send_message to avoid "already responded" error
                 await interaction.followup.send("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
             except discord.errors.NotFound:
-                logger.warning(f"Interaction expired for user {interaction.user.id} in evaluate_quiz_answer error handler")
+                logger.warning(
+                    f"Interaction expired for user {interaction.user.id} in evaluate_quiz_answer error handler")
             except Exception as e2:
                 logger.error(f"Error sending error message in evaluate_quiz_answer: {e2}")
 
@@ -3224,7 +3265,8 @@ class ScheduledEvents(commands.Cog):
                                 # Update reputation
                                 update_player_reputation(user_id, reputation_reward)
 
-                                logger.info(f"Player {name} passed {num_passed} subjects, awarded {xp_reward} XP and {reputation_reward} reputation")
+                                logger.info(
+                                    f"Player {name} passed {num_passed} subjects, awarded {xp_reward} XP and {reputation_reward} reputation")
 
                 # If there's an announcement channel, send a message
                 if self.announcement_channel_id:
@@ -3332,11 +3374,13 @@ class ScheduledEvents(commands.Cog):
                 end_time = event_data.get('end_time')
                 if end_time:
                     time_remaining = (end_time - now).total_seconds() / 60 if end_time > now else 0
-                    logger.info(f"Event {event_id}: ends at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, {time_remaining:.1f} minutes remaining")
+                    logger.info(
+                        f"Event {event_id}: ends at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, {time_remaining:.1f} minutes remaining")
 
                     if 'villain' in event_id:
                         active_villain_count += 1
-                        logger.info(f"Active villain: {event_data.get('data', {}).get('name')}, defeated: {event_data.get('data', {}).get('defeated', False)}")
+                        logger.info(
+                            f"Active villain: {event_data.get('data', {}).get('name')}, defeated: {event_data.get('data', {}).get('defeated', False)}")
 
             logger.info(f"Active villain count: {active_villain_count}")
 
@@ -3363,9 +3407,11 @@ class ScheduledEvents(commands.Cog):
                                         color=0x808080  # Gray
                                     )
                                 )
-                                logger.info(f"Sent escape message for villain {event_data['data']['name']} to channel {channel.name}")
+                                logger.info(
+                                    f"Sent escape message for villain {event_data['data']['name']} to channel {channel.name}")
                             else:
-                                logger.error(f"Could not find channel {event_data.get('channel_id')} for villain escape message")
+                                logger.error(
+                                    f"Could not find channel {event_data.get('channel_id')} for villain escape message")
                         except Exception as e:
                             logger.error(f"Error sending villain escape message: {e}")
 
@@ -3473,18 +3519,21 @@ class ScheduledEvents(commands.Cog):
                         end_time = event_data.get('end_time')
                         if end_time:
                             time_remaining = (end_time - now).total_seconds() / 60
-                            logger.info(f"Villain {event_data.get('data', {}).get('name')}: {time_remaining:.1f} minutes remaining")
+                            logger.info(
+                                f"Villain {event_data.get('data', {}).get('name')}: {time_remaining:.1f} minutes remaining")
 
         except Exception as e:
             logger.error(f"Error cleaning up expired events: {e}")
 
     @app_commands.command(name="configurar", description="Configurar canais para eventos e anúncios")
     @app_commands.default_permissions(administrator=True)
-    async def slash_configure(self, interaction: discord.Interaction, canal_torneios: discord.TextChannel = None, canal_anuncios: discord.TextChannel = None):
+    async def slash_configure(self, interaction: discord.Interaction, canal_torneios: discord.TextChannel = None,
+                              canal_anuncios: discord.TextChannel = None):
         """Configure channels for tournaments and announcements."""
         try:
             if not interaction.user.guild_permissions.administrator:
-                await interaction.response.send_message("Você precisa ser administrador para usar este comando.", ephemeral=True)
+                await interaction.response.send_message("Você precisa ser administrador para usar este comando.",
+                                                        ephemeral=True)
                 return
 
             if canal_torneios:
@@ -3516,7 +3565,9 @@ class ScheduledEvents(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Find active minion event in this channel
@@ -3524,9 +3575,9 @@ class ScheduledEvents(commands.Cog):
             active_event_id = None
 
             for event_id, event_data in ACTIVE_EVENTS.items():
-                if ('minion' in event_id and 
-                    event_data['channel_id'] == interaction.channel.id and 
-                    not event_data['data'].get('defeated', False)):
+                if ('minion' in event_id and
+                        event_data['channel_id'] == interaction.channel.id and
+                        not event_data['data'].get('defeated', False)):
                     active_minion = event_data
                     active_event_id = event_id
                     break
@@ -3562,9 +3613,11 @@ class ScheduledEvents(commands.Cog):
 
                 # Track progress for rankings
                 if interaction.user.id not in PLAYER_PROGRESS['daily']:
-                    PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                    PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                     'events_completed': 0}
                 if interaction.user.id not in PLAYER_PROGRESS['weekly']:
-                    PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                    PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                      'events_completed': 0}
 
                 PLAYER_PROGRESS['daily'][interaction.user.id]['exp_gained'] += exp_reward
                 PLAYER_PROGRESS['daily'][interaction.user.id]['events_completed'] += 1
@@ -3616,7 +3669,8 @@ class ScheduledEvents(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Find active villain event in this channel
@@ -3630,13 +3684,15 @@ class ScheduledEvents(commands.Cog):
 
             for event_id, event_data in ACTIVE_EVENTS.items():
                 # Log each event for debugging
-                logger.info(f"Event ID: {event_id}, Channel ID: {event_data.get('channel_id')}, Current channel: {interaction.channel.id}")
-                logger.info(f"Event data: {event_data.get('data', {}).get('type')}, Defeated: {event_data.get('data', {}).get('defeated', False)}")
+                logger.info(
+                    f"Event ID: {event_id}, Channel ID: {event_data.get('channel_id')}, Current channel: {interaction.channel.id}")
+                logger.info(
+                    f"Event data: {event_data.get('data', {}).get('type')}, Defeated: {event_data.get('data', {}).get('defeated', False)}")
 
                 # Check if this is a villain event in the current channel that's not defeated
-                if ('villain' in event_id and 
-                    event_data.get('channel_id') == interaction.channel.id and 
-                    not event_data.get('data', {}).get('defeated', False)):
+                if ('villain' in event_id and
+                        event_data.get('channel_id') == interaction.channel.id and
+                        not event_data.get('data', {}).get('defeated', False)):
                     active_villain = event_data
                     active_event_id = event_id
                     logger.info(f"Found active villain: {event_data.get('data', {}).get('name')}")
@@ -3647,7 +3703,8 @@ class ScheduledEvents(commands.Cog):
                 villain_events = [event_id for event_id in ACTIVE_EVENTS if 'villain' in event_id]
                 if villain_events:
                     logger.info(f"Found villain events but none in this channel: {villain_events}")
-                    await interaction.response.send_message("Não há vilões ativos neste canal no momento, mas existem vilões em outros canais.")
+                    await interaction.response.send_message(
+                        "Não há vilões ativos neste canal no momento, mas existem vilões em outros canais.")
                 else:
                     logger.info("No villain events found at all")
                     await interaction.response.send_message("Não há vilões ativos neste canal no momento.")
@@ -3655,7 +3712,8 @@ class ScheduledEvents(commands.Cog):
 
             # Check if player already participated
             if interaction.user.id in active_villain['participants']:
-                await interaction.response.send_message("Você já atacou este vilão. Aguarde outros estudantes se juntarem à batalha!")
+                await interaction.response.send_message(
+                    "Você já atacou este vilão. Aguarde outros estudantes se juntarem à batalha!")
                 return
 
             # Handle attack action
@@ -3726,9 +3784,11 @@ class ScheduledEvents(commands.Cog):
 
                             # Track progress for rankings
                             if user_id not in PLAYER_PROGRESS['daily']:
-                                PLAYER_PROGRESS['daily'][user_id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                                PLAYER_PROGRESS['daily'][user_id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                     'events_completed': 0}
                             if user_id not in PLAYER_PROGRESS['weekly']:
-                                PLAYER_PROGRESS['weekly'][user_id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                                PLAYER_PROGRESS['weekly'][user_id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                      'events_completed': 0}
 
                             PLAYER_PROGRESS['daily'][user_id]['exp_gained'] += p_exp_reward
                             PLAYER_PROGRESS['daily'][user_id]['events_completed'] += 1
@@ -3757,7 +3817,8 @@ class ScheduledEvents(commands.Cog):
                     ACTIVE_EVENTS.pop(active_event_id, None)
                 else:
                     # Villain still active, update status
-                    hp_percentage = max(0, min(100, int((active_villain['data']['current_hp'] / active_villain['data']['strength']) * 100)))
+                    hp_percentage = max(0, min(100, int((active_villain['data']['current_hp'] / active_villain['data'][
+                        'strength']) * 100)))
                     hp_bar = "█" * (hp_percentage // 10) + "░" * (10 - (hp_percentage // 10))
 
                     await interaction.response.send_message(
@@ -3781,7 +3842,8 @@ class ScheduledEvents(commands.Cog):
                 else:
                     PLAYER_ACTIVITY[current_hour] = {'count': 1, 'last_updated': datetime.now()}
 
-                logger.info(f"Player {player['name']} attacked villain {active_villain['data']['name']} for {total_damage} damage")
+                logger.info(
+                    f"Player {player['name']} attacked villain {active_villain['data']['name']} for {total_damage} damage")
 
         except Exception as e:
             logger.error(f"Error in slash_villain: {e}")
@@ -3798,7 +3860,9 @@ class ScheduledEvents(commands.Cog):
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Find active collectible event in this channel
@@ -3806,15 +3870,16 @@ class ScheduledEvents(commands.Cog):
             active_event_id = None
 
             for event_id, event_data in ACTIVE_EVENTS.items():
-                if ('collectible' in event_id and 
-                    event_data['channel_id'] == interaction.channel.id and 
-                    not event_data['data'].get('collected', False)):
+                if ('collectible' in event_id and
+                        event_data['channel_id'] == interaction.channel.id and
+                        not event_data['data'].get('collected', False)):
                     active_collectible = event_data
                     active_event_id = event_id
                     break
 
             if not active_collectible:
-                await interaction.response.send_message("Não há itens para coletar neste canal no momento.", ephemeral=True)
+                await interaction.response.send_message("Não há itens para coletar neste canal no momento.",
+                                                        ephemeral=True)
                 return
 
             # Handle collect action
@@ -3863,9 +3928,11 @@ class ScheduledEvents(commands.Cog):
 
                 # Track progress for rankings
                 if interaction.user.id not in PLAYER_PROGRESS['daily']:
-                    PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                    PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                     'events_completed': 0}
                 if interaction.user.id not in PLAYER_PROGRESS['weekly']:
-                    PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
+                    PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0,
+                                                                      'events_completed': 0}
 
                 PLAYER_PROGRESS['daily'][interaction.user.id]['exp_gained'] += exp_reward
                 PLAYER_PROGRESS['daily'][interaction.user.id]['events_completed'] += 1
@@ -3932,13 +3999,16 @@ class ScheduledEvents(commands.Cog):
         app_commands.Choice(name="valete", value="jack"),
         app_commands.Choice(name="healer", value="healer")
     ])
-    async def slash_turfwars(self, interaction: discord.Interaction, acao: str, nome_time: str = None, papel: str = None):
+    async def slash_turfwars(self, interaction: discord.Interaction, acao: str, nome_time: str = None,
+                             papel: str = None):
         """Commands for participating in Sunday Turf Wars."""
         try:
             # Check if player exists
             player = get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Check if Turf Wars are active
@@ -3949,30 +4019,36 @@ class ScheduledEvents(commands.Cog):
                     break
 
             if not turf_wars and acao != "info":
-                await interaction.response.send_message("As Turf Wars não estão ativas no momento. Aguarde o próximo domingo às 14h!", ephemeral=True)
+                await interaction.response.send_message(
+                    "As Turf Wars não estão ativas no momento. Aguarde o próximo domingo às 14h!", ephemeral=True)
                 return
 
             # Check if we're in signup phase for create/join actions
             if turf_wars and not turf_wars['data']['signup_phase'] and acao in ["create", "join"]:
-                await interaction.response.send_message("A fase de inscrições das Turf Wars já terminou. Aguarde o próximo evento!", ephemeral=True)
+                await interaction.response.send_message(
+                    "A fase de inscrições das Turf Wars já terminou. Aguarde o próximo evento!", ephemeral=True)
                 return
 
             # Handle different actions
             if acao == "create":
                 if not nome_time:
-                    await interaction.response.send_message("Você precisa fornecer um nome para o time.", ephemeral=True)
+                    await interaction.response.send_message("Você precisa fornecer um nome para o time.",
+                                                            ephemeral=True)
                     return
 
                 # Check if team already exists
                 if nome_time in TURF_WARS_TEAMS:
-                    await interaction.response.send_message(f"O time '{nome_time}' já existe. Escolha outro nome ou entre para este time.", ephemeral=True)
+                    await interaction.response.send_message(
+                        f"O time '{nome_time}' já existe. Escolha outro nome ou entre para este time.", ephemeral=True)
                     return
 
                 # Check if player is already in a team
                 for team_name, team_data in TURF_WARS_TEAMS.items():
                     for role, member in team_data['members'].items():
                         if member and member['user_id'] == interaction.user.id:
-                            await interaction.response.send_message(f"Você já está no time '{team_name}' como {role}. Saia primeiro para criar um novo time.", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"Você já está no time '{team_name}' como {role}. Saia primeiro para criar um novo time.",
+                                ephemeral=True)
                             return
 
                 # Create new team
@@ -4003,7 +4079,8 @@ class ScheduledEvents(commands.Cog):
 
             elif acao == "join":
                 if not nome_time or not papel:
-                    await interaction.response.send_message("Você precisa fornecer o nome do time e o papel desejado.", ephemeral=True)
+                    await interaction.response.send_message("Você precisa fornecer o nome do time e o papel desejado.",
+                                                            ephemeral=True)
                     return
 
                 # Check if team exists
@@ -4015,12 +4092,15 @@ class ScheduledEvents(commands.Cog):
                 for team_name, team_data in TURF_WARS_TEAMS.items():
                     for role, member in team_data['members'].items():
                         if member and member['user_id'] == interaction.user.id:
-                            await interaction.response.send_message(f"Você já está no time '{team_name}' como {role}. Saia primeiro para entrar em outro time.", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"Você já está no time '{team_name}' como {role}. Saia primeiro para entrar em outro time.",
+                                ephemeral=True)
                             return
 
                 # Check if role is available
                 if TURF_WARS_TEAMS[nome_time]['members'][papel]:
-                    await interaction.response.send_message(f"O papel de {papel} já está ocupado no time '{nome_time}'.", ephemeral=True)
+                    await interaction.response.send_message(
+                        f"O papel de {papel} já está ocupado no time '{nome_time}'.", ephemeral=True)
                     return
 
                 # Join team
@@ -4030,9 +4110,10 @@ class ScheduledEvents(commands.Cog):
                     embed=create_basic_embed(
                         title=f"{player['name']} entrou no time '{nome_time}'!",
                         description=(
-                            f"{player['name']} entrou no time '{nome_time}' como {papel.capitalize()}!\n\n"
-                            f"Composição atual do time:\n"
-                            + "\n".join([f"- {r.capitalize()}: {m['name'] if m else 'Vago'}" for r, m in TURF_WARS_TEAMS[nome_time]['members'].items()])
+                                f"{player['name']} entrou no time '{nome_time}' como {papel.capitalize()}!\n\n"
+                                f"Composição atual do time:\n"
+                                + "\n".join([f"- {r.capitalize()}: {m['name'] if m else 'Vago'}" for r, m in
+                                             TURF_WARS_TEAMS[nome_time]['members'].items()])
                         ),
                         color=0xFF5733
                     )
@@ -4055,7 +4136,8 @@ class ScheduledEvents(commands.Cog):
                         break
 
                 if not player_team:
-                    await interaction.response.send_message("Você não está em nenhum time das Turf Wars.", ephemeral=True)
+                    await interaction.response.send_message("Você não está em nenhum time das Turf Wars.",
+                                                            ephemeral=True)
                     return
 
                 # Handle monarch leaving (disband team if no other members)
@@ -4079,10 +4161,12 @@ class ScheduledEvents(commands.Cog):
                                     embed=create_basic_embed(
                                         title=f"{player['name']} saiu do time '{player_team}'!",
                                         description=(
-                                            f"{player['name']} saiu do time '{player_team}'!\n\n"
-                                            f"{member['name']} foi promovido a Monarca!\n\n"
-                                            f"Composição atual do time:\n"
-                                            + "\n".join([f"- {r.capitalize()}: {m['name'] if m else 'Vago'}" for r, m in TURF_WARS_TEAMS[player_team]['members'].items()])
+                                                f"{player['name']} saiu do time '{player_team}'!\n\n"
+                                                f"{member['name']} foi promovido a Monarca!\n\n"
+                                                f"Composição atual do time:\n"
+                                                + "\n".join(
+                                            [f"- {r.capitalize()}: {m['name'] if m else 'Vago'}" for r, m in
+                                             TURF_WARS_TEAMS[player_team]['members'].items()])
                                         ),
                                         color=0xFF5733
                                     )
@@ -4107,9 +4191,10 @@ class ScheduledEvents(commands.Cog):
                         embed=create_basic_embed(
                             title=f"{player['name']} saiu do time '{player_team}'!",
                             description=(
-                                f"{player['name']} saiu do time '{player_team}'!\n\n"
-                                f"Composição atual do time:\n"
-                                + "\n".join([f"- {r.capitalize()}: {m['name'] if m else 'Vago'}" for r, m in TURF_WARS_TEAMS[player_team]['members'].items()])
+                                    f"{player['name']} saiu do time '{player_team}'!\n\n"
+                                    f"Composição atual do time:\n"
+                                    + "\n".join([f"- {r.capitalize()}: {m['name'] if m else 'Vago'}" for r, m in
+                                                 TURF_WARS_TEAMS[player_team]['members'].items()])
                             ),
                             color=0xFF5733
                         )
@@ -4120,7 +4205,8 @@ class ScheduledEvents(commands.Cog):
             elif acao == "info":
                 # Show all teams
                 if not TURF_WARS_TEAMS:
-                    await interaction.response.send_message("Não há times registrados para as Turf Wars no momento.", ephemeral=True)
+                    await interaction.response.send_message("Não há times registrados para as Turf Wars no momento.",
+                                                            ephemeral=True)
                     return
 
                 teams_info = ""
@@ -4134,7 +4220,9 @@ class ScheduledEvents(commands.Cog):
 
                     teams_info += "\n"
 
-                status = "Inscrições Abertas" if turf_wars and turf_wars['data']['signup_phase'] else "Fase de Batalhas" if turf_wars and turf_wars['data']['battle_phase'] else "Inativo"
+                status = "Inscrições Abertas" if turf_wars and turf_wars['data'][
+                    'signup_phase'] else "Fase de Batalhas" if turf_wars and turf_wars['data'][
+                    'battle_phase'] else "Inativo"
 
                 await interaction.response.send_message(
                     embed=create_basic_embed(
@@ -4150,7 +4238,8 @@ class ScheduledEvents(commands.Cog):
             await interaction.response.send_message("Ocorreu um erro ao processar o comando.", ephemeral=True)
 
     # Quiz command group
-    quiz_group = app_commands.Group(name="quiz", description="Comandos relacionados aos quizzes diários da Academia Tokugawa")
+    quiz_group = app_commands.Group(name="quiz",
+                                    description="Comandos relacionados aos quizzes diários da Academia Tokugawa")
 
     @quiz_group.command(name="participar", description="Participar do quiz diário da matéria atual")
     async def slash_quiz_participate(self, interaction: discord.Interaction):
@@ -4162,24 +4251,30 @@ class ScheduledEvents(commands.Cog):
 
             if not quiz_event:
                 try:
-                    await interaction.response.send_message("Não há nenhum quiz ativo hoje. Aguarde o anúncio da próxima aula!", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Não há nenhum quiz ativo hoje. Aguarde o anúncio da próxima aula!", ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz availability")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking quiz availability")
                 return
 
             # Get player
             player = await get_player(interaction.user.id)
             if not player:
                 try:
-                    await interaction.response.send_message("Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.",
+                        ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking player registration")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking player registration")
                 return
 
             # Check if player already participated
             if interaction.user.id in quiz_event['participants']:
                 try:
-                    await interaction.response.send_message("Você já participou do quiz de hoje. Volte amanhã para um novo quiz!", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Você já participou do quiz de hoje. Volte amanhã para um novo quiz!", ephemeral=True)
                 except discord.errors.NotFound:
                     logger.warning(f"Interaction expired for user {interaction.user.id} when checking participation")
                 return
@@ -4188,7 +4283,8 @@ class ScheduledEvents(commands.Cog):
             questions = quiz_event['data']['questions']
             if not questions:
                 try:
-                    await interaction.response.send_message("Este quiz não possui perguntas. Por favor, informe um administrador.", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Este quiz não possui perguntas. Por favor, informe um administrador.", ephemeral=True)
                 except discord.errors.NotFound:
                     logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz questions")
                 return
@@ -4203,7 +4299,7 @@ class ScheduledEvents(commands.Cog):
                     discord.SelectOption(
                         label=option_text,
                         value=str(i),
-                        description=f"Opção {i+1}"
+                        description=f"Opção {i + 1}"
                     )
                 )
 
@@ -4239,9 +4335,11 @@ class ScheduledEvents(commands.Cog):
                 except Exception as e:
                     logger.error(f"Error in select_callback: {e}")
                     try:
-                        await select_interaction.response.send_message("Ocorreu um erro ao processar sua resposta.", ephemeral=True)
+                        await select_interaction.response.send_message("Ocorreu um erro ao processar sua resposta.",
+                                                                       ephemeral=True)
                     except discord.errors.NotFound:
-                        logger.warning(f"Interaction expired for user {select_interaction.user.id} in select_callback error handler")
+                        logger.warning(
+                            f"Interaction expired for user {select_interaction.user.id} in select_callback error handler")
 
             select.callback = select_callback
 
@@ -4284,9 +4382,12 @@ class ScheduledEvents(commands.Cog):
             player = get_player(interaction.user.id)
             if not player:
                 try:
-                    await interaction.response.send_message("Você precisa estar registrado para ver suas notas. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Você precisa estar registrado para ver suas notas. Use /registro ingressar para criar seu personagem.",
+                        ephemeral=True)
                 except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking player registration in grades")
+                    logger.warning(
+                        f"Interaction expired for user {interaction.user.id} when checking player registration in grades")
                 return
 
             # Get current month and year
@@ -4299,7 +4400,8 @@ class ScheduledEvents(commands.Cog):
 
             if not grades:
                 try:
-                    await interaction.response.send_message("Você ainda não possui notas registradas neste mês.", ephemeral=True)
+                    await interaction.response.send_message("Você ainda não possui notas registradas neste mês.",
+                                                            ephemeral=True)
                 except discord.errors.NotFound:
                     logger.warning(f"Interaction expired for user {interaction.user.id} when checking grades")
                 return
@@ -4412,7 +4514,8 @@ class ScheduledEvents(commands.Cog):
                         await interaction.response.send_message(embed=embed, ephemeral=True)
                     except Exception as e:
                         logger.error(f"Error in previous_rankings_callback: {e}")
-                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.", ephemeral=True)
+                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.",
+                                                                ephemeral=True)
 
                 previous_button.callback = previous_rankings_callback
                 view.add_item(previous_button)
@@ -4482,7 +4585,8 @@ class ScheduledEvents(commands.Cog):
                         await interaction.response.send_message(embed=embed, ephemeral=True)
                     except Exception as e:
                         logger.error(f"Error in previous_rankings_callback: {e}")
-                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.", ephemeral=True)
+                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings anteriores.",
+                                                                ephemeral=True)
 
                 previous_button.callback = previous_rankings_callback
                 view.add_item(previous_button)
@@ -4564,7 +4668,8 @@ class ScheduledEvents(commands.Cog):
                         await interaction.response.send_message(embed=embed, ephemeral=True)
                     except Exception as e:
                         logger.error(f"Error in full_rankings_callback: {e}")
-                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings completos.", ephemeral=True)
+                        await interaction.response.send_message("Ocorreu um erro ao exibir os rankings completos.",
+                                                                ephemeral=True)
 
                 previous_button.callback = full_rankings_callback
                 view.add_item(previous_button)
@@ -4651,9 +4756,9 @@ class ScheduledEvents(commands.Cog):
             except Exception as e2:
                 logger.error(f"Error sending error message in slash_eventos: {e2}")
 
+
 async def setup(bot):
     """Add the cog to the bot."""
-    import json
     from utils.command_registrar import CommandRegistrar
 
     # Create and add the cog

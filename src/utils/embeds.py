@@ -4,7 +4,7 @@ from utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progre
 import json
 from utils.persistence.db_provider import db_provider
 from utils.club_perks import get_club_perk_description
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 def create_basic_embed(title, description=None, color=0x1E90FF):
     """Create a basic embed with the Academia Tokugawa theme."""

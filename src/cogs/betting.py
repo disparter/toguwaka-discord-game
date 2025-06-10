@@ -4,18 +4,16 @@ This cog provides commands for betting on duels and other events.
 """
 
 import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
-import random
-import asyncio
-from datetime import datetime, timedelta
-from typing import Any
-from utils.persistence import db_provider
-from utils.embeds import create_basic_embed
+from discord import app_commands
+from discord.ext import commands
+
 from utils.command_registrar import CommandRegistrar
+from utils.embeds import create_basic_embed
+from utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 class Betting(commands.Cog):
     """Cog for betting on duels and other events."""
@@ -29,23 +27,27 @@ class Betting(commands.Cog):
     betting_group = app_commands.Group(name="aposta", description="Comandos de apostas da Academia Tokugawa")
 
     @betting_group.command(name="duelar", description="Desafiar outro jogador para um duelo com apostas")
-    async def slash_bet_duel(self, interaction: discord.Interaction, opponent: discord.Member, amount: int, duel_type: str = "physical"):
+    async def slash_bet_duel(self, interaction: discord.Interaction, opponent: discord.Member, amount: int,
+                             duel_type: str = "physical"):
         """Slash command for betting duel."""
         try:
             # Check if opponent is specified
             if not opponent:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa mencionar um oponente para duelar.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você precisa mencionar um oponente para duelar.")
                 return
 
             # Check if player is trying to duel themselves
             if opponent.id == interaction.user.id:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não pode duelar consigo mesmo!")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não pode duelar consigo mesmo!")
                 return
 
             # Check if player exists
             challenger = await db_provider.get_player(interaction.user.id)
             if not challenger:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check if opponent exists
@@ -56,18 +58,22 @@ class Betting(commands.Cog):
 
             # Check if amount is valid
             if amount <= 0:
-                await interaction.response.send_message(f"{interaction.user.mention}, o valor da aposta deve ser maior que zero.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, o valor da aposta deve ser maior que zero.")
                 return
 
             # Check if player has enough TUSD
             if challenger["tusd"] < amount:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para essa aposta. Seu saldo: {challenger['tusd']} TUSD")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não tem TUSD suficiente para essa aposta. Seu saldo: {challenger['tusd']} TUSD")
                 return
 
             # Check if player is already in a duel
             activities_cog = self.bot.get_cog('Activities')
-            if activities_cog and (interaction.user.id in activities_cog.active_duels or opponent.id in activities_cog.active_duels.values()):
-                await interaction.response.send_message(f"{interaction.user.mention}, você ou seu oponente já está em um duelo!")
+            if activities_cog and (
+                    interaction.user.id in activities_cog.active_duels or opponent.id in activities_cog.active_duels.values()):
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ou seu oponente já está em um duelo!")
                 return
 
             # Validate duel type
@@ -102,12 +108,15 @@ class Betting(commands.Cog):
 
             async def accept_callback(button_interaction):
                 if button_interaction.user.id != opponent.id:
-                    await button_interaction.response.send_message("Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
+                    await button_interaction.response.send_message(
+                        "Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
                     return
 
                 # Check if opponent has enough TUSD
                 if opponent_player["tusd"] < amount:
-                    await button_interaction.response.send_message(f"{opponent.mention}, você não tem TUSD suficiente para essa aposta. Seu saldo: {opponent_player['tusd']} TUSD", ephemeral=True)
+                    await button_interaction.response.send_message(
+                        f"{opponent.mention}, você não tem TUSD suficiente para essa aposta. Seu saldo: {opponent_player['tusd']} TUSD",
+                        ephemeral=True)
                     return
 
                 # Disable buttons
@@ -150,7 +159,8 @@ class Betting(commands.Cog):
                     # Add a callback to handle the duel result
                     self.bot.add_listener(self.on_duel_complete, "on_duel_complete")
                 else:
-                    await button_interaction.response.send_message("Erro ao iniciar o duelo. O módulo de atividades não está disponível.")
+                    await button_interaction.response.send_message(
+                        "Erro ao iniciar o duelo. O módulo de atividades não está disponível.")
                     # Refund the TUSD
                     challenger["tusd"] += amount
                     opponent_player["tusd"] += amount
@@ -159,7 +169,8 @@ class Betting(commands.Cog):
 
             async def decline_callback(button_interaction):
                 if button_interaction.user.id != opponent.id:
-                    await button_interaction.response.send_message("Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
+                    await button_interaction.response.send_message(
+                        "Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
                     return
 
                 # Disable buttons
@@ -167,7 +178,8 @@ class Betting(commands.Cog):
                     child.disabled = True
                 await button_interaction.message.edit(view=view)
 
-                await button_interaction.response.send_message(f"{opponent.mention} recusou o desafio de duelo com apostas.")
+                await button_interaction.response.send_message(
+                    f"{opponent.mention} recusou o desafio de duelo com apostas.")
 
             # Add buttons to view
             accept_button = discord.ui.Button(label="Aceitar", style=discord.ButtonStyle.green)
@@ -207,23 +219,27 @@ class Betting(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check if amount is valid
             if amount <= 0:
-                await interaction.response.send_message(f"{interaction.user.mention}, o valor da aposta deve ser maior que zero.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, o valor da aposta deve ser maior que zero.")
                 return
 
             # Check if player has enough TUSD
             if player["tusd"] < amount:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para essa aposta. Seu saldo: {player['tusd']} TUSD")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não tem TUSD suficiente para essa aposta. Seu saldo: {player['tusd']} TUSD")
                 return
 
             # Get the event
             scheduled_events_cog = self.bot.get_cog('ScheduledEvents')
             if not scheduled_events_cog:
-                await interaction.response.send_message("Erro ao processar a aposta. O módulo de eventos não está disponível.")
+                await interaction.response.send_message(
+                    "Erro ao processar a aposta. O módulo de eventos não está disponível.")
                 return
 
             # This is a placeholder for future event betting functionality
@@ -241,7 +257,8 @@ class Betting(commands.Cog):
         bet_id = None
         for bid, bet in self.active_bets.items():
             if (bet["challenger_id"] == duel_result["winner_id"] and bet["opponent_id"] == duel_result["loser_id"]) or \
-               (bet["challenger_id"] == duel_result["loser_id"] and bet["opponent_id"] == duel_result["winner_id"]):
+                    (bet["challenger_id"] == duel_result["loser_id"] and bet["opponent_id"] == duel_result[
+                        "winner_id"]):
                 bet_id = bid
                 break
 
@@ -281,6 +298,7 @@ class Betting(commands.Cog):
         # Convert to slash command
         interaction = await self.bot._get_context(ctx.message)
         await self.slash_bet_duel(interaction, opponent, amount, duel_type)
+
 
 async def setup(bot):
     """Add the cog to the bot."""

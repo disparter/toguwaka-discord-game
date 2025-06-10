@@ -1,13 +1,15 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
+import json
 import logging
 from typing import Any
-from utils.persistence.db_provider import db_provider
+from discord import app_commands
+from discord.ext import commands
+
 from utils.embeds import create_player_embed, create_inventory_embed, create_leaderboard_embed
-import json
+from utils.persistence.db_provider import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 class PlayerStatus(commands.Cog):
     """Cog for player status commands."""
@@ -29,9 +31,11 @@ class PlayerStatus(commands.Cog):
             player = await db_provider.get_player(target.id)
             if not player:
                 if target == interaction.user:
-                    await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                    await interaction.response.send_message(
+                        f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 else:
-                    await interaction.response.send_message(f"{target.display_name} não está registrado na Academia Tokugawa.")
+                    await interaction.response.send_message(
+                        f"{target.display_name} não está registrado na Academia Tokugawa.")
                 return
 
             # Get club data
@@ -55,7 +59,8 @@ class PlayerStatus(commands.Cog):
             # Get player data
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
             # Buscar inventário na tabela Inventario
@@ -83,7 +88,8 @@ class PlayerStatus(commands.Cog):
                     # Define callback for button
                     async def button_callback(button_interaction, item_id=item_id):
                         if button_interaction.user.id != interaction.user.id:
-                            await button_interaction.response.send_message("Este não é o seu inventário!", ephemeral=True)
+                            await button_interaction.response.send_message("Este não é o seu inventário!",
+                                                                           ephemeral=True)
                             return
 
                         # Call the use_item command from economy cog
@@ -91,7 +97,9 @@ class PlayerStatus(commands.Cog):
                         if economy_cog:
                             await economy_cog.slash_use_item(button_interaction, int(item_id))
                         else:
-                            await button_interaction.response.send_message("Erro ao usar o item. Tente usar o comando `/economia usar` diretamente.", ephemeral=True)
+                            await button_interaction.response.send_message(
+                                "Erro ao usar o item. Tente usar o comando `/economia usar` diretamente.",
+                                ephemeral=True)
 
                     button.callback = button_callback
                     view.add_item(button)
@@ -148,7 +156,8 @@ class PlayerStatus(commands.Cog):
         player = await db_provider.get_player(target.id)
         if not player:
             if target == ctx.author:
-                await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                await ctx.send(
+                    f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             else:
                 await ctx.send(f"{target.display_name} não está registrado na Academia Tokugawa.")
             return
@@ -183,7 +192,8 @@ class PlayerStatus(commands.Cog):
         # Get player data
         player = await db_provider.get_player(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Buscar inventário na tabela Inventario
@@ -231,6 +241,7 @@ class PlayerStatus(commands.Cog):
     async def profile(self, ctx, member: discord.Member = None):
         """Alias para o comando status."""
         await self.status(ctx, member)
+
 
 async def setup(bot):
     """Add the cog to the bot."""

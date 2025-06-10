@@ -1,14 +1,16 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
 from typing import Any
-from utils.persistence.db_provider import db_provider
-from utils.embeds import create_basic_embed, create_club_embed
+from discord import app_commands
+from discord.ext import commands
+
 from story_mode.club_rivalry_system import ClubSystem
 from utils.command_registrar import CommandRegistrar
+from utils.embeds import create_basic_embed, create_club_embed
+from utils.persistence.db_provider import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 class Clubs(commands.Cog):
     """Cog for club-related commands."""
@@ -20,11 +22,13 @@ class Clubs(commands.Cog):
     # Group for club commands
     club_group = app_commands.Group(name="clube", description="Comandos de clubes da Academia Tokugawa")
 
-    @club_group.command(name="teste", description="Comando de teste para verificar se os comandos estão sendo sincronizados")
+    @club_group.command(name="teste",
+                        description="Comando de teste para verificar se os comandos estão sendo sincronizados")
     async def slash_test(self, interaction: discord.Interaction):
         """Test command to verify that commands are being synced."""
         try:
-            await interaction.response.send_message("Teste bem-sucedido! Os comandos estão sendo sincronizados corretamente.")
+            await interaction.response.send_message(
+                "Teste bem-sucedido! Os comandos estão sendo sincronizados corretamente.")
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /clube teste")
@@ -38,18 +42,24 @@ class Clubs(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Check if player is in a club
             if not player['club_id']:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não está afiliado a nenhum clube. Use !ingressar para criar um novo personagem e escolher um clube.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não está afiliado a nenhum clube. Use !ingressar para criar um novo personagem e escolher um clube.",
+                    ephemeral=True)
                 return
 
             # Get club data
             club = await db_provider.get_club(player['club_id'])
             if not club:
-                await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.",
+                    ephemeral=True)
                 return
 
             # Get club members
@@ -60,11 +70,13 @@ class Clubs(commands.Cog):
             embed = await create_club_embed(club)
 
             # Add members to embed
-            member_list = "\n".join([f"- {m['name']} (Nível {m['level']})" for m in members]) if members else "Nenhum membro encontrado."
+            member_list = "\n".join(
+                [f"- {m['name']} (Nível {m['level']})" for m in members]) if members else "Nenhum membro encontrado."
             embed.add_field(name="📜 Jogadores", value=member_list, inline=False)
 
             # Add NPCs to embed
-            npc_list = "\n".join([f"- {n['name']} ({n['role']})" for n in npcs]) if npcs else "Nenhum NPC relevante identificado."
+            npc_list = "\n".join(
+                [f"- {n['name']} ({n['role']})" for n in npcs]) if npcs else "Nenhum NPC relevante identificado."
             embed.add_field(name="🤖 NPCs Relevantes", value=npc_list, inline=False)
 
             # Send the embed with ephemeral=True to make it visible only to the user
@@ -112,18 +124,21 @@ class Clubs(commands.Cog):
         # Check if player exists
         player = await db_provider.get_player(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if player is in a club
         if not player['club_id']:
-            await ctx.send(f"{ctx.author.mention}, você não está afiliado a nenhum clube. Use !ingressar para criar um novo personagem e escolher um clube.")
+            await ctx.send(
+                f"{ctx.author.mention}, você não está afiliado a nenhum clube. Use !ingressar para criar um novo personagem e escolher um clube.")
             return
 
         # Get club data
         club = await db_provider.get_club(player['club_id'])
         if not club:
-            await ctx.send(f"{ctx.author.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.")
+            await ctx.send(
+                f"{ctx.author.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.")
             return
 
         # Create and send club embed
@@ -192,6 +207,7 @@ class Clubs(commands.Cog):
         # Send embeds
         for embed in embeds:
             await interaction.followup.send(embed=embed, ephemeral=True)
+
 
 async def setup(bot):
     """Add the cog to the bot."""

@@ -1,7 +1,7 @@
 """
 Consequences module for story mode.
 
-This module defines the Consequences class that handles the application
+This module defines the DynamicConsequencesSystem class that handles the application
 and validation of consequences for player choices in the story mode.
 """
 
@@ -10,14 +10,14 @@ from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger('tokugawa_bot')
 
-class Consequences:
+class DynamicConsequencesSystem:
     """
     Class for handling consequences of player choices in the story mode.
     """
     
     def __init__(self):
-        """Initialize the Consequences class."""
-        logger.info("Consequences class initialized")
+        """Initialize the DynamicConsequencesSystem class."""
+        logger.info("DynamicConsequencesSystem class initialized")
 
     def apply_consequences(self, player_data: Dict[str, Any], choice_data: Dict[str, Any]) -> Dict[str, Any]:
         """

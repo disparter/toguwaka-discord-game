@@ -1,17 +1,16 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
 import asyncio
+import discord
 import logging
-import random
-from typing import Any
-from utils.persistence.db_provider import db_provider
+from discord import app_commands
+from discord.ext import commands
+
+from story_mode.club_rivalry_system import ClubSystem
 from utils.embeds import create_basic_embed, create_player_embed
 from utils.game_mechanics import STRENGTH_LEVELS
-from utils.command_registrar import CommandRegistrar
-from story_mode.club_rivalry_system import ClubSystem
+from utils.persistence.db_provider import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 class Registration(commands.Cog):
     """Cog for player registration and character creation."""
@@ -30,7 +29,8 @@ class Registration(commands.Cog):
             # Check if player already exists
             player = await db_provider.get_player(interaction.user.id)
             if player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
                 return
 
             # For slash commands, we'll use a simplified registration process
@@ -123,8 +123,9 @@ class Registration(commands.Cog):
 
             clubs_embed = create_basic_embed(
                 title="Escolha de Clube",
-                description="Escolha um clube para se afiliar:\n\n" + 
-                            "\n".join([f"{i+1}. **{club['name']}** - {club['description']}" for i, club in enumerate(clubs)]) +
+                description="Escolha um clube para se afiliar:\n\n" +
+                            "\n".join([f"{i + 1}. **{club['name']}** - {club['description']}" for i, club in
+                                       enumerate(clubs)]) +
                             "\n\nDigite o número do clube escolhido:",
                 color=0x1E90FF
             )
@@ -138,7 +139,8 @@ class Registration(commands.Cog):
                     if 0 <= club_index < len(clubs):
                         valid_club = True
                         selected_club = clubs[club_index]
-                        logger.info(f"User {ctx.author.id} selected club: {selected_club['name']} (ID: {selected_club['club_id']})")
+                        logger.info(
+                            f"User {ctx.author.id} selected club: {selected_club['name']} (ID: {selected_club['club_id']})")
                     else:
                         logger.warning(f"Invalid club index: {club_index + 1}")
                         await ctx.send("Por favor, escolha um número válido da lista.")
@@ -233,6 +235,7 @@ class Registration(commands.Cog):
 
         await ctx.send(embed=help_embed)
 
+
 async def setup(bot):
     """Add the cog to the bot."""
     from utils.command_registrar import CommandRegistrar
@@ -261,7 +264,8 @@ async def setup(bot):
             from utils.persistence.db_provider import get_player
             player = get_player(interaction.user.id)
             if player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
                 return
 
             # For slash commands, we'll use a simplified registration process

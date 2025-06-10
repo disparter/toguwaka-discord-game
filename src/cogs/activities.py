@@ -1,28 +1,25 @@
+import asyncio
 import discord
-from discord.ext import commands
-from discord import app_commands
+import json
 import logging
 import random
-import asyncio
-import json
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Any, Dict, List
-from utils.persistence import db_provider
+from typing import Any
+from discord import app_commands
+from discord.ext import commands
+from discord.ext import tasks
+
 from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed
 from utils.game_mechanics import (
-    get_random_training_outcome, get_random_event, 
-    calculate_duel_outcome, generate_duel_narration,
-    calculate_level_from_exp, calculate_hp_factor
+    calculate_level_from_exp
 )
 from utils.game_mechanics.calculators.experience_calculator import ExperienceCalculator
-from utils.game_mechanics.calculators.hp_factor_calculator import HPFactorCalculator
-from utils.game_mechanics.events.training_event import TrainingEvent
-from utils.game_mechanics.events.random_event import RandomEvent
 from utils.game_mechanics.duel.duel_calculator import DuelCalculator
 from utils.game_mechanics.duel.duel_narrator import DuelNarrator
-from utils.command_registrar import CommandRegistrar
-from discord.ext import tasks
+from utils.game_mechanics.events.random_event import RandomEvent
+from utils.game_mechanics.events.training_event import TrainingEvent
+from utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -35,9 +32,10 @@ COOLDOWNS = {
 COOLDOWN_DURATIONS = {
     "treinar": 3600,  # 1 hour
     "explorar": 3600,  # 1 hour
-    "duelar": 1800,   # 30 minutes
-    "evento": 86400   # 24 hours
+    "duelar": 1800,  # 30 minutes
+    "evento": 86400  # 24 hours
 }
+
 
 class Activities(commands.Cog):
     """Cog for player activities and interactions."""
@@ -73,13 +71,17 @@ class Activities(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Check cooldown
             cooldown = await self._check_cooldown(interaction.user.id, "treinar")
             if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}",
+                    ephemeral=True)
                 return
 
             # Create a random training event using the new SOLID architecture
@@ -89,7 +91,8 @@ class Activities(commands.Cog):
             # Get the outcome, experience and attribute gains from the event
             outcome = training_event.get_description()
             exp_gain = training_result["exp_gain"]
-            attribute_gain = training_result.get("attribute_gain", random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
+            attribute_gain = training_result.get("attribute_gain",
+                                                 random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
 
             # Check if player has equipped accessories that boost experience
             inventory = player.get('inventory', {})
@@ -112,7 +115,8 @@ class Activities(commands.Cog):
                     exp_gain = int(exp_gain * exp_boost)
                     accessory_boost_applied = True
                     accessory_name = item["name"]
-                    logger.info(f"Player {player.get('name', 'Unknown')} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+                    logger.info(
+                        f"Player {player.get('name', 'Unknown')} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
             # Update player data using the new ExperienceCalculator
             new_exp = player.get("exp", 0) + exp_gain
@@ -131,7 +135,8 @@ class Activities(commands.Cog):
                 # Full HP recovery on level up
                 update_data["hp"] = player.get("max_hp", 100)
                 # Bonus TUSD for level up
-                update_data["tusd"] = player.get("tusd", 0) + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+                update_data["tusd"] = player.get("tusd", 0) + (
+                            new_level * 50) + 10  # Add base TUSD reward plus level up bonus
 
             # Apply HP loss for training (5-15% of max HP)
             if "hp" in player and "max_hp" in player:
@@ -191,14 +196,16 @@ class Activities(commands.Cog):
 
                 await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
-                await interaction.response.send_message("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.response.send_message(
+                    "Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.", ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade treinar")
         except Exception as e:
             logger.error(f"Error in slash_train: {e}", exc_info=True)
             try:
-                await interaction.response.send_message("Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.response.send_message(
+                    "Ocorreu um erro durante o treinamento. Por favor, tente novamente mais tarde.", ephemeral=True)
             except discord.errors.NotFound:
                 pass
 
@@ -209,7 +216,9 @@ class Activities(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Garantir que o inventário é um dicionário
@@ -251,7 +260,8 @@ class Activities(commands.Cog):
 
             # TUSD change
             if "tusd_change" in event_result:
-                update_data["tusd"] = max(0, player.get("tusd", 0) + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
+                update_data["tusd"] = max(0, player.get("tusd", 0) + event_result[
+                    "tusd_change"])  # Ensure TUSD doesn't go below 0
 
             # Primary attribute change
             if "attribute_change" in event_result:
@@ -326,34 +336,40 @@ class Activities(commands.Cog):
 
                 await interaction.response.send_message(embed=embed)
             else:
-                await interaction.response.send_message("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message(
+                    "Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade explorar")
         except Exception as e:
             logger.error(f"Error in slash_explore: {e}", exc_info=True)
             try:
-                await interaction.response.send_message("Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message(
+                    "Ocorreu um erro durante a exploração. Por favor, tente novamente mais tarde.")
             except discord.errors.NotFound:
                 pass
 
-    async def handle_duel(self, interaction: discord.Interaction, opponent: discord.Member, duel_type: str = "physical"):
+    async def handle_duel(self, interaction: discord.Interaction, opponent: discord.Member,
+                          duel_type: str = "physical"):
         """Handle duel logic for both slash_duel and slash_bet_duel commands."""
         try:
             # Check if opponent is specified
             if not opponent:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa mencionar um oponente para duelar.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você precisa mencionar um oponente para duelar.")
                 return False
 
             # Check if player is trying to duel themselves
             if opponent.id == interaction.user.id:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não pode duelar consigo mesmo!")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não pode duelar consigo mesmo!")
                 return False
 
             # Check if player exists
             challenger = db_provider.get_player(interaction.user.id)
             if not challenger:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return False
 
             # Check if opponent exists
@@ -391,7 +407,8 @@ class Activities(commands.Cog):
 
             async def accept_callback(button_interaction):
                 if button_interaction.user.id != opponent.id:
-                    await button_interaction.response.send_message("Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
+                    await button_interaction.response.send_message(
+                        "Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
                     return
 
                 # Disable buttons
@@ -429,7 +446,8 @@ class Activities(commands.Cog):
                     winner_update["tusd"] += new_level * 50
 
                 # Check for bonus rewards
-                if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result["bonus_rewards"]:
+                if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result[
+                    "bonus_rewards"]:
                     # Get winner's inventory
                     winner_player = db_provider.get_player(winner_id)
                     if winner_player and "inventory" in winner_player:
@@ -507,7 +525,8 @@ class Activities(commands.Cog):
                     # Dispatch an event for the duel completion
                     self.bot.dispatch("duel_complete", duel_result)
                 else:
-                    await button_interaction.response.send_message("Ocorreu um erro durante o duelo. Por favor, tente novamente mais tarde.")
+                    await button_interaction.response.send_message(
+                        "Ocorreu um erro durante o duelo. Por favor, tente novamente mais tarde.")
 
                 # Remove active duel
                 if interaction.user.id in self.active_duels:
@@ -515,7 +534,8 @@ class Activities(commands.Cog):
 
             async def decline_callback(button_interaction):
                 if button_interaction.user.id != opponent.id:
-                    await button_interaction.response.send_message("Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
+                    await button_interaction.response.send_message(
+                        "Apenas o oponente desafiado pode aceitar ou recusar.", ephemeral=True)
                     return
 
                 # Disable buttons
@@ -573,12 +593,14 @@ class Activities(commands.Cog):
             # Check cooldown
             cooldown = await self._check_cooldown(interaction.user.id, "duelar")
             if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
                 return
 
             # Check if player is already in a duel
             if interaction.user.id in self.active_duels or opponent.id in self.active_duels.values():
-                await interaction.response.send_message(f"{interaction.user.mention}, você ou seu oponente já está em um duelo!")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ou seu oponente já está em um duelo!")
                 return
 
             # Send initial response
@@ -600,13 +622,15 @@ class Activities(commands.Cog):
             # Check if player exists
             player = db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check cooldown
             cooldown = await self._check_cooldown(interaction.user.id, "evento")
             if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, você precisa esperar antes de participar de outro evento. Tempo restante: {cooldown}")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você precisa esperar antes de participar de outro evento. Tempo restante: {cooldown}")
                 return
 
             # Create a random event using the new SOLID architecture
@@ -678,7 +702,8 @@ class Activities(commands.Cog):
                         "charisma": "Carisma",
                         "power_stat": "Poder"
                     }
-                    attribute_name = attribute_names.get(event_result["attribute_change"], event_result["attribute_change"])
+                    attribute_name = attribute_names.get(event_result["attribute_change"],
+                                                         event_result["attribute_change"])
                     embed.add_field(
                         name=attribute_name,
                         value=f"+{event_result.get('attribute_value', 1)}",
@@ -697,9 +722,11 @@ class Activities(commands.Cog):
                 # If the event triggers a duel, start it
                 if event_result.get("trigger_duel", False):
                     # This would be implemented in a future update
-                    await interaction.followup.send("Um duelo foi desencadeado pelo evento! Esta funcionalidade será implementada em breve.")
+                    await interaction.followup.send(
+                        "Um duelo foi desencadeado pelo evento! Esta funcionalidade será implementada em breve.")
             else:
-                await interaction.response.send_message("Ocorreu um erro ao processar o evento. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message(
+                    "Ocorreu um erro ao processar o evento. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /atividade evento")
@@ -739,13 +766,15 @@ class Activities(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(ctx.author.id)
             if not player:
-                await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                await ctx.send(
+                    f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
             # Check cooldown
             cooldown = await self._check_cooldown(ctx.author.id, "treinar")
             if cooldown:
-                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
+                await ctx.send(
+                    f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
                 return
 
             # Create a random training event using the new SOLID architecture
@@ -755,7 +784,8 @@ class Activities(commands.Cog):
             # Get the outcome, experience and attribute gains from the event
             outcome = training_event.get_description()
             exp_gain = training_result["exp_gain"]
-            attribute_gain = training_result.get("attribute_gain", random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
+            attribute_gain = training_result.get("attribute_gain",
+                                                 random.choice(["dexterity", "intellect", "charisma", "power_stat"]))
 
             # Check if player has equipped accessories that boost experience
             inventory = player.get('inventory', {})
@@ -778,7 +808,8 @@ class Activities(commands.Cog):
                     exp_gain = int(exp_gain * exp_boost)
                     accessory_boost_applied = True
                     accessory_name = item["name"]
-                    logger.info(f"Player {player.get('name', 'Unknown')} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
+                    logger.info(
+                        f"Player {player.get('name', 'Unknown')} gained {exp_gain} exp (boosted from {original_exp}) due to equipped accessory {item['name']}")
 
             # Update player data using the new ExperienceCalculator
             new_exp = player.get("exp", 0) + exp_gain
@@ -797,7 +828,8 @@ class Activities(commands.Cog):
                 # Full HP recovery on level up
                 update_data["hp"] = player.get("max_hp", 100)
                 # Bonus TUSD for level up
-                update_data["tusd"] = player.get("tusd", 0) + (new_level * 50) + 10  # Add base TUSD reward plus level up bonus
+                update_data["tusd"] = player.get("tusd", 0) + (
+                            new_level * 50) + 10  # Add base TUSD reward plus level up bonus
 
             # Apply HP loss for training (5-15% of max HP)
             if "hp" in player and "max_hp" in player:
@@ -870,7 +902,8 @@ class Activities(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(ctx.author.id)
             if not player:
-                await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+                await ctx.send(
+                    f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
             # LOG: Mostrar dados do player e inventário
@@ -890,7 +923,8 @@ class Activities(commands.Cog):
             # Check cooldown
             cooldown = await self._check_cooldown(ctx.author.id, "explorar")
             if cooldown:
-                await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
+                await ctx.send(
+                    f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
                 return
 
             # Create a random event using the enhanced RandomEvent class
@@ -908,7 +942,8 @@ class Activities(commands.Cog):
 
             # TUSD change
             if "tusd_change" in event_result:
-                update_data["tusd"] = max(0, player.get("tusd", 0) + event_result["tusd_change"])  # Ensure TUSD doesn't go below 0
+                update_data["tusd"] = max(0, player.get("tusd", 0) + event_result[
+                    "tusd_change"])  # Ensure TUSD doesn't go below 0
 
             # Attribute changes
             if "attribute_changes" in event_result:
@@ -954,7 +989,8 @@ class Activities(commands.Cog):
         """Desafiar outro jogador para um duelo."""
         # Check if opponent is specified
         if not opponent:
-            await ctx.send(f"{ctx.author.mention}, você precisa mencionar um oponente para duelar. Exemplo: !duelar @usuário")
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa mencionar um oponente para duelar. Exemplo: !duelar @usuário")
             return
 
         # Check if player is trying to duel themselves
@@ -965,7 +1001,8 @@ class Activities(commands.Cog):
         # Check if player exists
         challenger = db_provider.get_player(ctx.author.id)
         if not challenger:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if opponent exists
@@ -977,7 +1014,8 @@ class Activities(commands.Cog):
         # Check cooldown
         cooldown = await self._check_cooldown(ctx.author.id, "duelar")
         if cooldown:
-            await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
             return
 
         # Check if player is already in a duel
@@ -1013,7 +1051,8 @@ class Activities(commands.Cog):
         self.active_duels[ctx.author.id] = opponent.id
 
         def check(m):
-            return m.author.id == opponent.id and m.channel == ctx.channel and m.content.lower() in ["sim", "não", "nao", "yes", "no"]
+            return m.author.id == opponent.id and m.channel == ctx.channel and m.content.lower() in ["sim", "não",
+                                                                                                     "nao", "yes", "no"]
 
         try:
             # Wait for opponent's response
@@ -1048,7 +1087,8 @@ class Activities(commands.Cog):
                     winner_update["tusd"] += new_level * 50
 
                 # Check for bonus rewards
-                if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result["bonus_rewards"]:
+                if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result[
+                    "bonus_rewards"]:
                     # Get winner's inventory
                     winner_player = db_provider.get_player(winner_id)
                     if winner_player and "inventory" in winner_player:
@@ -1133,6 +1173,7 @@ class Activities(commands.Cog):
         """Participar do evento atual da academia."""
         # This is a placeholder for future weekly events
         await ctx.send("Não há eventos ativos no momento. Fique atento para futuros eventos na Academia Tokugawa!")
+
 
 async def setup(bot):
     """Add the cog to the bot."""

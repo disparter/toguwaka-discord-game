@@ -1,16 +1,13 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
 import random
-import asyncio
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from discord import app_commands
+from discord.ext import commands
 
-from utils.persistence import db_provider
-from utils.embeds import create_basic_embed, create_event_embed
-from utils.game_mechanics import calculate_level_from_exp
 from story_mode.club_rivalry_system import ClubSystem
+from utils.persistence import db_provider
+
 
 class MoralChoices(commands.Cog):
     """Cog para gerenciar dilemas morais e eventos coletivos na Academia Tokugawa."""
@@ -85,6 +82,7 @@ class MoralChoices(commands.Cog):
 
     def _create_dilema_choice_callback(self, user_id: int, choice_index: int):
         """Cria um callback para os botões de escolha do dilema."""
+
         async def dilema_choice_callback(interaction: discord.Interaction):
             # Verificar se o usuário é o mesmo que iniciou o dilema
             if interaction.user.id != user_id:
@@ -202,11 +200,11 @@ class MoralChoices(commands.Cog):
         ]
     )
     async def slash_atividade_moral(
-        self, 
-        interaction: discord.Interaction, 
-        tipo: str,
-        acao: str,
-        alvo: str = None
+            self,
+            interaction: discord.Interaction,
+            tipo: str,
+            acao: str,
+            alvo: str = None
     ):
         """Comando para participar de atividades coletivas."""
         user_id = interaction.user.id
@@ -660,6 +658,7 @@ class MoralChoices(commands.Cog):
 
     # Command alianca moved to story_mode.py to avoid duplicate command registration
     # Command rivalidade moved to story_mode.py to avoid duplicate command registration
+
 
 async def setup(bot):
     """Adiciona o cog ao bot."""

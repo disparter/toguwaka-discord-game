@@ -1,21 +1,22 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
 import os
-from typing import Dict, List, Any
+from discord import app_commands
+from discord.ext import commands
 
-from utils.persistence import db_provider
-from utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
 from utils.command_registrar import CommandRegistrar
+from utils.embeds import create_basic_embed
+from utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 class NPCInteractionCog(commands.Cog):
     """
     A cog that handles interactions with NPCs in the game.
     """
+
     def __init__(self, bot):
         self.bot = bot
         self.story_mode = StoryMode()
@@ -136,9 +137,9 @@ class NPCInteractionCog(commands.Cog):
                     }
                 else:
                     # For other relationships, suggest new topics
-                    other_topics = [topic for topic in npc.dialogues.keys() 
-                                   if topic != dialogue_id and topic != "greeting" 
-                                   and topic not in npc_interactions["topics_discussed"]]
+                    other_topics = [topic for topic in npc.dialogues.keys()
+                                    if topic != dialogue_id and topic != "greeting"
+                                    and topic not in npc_interactions["topics_discussed"]]
 
                     if other_topics:
                         dialogue = {
@@ -328,6 +329,7 @@ class NPCInteractionCog(commands.Cog):
         else:
             embed.set_footer(text="Use /registros [id] para ver uma imagem específica.")
             await interaction.followup.send(embed=embed, ephemeral=True)
+
 
 async def setup(bot):
     """

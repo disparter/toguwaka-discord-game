@@ -1,21 +1,21 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
+import json
 import logging
 import random
-import asyncio
-import json
-import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
-from utils.persistence import db_provider
-from utils.persistence.db_provider import get_player, update_player, get_club, get_player_async, get_club_async, get_player_inventory_async, add_item_to_inventory_async, update_player_async
+from typing import Any
+from discord import app_commands
+from discord.ext import commands
+
+from cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
 from utils.embeds import create_basic_embed
 from utils.game_mechanics import RARITIES
-from utils.club_perks import apply_shop_discount
-from cogs.activities import COOLDOWNS, COOLDOWN_DURATIONS
+from utils.persistence import db_provider
+from utils.persistence.db_provider import update_player, get_player_async, get_club_async, \
+    get_player_inventory_async, add_item_to_inventory_async, update_player_async
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 # Load JSON data
 def load_json(file_path):
@@ -25,6 +25,7 @@ def load_json(file_path):
     except Exception as e:
         logger.error(f"Error loading JSON file {file_path}: {e}")
         return {}
+
 
 # Load all economy data from JSON files
 ITEM_CATEGORIES = load_json('data/economy/item_categories.json')
@@ -54,6 +55,7 @@ LEGENDARY_ITEMS = load_json('data/economy/legendary_items.json')
 
 # Itens temáticos de clubes (disponíveis apenas para membros de clubes específicos)
 CLUB_ITEMS = load_json('data/economy/club_items.json')
+
 
 # Função para obter os itens disponíveis com base no bimestre atual, eventos ativos, nível do jogador e clube
 def get_available_shop_items(bimestre=1, active_events=None, player_level=1, player_club=None, current_date=None):
@@ -145,6 +147,7 @@ def get_available_shop_items(bimestre=1, active_events=None, player_level=1, pla
 
     return available_items
 
+
 # Lista de itens da loja (para compatibilidade com código existente)
 SHOP_ITEMS = []
 SHOP_ITEMS.extend(TRAINING_ITEMS)
@@ -184,8 +187,12 @@ TECHNIQUES = [
         "club_required": None,
         "effects": {"duel_boost": {"type": "physical", "amount": 0.3}},
         "evolution": {
-            "2": {"name": "Golpe Relâmpago Aprimorado", "description": "Um ataque rápido com maior precisão. +35% de chance de vencer duelos físicos.", "effects": {"duel_boost": {"type": "physical", "amount": 0.35}}},
-            "3": {"name": "Golpe Relâmpago Supremo", "description": "Um ataque rápido com precisão mortal. +40% de chance de vencer duelos físicos e 10% de dano adicional.", "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.1}}
+            "2": {"name": "Golpe Relâmpago Aprimorado",
+                  "description": "Um ataque rápido com maior precisão. +35% de chance de vencer duelos físicos.",
+                  "effects": {"duel_boost": {"type": "physical", "amount": 0.35}}},
+            "3": {"name": "Golpe Relâmpago Supremo",
+                  "description": "Um ataque rápido com precisão mortal. +40% de chance de vencer duelos físicos e 10% de dano adicional.",
+                  "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.1}}
         }
     },
     {
@@ -200,11 +207,16 @@ TECHNIQUES = [
         "club_required": None,
         "effects": {"duel_boost": {"type": "mental", "amount": 0.3}},
         "evolution": {
-            "2": {"name": "Manipulação Mental Aprimorada", "description": "Confunde a mente do oponente com maior eficácia. +35% de chance de vencer duelos mentais.", "effects": {"duel_boost": {"type": "mental", "amount": 0.35}}},
-            "3": {"name": "Manipulação Mental Suprema", "description": "Confunde a mente do oponente com precisão mortal. +40% de chance de vencer duelos mentais e 10% de dano adicional.", "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "damage_boost": 0.1}}
+            "2": {"name": "Manipulação Mental Aprimorada",
+                  "description": "Confunde a mente do oponente com maior eficácia. +35% de chance de vencer duelos mentais.",
+                  "effects": {"duel_boost": {"type": "mental", "amount": 0.35}}},
+            "3": {"name": "Manipulação Mental Suprema",
+                  "description": "Confunde a mente do oponente com precisão mortal. +40% de chance de vencer duelos mentais e 10% de dano adicional.",
+                  "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "damage_boost": 0.1}}
         }
     }
 ]
+
 
 class Economy(commands.Cog):
     """Cog for economy and shop commands."""
@@ -253,7 +265,8 @@ class Economy(commands.Cog):
     economy_group = app_commands.Group(name="economia", description="Comandos de economia da Academia Tokugawa")
 
     # Group for technique commands
-    technique_group = app_commands.Group(name="tecnica", description="Comandos relacionados às técnicas da Academia Tokugawa")
+    technique_group = app_commands.Group(name="tecnica",
+                                         description="Comandos relacionados às técnicas da Academia Tokugawa")
 
     @technique_group.command(name="evoluir", description="Evoluir uma técnica para o próximo nível")
     async def slash_evolve_technique(self, interaction: discord.Interaction, technique_id: int):
@@ -262,13 +275,16 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Get player's techniques
             techniques = player.get('techniques', [])
             if not techniques:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
                 return
 
             # Find the technique to evolve
@@ -279,24 +295,30 @@ class Economy(commands.Cog):
                     break
 
             if not technique:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui a técnica com ID {technique_id}.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não possui a técnica com ID {technique_id}.", ephemeral=True)
                 return
 
             # Check if technique can be evolved
             if technique['level'] >= technique['max_level']:
-                await interaction.response.send_message(f"{interaction.user.mention}, esta técnica já está no nível máximo.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, esta técnica já está no nível máximo.", ephemeral=True)
                 return
 
             # Get the evolution data
             evolution = technique.get('evolution', {}).get(str(technique['level'] + 1))
             if not evolution:
-                await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar os dados de evolução para esta técnica.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, não foi possível encontrar os dados de evolução para esta técnica.",
+                    ephemeral=True)
                 return
 
             # Check if player has enough TUSD
             cost = evolution.get('cost', 1000)  # Default cost if not specified
             if player.get('tusd', 0) < cost:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui TUSD suficiente para evoluir esta técnica. Custo: {cost} TUSD", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não possui TUSD suficiente para evoluir esta técnica. Custo: {cost} TUSD",
+                    ephemeral=True)
                 return
 
             # Update the technique
@@ -327,10 +349,12 @@ class Economy(commands.Cog):
                     )
                 )
             else:
-                await interaction.response.send_message("Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.response.send_message(
+                    "Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
         except Exception as e:
             logger.error(f"Error in slash_evolve_technique: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message(
+                "Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @technique_group.command(name="listar", description="Listar todas as suas técnicas")
     async def slash_list_techniques(self, interaction: discord.Interaction):
@@ -339,13 +363,16 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Get player's techniques
             techniques = player.get('techniques', [])
             if not techniques:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
                 return
 
             # Create embed for techniques list
@@ -379,7 +406,8 @@ class Economy(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             logger.error(f"Error in slash_list_techniques: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao listar suas técnicas. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message(
+                "Ocorreu um erro ao listar suas técnicas. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @technique_group.command(name="info", description="Ver informações detalhadas sobre uma técnica")
     async def slash_technique_info(self, interaction: discord.Interaction, technique_id: int):
@@ -388,13 +416,16 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Get player's techniques
             techniques = player.get('techniques', [])
             if not techniques:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
                 return
 
             # Find the technique
@@ -405,7 +436,8 @@ class Economy(commands.Cog):
                     break
 
             if not technique:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui a técnica com ID {technique_id}.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não possui a técnica com ID {technique_id}.", ephemeral=True)
                 return
 
             # Create embed for technique info
@@ -470,7 +502,9 @@ class Economy(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             logger.error(f"Error in slash_technique_info: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao mostrar informações da técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message(
+                "Ocorreu um erro ao mostrar informações da técnica. Por favor, tente novamente mais tarde.",
+                ephemeral=True)
 
     @economy_group.command(name="loja", description="Acessar a loja da Academia Tokugawa")
     async def slash_shop(self, interaction: discord.Interaction):
@@ -485,12 +519,16 @@ class Economy(commands.Cog):
             try:
                 player = await db_provider.get_player(interaction.user.id)
                 if not player:
-                    await interaction.followup.send(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                    await interaction.followup.send(
+                        f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                        ephemeral=True)
                     return
                 logger.info(f"Successfully retrieved player data for {interaction.user.id}")
             except Exception as e:
                 logger.error(f"Error retrieving player data for {interaction.user.id}: {e}")
-                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao acessar seus dados. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, ocorreu um erro ao acessar seus dados. Por favor, tente novamente mais tarde.",
+                    ephemeral=True)
                 return
 
             # Get available items based on player's status
@@ -505,7 +543,9 @@ class Economy(commands.Cog):
                 logger.info(f"Successfully retrieved shop items for player {interaction.user.id}")
             except Exception as e:
                 logger.error(f"Error retrieving shop items for player {interaction.user.id}: {e}")
-                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao carregar os itens da loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, ocorreu um erro ao carregar os itens da loja. Por favor, tente novamente mais tarde.",
+                    ephemeral=True)
                 return
 
             # Create embed for shop
@@ -533,11 +573,13 @@ class Economy(commands.Cog):
         except Exception as e:
             logger.error(f"Error in slash_shop: {e}")
             try:
-                await interaction.followup.send("Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    "Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
             except:
                 # If followup fails, the interaction might have already been responded to
                 try:
-                    await interaction.response.send_message("Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
                 except:
                     logger.error(f"Failed to send error message to player {interaction.user.id}")
 
@@ -554,12 +596,16 @@ class Economy(commands.Cog):
             try:
                 player = await db_provider.get_player(interaction.user.id)
                 if not player:
-                    await interaction.followup.send(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                    await interaction.followup.send(
+                        f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                        ephemeral=True)
                     return
                 logger.info(f"Successfully retrieved player data for {interaction.user.id}")
             except Exception as e:
                 logger.error(f"Error retrieving player data for {interaction.user.id}: {e}")
-                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao acessar seus dados. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, ocorreu um erro ao acessar seus dados. Por favor, tente novamente mais tarde.",
+                    ephemeral=True)
                 return
 
             # Get available items
@@ -574,7 +620,9 @@ class Economy(commands.Cog):
                 logger.info(f"Successfully retrieved shop items for player {interaction.user.id}")
             except Exception as e:
                 logger.error(f"Error retrieving shop items for player {interaction.user.id}: {e}")
-                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao carregar os itens da loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, ocorreu um erro ao carregar os itens da loja. Por favor, tente novamente mais tarde.",
+                    ephemeral=True)
                 return
 
             # Find the item
@@ -588,13 +636,16 @@ class Economy(commands.Cog):
                     break
 
             if not item:
-                await interaction.followup.send(f"{interaction.user.mention}, o item com ID {item_id} não está disponível na loja.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, o item com ID {item_id} não está disponível na loja.", ephemeral=True)
                 return
 
             # Check if player has enough TUSD
             price = item['price']
             if player.get('tusd', 0) < price:
-                await interaction.followup.send(f"{interaction.user.mention}, você não possui TUSD suficiente para comprar este item. Preço: {price} TUSD", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, você não possui TUSD suficiente para comprar este item. Preço: {price} TUSD",
+                    ephemeral=True)
                 return
 
             # Add item to player's inventory
@@ -613,7 +664,9 @@ class Economy(commands.Cog):
                 logger.info(f"Prepared inventory update for player {interaction.user.id}")
             except Exception as e:
                 logger.error(f"Error preparing inventory for player {interaction.user.id}: {e}")
-                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao processar seu inventário. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, ocorreu um erro ao processar seu inventário. Por favor, tente novamente mais tarde.",
+                    ephemeral=True)
                 return
 
             # Update player in database
@@ -626,7 +679,9 @@ class Economy(commands.Cog):
                 logger.info(f"Database update for player {interaction.user.id} purchase: {success}")
             except Exception as e:
                 logger.error(f"Error updating database for player {interaction.user.id} purchase: {e}")
-                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao atualizar seus dados. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{interaction.user.mention}, ocorreu um erro ao atualizar seus dados. Por favor, tente novamente mais tarde.",
+                    ephemeral=True)
                 return
 
             if success:
@@ -645,16 +700,19 @@ class Economy(commands.Cog):
                 )
                 logger.info(f"Player {interaction.user.id} successfully purchased item {item['name']}")
             else:
-                await interaction.followup.send("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    "Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
                 logger.error(f"Database update failed for player {interaction.user.id} purchase")
         except Exception as e:
             logger.error(f"Error in slash_buy: {e}")
             try:
-                await interaction.followup.send("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send(
+                    "Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
             except:
                 # If followup fails, the interaction might have already been responded to
                 try:
-                    await interaction.response.send_message("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
                 except:
                     logger.error(f"Failed to send error message to player {interaction.user.id}")
 
@@ -665,7 +723,9 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await db_provider.get_player(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.",
+                    ephemeral=True)
                 return
 
             # Get player's inventory
@@ -687,12 +747,14 @@ class Economy(commands.Cog):
                     break
 
             if not item:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui o item com ID {item_id}.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não possui o item com ID {item_id}.", ephemeral=True)
                 return
 
             # Check if item is usable
             if item.get('type') not in ['consumable', 'accessory']:
-                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado.", ephemeral=True)
+                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado.",
+                                                        ephemeral=True)
                 return
 
             # Apply item effects
@@ -730,18 +792,20 @@ class Economy(commands.Cog):
                     embed=create_basic_embed(
                         title="Item Usado!",
                         description=(
-                            f"{interaction.user.mention}, você usou o item com sucesso!\n\n"
-                            f"**Item:** {item['name']}\n"
-                            f"**Efeitos Aplicados:**\n" + "\n".join(effects_applied)
+                                f"{interaction.user.mention}, você usou o item com sucesso!\n\n"
+                                f"**Item:** {item['name']}\n"
+                                f"**Efeitos Aplicados:**\n" + "\n".join(effects_applied)
                         ),
                         color=0x00FF00
                     )
                 )
             else:
-                await interaction.response.send_message("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.response.send_message(
+                    "Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
         except Exception as e:
             logger.error(f"Error in slash_use_item: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message(
+                "Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @economy_group.command(name="mercado", description="Acessar o mercado de itens entre jogadores")
     async def slash_market(self, interaction: discord.Interaction):
@@ -750,7 +814,8 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await get_player_async(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Create market embed
@@ -795,7 +860,8 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await get_player_async(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check if price is valid
@@ -806,7 +872,8 @@ class Economy(commands.Cog):
             # Check if player has the item
             inventory = player["inventory"]
             if str(item_id) not in inventory:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não possui este item em seu inventário.")
                 return
 
             # Get item data
@@ -843,7 +910,8 @@ class Economy(commands.Cog):
 
                 await interaction.response.send_message(embed=embed)
             else:
-                await interaction.response.send_message("Ocorreu um erro ao colocar o item à venda. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message(
+                    "Ocorreu um erro ao colocar o item à venda. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia vender")
@@ -857,12 +925,14 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await get_player_async(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check if listing exists
             if listing_id not in self.market_listings:
-                await interaction.response.send_message(f"{interaction.user.mention}, listagem não encontrada. Use `/economia mercado` para ver as listagens disponíveis.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, listagem não encontrada. Use `/economia mercado` para ver as listagens disponíveis.")
                 return
 
             # Get listing data
@@ -870,18 +940,21 @@ class Economy(commands.Cog):
 
             # Check if player is trying to buy their own item
             if listing["seller_id"] == interaction.user.id:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não pode comprar seu próprio item.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não pode comprar seu próprio item.")
                 return
 
             # Check if player has enough TUSD
             if player["tusd"] < listing["price"]:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {listing['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {listing['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
                 return
 
             # Get seller data
             seller = await get_player_async(listing["seller_id"])
             if not seller:
-                await interaction.response.send_message(f"{interaction.user.mention}, o vendedor não existe mais. A listagem será removida.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, o vendedor não existe mais. A listagem será removida.")
                 del self.market_listings[listing_id]
                 return
 
@@ -944,7 +1017,8 @@ class Economy(commands.Cog):
                         # Ignore if we can't DM the seller
                         pass
             else:
-                await interaction.response.send_message("Ocorreu um erro durante a compra. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message(
+                    "Ocorreu um erro durante a compra. Por favor, tente novamente mais tarde.")
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia comprar_mercado")
@@ -957,7 +1031,8 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(interaction.user.id)
         if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
             return
 
         # Check cooldown (1 hour between exchanges)
@@ -966,13 +1041,15 @@ class Economy(commands.Cog):
         if user_id in self.exchange_cooldowns and self.exchange_cooldowns[user_id] > now:
             remaining = self.exchange_cooldowns[user_id] - now
             minutes, seconds = divmod(int(remaining), 60)
-            await interaction.response.send_message(f"{interaction.user.mention}, você precisa esperar {minutes}m {seconds}s para fazer outra troca.")
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, você precisa esperar {minutes}m {seconds}s para fazer outra troca.")
             return
 
         # Find the exchange
         exchange = next((e for e in ITEM_EXCHANGES if e["id"] == exchange_id), None)
         if not exchange:
-            await interaction.response.send_message(f"{interaction.user.mention}, troca não encontrada. Use `/economia loja` para ver as trocas disponíveis.")
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, troca não encontrada. Use `/economia loja` para ver as trocas disponíveis.")
             return
 
         # Check requirements
@@ -1165,13 +1242,15 @@ class Economy(commands.Cog):
             # Check if player exists
             player = await get_player_async(interaction.user.id)
             if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check if player has the item
             inventory = player["inventory"]
             if str(item_id) not in inventory:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, você não possui este item em seu inventário.", ephemeral=True)
                 return
 
             # Get item data
@@ -1179,7 +1258,9 @@ class Economy(commands.Cog):
 
             # Check if item is an accessory
             if item_data["type"] != "accessory":
-                await interaction.response.send_message(f"{interaction.user.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, apenas acessórios podem ser equipados. Este item é do tipo {item_data['type']}.",
+                    ephemeral=True)
                 return
 
             # Check if the item is already equipped
@@ -1197,13 +1278,17 @@ class Economy(commands.Cog):
                     )
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                 else:
-                    await interaction.response.send_message("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
+                    await interaction.response.send_message(
+                        "Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.",
+                        ephemeral=True)
                 return
 
             # Check if there's a cooldown for this accessory
             cooldown = self._check_cooldown(interaction.user.id, f"accessory_{item_id}")
             if cooldown:
-                await interaction.response.send_message(f"{interaction.user.mention}, este acessório está em cooldown. Tempo restante: {cooldown}", ephemeral=True)
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, este acessório está em cooldown. Tempo restante: {cooldown}",
+                    ephemeral=True)
                 return
 
             # Unequip any other equipped accessories of the same type
@@ -1232,7 +1317,8 @@ class Economy(commands.Cog):
 
                 await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
-                await interaction.response.send_message("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.response.send_message(
+                    "Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia equipar")
@@ -1245,7 +1331,8 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Create shop embed
@@ -1273,23 +1360,29 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if item_id is provided
         if item_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja comprar. Use `!loja` para ver os itens disponíveis.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa especificar o ID do item que deseja comprar. Use `!loja` para ver os itens disponíveis.",
+                ephemeral=True)
             return
 
         # Find the item
         item = next((i for i in SHOP_ITEMS if i["id"] == item_id), None)
         if not item:
-            await ctx.send(f"{ctx.author.mention}, item não encontrado. Use `!loja` para ver os itens disponíveis.", ephemeral=True)
+            await ctx.send(f"{ctx.author.mention}, item não encontrado. Use `!loja` para ver os itens disponíveis.",
+                           ephemeral=True)
             return
 
         # Check if player has enough TUSD
         if player["tusd"] < item["price"]:
-            await ctx.send(f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {item['price']} TUSD, Seu saldo: {player['tusd']} TUSD",
+                ephemeral=True)
             return
 
         # Get player's inventory
@@ -1349,7 +1442,8 @@ class Economy(commands.Cog):
 
         # Update inventory in database
         if success:
-            inventory_success = await add_item_to_inventory_async(ctx.author.id, str(item["id"]), inventory[str(item["id"])])
+            inventory_success = await add_item_to_inventory_async(ctx.author.id, str(item["id"]),
+                                                                  inventory[str(item["id"])])
             if not inventory_success:
                 success = False
 
@@ -1394,7 +1488,8 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Create market embed
@@ -1433,12 +1528,16 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.",
+                ephemeral=True)
             return
 
         # Check if item_id and price are provided
         if item_id is None or price is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item e o preço. Exemplo: `!vender 1 100`", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa especificar o ID do item e o preço. Exemplo: `!vender 1 100`",
+                ephemeral=True)
             return
 
         # Check if price is valid
@@ -1494,17 +1593,23 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.",
+                ephemeral=True)
             return
 
         # Check if listing_id is provided
         if listing_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID da listagem. Use `!mercado` para ver as listagens disponíveis.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa especificar o ID da listagem. Use `!mercado` para ver as listagens disponíveis.",
+                ephemeral=True)
             return
 
         # Check if listing exists
         if listing_id not in self.market_listings:
-            await ctx.send(f"{ctx.author.mention}, listagem não encontrada. Use `!mercado` para ver as listagens disponíveis.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, listagem não encontrada. Use `!mercado` para ver as listagens disponíveis.",
+                ephemeral=True)
             return
 
         # Get listing data
@@ -1517,7 +1622,8 @@ class Economy(commands.Cog):
 
         # Check if player has enough TUSD
         if player["tusd"] < listing["price"]:
-            await ctx.send(f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {listing['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
+            await ctx.send(
+                f"{ctx.author.mention}, você não tem TUSD suficiente para comprar este item. Preço: {listing['price']} TUSD, Seu saldo: {player['tusd']} TUSD")
             return
 
         # Get seller data
@@ -1594,12 +1700,15 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if item_id is provided
         if item_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja equipar. Use `!inventario` para ver seus itens.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa especificar o ID do item que deseja equipar. Use `!inventario` para ver seus itens.",
+                ephemeral=True)
             return
 
         # Get player's inventory
@@ -1618,7 +1727,9 @@ class Economy(commands.Cog):
 
         # Check if item is an accessory
         if item_data["type"] != "accessory":
-            await ctx.send(f"{ctx.author.mention}, este item não é um acessório. Apenas acessórios podem ser equipados.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, este item não é um acessório. Apenas acessórios podem ser equipados.",
+                ephemeral=True)
             return
 
         # Update player's equipped item
@@ -1635,7 +1746,8 @@ class Economy(commands.Cog):
 
             await ctx.send(embed=embed, ephemeral=True)
         else:
-            await ctx.send("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await ctx.send("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.",
+                           ephemeral=True)
 
     @commands.command(name="usar")
     async def use_item(self, ctx, item_id: int = None):
@@ -1643,12 +1755,15 @@ class Economy(commands.Cog):
         # Check if player exists
         player = await db_provider.get_player_async(ctx.author.id)
         if not player:
-            await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
+            await ctx.send(
+                f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if item_id is provided
         if item_id is None:
-            await ctx.send(f"{ctx.author.mention}, você precisa especificar o ID do item que deseja usar. Use `!inventario` para ver seus itens.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, você precisa especificar o ID do item que deseja usar. Use `!inventario` para ver seus itens.",
+                ephemeral=True)
             return
 
         # Check if player has the item
@@ -1662,7 +1777,9 @@ class Economy(commands.Cog):
 
         # Check if item is usable
         if item_data["type"] != "consumable":
-            await ctx.send(f"{ctx.author.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.", ephemeral=True)
+            await ctx.send(
+                f"{ctx.author.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.",
+                ephemeral=True)
             return
 
         # Process item use
@@ -1686,7 +1803,8 @@ class Economy(commands.Cog):
         elif "club_reputation" in item_data["effects"]:
             # Increase club reputation
             if not player["club_id"]:
-                await ctx.send(f"{ctx.author.mention}, você precisa estar em um clube para usar este item.", ephemeral=True)
+                await ctx.send(f"{ctx.author.mention}, você precisa estar em um clube para usar este item.",
+                               ephemeral=True)
                 return
 
             # Get club data
@@ -1763,6 +1881,7 @@ class Economy(commands.Cog):
             await ctx.send(embed=embed, ephemeral=True)
         else:
             await ctx.send("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.")
+
 
 async def setup(bot):
     """Add the cog to the bot."""

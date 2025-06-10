@@ -1,37 +1,33 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
-from utils.json_utils import dumps as json_dumps
-import asyncio
 import os
 from datetime import datetime
-import random
+from discord import app_commands
+from discord.ext import commands
 
-from utils.persistence import db_provider
-from utils.embeds import create_basic_embed, create_event_embed
-from utils.game_mechanics import calculate_level_from_exp
-
-from story_mode.story_mode import StoryMode
 from story_mode.club_system import ClubSystem
-from story_mode.consequences import Consequences
+from story_mode.consequences import DynamicConsequencesSystem
 from story_mode.relationship_system import RelationshipSystem
-
-from utils.command_registrar import CommandRegistrar
+from story_mode.story_mode import StoryMode
+from utils.embeds import create_basic_embed, create_event_embed
+from utils.json_utils import dumps as json_dumps
+from utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
+
 
 class StoryModeCog(commands.Cog):
     """
     A cog that implements the story mode using the new SOLID architecture.
     This cog serves as an adapter between the Discord bot and the StoryMode system.
     """
+
     def __init__(self, bot):
         self.bot = bot
         self.story_mode = StoryMode()
         self.active_sessions = {}  # user_id -> session_data
         self.club_system = ClubSystem()
-        self.consequences_system = Consequences()
+        self.consequences_system = DynamicConsequencesSystem()
         self.relationship_system = RelationshipSystem()
 
         logger.info("StoryModeCog initialized")
@@ -131,7 +127,8 @@ class StoryModeCog(commands.Cog):
             return
 
         if "player_data" not in result or "chapter_data" not in result:
-            await interaction.followup.send("Erro interno: dados do modo história ausentes. Por favor, contate um administrador.", ephemeral=True)
+            await interaction.followup.send(
+                "Erro interno: dados do modo história ausentes. Por favor, contate um administrador.", ephemeral=True)
             logger.error(f"start_story returned incomplete result: {result}")
             return
 
@@ -263,7 +260,8 @@ class StoryModeCog(commands.Cog):
         personagem="Nome do personagem",
         afinidade="Quantidade de pontos de afinidade para adicionar (opcional)"
     )
-    async def slash_relacionamento(self, interaction: discord.Interaction, personagem: str = None, afinidade: int = None):
+    async def slash_relacionamento(self, interaction: discord.Interaction, personagem: str = None,
+                                   afinidade: int = None):
         """
         Slash command to show or change the player's relationship with an NPC.
         """
@@ -308,7 +306,8 @@ class StoryModeCog(commands.Cog):
         if afinidade is not None:
             # Only allow admins to change affinity
             if not await self._is_admin(interaction.user):
-                await interaction.followup.send("Apenas administradores podem alterar afinidade diretamente.", ephemeral=True)
+                await interaction.followup.send("Apenas administradores podem alterar afinidade diretamente.",
+                                                ephemeral=True)
                 return
 
             result = self.story_mode.update_affinity(player_data, personagem, afinidade)
@@ -389,7 +388,8 @@ class StoryModeCog(commands.Cog):
 
         if not player_data:
             try:
-                await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
+                await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar",
+                                                ephemeral=True)
             except discord.errors.NotFound:
                 logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
             except Exception as e:
@@ -402,7 +402,8 @@ class StoryModeCog(commands.Cog):
 
             if "error" in result:
                 try:
-                    await interaction.followup.send(f"Erro ao verificar eventos disponíveis: {result['error']}", ephemeral=True)
+                    await interaction.followup.send(f"Erro ao verificar eventos disponíveis: {result['error']}",
+                                                    ephemeral=True)
                 except discord.errors.NotFound:
                     logger.error("A interação expirou antes que a resposta pudesse ser enviada.")
                 except Exception as e:
@@ -569,7 +570,8 @@ class StoryModeCog(commands.Cog):
                             file = discord.File(image_path, filename=image_filename)
                             await channel.send(embed=embed, file=file, ephemeral=True)
                         else:
-                            logger.warning(f"Image file {image_filename} is too large ({file_size/1024/1024:.2f}MB) and couldn't be sent")
+                            logger.warning(
+                                f"Image file {image_filename} is too large ({file_size / 1024 / 1024:.2f}MB) and couldn't be sent")
                             await channel.send(embed=embed, ephemeral=True)
                     except Exception as e:
                         logger.error(f"Error sending image {image_filename}: {str(e)}")
@@ -720,6 +722,7 @@ class StoryModeCog(commands.Cog):
         """
         Creates a callback function for a choice button.
         """
+
         async def choice_callback(interaction: discord.Interaction):
             # Check if the user who clicked is the same as the user who started the story
             if interaction.user.id != user_id:
@@ -785,6 +788,7 @@ class StoryModeCog(commands.Cog):
         """
         Creates a callback function for a continue button.
         """
+
         async def continue_callback(interaction: discord.Interaction):
             # Check if the user who clicked is the same as the user who started the story
             if interaction.user.id != user_id:
@@ -1028,6 +1032,7 @@ class StoryModeCog(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
 
 async def setup(bot):
     """

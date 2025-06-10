@@ -1,21 +1,21 @@
 import discord
-from discord.ext import commands
-from discord import app_commands
-import logging
-import json
-from typing import Dict, List, Any, Optional, Union
-import matplotlib.pyplot as plt
 import io
+import logging
+import matplotlib.pyplot as plt
 import numpy as np
 from collections import Counter, defaultdict
+from discord import app_commands
+from discord.ext import commands
+from typing import Dict, List, Any
 
-from utils.persistence import db_provider
-from utils.embeds import create_basic_embed
-from story_mode.story_mode import StoryMode
 from story_mode.narrative_logger import get_narrative_logger
+from story_mode.story_mode import StoryMode
+from utils.embeds import create_basic_embed
+from utils.persistence import db_provider
 
 # Set up logging
 logger = logging.getLogger(__name__)
+
 
 class DecisionDashboard(commands.Cog):
     """Cog for the Decision Dashboard functionality."""
@@ -440,8 +440,8 @@ class DecisionDashboard(commands.Cog):
 
         return dict(community_styles)
 
-    def _create_choice_comparison(self, player: Dict[str, Any], player_choices: Dict[str, Any], 
-                                 community_choices: Dict[str, Dict[str, Counter]], chapter_id: str = None) -> tuple:
+    def _create_choice_comparison(self, player: Dict[str, Any], player_choices: Dict[str, Any],
+                                  community_choices: Dict[str, Dict[str, Counter]], chapter_id: str = None) -> tuple:
         """
         Creates a visualization comparing player choices with community choices.
 
@@ -537,8 +537,8 @@ class DecisionDashboard(commands.Cog):
 
         return embed, file
 
-    def _create_path_analysis(self, player: Dict[str, Any], player_path: List[str], 
-                             community_paths: Dict[str, int]) -> tuple:
+    def _create_path_analysis(self, player: Dict[str, Any], player_path: List[str],
+                              community_paths: Dict[str, int]) -> tuple:
         """
         Creates a visualization of narrative paths.
 
@@ -615,9 +615,9 @@ class DecisionDashboard(commands.Cog):
 
         # Determine if the path is common or rare
         path_rarity = "muito comum" if percentage > 30 else \
-                      "comum" if percentage > 15 else \
-                      "incomum" if percentage > 5 else \
-                      "raro" if percentage > 1 else "extremamente raro"
+            "comum" if percentage > 15 else \
+                "incomum" if percentage > 5 else \
+                    "raro" if percentage > 1 else "extremamente raro"
 
         embed.add_field(
             name="Estatísticas",
@@ -629,8 +629,8 @@ class DecisionDashboard(commands.Cog):
 
         return embed, file
 
-    def _create_faction_stats(self, player: Dict[str, Any], player_faction: Dict[str, Any], 
-                             community_factions: Dict[str, Dict[str, int]]) -> tuple:
+    def _create_faction_stats(self, player: Dict[str, Any], player_faction: Dict[str, Any],
+                              community_factions: Dict[str, Dict[str, int]]) -> tuple:
         """
         Creates a visualization of faction statistics.
 
@@ -696,8 +696,8 @@ class DecisionDashboard(commands.Cog):
 
         return embed, file
 
-    def _create_style_analysis(self, player: Dict[str, Any], player_style: Dict[str, float], 
-                              community_styles: Dict[str, float]) -> tuple:
+    def _create_style_analysis(self, player: Dict[str, Any], player_style: Dict[str, float],
+                               community_styles: Dict[str, float]) -> tuple:
         """
         Creates a visualization of gameplay style analysis.
 
@@ -721,7 +721,7 @@ class DecisionDashboard(commands.Cog):
         community_values = np.array([community_styles.get(cat, 0) for cat in categories])
 
         # Create angles for each category
-        angles = np.linspace(0, 2*np.pi, N, endpoint=False).tolist()
+        angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
 
         # Close the loop
         player_values = np.concatenate((player_values, [player_values[0]]))
@@ -816,6 +816,7 @@ class DecisionDashboard(commands.Cog):
 
         return embed, file
 
+
 async def setup(bot):
     """
     Adds the DecisionDashboard cog to the bot.
@@ -830,4 +831,5 @@ async def setup(bot):
         logger.info("DecisionDashboard cog loaded successfully")
     except ImportError:
         logger.error("Failed to load DecisionDashboard cog: matplotlib is required")
-        raise ImportError("The matplotlib library is required for the DecisionDashboard cog. Please install it with 'pip install matplotlib'.")
+        raise ImportError(
+            "The matplotlib library is required for the DecisionDashboard cog. Please install it with 'pip install matplotlib'.")
