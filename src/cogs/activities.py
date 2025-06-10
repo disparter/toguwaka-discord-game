@@ -366,14 +366,14 @@ class Activities(commands.Cog):
                 return False
 
             # Check if player exists
-            challenger = db_provider.get_player(interaction.user.id)
+            challenger = await db_provider.get_player(interaction.user.id)
             if not challenger:
                 await interaction.response.send_message(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return False
 
             # Check if opponent exists
-            opponent_player = db_provider.get_player(opponent.id)
+            opponent_player = await db_provider.get_player(opponent.id)
             if not opponent_player:
                 await interaction.response.send_message(f"{opponent.mention} não está registrado na Academia Tokugawa.")
                 return False
@@ -420,7 +420,8 @@ class Activities(commands.Cog):
                 self.active_duels[interaction.user.id] = opponent.id
 
                 # Calculate duel outcome using the new DuelCalculator
-                duel_result = DuelCalculator.calculate_outcome(challenger, opponent_player, duel_type)
+                calculator = DuelCalculator()
+                duel_result = calculator.calculate_outcome(challenger, opponent_player, duel_type)
 
                 # Generate narration using the new DuelNarrator
                 narration = DuelNarrator.generate_narration(duel_result)
@@ -449,7 +450,7 @@ class Activities(commands.Cog):
                 if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result[
                     "bonus_rewards"]:
                     # Get winner's inventory
-                    winner_player = db_provider.get_player(winner_id)
+                    winner_player = await db_provider.get_player(winner_id)
                     if winner_player and "inventory" in winner_player:
                         inventory = winner_player["inventory"]
 
@@ -495,8 +496,8 @@ class Activities(commands.Cog):
                     loser_update["level"] = new_level
 
                 # Update players in database
-                winner_success = db_provider.update_player(winner_id, **winner_update)
-                loser_success = db_provider.update_player(loser_id, **loser_update)
+                winner_success = await db_provider.update_player(winner_id, **winner_update)
+                loser_success = await db_provider.update_player(loser_id, **loser_update)
 
                 if winner_success and loser_success:
                     # Set cooldown for challenger
@@ -999,14 +1000,14 @@ class Activities(commands.Cog):
             return
 
         # Check if player exists
-        challenger = db_provider.get_player(ctx.author.id)
+        challenger = await db_provider.get_player(ctx.author.id)
         if not challenger:
             await ctx.send(
                 f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if opponent exists
-        opponent_player = db_provider.get_player(opponent.id)
+        opponent_player = await db_provider.get_player(opponent.id)
         if not opponent_player:
             await ctx.send(f"{opponent.mention} não está registrado na Academia Tokugawa.")
             return
@@ -1061,7 +1062,8 @@ class Activities(commands.Cog):
             # Process response
             if response.content.lower() in ["sim", "yes"]:
                 # Calculate duel outcome using the new DuelCalculator
-                duel_result = DuelCalculator.calculate_outcome(challenger, opponent_player, duel_type)
+                calculator = DuelCalculator()
+                duel_result = calculator.calculate_outcome(challenger, opponent_player, duel_type)
 
                 # Generate narration using the new DuelNarrator
                 narration = DuelNarrator.generate_narration(duel_result)
@@ -1090,7 +1092,7 @@ class Activities(commands.Cog):
                 if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result[
                     "bonus_rewards"]:
                     # Get winner's inventory
-                    winner_player = db_provider.get_player(winner_id)
+                    winner_player = await db_provider.get_player(winner_id)
                     if winner_player and "inventory" in winner_player:
                         inventory = winner_player["inventory"]
 
@@ -1129,8 +1131,8 @@ class Activities(commands.Cog):
                     loser_update["level"] = new_level
 
                 # Update players in database
-                winner_success = db_provider.update_player(winner_id, **winner_update)
-                loser_success = db_provider.update_player(loser_id, **loser_update)
+                winner_success = await db_provider.update_player(winner_id, **winner_update)
+                loser_success = await db_provider.update_player(loser_id, **loser_update)
 
                 if winner_success and loser_success:
                     # Set cooldown for challenger

@@ -359,7 +359,7 @@ class BaseChapter(Chapter):
 
 class StoryChapter(BaseChapter):
     """
-    A story chapter that contains narrative content and choices.
+    Story chapter implementation.
     """
 
     def __init__(self, chapter_id: str, chapter_data: Dict[str, Any], image_manager: ImageManager):
@@ -369,112 +369,76 @@ class StoryChapter(BaseChapter):
         Args:
             chapter_id: The chapter's unique identifier
             chapter_data: The chapter's data dictionary
-            image_manager: The image manager
+            image_manager: The image manager instance
         """
         super().__init__(chapter_id, chapter_data)
+        self.image_manager = image_manager
         self.scenes = chapter_data.get("scenes", [])
         self.current_scene_index = 0
-        self.current_dialogue_index = 0
-        self.shared_dialogue = []
-        self.choices = []
-        self.image_manager = image_manager
-
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Convert the chapter to a dictionary for serialization.
-
-        Returns:
-            Dictionary representation of the chapter
-        """
-        return {
-            "id": self.chapter_id,
-            "title": self.title,
-            "description": self.description,
-            "type": self.type,
-            "phase": self.phase,
-            "scenes": self.scenes,
-            "completion_exp": self.completion_exp,
-            "completion_tusd": self.completion_tusd,
-            "current_scene_index": self.current_scene_index,
-            "current_dialogue_index": self.current_dialogue_index,
-            "shared_dialogue": self.shared_dialogue,
-            "choices": self.choices
-        }
 
     def process(self, player_data: Dict) -> Dict:
         """
-        Process the chapter for a player.
+        Process the chapter and return updated player data and chapter information.
 
         Args:
-            player_data (Dict): The player's data.
+            player_data: The player's current data
 
         Returns:
-            Dict: The result of processing the chapter.
+            Dictionary containing updated player data and chapter information
         """
         try:
-            # Initialize chapter progress if not exists
+            # Initialize chapter state if not already present
             story_progress = player_data.get("story_progress", {})
-            chapter_progress = story_progress.get("chapter_progress", {}).get(self.chapter_id, {})
-
-            # Get the current scene
-            current_scene = chapter_progress.get("current_scene", 0)
-
-            # If the chapter is already completed, return an error
-            if self.chapter_id in story_progress.get("completed_chapters", []):
-                return {
-                    "error": "Chapter already completed",
-                    "player_data": player_data
+            if not story_progress:
+                story_progress = {
+                    "current_year": 1,
+                    "current_chapter": self.chapter_id,
+                    "current_scene_index": 0,
+                    "completed_chapters": [],
+                    "completed_challenge_chapters": [],
+                    "club_progress": {},
+                    "villain_defeats": [],
+                    "minion_defeats": [],
+                    "hierarchy_tier": 0,
+                    "hierarchy_points": 0,
+                    "discovered_secrets": [],
+                    "special_items": [],
+                    "character_relationships": {},
+                    "story_choices": {}
                 }
-
-            # If we've reached the end of the scenes, mark the chapter as completed
-            if current_scene >= len(self.scenes):
-                story_progress.setdefault("completed_chapters", []).append(self.chapter_id)
-                story_progress["current_chapter"] = self.chapter_data.get("next_chapter")
                 player_data["story_progress"] = story_progress
 
-                return {
-                    "player_data": player_data,
-                    "chapter_complete": True,
-                    "next_chapter_id": self.chapter_data.get("next_chapter")
-                }
+            # Get current scene index
+            current_scene_index = story_progress.get("current_scene_index", 0)
 
-            # Get the current scene
-            scene = self.scenes[current_scene]
-
-            # Process the scene
-            result = self._process_scene(scene, player_data)
-            if "error" in result:
+            # Check if we have more scenes to process
+            if current_scene_index < len(self.scenes):
+                current_scene = self.scenes[current_scene_index]
+                result = self._process_scene(current_scene, player_data)
+                return result
+            else:
+                # No more scenes, chapter is complete
+                result = self.complete(player_data)
+                result["chapter_complete"] = True
                 return result
 
-            # Update the player's story progress
-            story_progress.setdefault("chapter_progress", {}).setdefault(self.chapter_id, {})["current_scene"] = current_scene + 1
-            player_data["story_progress"] = story_progress
-
-            # Add the current scene to the result
-            result["current_scene"] = scene
-
-            return result
-
         except Exception as e:
-            logger.error(f"Error processing chapter {self.chapter_id}: {str(e)}")
+            logger.error(f"Error processing chapter: {str(e)}")
             return {"error": f"Error processing chapter: {str(e)}"}
 
     def _process_scene(self, scene: Dict, player_data: Dict) -> Dict:
         """
-        Process a scene in the chapter.
+        Process a scene and return updated player data and scene information.
 
         Args:
-            scene (Dict): The scene data.
-            player_data (Dict): The player's data.
+            scene: The scene data
+            player_data: The player's current data
 
         Returns:
-            Dict: The result of processing the scene.
+            Dictionary containing updated player data and scene information
         """
         try:
-            # Get the scene type
             scene_type = scene.get("type", "dialogue")
-
-            # Process the scene based on its type
             if scene_type == "dialogue":
                 return self._process_dialogue_scene(scene, player_data)
             elif scene_type == "choice":
@@ -486,6 +450,7 @@ class StoryChapter(BaseChapter):
             elif scene_type == "romance":
                 return self._process_romance_scene(scene, player_data)
             else:
+                logger.error(f"Unknown scene type: {scene_type}")
                 return {"error": f"Unknown scene type: {scene_type}"}
 
         except Exception as e:
@@ -494,57 +459,32 @@ class StoryChapter(BaseChapter):
 
     def _process_dialogue_scene(self, scene: Dict, player_data: Dict) -> Dict:
         """
-        Process a dialogue scene.
+        Process a dialogue scene and return updated player data and scene information.
 
         Args:
-            scene (Dict): The scene data.
-            player_data (Dict): The player's data.
+            scene: The scene data
+            player_data: The player's current data
 
         Returns:
-            Dict: The result of processing the dialogue scene.
+            Dictionary containing updated player data and scene information
         """
         try:
-            # Get the dialogue data
-            dialogue = scene.get("dialogue", {})
-            if not dialogue:
-                return {"error": "No dialogue data found"}
+            # Get dialogue and choices from the scene
+            dialogue = scene.get("dialogue", [])
+            choices = scene.get("choices", [])
 
-            # Get the character data
-            character = dialogue.get("character", {})
-            if not character:
-                return {"error": "No character data found"}
-
-            # Get the character image
-            character_image = None
-            if "image" in character:
-                character_image = self.image_manager.get_character_image(
-                    character["id"],
-                    character.get("expression", "default")
-                )
-
-            # Get the background image
-            background_image = None
-            if "background" in scene:
-                background_image = self.image_manager.get_location_image(
-                    scene["background"]["id"],
-                    scene["background"].get("type", "default")
-                )
-
-            # Create the dialogue result
+            # Create result dictionary
             result = {
-                "type": "dialogue",
-                "character": {
-                    "id": character["id"],
-                    "name": character.get("name", "Unknown"),
-                    "image": character_image
-                },
-                "text": dialogue.get("text", "..."),
-                "background": background_image
+                "player_data": player_data,
+                "chapter_data": {
+                    "title": scene.get("title", self.title),
+                    "description": scene.get("description", self.description),
+                    "background": scene.get("background"),
+                    "characters": scene.get("characters", []),
+                    "current_dialogue": dialogue[0] if dialogue else None,
+                    "choices": choices
+                }
             }
-
-            # Add choices if any
-            if "choices" in dialogue:
-                result["choices"] = dialogue["choices"]
 
             return result
 
@@ -552,510 +492,64 @@ class StoryChapter(BaseChapter):
             logger.error(f"Error processing dialogue scene: {str(e)}")
             return {"error": f"Error processing dialogue scene: {str(e)}"}
 
-    def _process_choice_scene(self, scene: Dict, player_data: Dict) -> Dict:
-        """
-        Process a choice scene.
-
-        Args:
-            scene (Dict): The scene data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the choice scene.
-        """
-        try:
-            # Get the choice data
-            choices = scene.get("choices", [])
-            if not choices:
-                return {"error": "No choices found"}
-
-            # Get the background image
-            background_image = None
-            if "background" in scene:
-                background_image = self.image_manager.get_location_image(
-                    scene["background"]["id"],
-                    scene["background"].get("type", "default")
-                )
-
-            # Create the choice result
-            result = {
-                "type": "choice",
-                "title": scene.get("title", "Make a choice"),
-                "description": scene.get("description", "What will you do?"),
-                "choices": choices,
-                "background": background_image
-            }
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing choice scene: {str(e)}")
-            return {"error": f"Error processing choice scene: {str(e)}"}
-
-    def _process_event_scene(self, scene: Dict, player_data: Dict) -> Dict:
-        """
-        Process an event scene.
-
-        Args:
-            scene (Dict): The scene data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the event scene.
-        """
-        try:
-            # Get the event data
-            event = scene.get("event", {})
-            if not event:
-                return {"error": "No event data found"}
-
-            # Get the event image
-            event_image = None
-            if "image" in event:
-                event_image = self.image_manager.get_event_image(event["type"])
-
-            # Get the background image
-            background_image = None
-            if "background" in scene:
-                background_image = self.image_manager.get_location_image(
-                    scene["background"]["id"],
-                    scene["background"].get("type", "default")
-                )
-
-            # Create the event result
-            result = {
-                "type": "event",
-                "event": {
-                    "id": event["id"],
-                    "type": event["type"],
-                    "name": event.get("name", "Unknown Event"),
-                    "description": event.get("description", "No description available."),
-                    "image": event_image
-                },
-                "background": background_image
-            }
-
-            # Add choices if any
-            if "choices" in event:
-                result["choices"] = event["choices"]
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing event scene: {str(e)}")
-            return {"error": f"Error processing event scene: {str(e)}"}
-
-    def _process_battle_scene(self, scene: Dict, player_data: Dict) -> Dict:
-        """
-        Process a battle scene.
-
-        Args:
-            scene (Dict): The scene data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the battle scene.
-        """
-        try:
-            # Get the battle data
-            battle = scene.get("battle", {})
-            if not battle:
-                return {"error": "No battle data found"}
-
-            # Get the battle image
-            battle_image = None
-            if "element" in battle:
-                battle_image = self.image_manager.get_battle_image(battle["element"])
-
-            # Get the background image
-            background_image = None
-            if "background" in scene:
-                background_image = self.image_manager.get_location_image(
-                    scene["background"]["id"],
-                    scene["background"].get("type", "default")
-                )
-
-            # Create the battle result
-            result = {
-                "type": "battle",
-                "battle": {
-                    "id": battle["id"],
-                    "element": battle["element"],
-                    "name": battle.get("name", "Unknown Battle"),
-                    "description": battle.get("description", "No description available."),
-                    "image": battle_image
-                },
-                "background": background_image
-            }
-
-            # Add choices if any
-            if "choices" in battle:
-                result["choices"] = battle["choices"]
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing battle scene: {str(e)}")
-            return {"error": f"Error processing battle scene: {str(e)}"}
-
-    def _process_romance_scene(self, scene: Dict, player_data: Dict) -> Dict:
-        """
-        Process a romance scene.
-
-        Args:
-            scene (Dict): The scene data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the romance scene.
-        """
-        try:
-            # Get the romance data
-            romance = scene.get("romance", {})
-            if not romance:
-                return {"error": "No romance data found"}
-
-            # Get the romance image
-            romance_image = None
-            if "type" in romance:
-                romance_image = self.image_manager.get_romance_image(romance["type"])
-
-            # Get the background image
-            background_image = None
-            if "background" in scene:
-                background_image = self.image_manager.get_location_image(
-                    scene["background"]["id"],
-                    scene["background"].get("type", "default")
-                )
-
-            # Create the romance result
-            result = {
-                "type": "romance",
-                "romance": {
-                    "id": romance["id"],
-                    "type": romance["type"],
-                    "name": romance.get("name", "Unknown Romance"),
-                    "description": romance.get("description", "No description available."),
-                    "image": romance_image
-                },
-                "background": background_image
-            }
-
-            # Add choices if any
-            if "choices" in romance:
-                result["choices"] = romance["choices"]
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing romance scene: {str(e)}")
-            return {"error": f"Error processing romance scene: {str(e)}"}
-
     def process_choice(self, player_data: Dict, choice_index: int) -> Dict:
         """
-        Process a player's choice in the chapter.
+        Process a player's choice and return updated player data and chapter information.
 
         Args:
-            player_data (Dict): The player's data.
-            choice_index (int): The index of the choice made.
+            player_data: The player's current data
+            choice_index: The index of the chosen option
 
         Returns:
-            Dict: The result of processing the choice.
+            Dictionary containing updated player data and chapter information
         """
         try:
-            # Get the current scene
             story_progress = player_data.get("story_progress", {})
-            chapter_progress = story_progress.get("chapter_progress", {}).get(self.chapter_id, {})
-            current_scene = chapter_progress.get("current_scene", 0)
+            current_scene_index = story_progress.get("current_scene_index", 0)
 
-            # If we've reached the end of the scenes, return an error
-            if current_scene >= len(self.scenes):
-                return {"error": "No more scenes in this chapter"}
+            if current_scene_index >= len(self.scenes):
+                return {"error": "No more scenes to process"}
 
-            # Get the current scene
-            scene = self.scenes[current_scene]
+            current_scene = self.scenes[current_scene_index]
+            choices = current_scene.get("choices", [])
 
-            # Get the choices
-            choices = None
-            if scene.get("type") == "dialogue":
-                choices = scene.get("dialogue", {}).get("choices", [])
-            elif scene.get("type") == "choice":
-                choices = scene.get("choices", [])
-            elif scene.get("type") == "event":
-                choices = scene.get("event", {}).get("choices", [])
-            elif scene.get("type") == "battle":
-                choices = scene.get("battle", {}).get("choices", [])
-            elif scene.get("type") == "romance":
-                choices = scene.get("romance", {}).get("choices", [])
-
-            # If no choices, return an error
-            if not choices:
-                return {"error": "No choices available in this scene"}
-
-            # If the choice index is invalid, return an error
-            if choice_index < 0 or choice_index >= len(choices):
+            if choice_index >= len(choices):
                 return {"error": "Invalid choice index"}
 
-            # Get the chosen choice
             choice = choices[choice_index]
+            next_scene_id = choice.get("next_scene")
 
-            # Process the choice
-            result = self._process_choice(choice, player_data)
-            if "error" in result:
-                return result
+            # Find the next scene
+            next_scene_index = None
+            for i, scene in enumerate(self.scenes):
+                if scene.get("scene_id") == next_scene_id:
+                    next_scene_index = i
+                    break
 
-            # Update the player's story progress
-            story_progress.setdefault("chapter_progress", {}).setdefault(self.chapter_id, {}).setdefault("choices_made", []).append(choice_index)
+            if next_scene_index is None:
+                return {"error": f"Next scene {next_scene_id} not found"}
+
+            # Update player data with choice effects
+            if "effects" in choice:
+                for effect, value in choice["effects"].items():
+                    if effect == "reputation":
+                        for npc, points in value.items():
+                            player_data["reputation"] = player_data.get("reputation", {})
+                            player_data["reputation"][npc] = player_data["reputation"].get(npc, 0) + points
+                    else:
+                        player_data[effect] = value
+
+            # Update story progress
+            story_progress["current_scene_index"] = next_scene_index
             player_data["story_progress"] = story_progress
 
-            # Add the next scene to the result
-            result["next_scene"] = self.scenes[current_scene + 1] if current_scene + 1 < len(self.scenes) else None
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing choice: {str(e)}")
-            return {"error": f"Error processing choice: {str(e)}"}
-
-    def _process_choice(self, choice: Dict, player_data: Dict) -> Dict:
-        """
-        Process a choice.
-
-        Args:
-            choice (Dict): The choice data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the choice.
-        """
-        try:
-            # Get the choice type
-            choice_type = choice.get("type", "story")
-
-            # Process the choice based on its type
-            if choice_type == "story":
-                return self._process_story_choice(choice, player_data)
-            elif choice_type == "battle":
-                return self._process_battle_choice(choice, player_data)
-            elif choice_type == "romance":
-                return self._process_romance_choice(choice, player_data)
-            elif choice_type == "event":
-                return self._process_event_choice(choice, player_data)
-            else:
-                return {"error": f"Unknown choice type: {choice_type}"}
+            # Process the next scene
+            next_scene = self.scenes[next_scene_index]
+            return self._process_scene(next_scene, player_data)
 
         except Exception as e:
             logger.error(f"Error processing choice: {str(e)}")
             return {"error": f"Error processing choice: {str(e)}"}
-
-    def _process_story_choice(self, choice: Dict, player_data: Dict) -> Dict:
-        """
-        Process a story choice.
-
-        Args:
-            choice (Dict): The choice data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the story choice.
-        """
-        try:
-            # Get the choice effects
-            effects = choice.get("effects", {})
-
-            # Apply the effects to the player data
-            for effect_type, effect_value in effects.items():
-                if effect_type == "exp":
-                    player_data["exp"] = player_data.get("exp", 0) + effect_value
-                elif effect_type == "tusd":
-                    player_data["tusd"] = player_data.get("tusd", 0) + effect_value
-                elif effect_type == "level":
-                    player_data["level"] = player_data.get("level", 0) + effect_value
-                elif effect_type == "element":
-                    player_data["element"] = effect_value
-                elif effect_type == "item":
-                    player_data.setdefault("inventory", []).append(effect_value)
-                elif effect_type == "flag":
-                    player_data.setdefault("story_progress", {}).setdefault("flags", {})[effect_value] = True
-
-            return {
-                "player_data": player_data,
-                "effects": effects
-            }
-
-        except Exception as e:
-            logger.error(f"Error processing story choice: {str(e)}")
-            return {"error": f"Error processing story choice: {str(e)}"}
-
-    def _process_battle_choice(self, choice: Dict, player_data: Dict) -> Dict:
-        """
-        Process a battle choice.
-
-        Args:
-            choice (Dict): The choice data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the battle choice.
-        """
-        try:
-            # Get the battle data
-            battle = choice.get("battle", {})
-            if not battle:
-                return {"error": "No battle data found"}
-
-            # Get the battle image
-            battle_image = None
-            if "element" in battle:
-                battle_image = self.image_manager.get_battle_image(battle["element"])
-
-            # Create the battle result
-            result = {
-                "type": "battle",
-                "battle": {
-                    "id": battle["id"],
-                    "element": battle["element"],
-                    "name": battle.get("name", "Unknown Battle"),
-                    "description": battle.get("description", "No description available."),
-                    "image": battle_image
-                }
-            }
-
-            # Add the battle effects
-            effects = battle.get("effects", {})
-            for effect_type, effect_value in effects.items():
-                if effect_type == "exp":
-                    player_data["exp"] = player_data.get("exp", 0) + effect_value
-                elif effect_type == "tusd":
-                    player_data["tusd"] = player_data.get("tusd", 0) + effect_value
-                elif effect_type == "level":
-                    player_data["level"] = player_data.get("level", 0) + effect_value
-                elif effect_type == "item":
-                    player_data.setdefault("inventory", []).append(effect_value)
-
-            result["player_data"] = player_data
-            result["effects"] = effects
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing battle choice: {str(e)}")
-            return {"error": f"Error processing battle choice: {str(e)}"}
-
-    def _process_romance_choice(self, choice: Dict, player_data: Dict) -> Dict:
-        """
-        Process a romance choice.
-
-        Args:
-            choice (Dict): The choice data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the romance choice.
-        """
-        try:
-            # Get the romance data
-            romance = choice.get("romance", {})
-            if not romance:
-                return {"error": "No romance data found"}
-
-            # Get the romance image
-            romance_image = None
-            if "type" in romance:
-                romance_image = self.image_manager.get_romance_image(romance["type"])
-
-            # Create the romance result
-            result = {
-                "type": "romance",
-                "romance": {
-                    "id": romance["id"],
-                    "type": romance["type"],
-                    "name": romance.get("name", "Unknown Romance"),
-                    "description": romance.get("description", "No description available."),
-                    "image": romance_image
-                }
-            }
-
-            # Add the romance effects
-            effects = romance.get("effects", {})
-            for effect_type, effect_value in effects.items():
-                if effect_type == "exp":
-                    player_data["exp"] = player_data.get("exp", 0) + effect_value
-                elif effect_type == "tusd":
-                    player_data["tusd"] = player_data.get("tusd", 0) + effect_value
-                elif effect_type == "level":
-                    player_data["level"] = player_data.get("level", 0) + effect_value
-                elif effect_type == "item":
-                    player_data.setdefault("inventory", []).append(effect_value)
-                elif effect_type == "relationship":
-                    player_data.setdefault("relationships", {}).setdefault(romance["id"], 0)
-                    player_data["relationships"][romance["id"]] += effect_value
-
-            result["player_data"] = player_data
-            result["effects"] = effects
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing romance choice: {str(e)}")
-            return {"error": f"Error processing romance choice: {str(e)}"}
-
-    def _process_event_choice(self, choice: Dict, player_data: Dict) -> Dict:
-        """
-        Process an event choice.
-
-        Args:
-            choice (Dict): The choice data.
-            player_data (Dict): The player's data.
-
-        Returns:
-            Dict: The result of processing the event choice.
-        """
-        try:
-            # Get the event data
-            event = choice.get("event", {})
-            if not event:
-                return {"error": "No event data found"}
-
-            # Get the event image
-            event_image = None
-            if "type" in event:
-                event_image = self.image_manager.get_event_image(event["type"])
-
-            # Create the event result
-            result = {
-                "type": "event",
-                "event": {
-                    "id": event["id"],
-                    "type": event["type"],
-                    "name": event.get("name", "Unknown Event"),
-                    "description": event.get("description", "No description available."),
-                    "image": event_image
-                }
-            }
-
-            # Add the event effects
-            effects = event.get("effects", {})
-            for effect_type, effect_value in effects.items():
-                if effect_type == "exp":
-                    player_data["exp"] = player_data.get("exp", 0) + effect_value
-                elif effect_type == "tusd":
-                    player_data["tusd"] = player_data.get("tusd", 0) + effect_value
-                elif effect_type == "level":
-                    player_data["level"] = player_data.get("level", 0) + effect_value
-                elif effect_type == "item":
-                    player_data.setdefault("inventory", []).append(effect_value)
-                elif effect_type == "flag":
-                    player_data.setdefault("story_progress", {}).setdefault("flags", {})[effect_value] = True
-
-            result["player_data"] = player_data
-            result["effects"] = effects
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing event choice: {str(e)}")
-            return {"error": f"Error processing event choice: {str(e)}"}
 
     def get_available_events(self, player_data: Dict) -> List[Dict]:
         """
