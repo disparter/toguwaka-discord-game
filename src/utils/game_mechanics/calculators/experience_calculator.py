@@ -22,9 +22,7 @@ class ExperienceCalculator(IExperienceCalculator):
     @staticmethod
     def calculate_required_exp(level):
         """Calculate experience required for a specific level."""
-        if level in EXP_LEVELS:
-            return EXP_LEVELS[level]
-        return math.floor(BASE_EXP * (level ** 1.5))
+        return 100 * (level ** 2)
     
     @staticmethod
     def calculate_level(exp):

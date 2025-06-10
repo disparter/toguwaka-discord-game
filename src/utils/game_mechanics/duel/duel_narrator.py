@@ -66,8 +66,8 @@ class DuelNarrator(IDuelNarrator):
         
         # Format the template variables
         template_vars = {
-            "winner_name": winner["name"],
-            "loser_name": loser["name"],
+            "winner_name": winner,  # winner is already a string
+            "loser_name": loser,  # loser is already a string
             "exp_reward": duel_result["exp_reward"],
             "tusd_reward": duel_result["tusd_reward"]
         }

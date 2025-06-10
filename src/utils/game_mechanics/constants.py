@@ -7,12 +7,12 @@ import os
 
 # HP factor constants
 HP_FACTOR_THRESHOLD = 0.5  # Below 50% HP, attributes start to be affected
-HP_FACTOR_MIN = 0.7  # At 0% HP, attributes would be at 70% (though players can't reach 0 HP)
+HP_FACTOR_MIN = 0.3  # At 0% HP, attributes would be at 30% (though players can't reach 0 HP)
 
 # Experience required for each level
-# Formula: base_exp * (level ^ 1.5)
+# Formula: base_exp * level
 BASE_EXP = 100
-EXP_LEVELS = {level: math.floor(BASE_EXP * (level ** 1.5)) for level in range(1, 51)}
+EXP_LEVELS = {level: BASE_EXP * level for level in range(1, 51)}
 
 # Strength level stars (1-5)
 STRENGTH_LEVELS = {

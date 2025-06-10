@@ -61,7 +61,8 @@ mkdir -p test_outputs
 
 # Run tests with coverage and save output to file
 print_section "Running tests with coverage"
-python tests/run_tests.py > test_outputs/test_results.txt 2>&1
+chmod +x run_tests.sh
+./run_tests.sh > test_outputs/test_results.txt 2>&1
 
 # Store the exit code
 TEST_EXIT_CODE=$?

@@ -19,43 +19,6 @@ sys.path.insert(0, str(root_dir))
 os.environ["TESTING"] = "true"
 os.environ["ENVIRONMENT"] = "test"
 
-# Monkey patch para corrigir imports
-import builtins
-original_import = builtins.__import__
-
-def patched_import(name, *args, **kwargs):
-    # Handle specific problematic imports
-    if name == 'discord.ext.commands.src':
-        # Create a mock module for discord.ext.commands.src
-        import types
-        mock_module = types.ModuleType('discord.ext.commands')
-        return mock_module
-
-    if name == 'src.story_mode.src':
-        # Create a mock module for src.story_mode.src
-        import types
-        mock_module = types.ModuleType('src.story_mode')
-        return mock_module
-
-    # Lista de módulos que precisam do prefixo src
-    src_modules = ['utils', 'cogs', 'story_mode', 'bot']
-
-    # Não modifica imports de bibliotecas externas ou imports relativos
-    if (name.startswith(('discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore')) or
-        name.startswith('.') or
-        name.startswith('src.')):
-        return original_import(name, *args, **kwargs)
-
-    # Verifica se o módulo está na lista e adiciona o prefixo src
-    for module in src_modules:
-        if name == module or name.startswith(f"{module}."):
-            name = f"src.{name}"
-            break
-
-    return original_import(name, *args, **kwargs)
-
-builtins.__import__ = patched_import
-
 @pytest.fixture(autouse=True)
 def mock_logging():
     """Mock logging to prevent actual log output during tests."""
@@ -66,47 +29,75 @@ def mock_logging():
 @pytest.fixture(autouse=True)
 def mock_discord():
     """Mock Discord.py to prevent actual Discord API calls during tests."""
-    with pytest.MonkeyPatch.context() as m:
-        # Mock discord.Client
-        m.setattr('discord.Client', MagicMock)
-
-        # Mock discord.Interaction
-        m.setattr('discord.Interaction', MagicMock)
-
-        # Mock discord.app_commands
-        m.setattr('discord.app_commands', MagicMock)
-
-        yield 
+    mock_client = MagicMock()
+    mock_interaction = MagicMock()
+    mock_app_commands = MagicMock()
+    mock_commands = MagicMock()
+    
+    with patch('discord.Client', return_value=mock_client), \
+         patch('discord.Interaction', return_value=mock_interaction), \
+         patch('discord.app_commands', mock_app_commands), \
+         patch('discord.ext.commands', mock_commands):
+        yield
 
 @pytest.fixture
 def mock_ctx():
-    """Mock Discord context."""
+    """Mock do contexto do comando"""
     ctx = MagicMock()
-    ctx.author.id = "123456789"
-    ctx.author.name = "Test Player"
-    ctx.send = MagicMock()
+    ctx.author.id = 123456789
+    ctx.author.name = "TestUser"
+    ctx.guild.id = 987654321
+    ctx.guild.name = "TestGuild"
     return ctx
 
 @pytest.fixture
-def test_player():
-    """Provide test player data."""
-    return {
-        "user_id": "123456789",
-        "name": "Test Player",
+def mock_bot():
+    """Mock básico do bot"""
+    bot = MagicMock()
+    bot.user.id = 111111111
+    bot.user.name = "TestBot"
+    return bot
+
+@pytest.fixture
+def mock_db():
+    """Mock básico do banco de dados"""
+    db = MagicMock()
+    db.get_player.return_value = {
+        "user_id": 123456789,
+        "name": "TestUser",
         "level": 1,
         "exp": 0,
         "tusd": 1000,
         "hp": 100,
         "max_hp": 100,
-        "dexterity": 10,
-        "intellect": 10,
-        "charisma": 10,
-        "power_stat": 10,
-        "reputation": 0,
-        "strength_level": 1,
-        "club_id": None,
-        "created_at": datetime.now().isoformat(),
-        "last_active": datetime.now().isoformat()
+        "strength": 10,
+        "agility": 10,
+        "intelligence": 10
+    }
+    return db
+
+@pytest.fixture
+def test_player():
+    """Dados de teste para um jogador"""
+    return {
+        "user_id": 123456789,
+        "name": "TestUser",
+        "level": 1,
+        "exp": 0,
+        "tusd": 1000,
+        "hp": 100,
+        "max_hp": 100,
+        "strength": 10,
+        "agility": 10,
+        "intelligence": 10,
+        "inventory": {
+            "item1": {
+                "id": "item1",
+                "name": "Test Item",
+                "type": "consumable",
+                "effect": "heal"
+            }
+        }
     }
 
 @pytest.fixture
@@ -155,32 +146,6 @@ def test_inventory():
             "effect": "heal"
         }
     }
-
-@pytest.fixture
-def mock_db():
-    """Mock database operations."""
-    with patch('utils.persistence.db_provider.get_player') as mock_get_player, \
-         patch('utils.persistence.db_provider.update_player') as mock_update_player, \
-         patch('utils.persistence.db_provider.get_club') as mock_get_club, \
-         patch('utils.persistence.db_provider.get_player_inventory') as mock_get_inventory, \
-         patch('utils.persistence.db_provider.add_item_to_inventory') as mock_add_item, \
-         patch('utils.persistence.db_provider.remove_item_from_inventory') as mock_remove_item:
-
-        mock_get_player.return_value = None
-        mock_update_player.return_value = True
-        mock_get_club.return_value = None
-        mock_get_inventory.return_value = {}
-        mock_add_item.return_value = True
-        mock_remove_item.return_value = True
-
-        yield {
-            'get_player': mock_get_player,
-            'update_player': mock_update_player,
-            'get_club': mock_get_club,
-            'get_inventory': mock_get_inventory,
-            'add_item': mock_add_item,
-            'remove_item': mock_remove_item
-        }
 
 @pytest.fixture
 def mock_story_data():
