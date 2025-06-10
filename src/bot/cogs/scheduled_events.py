@@ -9,6 +9,7 @@ import sqlite3
 import os
 from datetime import datetime, timedelta, time
 import pytz
+from typing import Any
 from src.utils.persistence import db_provider
 
 # Helper functions to use db_provider

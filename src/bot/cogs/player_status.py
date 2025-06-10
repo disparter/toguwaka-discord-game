@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
+from typing import Any
 from src.utils.persistence.db_provider import db_provider
 from src.utils.embeds import create_player_embed, create_inventory_embed, create_leaderboard_embed
 import json

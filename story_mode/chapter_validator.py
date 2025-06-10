@@ -52,9 +52,9 @@ class ChapterValidator:
             True if the chapter is valid, False otherwise
         """
         # Get chapter ID from data
-        chapter_id = chapter_data.get("id")
+        chapter_id = chapter_data.get("id") or chapter_data.get("chapter_id")
         if not chapter_id:
-            logger.error(f"Chapter in {file_path} is missing id")
+            logger.error(f"Chapter in {file_path} is missing id or chapter_id")
             return False
 
         # Check required fields

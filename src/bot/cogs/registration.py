@@ -4,6 +4,7 @@ from discord import app_commands
 import asyncio
 import logging
 import random
+from typing import Any
 from src.utils.persistence.db_provider import db_provider
 from src.utils.embeds import create_basic_embed, create_player_embed
 from src.utils.game_mechanics import STRENGTH_LEVELS
@@ -47,11 +48,11 @@ class Registration(commands.Cog):
     async def register(self, ctx):
         """Iniciar o processo de registro na Academia Tokugawa."""
         logger.info(f"Register command called by user {ctx.author.id} ({ctx.author.name})")
-        
+
         # Check if player already exists
         player = await db_provider.get_player(ctx.author.id)
         logger.info(f"Player lookup result for {ctx.author.id}: {player}")
-        
+
         if player:
             logger.info(f"Player {ctx.author.id} already registered")
             await ctx.send(f"{ctx.author.mention}, você já está registrado na Academia Tokugawa!")

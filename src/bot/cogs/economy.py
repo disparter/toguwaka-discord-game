@@ -7,6 +7,7 @@ import asyncio
 import json
 import os
 from datetime import datetime, timedelta
+from typing import Any
 from src.utils.persistence import db_provider
 from src.utils.persistence.db_provider import get_player, update_player, get_club, get_player_async, get_club_async, get_player_inventory_async, add_item_to_inventory_async, update_player_async
 from src.utils.embeds import create_basic_embed
@@ -1345,7 +1346,7 @@ class Economy(commands.Cog):
 
         # Update player in database
         success = await update_player_async(ctx.author.id, **update_data)
-        
+
         # Update inventory in database
         if success:
             inventory_success = await add_item_to_inventory_async(ctx.author.id, str(item["id"]), inventory[str(item["id"])])
