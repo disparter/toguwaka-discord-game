@@ -17,8 +17,9 @@ from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CL
 
 logger = logging.getLogger('tokugawa_bot')
 
-# Configuração do DynamoDB
-dynamodb = boto3.resource('dynamodb')
+# Configurar região padrão para o DynamoDB
+AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
+dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
 PLAYERS_TABLE = dynamodb.Table(DYNAMODB_PLAYERS_TABLE)
 INVENTORY_TABLE = dynamodb.Table(DYNAMODB_INVENTORY_TABLE)
 CLUBS_TABLE = dynamodb.Table(DYNAMODB_CLUBS_TABLE)

@@ -98,40 +98,74 @@ def get_table(table_name):
         logger.error(f"Error getting table {table_name}: {e}")
         raise DynamoDBConnectionError(f"Failed to get table {table_name}") from e
 
-def init_db():
-    """
-    Initialize the DynamoDB connection and create tables if they don't exist.
-    """
+def init_db() -> bool:
+    """Initialize DynamoDB tables."""
     try:
-        logger.info("Initializing DynamoDB connection")
         dynamodb = get_dynamodb_client()
         
-        # Check if tables exist and create them if they don't
-        for table_name in [TABLES['players'], TABLES['clubs'], TABLES['events'], TABLES['inventory'], TABLES['market'], TABLES['items'], TABLES['club_activities'], TABLES['grades'], TABLES['votes'], TABLES['quiz_questions'], TABLES['quiz_answers'], TABLES['main']]:
-            try:
-                logger.info(f"Checking table {table_name}")
-                # Try to describe the table to check if it exists
-                try:
-                    dynamodb.meta.client.describe_table(TableName=table_name)
-                    logger.info(f"Table {table_name} exists and is active")
-                except Exception as e:
-                    if hasattr(e, 'response') and e.response['Error']['Code'] in ['ResourceNotFoundException', 'UnrecognizedClientException']:
-                        logger.info(f"Creating table {table_name}")
-                        create_table(dynamodb, table_name)
-                        # Wait for table to be active after creation
-                        dynamodb.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-                        logger.info(f"Table {table_name} created and is active")
-                    else:
-                        logger.error(f"Error checking table {table_name}: {e}")
-                        raise DynamoDBOperationError(f"Error checking table {table_name}: {e}")
-            except Exception as e:
-                logger.error(f"Error initializing table {table_name}: {e}")
-                raise DynamoDBOperationError(f"Error initializing table {table_name}: {e}")
-
-        logger.info("DynamoDB initialized successfully")
+        # Check if tables exist
+        tables = dynamodb.meta.client.list_tables()['TableNames']
+        
+        # If tables don't exist, create them
+        if 'Jogadores' not in tables:
+            logger.info("Creating Jogadores table...")
+            dynamodb.create_table(
+                TableName='Jogadores',
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
+                ],
+                ProvisionedThroughput={
+                    'ReadCapacityUnits': 5,
+                    'WriteCapacityUnits': 5
+                }
+            )
+        
+        if 'Clubes' not in tables:
+            logger.info("Creating Clubes table...")
+            dynamodb.create_table(
+                TableName='Clubes',
+                KeySchema=[
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
+                ],
+                ProvisionedThroughput={
+                    'ReadCapacityUnits': 5,
+                    'WriteCapacityUnits': 5
+                }
+            )
+        
+        if 'Inventario' not in tables:
+            logger.info("Creating Inventario table...")
+            dynamodb.create_table(
+                TableName='Inventario',
+                KeySchema=[
+                    {'AttributeName': 'user_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'item_id', 'KeyType': 'RANGE'}
+                ],
+                AttributeDefinitions=[
+                    {'AttributeName': 'user_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'item_id', 'AttributeType': 'S'}
+                ],
+                ProvisionedThroughput={
+                    'ReadCapacityUnits': 5,
+                    'WriteCapacityUnits': 5
+                }
+            )
+        
+        logger.info("DynamoDB tables initialized successfully")
         return True
+        
     except Exception as e:
-        logger.error(f"Error initializing DynamoDB: {e}")
+        logger.error(f"Error initializing DynamoDB tables: {str(e)}")
         return False
 
 def create_table(dynamodb, table_name):

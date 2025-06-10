@@ -9,10 +9,10 @@ import sqlite3
 import os
 from datetime import datetime, timedelta, time
 import pytz
-from utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag, store_cooldown, update_player_grade, get_monthly_average_grades, update_player_reputation, get_player_grades, get_all_players
-from utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
-from utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
-from utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
+from src.utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag, store_cooldown, update_player_grade, get_monthly_average_grades, update_player_reputation, get_player_grades, get_all_players
+from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
+from src.utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
+from src.utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
 from story_mode.club_system import ClubSystem
 
 logger = logging.getLogger('tokugawa_bot')
@@ -227,7 +227,7 @@ class ScheduledEvents(commands.Cog):
         # Load active events from database
         try:
             logger.info("Loading active events from database")
-            from utils.database import get_active_events
+            from src.utils.database import get_active_events
 
             db_events = get_active_events()
             if db_events:
@@ -273,7 +273,7 @@ class ScheduledEvents(commands.Cog):
         # Load cooldowns from database
         try:
             logger.info("Loading cooldowns from database")
-            from utils.database import get_cooldowns, clear_expired_cooldowns
+            from src.utils.database import get_cooldowns, clear_expired_cooldowns
 
             # First clear any expired cooldowns
             removed = clear_expired_cooldowns()
@@ -355,7 +355,7 @@ class ScheduledEvents(commands.Cog):
     async def recover_player_hp(self):
         """Recover HP for all players."""
         try:
-            from utils.database import get_all_players, update_player
+            from src.utils.database import get_all_players, update_player
 
             # Get all players
             players = get_all_players()
@@ -774,7 +774,7 @@ class ScheduledEvents(commands.Cog):
                 logger.info("Weekly reset completed")
 
                 # Update club reputation based on weekly activities
-                from utils.database import get_all_clubs, update_club_reputation_weekly, get_top_clubs_by_activity
+                from src.utils.database import get_all_clubs, update_club_reputation_weekly, get_top_clubs_by_activity
                 
                 # Get all clubs and their weekly activities
                 clubs = get_all_clubs()
@@ -812,7 +812,7 @@ class ScheduledEvents(commands.Cog):
         """Announce the top three clubs of the week."""
         try:
             # Get top clubs by activity
-            from utils.database import get_top_clubs_by_activity
+            from src.utils.database import get_top_clubs_by_activity
             top_clubs = get_top_clubs_by_activity(limit=3)
 
             if not top_clubs:
@@ -1645,7 +1645,7 @@ class ScheduledEvents(commands.Cog):
     async def send_daily_announcements(self):
         """Send daily announcements, rankings, and news."""
         try:
-            from utils.ranking_formatter import RankingFormatter, ClubEffectEngine
+            from src.utils.ranking_formatter import RankingFormatter, ClubEffectEngine
 
             logger.info("Preparing to send daily announcements")
 
@@ -1910,7 +1910,7 @@ class ScheduledEvents(commands.Cog):
         """
         try:
             # Import ClubEffectEngine for formatting buff descriptions
-            from utils.ranking_formatter import ClubEffectEngine
+            from src.utils.ranking_formatter import ClubEffectEngine
 
             # Get all clubs
             clubs = get_all_clubs()
@@ -2296,7 +2296,7 @@ class ScheduledEvents(commands.Cog):
 
             # Store in database
             try:
-                from utils.database import store_event
+                from src.utils.database import store_event
 
                 # Extract data for database storage
                 store_event(
@@ -2504,7 +2504,7 @@ class ScheduledEvents(commands.Cog):
 
             # Try to store in database if available
             try:
-                from utils.database import store_event
+                from src.utils.database import store_event
                 store_event(
                     event_id=event_id,
                     event_type='villain',
@@ -2675,7 +2675,7 @@ class ScheduledEvents(commands.Cog):
             }
 
             # Store in database
-            from utils.database import store_event
+            from src.utils.database import store_event
             store_event(
                 event_id=event_id,
                 name=event["title"],
@@ -3398,7 +3398,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Update in database
                     try:
-                        from utils.database import update_event_status
+                        from src.utils.database import update_event_status
 
                         # Mark as completed in database
                         update_event_status(
@@ -3435,7 +3435,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Update in database
                     try:
-                        from utils.database import update_event_status
+                        from src.utils.database import update_event_status
 
                         # Mark as completed in database
                         update_event_status(
@@ -4336,7 +4336,7 @@ class ScheduledEvents(commands.Cog):
     async def slash_ranking(self, interaction: discord.Interaction, tipo: str = "overall"):
         """View daily, weekly, overall, and reputation rankings with improved visuals."""
         try:
-            from utils.ranking_formatter import RankingFormatter
+            from src.utils.ranking_formatter import RankingFormatter
 
             if tipo == "daily":
                 # Get daily rankings
@@ -4571,8 +4571,8 @@ class ScheduledEvents(commands.Cog):
         """View today's events at Tokugawa Academy."""
         try:
             # Import the necessary function
-            from utils.database import get_events_by_date
-            from utils.embeds import create_db_event_embed
+            from src.utils.database import get_events_by_date
+            from src.utils.embeds import create_db_event_embed
 
             # Get today's events
             today_events = get_events_by_date(include_completed=mostrar_concluidos)
@@ -4639,7 +4639,7 @@ class ScheduledEvents(commands.Cog):
 async def setup(bot):
     """Add the cog to the bot."""
     import json
-    from utils.command_registrar import CommandRegistrar
+    from src.utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
     cog = ScheduledEvents(bot)
