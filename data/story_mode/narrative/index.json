@@ -171,5 +171,22 @@
       "base_path": "images/story/locations/",
       "fallback": "default_location.jpg"
     }
+  },
+  "chapters": {
+    "1_1_arrival": {
+      "path": "data/story_mode/narrative/chapters/1_1_arrival.json"
+    },
+    "2_1_return": {
+      "path": "data/story_mode/narrative/chapters/2_1_return.json"
+    },
+    "3_1_final_year": {
+      "path": "data/story_mode/narrative/chapters/3_1_final_year.json"
+    },
+    "3_12_portal_rift": {
+      "path": "data/story_mode/narrative/chapters/3_12_portal_rift.json"
+    },
+    "4_1_portal_rift": {
+      "path": "data/story_mode/narrative/chapters/4_1_portal_rift.json"
+    }
   }
 } 

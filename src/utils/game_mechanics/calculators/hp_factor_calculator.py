@@ -8,16 +8,14 @@ from utils.game_mechanics.calculators.hp_factor_calculator_interface import IHPF
 class HPFactorCalculator(IHPFactorCalculator):
     """Calculadora de fator de HP para eventos"""
     
-    def __init__(self, threshold=0.5):
-        """Inicializa a calculadora com um threshold opcional"""
-        self.threshold = threshold
-    
-    def calculate_factor(self, current_hp, max_hp):
+    @staticmethod
+    def calculate_factor(current_hp, max_hp, threshold=0.5):
         """Calcula o fator de HP para eventos
         
         Args:
             current_hp (int): HP atual do personagem
             max_hp (int): HP máximo do personagem
+            threshold (float): Threshold para cálculo do fator (default: 0.5)
             
         Returns:
             float: Fator de HP (entre 0.0 e 1.0)
@@ -28,7 +26,7 @@ class HPFactorCalculator(IHPFactorCalculator):
         hp_percentage = current_hp / max_hp
         
         # Se HP está acima do threshold, aplica uma pequena redução
-        if hp_percentage > self.threshold:
+        if hp_percentage > threshold:
             return 0.8
             
         # Se HP está abaixo do threshold, calcula o fator proporcionalmente
