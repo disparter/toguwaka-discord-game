@@ -192,7 +192,10 @@ class DBProvider:
                       completed: bool = False) -> bool:
         """Store event data in database."""
         try:
-            self.MAIN_TABLE.put_item(Item={
+            from utils.persistence.dynamodb import put_item
+            from utils.config import DYNAMODB_TABLE
+
+            item = {
                 'PK': f'EVENT#{event_id}',
                 'SK': 'INFO',
                 'name': name,
@@ -207,7 +210,10 @@ class DBProvider:
                 'completed': completed,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()
-            })
+            }
+
+            # Use the async put_item function instead of direct table access
+            await put_item(DYNAMODB_TABLE, item)
             return True
         except Exception as e:
             logger.error(f"Error storing event {event_id}: {str(e)}")

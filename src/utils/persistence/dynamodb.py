@@ -9,6 +9,7 @@ import boto3
 import json
 import os
 import logging
+import asyncio
 from datetime import datetime, time
 import decimal
 from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
@@ -605,7 +606,9 @@ async def put_item(table_name, item):
     """
     try:
         table = get_table(table_name)
-        response = table.put_item(Item=item)
+        loop = asyncio.get_event_loop()
+        # Run the synchronous put_item operation in a separate thread to avoid blocking the event loop
+        response = await loop.run_in_executor(None, lambda: table.put_item(Item=item))
         logger.info(f"Successfully put item into table {table_name}")
         return response
     except Exception as e:
@@ -626,7 +629,9 @@ async def get_item(table_name, key):
     """
     try:
         table = get_table(table_name)
-        response = table.get_item(Key=key)
+        loop = asyncio.get_event_loop()
+        # Run the synchronous get_item operation in a separate thread to avoid blocking the event loop
+        response = await loop.run_in_executor(None, lambda: table.get_item(Key=key))
         item = response.get('Item')
         if item:
             logger.info(f"Successfully retrieved item from table {table_name}")
@@ -663,7 +668,9 @@ async def query_items(table_name, key_condition_expression, expression_attribute
         if filter_expression:
             query_params['FilterExpression'] = filter_expression
 
-        response = table.query(**query_params)
+        loop = asyncio.get_event_loop()
+        # Run the synchronous query operation in a separate thread to avoid blocking the event loop
+        response = await loop.run_in_executor(None, lambda: table.query(**query_params))
         items = response.get('Items', [])
 
         logger.info(f"Successfully queried {len(items)} items from table {table_name}")
@@ -695,7 +702,9 @@ async def scan_items(table_name, filter_expression=None, expression_attribute_va
         if expression_attribute_values:
             scan_params['ExpressionAttributeValues'] = expression_attribute_values
 
-        response = table.scan(**scan_params)
+        loop = asyncio.get_event_loop()
+        # Run the synchronous scan operation in a separate thread to avoid blocking the event loop
+        response = await loop.run_in_executor(None, lambda: table.scan(**scan_params))
         items = response.get('Items', [])
 
         logger.info(f"Successfully scanned {len(items)} items from table {table_name}")
@@ -732,7 +741,9 @@ async def update_item(table_name, key, update_expression, expression_attribute_v
         if expression_attribute_names:
             update_params['ExpressionAttributeNames'] = expression_attribute_names
 
-        response = table.update_item(**update_params)
+        loop = asyncio.get_event_loop()
+        # Run the synchronous update_item operation in a separate thread to avoid blocking the event loop
+        response = await loop.run_in_executor(None, lambda: table.update_item(**update_params))
         logger.info(f"Successfully updated item in table {table_name}")
         return response
     except Exception as e:
@@ -753,7 +764,9 @@ async def delete_item(table_name, key):
     """
     try:
         table = get_table(table_name)
-        response = table.delete_item(Key=key)
+        loop = asyncio.get_event_loop()
+        # Run the synchronous delete_item operation in a separate thread to avoid blocking the event loop
+        response = await loop.run_in_executor(None, lambda: table.delete_item(Key=key))
         logger.info(f"Successfully deleted item from table {table_name}")
         return response
     except Exception as e:

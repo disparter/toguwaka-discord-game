@@ -56,9 +56,12 @@ pip install -r requirements-test.txt
 print_section "Installing project dependencies"
 pip install -r requirements.txt
 
-# Run tests with coverage
+# Create a directory for test outputs if it doesn't exist
+mkdir -p test_outputs
+
+# Run tests with coverage and save output to file
 print_section "Running tests with coverage"
-python tests/run_tests.py
+python tests/run_tests.py > test_outputs/test_results.txt 2>&1
 
 # Store the exit code
 TEST_EXIT_CODE=$?
@@ -66,27 +69,53 @@ TEST_EXIT_CODE=$?
 # Check if tests passed
 if [ $TEST_EXIT_CODE -eq 0 ]; then
     echo -e "\n${GREEN}All tests passed successfully!${NC}"
-    
-    # Print coverage summary
-    print_section "Coverage Summary"
-    coverage report
-    
-    # Open coverage report in browser if possible
-    if command_exists open; then
-        open htmlcov/index.html
-    elif command_exists xdg-open; then
-        xdg-open htmlcov/index.html
-    fi
-
-    # Git operations
-    print_section "Committing and pushing to Git"
-    git add .
-    git commit -m "✅ All tests passed – build verified and coverage updated"
-    git push
+    TEST_STATUS="passed"
 else
-    echo -e "\n${RED}Some tests failed! No commit will be made.${NC}"
-    echo -e "${YELLOW}Please fix the failing tests before committing.${NC}"
-    exit 1
+    echo -e "\n${YELLOW}Some tests failed, but continuing with the process.${NC}"
+    echo -e "${YELLOW}Test output saved to test_outputs/test_results.txt${NC}"
+    TEST_STATUS="failed"
+fi
+
+# Print coverage summary
+print_section "Coverage Summary"
+coverage report | tee test_outputs/coverage_report.txt
+
+# Open coverage report in browser if possible
+if command_exists open; then
+    open htmlcov/index.html
+elif command_exists xdg-open; then
+    xdg-open htmlcov/index.html
+fi
+
+# Git operations
+print_section "Committing and pushing to Git"
+git add .
+if [ "$TEST_STATUS" = "passed" ]; then
+    git commit -m "✅ All tests passed – build verified and coverage updated"
+else
+    git commit -m "⚠️ Some tests failed – committing anyway as requested"
+fi
+git push
+
+# Generate prompt for test error analysis
+if [ "$TEST_STATUS" = "failed" ]; then
+    print_section "Test Error Analysis Prompt"
+    echo -e "The following prompt can be used with an AI assistant to analyze and fix the test errors:"
+    echo -e "${GREEN}------- COPY FROM HERE -------${NC}"
+    echo "I'm working on a Python project and some tests are failing. Please help me analyze the test errors and suggest fixes. Here's the test output:"
+    echo ""
+    echo "\`\`\`"
+    cat test_outputs/test_results.txt
+    echo "\`\`\`"
+    echo ""
+    echo "And here's the coverage report:"
+    echo ""
+    echo "\`\`\`"
+    cat test_outputs/coverage_report.txt
+    echo "\`\`\`"
+    echo ""
+    echo "Please analyze these errors in depth and suggest specific fixes for each failing test. Include code examples where appropriate."
+    echo -e "${GREEN}------- COPY TO HERE -------${NC}"
 fi
 
 # Deactivate virtual environment

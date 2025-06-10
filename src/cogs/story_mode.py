@@ -733,7 +733,22 @@ class StoryModeCog(commands.Cog):
             message = await channel.send(embed=embed, view=view)
             return
 
-        # If no dialogue or choices, the chapter is complete
+        # If no dialogue or choices, check if we have a current dialogue in the chapter data
+        chapter_data = result.get("chapter_data", {})
+
+        # Check if we have a current dialogue or choices in the chapter data
+        has_content = False
+        if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
+            has_content = True
+        elif "choices" in chapter_data and chapter_data["choices"]:
+            has_content = True
+
+        # If we have content but it's not being displayed, there's an issue
+        if has_content:
+            logger.error(f"Chapter has content but it's not being displayed: {chapter_data}")
+            return
+
+        # If no content and chapter_complete is explicitly set, the chapter is complete
         if "chapter_complete" in result and result["chapter_complete"]:
             if "story_complete" in result and result["story_complete"]:
                 title = "História Concluída"
@@ -744,9 +759,27 @@ class StoryModeCog(commands.Cog):
                 description = "Você concluiu este capítulo da história."
                 color = discord.Color.green()
         else:
-            title = "Capítulo Concluído"
-            description = "Você concluiu este capítulo da história."
-            color = discord.Color.green()
+            # If no content and not marked as complete, this is likely the first chapter
+            # Let's check if this is the first chapter (1_1_arrival)
+            # Get player data from result
+            player_data = result.get("player_data", {})
+            story_progress = player_data.get("story_progress", {})
+            current_chapter = story_progress.get("current_chapter")
+
+            if current_chapter == "1_1_arrival":
+                # This is the first chapter, so we need to load the dialogues
+                # Let's log this for debugging
+                logger.warning(f"First chapter has no content: {chapter_data}")
+
+                # For now, just show a message to continue
+                title = "Bem-vindo à Academia Tokugawa"
+                description = "Sua jornada está apenas começando. Use o comando /historia novamente para continuar."
+                color = discord.Color.blue()
+            else:
+                # Otherwise, just mark it as completed
+                title = "Capítulo Concluído"
+                description = "Você concluiu este capítulo da história."
+                color = discord.Color.green()
 
         embed = create_basic_embed(
             title=title,

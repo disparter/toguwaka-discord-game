@@ -6,6 +6,7 @@ import os
 import random
 import sqlite3
 from datetime import datetime, timedelta, time
+from decimal import Decimal
 from typing import Any
 from discord import app_commands
 from discord.ext import commands, tasks
@@ -389,7 +390,7 @@ class ScheduledEvents(commands.Cog):
                     # Only update if HP is less than max_hp
                     if current_hp < max_hp:
                         # Recover 10% of max_hp, rounded up
-                        recovery_amount = max(1, int(max_hp * 0.1))
+                        recovery_amount = max(1, int(max_hp * Decimal('0.1')))
                         new_hp = min(max_hp, current_hp + recovery_amount)
 
                         # Update player HP
@@ -1107,14 +1108,14 @@ class ScheduledEvents(commands.Cog):
                     tusd_reward = 20 + winner_full['level']
 
                     # Update winner's stats
-                    update_player(
+                    await update_player(
                         winner['user_id'],
                         exp=winner_full['exp'] + exp_reward,
                         tusd=winner_full['tusd'] + tusd_reward
                     )
 
                     # Update loser's stats (consolation prize)
-                    update_player(
+                    await update_player(
                         loser['user_id'],
                         exp=loser_full['exp'] + (exp_reward // 2)
                     )
@@ -1175,7 +1176,7 @@ class ScheduledEvents(commands.Cog):
                     inventory[trophy_id] = trophy
 
                     # Update player
-                    update_player(
+                    await update_player(
                         winner['user_id'],
                         exp=winner_full['exp'] + final_exp_reward,
                         tusd=winner_full['tusd'] + final_tusd_reward,
@@ -1415,14 +1416,14 @@ class ScheduledEvents(commands.Cog):
                         monarch1_player = get_player(monarch1['user_id'])
                         if monarch1_player:
                             # Apply -10 XP penalty to monarch
-                            update_player(monarch1['user_id'], exp=monarch1_player['exp'] - 10)
+                            await update_player(monarch1['user_id'], exp=monarch1_player['exp'] - 10)
 
                             # Apply +10 XP bonus to all team members
                             for member in team1_fighters:
                                 if member['user_id'] != monarch1['user_id']:  # Skip monarch who already got -10
                                     member_player = get_player(member['user_id'])
                                     if member_player:
-                                        update_player(member['user_id'], exp=member_player['exp'] + 10)
+                                        await update_player(member['user_id'], exp=member_player['exp'] + 10)
 
                             democracy_messages.append(
                                 f"O Monarca de {team1_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
@@ -1432,14 +1433,14 @@ class ScheduledEvents(commands.Cog):
                         monarch2_player = get_player(monarch2['user_id'])
                         if monarch2_player:
                             # Apply -10 XP penalty to monarch
-                            update_player(monarch2['user_id'], exp=monarch2_player['exp'] - 10)
+                            await update_player(monarch2['user_id'], exp=monarch2_player['exp'] - 10)
 
                             # Apply +10 XP bonus to all team members
                             for member in team2_fighters:
                                 if member['user_id'] != monarch2['user_id']:  # Skip monarch who already got -10
                                     member_player = get_player(member['user_id'])
                                     if member_player:
-                                        update_player(member['user_id'], exp=member_player['exp'] + 10)
+                                        await update_player(member['user_id'], exp=member_player['exp'] + 10)
 
                             democracy_messages.append(
                                 f"O Monarca de {team2_name} escolheu o **modo democracia**! O time ganha +10 XP, mas o Monarca perde 10 XP.")
@@ -1508,7 +1509,7 @@ class ScheduledEvents(commands.Cog):
 
                     # Update winner's stats
                     winner_full = get_player(winner['user_id'])
-                    update_player(
+                    await update_player(
                         winner['user_id'],
                         exp=winner_full['exp'] + exp_reward
                     )
@@ -1567,14 +1568,14 @@ class ScheduledEvents(commands.Cog):
                         if member:
                             player = get_player(member['user_id'])
                             if player:
-                                update_player(member['user_id'], exp=player['exp'] + 10)
+                                await update_player(member['user_id'], exp=player['exp'] + 10)
                     TURF_WARS_TEAMS[team1_name]['score'] += 1
                 else:
                     for role, member in team2_data['members'].items():
                         if member:
                             player = get_player(member['user_id'])
                             if player:
-                                update_player(member['user_id'], exp=player['exp'] + 10)
+                                await update_player(member['user_id'], exp=player['exp'] + 10)
                     TURF_WARS_TEAMS[team2_name]['score'] += 1
 
                 # Add delay between matchups
@@ -1612,7 +1613,7 @@ class ScheduledEvents(commands.Cog):
                         exp_reward = int(50 * multiplier)
                         tusd_reward = int(25 * multiplier)
 
-                        update_player(
+                        await update_player(
                             member['user_id'],
                             exp=player['exp'] + exp_reward,
                             tusd=player['tusd'] + tusd_reward
@@ -2572,7 +2573,14 @@ class ScheduledEvents(commands.Cog):
 
             # Select a random player
             player = random.choice(players)
-            user_id = player.get('user_id')
+
+            # Extract user_id from PK field (format: 'PLAYER#{user_id}')
+            user_id = None
+            if 'PK' in player and player['PK'].startswith('PLAYER#'):
+                user_id = player['PK'].split('#')[1]
+                # Store user_id in player object for later use
+                player['user_id'] = user_id
+
             if not user_id:
                 logger.error("Selected player has no user_id")
                 return
@@ -3149,7 +3157,20 @@ class ScheduledEvents(commands.Cog):
                         from cogs.economy import TECHNIQUES
 
                         # Get player's techniques
-                        techniques = player['techniques']
+                        techniques = player.get('techniques', {})
+
+                        # Ensure techniques is a dictionary
+                        if not isinstance(techniques, dict):
+                            try:
+                                # Try to parse it if it's a JSON string
+                                if isinstance(techniques, str):
+                                    techniques = json.loads(techniques)
+                                else:
+                                    # If it's not a dictionary or string, initialize as empty dict
+                                    techniques = {}
+                            except Exception:
+                                # If parsing fails, initialize as empty dict
+                                techniques = {}
 
                         # Filter techniques the player doesn't have yet
                         available_techniques = [t for t in TECHNIQUES if str(t["id"]) not in techniques]
@@ -3162,7 +3183,7 @@ class ScheduledEvents(commands.Cog):
                             techniques[str(technique["id"])] = technique
 
                             # Update player in database
-                            update_player(
+                            await update_player(
                                 interaction.user.id,
                                 techniques=json.dumps(techniques)
                             )
@@ -3261,7 +3282,7 @@ class ScheduledEvents(commands.Cog):
                             # Update player
                             player_data = get_player(user_id)
                             if player_data:
-                                update_player(
+                                await update_player(
                                     user_id,
                                     exp=player_data['exp'] + xp_reward
                                 )
@@ -3609,7 +3630,7 @@ class ScheduledEvents(commands.Cog):
                         tusd_reward = int(tusd_reward * (1 + buff['value'] / 100))
 
                 # Update player stats
-                update_player(
+                await update_player(
                     interaction.user.id,
                     exp=player['exp'] + exp_reward,
                     tusd=player['tusd'] + tusd_reward

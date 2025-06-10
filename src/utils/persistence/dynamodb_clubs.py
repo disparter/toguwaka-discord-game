@@ -18,21 +18,45 @@ async def get_club(club_id):
     """Get club data from DynamoDB."""
     try:
         table = get_table(TABLES['clubs'])
+        # Try first with NomeClube as the key
         response = await table.get_item(
             Key={
-                'PK': f"CLUB#{club_id}",
-                'SK': 'INFO'
+                'NomeClube': str(club_id)
             }
         )
         if 'Item' in response:
             item = response['Item']
             club = {
-                'name': item.get('name', ''),
-                'description': item.get('description', ''),
-                'leader_id': item.get('leader_id', ''),
+                'name': item.get('NomeClube', ''),
+                'description': item.get('descricao', ''),
+                'leader_id': item.get('lider_id', ''),
                 'reputacao': item.get('reputacao', 0)
             }
             return club
+
+        # If not found, try with the PK/SK format as fallback
+        try:
+            response = await table.get_item(
+                Key={
+                    'PK': f"CLUB#{club_id}",
+                    'SK': 'INFO'
+                }
+            )
+            if 'Item' in response:
+                item = response['Item']
+                club = {
+                    'name': item.get('name', ''),
+                    'description': item.get('description', ''),
+                    'leader_id': item.get('leader_id', ''),
+                    'reputacao': item.get('reputacao', 0)
+                }
+                return club
+        except Exception:
+            # Ignore errors from the fallback attempt
+            logger.warning(f"Error getting club {club_id}: {e}")
+            pass
+
+
         return None
     except Exception as e:
         logger.error(f"Error getting club {club_id}: {e}")
@@ -162,4 +186,4 @@ async def record_club_activity(user_id, activity_type, points=1):
         return True
     except Exception as e:
         logger.error(f"Error recording club activity: {e}")
-        return False 
+        return False

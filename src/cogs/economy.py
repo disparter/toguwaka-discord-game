@@ -1751,7 +1751,7 @@ class Economy(commands.Cog):
                            ephemeral=True)
 
     @commands.command(name="usar")
-    async def use_item(self, ctx, item_id: int = None):
+    async def use_item(self, ctx, item_id = None):
         """Usar um item do inventário."""
         # Check if player exists
         player = await get_player_async(ctx.author.id)
@@ -1767,9 +1767,29 @@ class Economy(commands.Cog):
                 ephemeral=True)
             return
 
-        # Check if player has the item
-        inventory = player["inventory"]
-        if str(item_id) not in inventory:
+        # Try to convert item_id to integer if it's a numeric string
+        try:
+            if isinstance(item_id, str) and item_id.isdigit():
+                item_id = int(item_id)
+        except (AttributeError, ValueError):
+            # If conversion fails, we'll search by name later
+            pass
+
+        # Get player's inventory
+        inventory = await get_player_inventory_async(ctx.author.id)
+        if not inventory:
+            await ctx.send(f"{ctx.author.mention}, você não possui itens em seu inventário.", ephemeral=True)
+            return
+        # If item_id is a string (name), try to find the item by name
+        item_found = False
+        if not isinstance(item_id, int):
+            for item_key, item_value in inventory.items():
+                if item_value.get("name", "").lower() == str(item_id).lower():
+                    item_id = item_key
+                    item_found = True
+                    break
+
+        if not item_found and str(item_id) not in inventory:
             await ctx.send(f"{ctx.author.mention}, você não possui este item em seu inventário.", ephemeral=True)
             return
 
@@ -1862,13 +1882,26 @@ class Economy(commands.Cog):
 
         # Remove item from inventory
         inventory[str(item_id)]["quantity"] -= 1
-        if inventory[str(item_id)]["quantity"] <= 0:
-            del inventory[str(item_id)]
-
-        update_data["inventory"] = json.dumps(inventory)
 
         # Update player in database
-        success = update_player(ctx.author.id, **update_data)
+        success = await update_player_async(ctx.author.id, **update_data)
+
+        # Update inventory in database
+        if success:
+            if inventory[str(item_id)]["quantity"] <= 0:
+                # If quantity is 0, remove the item
+                del inventory[str(item_id)]
+                # We need to update all inventory items since we're removing one
+                for inv_item_id, inv_item_data in inventory.items():
+                    inventory_success = await add_item_to_inventory_async(ctx.author.id, inv_item_id, inv_item_data)
+                    if not inventory_success:
+                        success = False
+                        break
+            else:
+                # Just update the quantity of this item
+                inventory_success = await add_item_to_inventory_async(ctx.author.id, str(item_id), inventory[str(item_id)])
+                if not inventory_success:
+                    success = False
 
         if success:
             # Create use confirmation embed
