@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
 import random
 
-from src.utils.persistence.db_provider import get_player, update_player, get_club, get_all_clubs
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed, create_event_embed
 from src.utils.game_mechanics import calculate_level_from_exp
 
@@ -47,7 +47,7 @@ class StoryModeCog(commands.Cog):
         Regular command to start or continue the story mode.
         """
         user_id = ctx.author.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await ctx.send("Você precisa criar um personagem primeiro! Use /registrar")
@@ -76,7 +76,7 @@ class StoryModeCog(commands.Cog):
         if "club_id" in result["player_data"]:
             update_data["club_id"] = result["player_data"]["club_id"]
 
-        update_player(user_id, **update_data)
+        await db_provider.update_player(user_id, **update_data)
 
         # Store session data
         self.active_sessions[user_id] = {
@@ -114,7 +114,7 @@ class StoryModeCog(commands.Cog):
             return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -143,7 +143,7 @@ class StoryModeCog(commands.Cog):
         if "club_id" in result["player_data"]:
             update_data["club_id"] = result["player_data"]["club_id"]
 
-        update_player(user_id, **update_data)
+        await db_provider.update_player(user_id, **update_data)
 
         # Store session data
         self.active_sessions[user_id] = {
@@ -181,7 +181,7 @@ class StoryModeCog(commands.Cog):
             return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -275,7 +275,7 @@ class StoryModeCog(commands.Cog):
             return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -325,7 +325,7 @@ class StoryModeCog(commands.Cog):
             if "club_id" in result["player_data"]:
                 update_data["club_id"] = result["player_data"]["club_id"]
 
-            update_player(user_id, **update_data)
+            await db_provider.update_player(user_id, **update_data)
 
             affinity_result = result["affinity_result"]
 
@@ -386,7 +386,7 @@ class StoryModeCog(commands.Cog):
             return  # Let the command tree error handler handle this
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             try:
@@ -461,7 +461,7 @@ class StoryModeCog(commands.Cog):
         if "club_id" in result["player_data"]:
             update_data["club_id"] = result["player_data"]["club_id"]
 
-        update_player(user_id, **update_data)
+        await db_provider.update_player(user_id, **update_data)
 
         event_result = result["event_result"]
 
@@ -542,7 +542,7 @@ class StoryModeCog(commands.Cog):
             text = dialogue.get("text", "...")
 
             # Replace placeholders in the text with player-specific information
-            player_data = get_player(user_id)
+            player_data = await db_provider.get_player(user_id)
             if player_data:
                 text = text.format(
                     player_name=player_data["name"],
@@ -734,7 +734,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Get player data
-            player_data = get_player(user_id)
+            player_data = await db_provider.get_player(user_id)
 
             if not player_data:
                 await interaction.followup.send("Erro: Dados do jogador não encontrados.", ephemeral=True)
@@ -754,7 +754,7 @@ class StoryModeCog(commands.Cog):
             if "club_id" in result["player_data"]:
                 update_data["club_id"] = result["player_data"]["club_id"]
 
-            update_player(user_id, **update_data)
+            await db_provider.update_player(user_id, **update_data)
 
             # Send next dialogue or choices
             await self._send_dialogue_or_choices(interaction.channel, user_id, result)
@@ -799,7 +799,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Get player data
-            player_data = get_player(user_id)
+            player_data = await db_provider.get_player(user_id)
 
             if not player_data:
                 await interaction.followup.send("Erro: Dados do jogador não encontrados.", ephemeral=True)
@@ -819,7 +819,7 @@ class StoryModeCog(commands.Cog):
             if "club_id" in result["player_data"]:
                 update_data["club_id"] = result["player_data"]["club_id"]
 
-            update_player(user_id, **update_data)
+            await db_provider.update_player(user_id, **update_data)
 
             # Send next dialogue or choices
             await self._send_dialogue_or_choices(interaction.channel, user_id, result)
@@ -940,7 +940,7 @@ class StoryModeCog(commands.Cog):
     async def form_alliance(self, ctx, *, club_name: str):
         """Forma uma aliança com outro clube."""
         # Get player data
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         if not player:
             await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
             return
@@ -987,7 +987,7 @@ class StoryModeCog(commands.Cog):
     async def declare_rivalry(self, ctx, *, club_name: str):
         """Declara rivalidade com outro clube."""
         # Get player data
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         if not player:
             await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
             return

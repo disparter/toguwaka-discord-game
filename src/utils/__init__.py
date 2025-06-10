@@ -8,9 +8,13 @@ the Academia Tokugawa Discord bot.
 from src.utils.club_system import ClubSystem
 from src.utils.json_utils import dumps as json_dumps
 from src.utils.content_validator import ContentValidator
+from src.utils.persistence import db_provider, init_db, normalize_player_data
 
 __all__ = [
     'ClubSystem',
     'json_dumps',
-    'ContentValidator'
+    'ContentValidator',
+    'db_provider',
+    'init_db',
+    'normalize_player_data'
 ] 

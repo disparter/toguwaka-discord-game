@@ -7,12 +7,10 @@ from unittest.mock import AsyncMock, MagicMock, patch, Mock
 from decimal import Decimal
 import discord
 from discord import app_commands
-from cogs.registration import Registration, normalize_club_name
-from src.utils.persistence.dynamodb_clubs import get_club, get_all_clubs
-from src.utils.persistence.dynamodb_players import get_player, update_player
+from src.bot.cogs.registration import Registration
 from src.utils.normalization import normalize_club_name
 import src.utils.game_mechanics
-from src.utils.persistence.db_provider import get_all_clubs, update_player
+from src.utils.persistence.db_provider import db_provider
 
 # Skip SQLite tests
 pytest.skip('Skipping SQLite tests as they are disabled', allow_module_level=True)
@@ -80,7 +78,7 @@ def test_normalize_club_name():
 async def test_club_selection_autocomplete(mock_interaction):
     """Test club selection autocomplete."""
     registration_cog = Registration(None)
-    with patch('cogs.registration.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
+    with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
         mock_get_all_clubs.return_value = [
             {'name': 'Ilusionistas Mentais', 'description': 'Description1', 'leader_id': 'leader1', 'reputacao': 100},
             {'name': 'Elementalistas', 'description': 'Description2', 'leader_id': 'leader2', 'reputacao': 200},
@@ -104,8 +102,8 @@ async def test_club_selection_autocomplete(mock_interaction):
 @pytest.mark.asyncio
 async def test_club_selection_success(mock_ctx):
     """Test successful club selection."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs') as mock_get_clubs, \
-         patch('src.utils.persistence.db_provider.update_player') as mock_update:
+    with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
+         patch.object(db_provider, 'update_player', new_callable=AsyncMock) as mock_update:
         
         mock_get_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
@@ -125,7 +123,7 @@ async def test_club_selection_success(mock_ctx):
 @pytest.mark.asyncio
 async def test_club_selection_invalid_club(mock_ctx):
     """Test club selection with invalid club name."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs') as mock_get_clubs:
+    with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
         mock_get_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
         ]
@@ -140,8 +138,8 @@ async def test_club_selection_invalid_club(mock_ctx):
 @pytest.mark.asyncio
 async def test_club_selection_database_error(mock_ctx):
     """Test club selection with database error."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs') as mock_get_clubs, \
-         patch('src.utils.persistence.db_provider.update_player') as mock_update:
+    with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_clubs, \
+         patch.object(db_provider, 'update_player', new_callable=AsyncMock) as mock_update:
         
         mock_get_clubs.return_value = [
             {'club_id': 'test_club', 'name': 'Test Club', 'description': 'A test club'}
@@ -159,7 +157,7 @@ async def test_club_selection_database_error(mock_ctx):
 @pytest.mark.asyncio
 async def test_club_selection_no_clubs(mock_ctx):
     """Test club selection when no clubs are available."""
-    with patch('src.utils.persistence.db_provider.get_all_clubs') as mock_get_clubs:
+    with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_clubs:
         mock_get_clubs.return_value = []
         
         from src.bot.cogs.registration import RegistrationCommands
@@ -173,7 +171,7 @@ async def test_club_selection_no_clubs(mock_ctx):
 async def test_club_selection_error(mock_ctx):
     """Test error handling in club selection."""
     registration_cog = Registration(None)
-    with patch('cogs.registration.get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
+    with patch.object(db_provider, 'get_all_clubs', new_callable=AsyncMock) as mock_get_all_clubs:
         mock_get_all_clubs.side_effect = Exception("Error fetching clubs")
         await registration_cog.select_club.callback(registration_cog, mock_ctx, "Conselho Político")
         mock_ctx.send.assert_called_once()

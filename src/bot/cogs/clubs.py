@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from src.utils.persistence.db_provider import get_player, get_club, get_all_clubs, update_player, get_club_members, get_relevant_npcs
+from src.utils.persistence.db_provider import db_provider
 from src.utils.embeds import create_basic_embed, create_club_embed
 from story_mode.club_system import ClubSystem
 from src.utils.command_registrar import CommandRegistrar
@@ -35,7 +35,7 @@ class Clubs(commands.Cog):
         """Slash command version of the club command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.", ephemeral=True)
                 return
@@ -46,17 +46,17 @@ class Clubs(commands.Cog):
                 return
 
             # Get club data
-            club = get_club(player['club_id'])
+            club = await db_provider.get_club(player['club_id'])
             if not club:
                 await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.", ephemeral=True)
                 return
 
             # Get club members
-            members = get_club_members(player['club_id'])
-            npcs = get_relevant_npcs(player['club_id'])
+            members = await db_provider.get_club_members(player['club_id'])
+            npcs = await db_provider.get_relevant_npcs(player['club_id'])
 
             # Create club embed
-            embed = create_club_embed(club)
+            embed = await create_club_embed(club)
 
             # Add members to embed
             member_list = "\n".join([f"- {m['name']} (Nível {m['level']})" for m in members]) if members else "Nenhum membro encontrado."
@@ -79,7 +79,7 @@ class Clubs(commands.Cog):
         """Slash command version of the all_clubs command."""
         try:
             # Get all clubs
-            clubs = get_all_clubs()
+            clubs = await db_provider.get_all_clubs()
 
             # Create embed
             embed = create_basic_embed(
@@ -109,7 +109,7 @@ class Clubs(commands.Cog):
     async def club(self, ctx):
         """Exibe informações sobre o clube do jogador."""
         # Check if player exists
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
@@ -120,13 +120,13 @@ class Clubs(commands.Cog):
             return
 
         # Get club data
-        club = get_club(player['club_id'])
+        club = await db_provider.get_club(player['club_id'])
         if not club:
             await ctx.send(f"{ctx.author.mention}, não foi possível encontrar informações sobre seu clube. Por favor, contate um administrador.")
             return
 
         # Create and send club embed
-        embed = create_club_embed(club)
+        embed = await create_club_embed(club)
         await ctx.send(embed=embed)
 
     @commands.command(name="clubes")
@@ -146,6 +146,51 @@ class Clubs(commands.Cog):
             )
 
         await ctx.send(embed=embed)
+
+    @app_commands.command(name="info", description="Mostra informações sobre um clube")
+    async def slash_club_info(self, interaction: discord.Interaction, clube: str):
+        """Mostra informações sobre um clube."""
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que pudesse ser processada.")
+            return
+
+        # Get club data
+        club = await db_provider.get_club(clube)
+        if not club:
+            await interaction.followup.send(f"Clube '{clube}' não encontrado.", ephemeral=True)
+            return
+
+        # Create embed
+        embed = await create_club_embed(club)
+
+        await interaction.followup.send(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="listar", description="Lista todos os clubes disponíveis")
+    async def slash_list_clubs(self, interaction: discord.Interaction):
+        """Lista todos os clubes disponíveis."""
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except discord.errors.NotFound:
+            logger.error("A interação expirou antes que pudesse ser processada.")
+            return
+
+        # Get all clubs
+        clubs = await db_provider.get_all_clubs()
+        if not clubs:
+            await interaction.followup.send("Não há clubes disponíveis no momento.", ephemeral=True)
+            return
+
+        # Create embeds for each club
+        embeds = []
+        for club in clubs:
+            embed = await create_club_embed(club)
+            embeds.append(embed)
+
+        # Send embeds
+        for embed in embeds:
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
 async def setup(bot):
     """Add the cog to the bot."""

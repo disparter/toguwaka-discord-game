@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union
 
-from src.utils.persistence.db_provider import get_player, update_player, get_club, get_all_clubs
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed, create_event_embed
 from src.utils.game_mechanics import calculate_level_from_exp
 from story_mode.club_system import ClubSystem
@@ -43,7 +43,7 @@ class MoralChoices(commands.Cog):
             return
 
         # Obter dados do jogador
-        player_data = await get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
         if not player_data:
             await interaction.response.send_message(
                 "Você precisa se registrar primeiro usando o comando `/registrar`.",
@@ -106,7 +106,7 @@ class MoralChoices(commands.Cog):
             choice = dilema["choices"][choice_index]
 
             # Aplicar consequências da escolha
-            player_data = await get_player(user_id)
+            player_data = await db_provider.get_player(user_id)
 
             # Registrar a escolha moral
             choice_type = choice.get("type", "neutral")
@@ -134,7 +134,7 @@ class MoralChoices(commands.Cog):
                 player_data["factions"][faction] += value
 
             # Salvar as alterações
-            await update_player(user_id, player_data)
+            await db_provider.update_player(user_id, player_data)
 
             # Remover o dilema ativo
             del self.active_dilemas[user_id]
@@ -212,7 +212,7 @@ class MoralChoices(commands.Cog):
         user_id = interaction.user.id
 
         # Verificar registro
-        player_data = await get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
         if not player_data:
             await interaction.response.send_message(
                 "Você precisa se registrar primeiro usando o comando `/registrar`.",
@@ -662,7 +662,7 @@ class MoralChoices(commands.Cog):
     async def form_alliance(self, ctx, *, club_name: str):
         """Forma uma aliança com outro clube."""
         # Get player data
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         if not player:
             await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
             return
@@ -709,7 +709,7 @@ class MoralChoices(commands.Cog):
     async def declare_rivalry(self, ctx, *, club_name: str):
         """Declara rivalidade com outro clube."""
         # Get player data
-        player = get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         if not player:
             await ctx.send("Você precisa se registrar primeiro! Use o comando `!registrar`.")
             return

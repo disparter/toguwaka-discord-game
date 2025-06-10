@@ -6,7 +6,7 @@ import random
 import asyncio
 import json
 from datetime import datetime, timedelta
-from src.utils.database import get_player, update_player, get_club
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed
 from src.utils.game_mechanics import (
     get_random_training_outcome, get_random_event, 
@@ -19,11 +19,6 @@ from src.utils.game_mechanics.events.training_event import TrainingEvent
 from src.utils.game_mechanics.events.random_event import RandomEvent
 from src.utils.game_mechanics.duel.duel_calculator import DuelCalculator
 from src.utils.game_mechanics.duel.duel_narrator import DuelNarrator
-from src.utils.persistence.db_provider import (
-    store_cooldown,
-    get_cooldowns,
-    clear_expired_cooldowns
-)
 from src.utils.command_registrar import CommandRegistrar
 from discord.ext import tasks
 
@@ -57,7 +52,7 @@ class Activities(commands.Cog):
     async def clear_cooldowns(self):
         """Clear expired cooldowns."""
         try:
-            await clear_expired_cooldowns()
+            await db_provider.clear_expired_cooldowns()
         except Exception as e:
             logger.error(f"Error clearing cooldowns: {e}")
 
@@ -74,13 +69,13 @@ class Activities(commands.Cog):
         """Slash command version of the train command."""
         try:
             # Check if player exists
-            player = await get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
 
             # Check cooldown
-            cooldown = self._check_cooldown(interaction.user.id, "treinar")
+            cooldown = await self._check_cooldown(interaction.user.id, "treinar")
             if cooldown:
                 await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}", ephemeral=True)
                 return
@@ -144,11 +139,11 @@ class Activities(commands.Cog):
                 update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
             # Update player in database
-            success = await update_player(interaction.user.id, **update_data)
+            success = await db_provider.update_player(interaction.user.id, **update_data)
 
             if success:
                 # Set cooldown
-                self._set_cooldown(interaction.user.id, "treinar")
+                await self._set_cooldown(interaction.user.id, "treinar")
 
                 # Create embed for training result
                 embed = create_basic_embed(
@@ -210,7 +205,7 @@ class Activities(commands.Cog):
         """Slash command version of the explore command."""
         try:
             # Check if player exists
-            player = await get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
@@ -227,7 +222,7 @@ class Activities(commands.Cog):
             player['inventory'] = inventory
 
             # Check cooldown
-            cooldowns = await get_cooldowns(str(interaction.user.id))
+            cooldowns = await db_provider.get_cooldowns(str(interaction.user.id))
             for cooldown in cooldowns:
                 if cooldown['SK'] == 'COOLDOWN#explore':
                     expiry = datetime.fromisoformat(cooldown['expiry'])
@@ -306,11 +301,11 @@ class Activities(commands.Cog):
                 update_data['inventory'] = json.dumps(inventory)
 
             # Update player in database
-            success = await update_player(interaction.user.id, **update_data)
+            success = await db_provider.update_player(interaction.user.id, **update_data)
 
             if success:
                 # Set cooldown
-                await store_cooldown(
+                await db_provider.store_cooldown(
                     str(interaction.user.id),
                     'explore',
                     datetime.now() + timedelta(minutes=30)
@@ -354,13 +349,13 @@ class Activities(commands.Cog):
                 return False
 
             # Check if player exists
-            challenger = get_player(interaction.user.id)
+            challenger = db_provider.get_player(interaction.user.id)
             if not challenger:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return False
 
             # Check if opponent exists
-            opponent_player = get_player(opponent.id)
+            opponent_player = db_provider.get_player(opponent.id)
             if not opponent_player:
                 await interaction.response.send_message(f"{opponent.mention} não está registrado na Academia Tokugawa.")
                 return False
@@ -434,7 +429,7 @@ class Activities(commands.Cog):
                 # Check for bonus rewards
                 if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result["bonus_rewards"]:
                     # Get winner's inventory
-                    winner_player = get_player(winner_id)
+                    winner_player = db_provider.get_player(winner_id)
                     if winner_player and "inventory" in winner_player:
                         inventory = winner_player["inventory"]
 
@@ -480,12 +475,12 @@ class Activities(commands.Cog):
                     loser_update["level"] = new_level
 
                 # Update players in database
-                winner_success = update_player(winner_id, **winner_update)
-                loser_success = update_player(loser_id, **loser_update)
+                winner_success = db_provider.update_player(winner_id, **winner_update)
+                loser_success = db_provider.update_player(loser_id, **loser_update)
 
                 if winner_success and loser_success:
                     # Set cooldown for challenger
-                    self._set_cooldown(interaction.user.id, "duelar")
+                    await self._set_cooldown(interaction.user.id, "duelar")
 
                     # Create duel result embed
                     embed = create_duel_embed(duel_result)
@@ -574,7 +569,7 @@ class Activities(commands.Cog):
         """Slash command version of the duel command."""
         try:
             # Check cooldown
-            cooldown = self._check_cooldown(interaction.user.id, "duelar")
+            cooldown = await self._check_cooldown(interaction.user.id, "duelar")
             if cooldown:
                 await interaction.response.send_message(f"{interaction.user.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
                 return
@@ -601,13 +596,13 @@ class Activities(commands.Cog):
         """Slash command version of the event command."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check cooldown
-            cooldown = self._check_cooldown(interaction.user.id, "evento")
+            cooldown = await self._check_cooldown(interaction.user.id, "evento")
             if cooldown:
                 await interaction.response.send_message(f"{interaction.user.mention}, você precisa esperar antes de participar de outro evento. Tempo restante: {cooldown}")
                 return
@@ -646,11 +641,11 @@ class Activities(commands.Cog):
                 update_data[attribute] = player.get(attribute, 0) + value
 
             # Update player in database
-            success = update_player(interaction.user.id, **update_data)
+            success = db_provider.update_player(interaction.user.id, **update_data)
 
             if success:
                 # Set cooldown
-                self._set_cooldown(interaction.user.id, "evento")
+                await self._set_cooldown(interaction.user.id, "evento")
 
                 # Create embed for event result
                 embed = create_event_embed(
@@ -709,65 +704,47 @@ class Activities(commands.Cog):
         except Exception as e:
             logger.error(f"Error in slash_event: {e}")
 
-    def _check_cooldown(self, user_id, command):
+    async def _check_cooldown(self, user_id, command):
         """Check if a command is on cooldown for a user."""
-        now = datetime.now().timestamp()
-
-        # Initialize user cooldowns if not exists
-        if user_id not in COOLDOWNS:
-            COOLDOWNS[user_id] = {}
-
-        # Check if command is on cooldown
-        if command in COOLDOWNS[user_id] and COOLDOWNS[user_id][command] > now:
-            # Calculate remaining time
-            remaining = COOLDOWNS[user_id][command] - now
-            minutes, seconds = divmod(int(remaining), 60)
-            hours, minutes = divmod(minutes, 60)
-
-            if hours > 0:
-                time_str = f"{hours}h {minutes}m {seconds}s"
-            elif minutes > 0:
-                time_str = f"{minutes}m {seconds}s"
-            else:
-                time_str = f"{seconds}s"
-
-            return time_str
-
-        return None
-
-    def _set_cooldown(self, user_id, command, custom_duration=None):
-        """Set a cooldown for a command for a user.
-
-        Args:
-            user_id: The user ID
-            command: The command name
-            custom_duration: Optional custom duration in seconds. If not provided, uses the default duration.
-        """
-        if user_id not in COOLDOWNS:
-            COOLDOWNS[user_id] = {}
-
-        duration = custom_duration if custom_duration is not None else COOLDOWN_DURATIONS.get(command, 3600)  # Default 1 hour
-        expiry_time = datetime.now().timestamp() + duration
-        COOLDOWNS[user_id][command] = expiry_time
-
-        # Store cooldown in database
         try:
-            store_cooldown(user_id, command, expiry_time)
+            # Get cooldowns from database
+            cooldowns = await db_provider.get_cooldowns()
+            user_cooldowns = cooldowns.get(str(user_id), {})
+            command_cooldown = user_cooldowns.get(command)
+
+            if command_cooldown:
+                expiry = datetime.fromtimestamp(command_cooldown)
+                if datetime.now() < expiry:
+                    remaining = expiry - datetime.now()
+                    minutes = int(remaining.total_seconds() // 60)
+                    seconds = int(remaining.total_seconds() % 60)
+                    return f"{minutes}m {seconds}s"
+            return None
         except Exception as e:
-            logger.error(f"Error storing cooldown in database: {e}")
+            logger.error(f"Error checking cooldown: {e}")
+            return None
+
+    async def _set_cooldown(self, user_id, command, custom_duration=None):
+        """Set a cooldown for a command for a user."""
+        try:
+            duration = custom_duration or COOLDOWN_DURATIONS.get(command, 3600)
+            expiry = datetime.now() + timedelta(seconds=duration)
+            await db_provider.store_cooldown(str(user_id), command, int(expiry.timestamp()))
+        except Exception as e:
+            logger.error(f"Error setting cooldown: {e}")
 
     @commands.command(name="treinar")
     async def train(self, ctx):
         """Treinar para ganhar experiência e melhorar atributos."""
         try:
             # Check if player exists
-            player = await get_player(ctx.author.id)
+            player = await db_provider.get_player(ctx.author.id)
             if not player:
                 await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
             # Check cooldown
-            cooldown = self._check_cooldown(ctx.author.id, "treinar")
+            cooldown = await self._check_cooldown(ctx.author.id, "treinar")
             if cooldown:
                 await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de treinar novamente. Tempo restante: {cooldown}")
                 return
@@ -831,11 +808,11 @@ class Activities(commands.Cog):
                 update_data["hp"] = max(1, current_hp - hp_loss_amount)
 
             # Update player in database
-            success = await update_player(ctx.author.id, **update_data)
+            success = await db_provider.update_player(ctx.author.id, **update_data)
 
             if success:
                 # Set cooldown
-                self._set_cooldown(ctx.author.id, "treinar")
+                await self._set_cooldown(ctx.author.id, "treinar")
 
                 # Create embed for training result
                 embed = create_basic_embed(
@@ -891,7 +868,7 @@ class Activities(commands.Cog):
         """Explorar a academia em busca de eventos aleatórios."""
         try:
             # Check if player exists
-            player = await get_player(ctx.author.id)
+            player = await db_provider.get_player(ctx.author.id)
             if not player:
                 await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
@@ -911,7 +888,7 @@ class Activities(commands.Cog):
             player['inventory'] = inventory
 
             # Check cooldown
-            cooldown = self._check_cooldown(ctx.author.id, "explorar")
+            cooldown = await self._check_cooldown(ctx.author.id, "explorar")
             if cooldown:
                 await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de explorar novamente. Tempo restante: {cooldown}")
                 return
@@ -948,11 +925,11 @@ class Activities(commands.Cog):
                 update_data['inventory'] = json.dumps(inventory)
 
             # Update player in database
-            success = await update_player(ctx.author.id, **update_data)
+            success = await db_provider.update_player(ctx.author.id, **update_data)
 
             if success:
                 # Set cooldown
-                self._set_cooldown(ctx.author.id, "explorar")
+                await self._set_cooldown(ctx.author.id, "explorar")
 
                 # Create embed for event
                 embed = create_event_embed(event_result)
@@ -986,19 +963,19 @@ class Activities(commands.Cog):
             return
 
         # Check if player exists
-        challenger = get_player(ctx.author.id)
+        challenger = db_provider.get_player(ctx.author.id)
         if not challenger:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Check if opponent exists
-        opponent_player = get_player(opponent.id)
+        opponent_player = db_provider.get_player(opponent.id)
         if not opponent_player:
             await ctx.send(f"{opponent.mention} não está registrado na Academia Tokugawa.")
             return
 
         # Check cooldown
-        cooldown = self._check_cooldown(ctx.author.id, "duelar")
+        cooldown = await self._check_cooldown(ctx.author.id, "duelar")
         if cooldown:
             await ctx.send(f"{ctx.author.mention}, você precisa descansar antes de duelar novamente. Tempo restante: {cooldown}")
             return
@@ -1073,7 +1050,7 @@ class Activities(commands.Cog):
                 # Check for bonus rewards
                 if "bonus_rewards" in duel_result and duel_result["bonus_rewards"] and "item" in duel_result["bonus_rewards"]:
                     # Get winner's inventory
-                    winner_player = get_player(winner_id)
+                    winner_player = db_provider.get_player(winner_id)
                     if winner_player and "inventory" in winner_player:
                         inventory = winner_player["inventory"]
 
@@ -1112,12 +1089,12 @@ class Activities(commands.Cog):
                     loser_update["level"] = new_level
 
                 # Update players in database
-                winner_success = update_player(winner_id, **winner_update)
-                loser_success = update_player(loser_id, **loser_update)
+                winner_success = db_provider.update_player(winner_id, **winner_update)
+                loser_success = db_provider.update_player(loser_id, **loser_update)
 
                 if winner_success and loser_success:
                     # Set cooldown for challenger
-                    self._set_cooldown(ctx.author.id, "duelar")
+                    await self._set_cooldown(ctx.author.id, "duelar")
 
                     # Create duel result embed
                     embed = create_duel_embed(duel_result)

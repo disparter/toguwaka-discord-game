@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import logging
 import re
-from src.utils.persistence.db_provider import get_player
+from src.utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -25,7 +25,7 @@ class JunieInteraction(commands.Cog):
             logger.info(f"Detected Junie interaction from {message.author.name}: {message.content}")
             
             # Get player data
-            player = get_player(message.author.id)
+            player = await db_provider.get_player(message.author.id)
             
             if not player:
                 # Player is not registered

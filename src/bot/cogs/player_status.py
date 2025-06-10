@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from src.utils.persistence.db_provider import get_player, get_club, get_top_players, get_player_inventory
+from src.utils.persistence.db_provider import db_provider
 from src.utils.embeds import create_player_embed, create_inventory_embed, create_leaderboard_embed
 import json
 
@@ -25,7 +25,7 @@ class PlayerStatus(commands.Cog):
             target = member or interaction.user
 
             # Get player data
-            player = get_player(target.id)
+            player = await db_provider.get_player(target.id)
             if not player:
                 if target == interaction.user:
                     await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
@@ -36,7 +36,7 @@ class PlayerStatus(commands.Cog):
             # Get club data
             club = None
             if player['club_id']:
-                club = get_club(player['club_id'])
+                club = await db_provider.get_club(player['club_id'])
 
             # Create and send player embed
             embed = create_player_embed(player, club)
@@ -52,13 +52,13 @@ class PlayerStatus(commands.Cog):
         """Slash command version of the inventory command."""
         try:
             # Get player data
-            player = await get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
                 return
 
             # Buscar inventário na tabela Inventario
-            inventory = await get_player_inventory(interaction.user.id)
+            inventory = await db_provider.get_player_inventory(interaction.user.id)
             player['inventory'] = inventory
 
             # Create inventory embed
@@ -126,7 +126,7 @@ class PlayerStatus(commands.Cog):
                 limit = 25
 
             # Get top players
-            top_players = get_top_players(limit)
+            top_players = await db_provider.get_top_players(limit)
 
             # Create and send leaderboard embed
             embed = create_leaderboard_embed(top_players)
@@ -144,7 +144,7 @@ class PlayerStatus(commands.Cog):
         target = member or ctx.author
 
         # Get player data
-        player = get_player(target.id)
+        player = await db_provider.get_player(target.id)
         if not player:
             if target == ctx.author:
                 await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
@@ -170,7 +170,7 @@ class PlayerStatus(commands.Cog):
         # Get club data
         club = None
         if player['club_id']:
-            club = get_club(player['club_id'])
+            club = await db_provider.get_club(player['club_id'])
 
         # Create and send player embed
         embed = create_player_embed(player, club)
@@ -180,13 +180,13 @@ class PlayerStatus(commands.Cog):
     async def inventory(self, ctx):
         """Exibe o inventário do jogador."""
         # Get player data
-        player = await get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         if not player:
             await ctx.send(f"{ctx.author.mention}, você ainda não está registrado na Academia Tokugawa. Use !ingressar para criar seu personagem.")
             return
 
         # Buscar inventário na tabela Inventario
-        inventory = await get_player_inventory(ctx.author.id)
+        inventory = await db_provider.get_player_inventory(ctx.author.id)
         player['inventory'] = inventory
 
         # Create inventory embed
@@ -220,7 +220,7 @@ class PlayerStatus(commands.Cog):
             limit = 25
 
         # Get top players
-        top_players = get_top_players(limit)
+        top_players = await db_provider.get_top_players(limit)
 
         # Create and send leaderboard embed
         embed = create_leaderboard_embed(top_players)

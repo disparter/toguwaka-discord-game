@@ -17,388 +17,508 @@ from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CL
 
 logger = logging.getLogger('tokugawa_bot')
 
-# Configurar região padrão para o DynamoDB
-AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
-dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
-PLAYERS_TABLE = dynamodb.Table(DYNAMODB_PLAYERS_TABLE)
-INVENTORY_TABLE = dynamodb.Table(DYNAMODB_INVENTORY_TABLE)
-CLUBS_TABLE = dynamodb.Table(DYNAMODB_CLUBS_TABLE)
+class DBProvider:
+    """Database provider class that encapsulates all database operations."""
+    
+    def __init__(self):
+        # Configurar região padrão para o DynamoDB
+        self.AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
+        self.dynamodb = boto3.resource('dynamodb', region_name=self.AWS_REGION)
+        self.PLAYERS_TABLE = self.dynamodb.Table(DYNAMODB_PLAYERS_TABLE)
+        self.INVENTORY_TABLE = self.dynamodb.Table(DYNAMODB_INVENTORY_TABLE)
+        self.CLUBS_TABLE = self.dynamodb.Table(DYNAMODB_CLUBS_TABLE)
 
-# --- Player operations ---
-async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
-    """Get player data from database."""
-    try:
-        response = PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
-        return response.get('Item')
-    except Exception as e:
-        logger.error(f"Error getting player {user_id}: {str(e)}")
-        return None
-
-async def create_player(user_id: str, name: str, **kwargs) -> bool:
-    """Create a new player in database."""
-    try:
-        player_data = {
-            'PK': f'PLAYER#{user_id}',
-            'SK': 'PROFILE',
-            'name': name,
-            'level': 1,
-            'exp': 0,
-            'tusd': 1000,
-            'club_id': None,
-            'dexterity': 10,
-            'intellect': 10,
-            'charisma': 10,
-            'power_stat': 10,
-            'reputation': 0,
-            'hp': 100,
-            'max_hp': 100,
-            'strength_level': 1,
-            'created_at': datetime.now().isoformat(),
-            'last_active': datetime.now().isoformat(),
-            **kwargs
-        }
-        PLAYERS_TABLE.put_item(Item=player_data)
-        return True
-    except Exception as e:
-        logger.error(f"Error creating player {user_id}: {str(e)}")
-        return False
-
-async def update_player(user_id: str, **kwargs) -> bool:
-    """Update player data in database."""
-    try:
-        # Get current player data
-        current_player = await get_player(user_id)
-        if not current_player:
+    def ensure_dynamo_available(self) -> bool:
+        """Check if DynamoDB is available."""
+        try:
+            # Try to describe the tables
+            self.PLAYERS_TABLE.table_status
+            self.INVENTORY_TABLE.table_status
+            self.CLUBS_TABLE.table_status
+            return True
+        except Exception as e:
+            logger.error(f"Error checking DynamoDB availability: {e}")
             return False
 
-        # Update fields
-        update_expr = "SET "
-        expr_attr_values = {}
-        expr_attr_names = {}
-
-        for key, value in kwargs.items():
-            if key in current_player or key in ['level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma', 'power_stat', 'reputation', 'hp', 'max_hp', 'strength_level']:
-                update_expr += f"#{key} = :{key}, "
-                expr_attr_values[f":{key}"] = value
-                expr_attr_names[f"#{key}"] = key
-
-        # Always update last_active
-        update_expr += "#last_active = :last_active"
-        expr_attr_values[":last_active"] = datetime.now().isoformat()
-        expr_attr_names["#last_active"] = "last_active"
-
-        PLAYERS_TABLE.update_item(
-            Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
-            UpdateExpression=update_expr,
-            ExpressionAttributeValues=expr_attr_values,
-            ExpressionAttributeNames=expr_attr_names
-        )
-        return True
-    except Exception as e:
-        logger.error(f"Error updating player {user_id}: {str(e)}")
-        return False
-
-async def get_all_players() -> List[Dict[str, Any]]:
-    """Get all players from DynamoDB."""
-    try:
-        response = PLAYERS_TABLE.scan()
-        return response.get('Items', [])
-    except Exception as e:
-        logger.error(f"Error getting all players: {str(e)}")
-        return []
-
-# --- Club operations ---
-async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
-    """Get club data from database."""
-    try:
-        response = CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
-        return response.get('Item')
-    except Exception as e:
-        logger.error(f"Error getting club {club_id}: {str(e)}")
-        return None
-
-async def get_all_clubs() -> List[Dict[str, Any]]:
-    """Get all clubs from database."""
-    try:
-        response = CLUBS_TABLE.scan(
-            FilterExpression='begins_with(PK, :pk) AND SK = :sk',
-            ExpressionAttributeValues={
-                ':pk': 'CLUB#',
-                ':sk': 'INFO'
-            }
-        )
-        return response.get('Items', [])
-    except Exception as e:
-        logger.error(f"Error getting all clubs: {str(e)}")
-        return []
-
-# --- Event operations ---
-async def store_event(*args, **kwargs) -> bool:
-    return True
-
-async def get_event(*args, **kwargs) -> Optional[Dict[str, Any]]:
-    return None
-
-async def get_events_by_date(*args, **kwargs) -> List[Dict[str, Any]]:
-    return []
-
-async def update_event_status(*args, **kwargs) -> bool:
-    return True
-
-async def get_active_events(*args, **kwargs) -> List[Dict[str, Any]]:
-    return []
-
-# --- Cooldown operations ---
-async def store_cooldown(user_id: str, command: str, expiry_time: datetime) -> bool:
-    """Store command cooldown in database."""
-    try:
-        PLAYERS_TABLE.update_item(
-            Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
-            UpdateExpression='SET cooldowns.#command = :expiry',
-            ExpressionAttributeValues={':expiry': expiry_time.isoformat()},
-            ExpressionAttributeNames={'#command': command}
-        )
-        return True
-    except Exception as e:
-        logger.error(f"Error storing cooldown for command {command} for player {user_id}: {str(e)}")
-        return False
-
-async def get_cooldown(user_id: str, command: str) -> Optional[datetime]:
-    """Get command cooldown from database."""
-    try:
-        response = PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
-        player = response.get('Item')
-        if player and 'cooldowns' in player and command in player['cooldowns']:
-            return datetime.fromisoformat(player['cooldowns'][command])
-        return None
-    except Exception as e:
-        logger.error(f"Error getting cooldown for command {command} for player {user_id}: {str(e)}")
-        return None
-
-async def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
-    return []
-
-async def clear_expired_cooldowns() -> int:
-    """Clear expired cooldowns from database."""
-    try:
-        # Scan all players
-        response = PLAYERS_TABLE.scan()
-        cleared = 0
-        now = datetime.now()
-
-        for player in response.get('Items', []):
-            if 'cooldowns' not in player:
-                continue
-
-            # Check each cooldown
-            expired_commands = []
-            for command, expiry_str in player['cooldowns'].items():
-                expiry = datetime.fromisoformat(expiry_str)
-                if expiry < now:
-                    expired_commands.append(command)
-                    cleared += 1
-
-            # Remove expired cooldowns
-            if expired_commands:
-                update_expr = "REMOVE " + ", ".join([f"cooldowns.#{cmd}" for cmd in expired_commands])
-                expr_attr_names = {f"#{cmd}": cmd for cmd in expired_commands}
-
-                PLAYERS_TABLE.update_item(
-                    Key={'PK': player['PK'], 'SK': player['SK']},
-                    UpdateExpression=update_expr,
-                    ExpressionAttributeNames=expr_attr_names
-                )
-
-        return cleared
-    except Exception as e:
-        logger.error(f"Error clearing expired cooldowns: {str(e)}")
-        return 0
-
-# --- System flag operations ---
-async def get_system_flag(*args, **kwargs) -> Optional[Any]:
-    return None
-
-async def set_system_flag(*args, **kwargs) -> bool:
-    return True
-
-# --- Grade operations ---
-async def get_player_grades(*args, **kwargs) -> List[Dict[str, Any]]:
-    return []
-
-async def update_player_grade(*args, **kwargs) -> bool:
-    return True
-
-async def get_monthly_average_grades(*args, **kwargs) -> Dict[str, float]:
-    return {}
-
-# --- Voting operations ---
-async def add_vote(*args, **kwargs) -> bool:
-    return True
-
-async def get_vote_results(*args, **kwargs) -> Dict[str, int]:
-    return {}
-
-async def update_player_reputation(*args, **kwargs) -> bool:
-    return True
-
-# --- Quiz operations ---
-async def get_quiz_questions(*args, **kwargs) -> List[Dict[str, Any]]:
-    return []
-
-async def record_quiz_answer(*args, **kwargs) -> bool:
-    return True
-
-# --- Init ---
-async def init_db() -> bool:
-    """Initialize the database."""
-    try:
-        from src.utils.persistence.dynamodb import init_db as dynamo_init_db
-        return dynamo_init_db()
-    except Exception as e:
-        logger.error(f"Error initializing DynamoDB: {str(e)}")
-        return False
-
-def ensure_dynamo_available() -> bool:
-    """Check if DynamoDB is available."""
-    try:
-        # Try to describe tables
-        dynamodb_client = boto3.client('dynamodb')
-        dynamodb_client.describe_table(TableName=DYNAMODB_PLAYERS_TABLE)
-        dynamodb_client.describe_table(TableName=DYNAMODB_INVENTORY_TABLE)
-        dynamodb_client.describe_table(TableName=DYNAMODB_CLUBS_TABLE)
-        return True
-    except Exception as e:
-        logger.error(f"DynamoDB is not available: {str(e)}")
-        return False
-
-# --- Club NPCs ---
-async def get_relevant_npcs(club_id: str) -> List[Dict[str, Any]]:
-    """Get NPCs relevant to a specific club."""
-    # Hardcoded NPCs for each club
-    club_npcs = {
-        "clube_das_chamas": [
-            {
-                "id": "kai_flameheart",
-                "name": "Kai Flameheart",
-                "role": "Líder",
-                "image": "kai_flameheart_intro.png"
-            }
-        ],
-        "clube_politico": [
-            {
-                "id": "alexander_strategos",
-                "name": "Alexander Strategos",
-                "role": "Líder",
-                "image": "lider_clube_conselho_politico_intro.png"
-            }
-        ],
-        "clube_de_combate": [
-            {
-                "id": "ryuji_battleborn",
-                "name": "Ryuji Battleborn",
-                "role": "Líder",
-                "image": "ryuji_battleborn_intro.png"
-            }
-        ],
-        "clube_dos_elementalistas": [
-            {
-                "id": "gaia_naturae",
-                "name": "Gaia Naturae",
-                "role": "Líder",
-                "image": "gaia_naturae_neutral.png"
-            }
-        ],
-        "clube_dos_ilusionistas": [
-            {
-                "id": "mina_starlight",
-                "name": "Mina Starlight",
-                "role": "Líder",
-                "image": "mina_starlight_intro.png"
-            }
-        ]
-    }
-    return club_npcs.get(club_id, [])
-
-# --- Inventory operations ---
-async def get_player_inventory(user_id: str) -> Dict[str, Any]:
-    """Get player inventory from database."""
-    if USE_DYNAMO:
+    async def sync_to_dynamo_if_empty(self) -> bool:
+        """Check if DynamoDB tables are empty and sync data if needed."""
         try:
-            response = INVENTORY_TABLE.query(
-                KeyConditionExpression='user_id = :uid',
-                ExpressionAttributeValues={':uid': user_id}
+            # Check if players table is empty
+            response = self.PLAYERS_TABLE.scan(Limit=1)
+            if not response.get('Items'):
+                logger.info("Players table is empty, no sync needed")
+                return True
+            return True
+        except Exception as e:
+            logger.error(f"Error checking DynamoDB tables: {e}")
+            return False
+
+    # --- Player operations ---
+    async def get_player(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """Get player data from database."""
+        try:
+            response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting player {user_id}: {str(e)}")
+            return None
+
+    async def create_player(self, user_id: str, name: str, **kwargs) -> bool:
+        """Create a new player in database."""
+        try:
+            player_data = {
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'PROFILE',
+                'name': name,
+                'level': 1,
+                'exp': 0,
+                'tusd': 1000,
+                'club_id': None,
+                'dexterity': 10,
+                'intellect': 10,
+                'charisma': 10,
+                'power_stat': 10,
+                'reputation': 0,
+                'hp': 100,
+                'max_hp': 100,
+                'strength_level': 1,
+                'created_at': datetime.now().isoformat(),
+                'last_active': datetime.now().isoformat(),
+                **kwargs
+            }
+            self.PLAYERS_TABLE.put_item(Item=player_data)
+            return True
+        except Exception as e:
+            logger.error(f"Error creating player {user_id}: {str(e)}")
+            return False
+
+    async def update_player(self, user_id: str, **kwargs) -> bool:
+        """Update player data in database."""
+        try:
+            # Get current player data
+            current_player = await self.get_player(user_id)
+            if not current_player:
+                return False
+
+            # Update fields
+            update_expr = "SET "
+            expr_attr_values = {}
+            expr_attr_names = {}
+
+            for key, value in kwargs.items():
+                if key in current_player or key in ['level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma', 'power_stat', 'reputation', 'hp', 'max_hp', 'strength_level']:
+                    update_expr += f"#{key} = :{key}, "
+                    expr_attr_values[f":{key}"] = value
+                    expr_attr_names[f"#{key}"] = key
+
+            # Always update last_active
+            update_expr += "#last_active = :last_active"
+            expr_attr_values[":last_active"] = datetime.now().isoformat()
+            expr_attr_names["#last_active"] = "last_active"
+
+            self.PLAYERS_TABLE.update_item(
+                Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
+                UpdateExpression=update_expr,
+                ExpressionAttributeValues=expr_attr_values,
+                ExpressionAttributeNames=expr_attr_names
             )
-            return {item['item_id']: json.loads(item['item_data']) for item in response.get('Items', [])}
+            return True
+        except Exception as e:
+            logger.error(f"Error updating player {user_id}: {str(e)}")
+            return False
+
+    async def get_all_players(self) -> List[Dict[str, Any]]:
+        """Get all players from DynamoDB."""
+        try:
+            response = self.PLAYERS_TABLE.scan()
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all players: {str(e)}")
+            return []
+
+    # --- Club operations ---
+    async def get_club(self, club_id: str) -> Optional[Dict[str, Any]]:
+        """Get club data from database."""
+        try:
+            response = self.CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting club {club_id}: {str(e)}")
+            return None
+
+    async def get_all_clubs(self) -> List[Dict[str, Any]]:
+        """Get all clubs from database."""
+        try:
+            response = self.CLUBS_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+                ExpressionAttributeValues={
+                    ':pk': 'CLUB#',
+                    ':sk': 'INFO'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all clubs: {str(e)}")
+            return []
+
+    # --- Event operations ---
+    async def store_event(self, *args, **kwargs) -> bool:
+        return True
+
+    async def get_event(self, *args, **kwargs) -> Optional[Dict[str, Any]]:
+        return None
+
+    async def get_events_by_date(self, *args, **kwargs) -> List[Dict[str, Any]]:
+        return []
+
+    async def update_event_status(self, *args, **kwargs) -> bool:
+        return True
+
+    async def get_active_events(self, *args, **kwargs) -> List[Dict[str, Any]]:
+        return []
+
+    # --- Cooldown operations ---
+    async def store_cooldown(self, user_id: str, command: str, expiry_time: datetime) -> bool:
+        """Store command cooldown in database."""
+        try:
+            self.PLAYERS_TABLE.update_item(
+                Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
+                UpdateExpression='SET cooldowns.#command = :expiry',
+                ExpressionAttributeValues={':expiry': expiry_time.isoformat()},
+                ExpressionAttributeNames={'#command': command}
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error storing cooldown for command {command} for player {user_id}: {str(e)}")
+            return False
+
+    async def get_cooldown(self, user_id: str, command: str) -> Optional[datetime]:
+        """Get command cooldown from database."""
+        try:
+            response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
+            player = response.get('Item')
+            if player and 'cooldowns' in player and command in player['cooldowns']:
+                return datetime.fromisoformat(player['cooldowns'][command])
+            return None
+        except Exception as e:
+            logger.error(f"Error getting cooldown for command {command} for player {user_id}: {str(e)}")
+            return None
+
+    async def get_cooldowns(self, *args, **kwargs) -> List[Dict[str, Any]]:
+        return []
+
+    async def clear_expired_cooldowns(self) -> int:
+        """Clear expired cooldowns from database."""
+        try:
+            # Scan all players
+            response = self.PLAYERS_TABLE.scan()
+            cleared = 0
+            now = datetime.now()
+
+            for player in response.get('Items', []):
+                if 'cooldowns' not in player:
+                    continue
+
+                # Check each cooldown
+                expired_commands = []
+                for command, expiry_str in player['cooldowns'].items():
+                    expiry = datetime.fromisoformat(expiry_str)
+                    if expiry < now:
+                        expired_commands.append(command)
+                        cleared += 1
+
+                # Remove expired cooldowns
+                if expired_commands:
+                    update_expr = "REMOVE "
+                    for command in expired_commands:
+                        update_expr += f"cooldowns.#{command}, "
+                    update_expr = update_expr.rstrip(", ")
+
+                    expr_attr_names = {f"#{cmd}": cmd for cmd in expired_commands}
+
+                    self.PLAYERS_TABLE.update_item(
+                        Key={'PK': player['PK'], 'SK': player['SK']},
+                        UpdateExpression=update_expr,
+                        ExpressionAttributeNames=expr_attr_names
+                    )
+
+            return cleared
+        except Exception as e:
+            logger.error(f"Error clearing expired cooldowns: {str(e)}")
+            return 0
+
+    # --- System flag operations ---
+    async def get_system_flag(self, flag_name: str) -> Optional[str]:
+        """Get a system flag value."""
+        try:
+            response = self.PLAYERS_TABLE.get_item(Key={'PK': 'SYSTEM', 'SK': f'FLAG#{flag_name}'})
+            return response.get('Item', {}).get('value')
+        except Exception as e:
+            logger.error(f"Error getting system flag {flag_name}: {str(e)}")
+            return None
+
+    async def set_system_flag(self, flag_name: str, value: str) -> bool:
+        """Set a system flag value."""
+        try:
+            self.PLAYERS_TABLE.put_item(Item={
+                'PK': 'SYSTEM',
+                'SK': f'FLAG#{flag_name}',
+                'value': value,
+                'last_updated': datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            logger.error(f"Error setting system flag {flag_name}: {str(e)}")
+            return False
+
+    # --- Grade operations ---
+    async def get_player_grades(self, user_id: str) -> Dict[str, Dict[str, float]]:
+        """Get all grades for a player."""
+        try:
+            response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'GRADES'})
+            return response.get('Item', {}).get('grades', {})
+        except Exception as e:
+            logger.error(f"Error getting grades for player {user_id}: {str(e)}")
+            return {}
+
+    async def update_player_grade(self, user_id: str, subject: str, grade: float) -> bool:
+        """Update a player's grade for a subject."""
+        try:
+            # Get current grades
+            grades = await self.get_player_grades(user_id)
+            
+            # Update grade
+            if subject not in grades:
+                grades[subject] = {}
+            grades[subject][datetime.now().strftime('%Y-%m')] = grade
+
+            # Store updated grades
+            self.PLAYERS_TABLE.put_item(Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'GRADES',
+                'grades': grades,
+                'last_updated': datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            logger.error(f"Error updating grade for player {user_id}: {str(e)}")
+            return False
+
+    async def get_monthly_average_grades(self, user_id: str) -> Dict[str, float]:
+        """Get monthly average grades for a player."""
+        try:
+            grades = await self.get_player_grades(user_id)
+            averages = {}
+            
+            for subject, monthly_grades in grades.items():
+                if monthly_grades:
+                    total = sum(monthly_grades.values())
+                    count = len(monthly_grades)
+                    averages[subject] = total / count
+
+            return averages
+        except Exception as e:
+            logger.error(f"Error calculating monthly averages for player {user_id}: {str(e)}")
+            return {}
+
+    # --- Vote operations ---
+    async def add_vote(self, vote_id: str, voter_id: str, candidate_id: str) -> bool:
+        """Add a vote to the database."""
+        try:
+            self.PLAYERS_TABLE.put_item(Item={
+                'PK': f'VOTE#{vote_id}',
+                'SK': f'VOTER#{voter_id}',
+                'candidate_id': candidate_id,
+                'timestamp': datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            logger.error(f"Error adding vote for vote {vote_id}: {str(e)}")
+            return False
+
+    async def get_vote_results(self, vote_id: str) -> Dict[str, int]:
+        """Get results for a vote."""
+        try:
+            response = self.PLAYERS_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': f'VOTE#{vote_id}'}
+            )
+            
+            results = {}
+            for item in response.get('Items', []):
+                candidate_id = item['candidate_id']
+                results[candidate_id] = results.get(candidate_id, 0) + 1
+
+            return results
+        except Exception as e:
+            logger.error(f"Error getting results for vote {vote_id}: {str(e)}")
+            return {}
+
+    # --- Reputation operations ---
+    async def update_player_reputation(self, user_id: str, amount: int) -> bool:
+        """Update a player's reputation."""
+        try:
+            self.PLAYERS_TABLE.update_item(
+                Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
+                UpdateExpression='ADD reputation :amount',
+                ExpressionAttributeValues={':amount': amount}
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error updating reputation for player {user_id}: {str(e)}")
+            return False
+
+    # --- Quiz operations ---
+    async def get_quiz_questions(self, subject: str) -> List[Dict[str, Any]]:
+        """Get quiz questions for a subject."""
+        try:
+            response = self.PLAYERS_TABLE.get_item(Key={'PK': 'QUIZ', 'SK': f'SUBJECT#{subject}'})
+            return response.get('Item', {}).get('questions', [])
+        except Exception as e:
+            logger.error(f"Error getting quiz questions for subject {subject}: {str(e)}")
+            return []
+
+    async def record_quiz_answer(self, user_id: str, question_id: str, is_correct: bool) -> bool:
+        """Record a player's answer to a quiz question."""
+        try:
+            self.PLAYERS_TABLE.put_item(Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': f'QUIZ#{question_id}',
+                'is_correct': is_correct,
+                'timestamp': datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            logger.error(f"Error recording quiz answer for player {user_id}: {str(e)}")
+            return False
+
+    # --- Database initialization ---
+    async def init_db(self) -> bool:
+        """Initialize the database."""
+        try:
+            # Check if tables exist
+            if not self.ensure_dynamo_available():
+                return False
+
+            # Sync data if needed
+            if not await self.sync_to_dynamo_if_empty():
+                return False
+
+            return True
+        except Exception as e:
+            logger.error(f"Error initializing database: {str(e)}")
+            return False
+
+    # --- NPC operations ---
+    async def get_relevant_npcs(self, club_id: str) -> List[Dict[str, Any]]:
+        """Get NPCs relevant to a club."""
+        try:
+            response = self.PLAYERS_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND club_id = :club_id',
+                ExpressionAttributeValues={
+                    ':pk': 'NPC#',
+                    ':club_id': club_id
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting NPCs for club {club_id}: {str(e)}")
+            return []
+
+    # --- Inventory operations ---
+    async def get_player_inventory(self, user_id: str) -> Dict[str, Any]:
+        """Get a player's inventory."""
+        try:
+            response = self.INVENTORY_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': f'PLAYER#{user_id}'}
+            )
+            
+            inventory = {}
+            for item in response.get('Items', []):
+                item_id = item['SK'].split('#')[1]
+                inventory[item_id] = item['item_data']
+            
+            return inventory
         except Exception as e:
             logger.error(f"Error getting inventory for player {user_id}: {str(e)}")
             return {}
-    else:
-        return _sqlite_get_player_inventory(user_id)
 
-async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
-    """Add item to player inventory."""
-    if USE_DYNAMO:
+    async def add_item_to_inventory(self, user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
+        """Add an item to a player's inventory."""
         try:
-            INVENTORY_TABLE.put_item(Item={
-                'user_id': user_id,
-                'item_id': item_id,
-                'item_data': json.dumps(item_data),
+            self.INVENTORY_TABLE.put_item(Item={
+                'PK': f'PLAYER#{user_id}',
+                'SK': f'ITEM#{item_id}',
+                'item_data': item_data,
                 'created_at': datetime.now().isoformat(),
                 'last_updated': datetime.now().isoformat()
             })
             return True
         except Exception as e:
-            logger.error(f"Error adding item {item_id} to inventory for player {user_id}: {str(e)}")
+            logger.error(f"Error adding item to inventory for player {user_id}: {str(e)}")
             return False
-    else:
-        return _sqlite_add_item_to_inventory(user_id, item_id, item_data)
 
-async def remove_item_from_inventory(user_id: str, item_id: str) -> bool:
-    """Remove item from player inventory."""
-    if USE_DYNAMO:
+    async def remove_item_from_inventory(self, user_id: str, item_id: str) -> bool:
+        """Remove an item from a player's inventory."""
         try:
-            INVENTORY_TABLE.delete_item(
+            self.INVENTORY_TABLE.delete_item(
                 Key={
-                    'user_id': user_id,
-                    'item_id': item_id
+                    'PK': f'PLAYER#{user_id}',
+                    'SK': f'ITEM#{item_id}'
                 }
             )
             return True
         except Exception as e:
-            logger.error(f"Error removing item {item_id} from inventory for player {user_id}: {str(e)}")
+            logger.error(f"Error removing item from inventory for player {user_id}: {str(e)}")
             return False
-    else:
-        return _sqlite_remove_item_from_inventory(user_id, item_id)
 
-# --- Outros helpers ---
-async def get_top_players(*args, **kwargs) -> list:
-    """Get top players by various criteria."""
-    try:
-        response = PLAYERS_TABLE.scan()
-        players = response.get('Items', [])
-        return sorted(players, key=lambda x: x.get('exp', 0), reverse=True)
-    except Exception as e:
-        logger.error(f"Error getting top players: {str(e)}")
-        return []
+    # --- Ranking operations ---
+    async def get_top_players(self, limit: int = 10) -> list:
+        """Get top players by level."""
+        try:
+            response = self.PLAYERS_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': 'PLAYER#'},
+                Limit=limit
+            )
+            
+            players = response.get('Items', [])
+            return sorted(players, key=lambda x: x.get('level', 0), reverse=True)[:limit]
+        except Exception as e:
+            logger.error(f"Error getting top players: {str(e)}")
+            return []
 
-async def get_top_players_by_reputation(*args, **kwargs) -> list:
-    """Get top players by reputation."""
-    try:
-        response = PLAYERS_TABLE.scan()
-        players = response.get('Items', [])
-        return sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)
-    except Exception as e:
-        logger.error(f"Error getting top players by reputation: {str(e)}")
-        return []
+    async def get_top_players_by_reputation(self, limit: int = 10) -> list:
+        """Get top players by reputation."""
+        try:
+            response = self.PLAYERS_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': 'PLAYER#'},
+                Limit=limit
+            )
+            
+            players = response.get('Items', [])
+            return sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)[:limit]
+        except Exception as e:
+            logger.error(f"Error getting top players by reputation: {str(e)}")
+            return []
 
-async def get_club_members(club_id: str) -> list:
-    """Get all members of a club."""
-    try:
-        response = PLAYERS_TABLE.scan(
-            FilterExpression='club_id = :cid',
-            ExpressionAttributeValues={':cid': club_id}
-        )
-        return response.get('Items', [])
-    except Exception as e:
-        logger.error(f"Error getting club members: {str(e)}")
-        return [] 
+    # --- Club member operations ---
+    async def get_club_members(self, club_id: str) -> list:
+        """Get all members of a club."""
+        try:
+            response = self.PLAYERS_TABLE.scan(
+                FilterExpression='club_id = :club_id',
+                ExpressionAttributeValues={':club_id': club_id}
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting club members for club {club_id}: {str(e)}")
+            return []
+
+# Create a singleton instance of DBProvider
+db_provider = DBProvider()
+
+# Export the singleton instance
+__all__ = ['db_provider'] 

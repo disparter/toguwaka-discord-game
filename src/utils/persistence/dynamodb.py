@@ -746,5 +746,5 @@ async def delete_item(table_name, key):
         logger.error(f"Error deleting item from table {table_name}: {e}")
         raise DynamoDBOperationError(f"Failed to delete item from table {table_name}") from e
 
-# Initialize the DynamoDB connection when the module is imported
-init_db()
+# Export the init_db function
+__all__ = ['init_db']

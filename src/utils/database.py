@@ -15,7 +15,8 @@ from src.utils.persistence.db_provider import (
     add_item_to_inventory,
     get_cooldowns,
     clear_expired_cooldowns,
-    init_db
+    init_db,
+    db_provider
 )
 
 # Re-export all database functions
@@ -28,5 +29,6 @@ __all__ = [
     'add_item_to_inventory',
     'get_cooldowns',
     'clear_expired_cooldowns',
-    'init_db'
+    'init_db',
+    'db_provider'
 ] 

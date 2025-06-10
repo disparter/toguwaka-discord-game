@@ -10,7 +10,7 @@ import logging
 import random
 import asyncio
 from datetime import datetime, timedelta
-from src.utils.database import get_player, update_player
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed
 from src.utils.command_registrar import CommandRegistrar
 
@@ -42,13 +42,13 @@ class Betting(commands.Cog):
                 return
 
             # Check if player exists
-            challenger = get_player(interaction.user.id)
+            challenger = await db_provider.get_player(interaction.user.id)
             if not challenger:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
 
             # Check if opponent exists
-            opponent_player = get_player(opponent.id)
+            opponent_player = await db_provider.get_player(opponent.id)
             if not opponent_player:
                 await interaction.response.send_message(f"{opponent.mention} não está registrado na Academia Tokugawa.")
                 return
@@ -131,8 +131,10 @@ class Betting(commands.Cog):
                 }
 
                 # Deduct TUSD from both players
-                update_player(interaction.user.id, tusd=challenger["tusd"] - amount)
-                update_player(opponent.id, tusd=opponent_player["tusd"] - amount)
+                challenger["tusd"] -= amount
+                opponent_player["tusd"] -= amount
+                await db_provider.update_player(interaction.user.id, challenger)
+                await db_provider.update_player(opponent.id, opponent_player)
 
                 # Start the duel
                 if activities_cog:
@@ -149,8 +151,10 @@ class Betting(commands.Cog):
                 else:
                     await button_interaction.response.send_message("Erro ao iniciar o duelo. O módulo de atividades não está disponível.")
                     # Refund the TUSD
-                    update_player(interaction.user.id, tusd=challenger["tusd"])
-                    update_player(opponent.id, tusd=opponent_player["tusd"])
+                    challenger["tusd"] += amount
+                    opponent_player["tusd"] += amount
+                    await db_provider.update_player(interaction.user.id, challenger)
+                    await db_provider.update_player(opponent.id, opponent_player)
 
             async def decline_callback(button_interaction):
                 if button_interaction.user.id != opponent.id:
@@ -200,7 +204,7 @@ class Betting(commands.Cog):
         """Slash command for betting on events."""
         try:
             # Check if player exists
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
                 return
@@ -231,45 +235,40 @@ class Betting(commands.Cog):
             logger.error(f"Error in slash_bet_event: {e}")
 
     async def on_duel_complete(self, duel_result):
-        """Event listener for duel completion."""
+        """Handle duel completion and distribute winnings."""
         # Find the bet for this duel
-        for bet_id, bet in list(self.active_bets.items()):
-            if bet["challenger_id"] == duel_result["winner"]["user_id"] and bet["opponent_id"] == duel_result["loser"]["user_id"]:
-                # Challenger won
-                winner_id = bet["challenger_id"]
-                loser_id = bet["opponent_id"]
-                self._handle_bet_result(bet_id, winner_id, loser_id)
-                break
-            elif bet["challenger_id"] == duel_result["loser"]["user_id"] and bet["opponent_id"] == duel_result["winner"]["user_id"]:
-                # Opponent won
-                winner_id = bet["opponent_id"]
-                loser_id = bet["challenger_id"]
-                self._handle_bet_result(bet_id, winner_id, loser_id)
+        bet_id = None
+        for bid, bet in self.active_bets.items():
+            if (bet["challenger_id"] == duel_result["winner_id"] and bet["opponent_id"] == duel_result["loser_id"]) or \
+               (bet["challenger_id"] == duel_result["loser_id"] and bet["opponent_id"] == duel_result["winner_id"]):
+                bet_id = bid
                 break
 
-    def _handle_bet_result(self, bet_id, winner_id, loser_id):
-        """Handle the result of a bet."""
+        if bet_id:
+            await self._handle_bet_result(bet_id, duel_result["winner_id"], duel_result["loser_id"])
+            del self.active_bets[bet_id]
+
+    async def _handle_bet_result(self, bet_id, winner_id, loser_id):
+        """Handle the result of a bet and distribute winnings."""
         bet = self.active_bets.get(bet_id)
         if not bet:
             return
 
+        # Calculate winnings (total pot)
+        winnings = bet["amount"] * 2  # Both players put in the same amount
+
         # Get player data
-        winner = get_player(winner_id)
-        loser = get_player(loser_id)
+        winner = await db_provider.get_player(winner_id)
+        loser = await db_provider.get_player(loser_id)
         if not winner or not loser:
             return
 
-        # Calculate winnings (double the bet amount)
-        winnings = bet["amount"] * 2
-
         # Update winner's TUSD
-        update_player(winner_id, tusd=winner["tusd"] + winnings)
+        winner["tusd"] += winnings
+        await db_provider.update_player(winner_id, winner)
 
         # Log the result
-        logger.info(f"Bet {bet_id} completed: {winner_id} won {winnings} TUSD from {loser_id}")
-
-        # Remove the bet
-        del self.active_bets[bet_id]
+        logger.info(f"Bet {bet_id} completed. Winner: {winner_id}, Winnings: {winnings} TUSD")
 
     @commands.command(name="apostar")
     async def bet(self, ctx, opponent: discord.Member = None, amount: int = None, duel_type: str = "physical"):

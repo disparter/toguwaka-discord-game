@@ -9,7 +9,7 @@ import io
 import numpy as np
 from collections import Counter, defaultdict
 
-from src.utils.persistence.db_provider import get_player, get_all_players
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
 from story_mode.narrative_logger import get_narrative_logger
@@ -42,7 +42,7 @@ class DecisionDashboard(commands.Cog):
             await interaction.response.defer(ephemeral=True)
 
             # Get player data
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.followup.send(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
@@ -59,7 +59,7 @@ class DecisionDashboard(commands.Cog):
                 return
 
             # Get community choices
-            community_choices = self._get_community_choices(chapter_id)
+            community_choices = await self._get_community_choices(chapter_id)
 
             # Create comparison visualization
             embed, file = self._create_choice_comparison(player, player_choices, community_choices, chapter_id)
@@ -83,7 +83,7 @@ class DecisionDashboard(commands.Cog):
             await interaction.response.defer(ephemeral=True)
 
             # Get player data
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.followup.send(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
@@ -98,7 +98,7 @@ class DecisionDashboard(commands.Cog):
                 return
 
             # Get community paths
-            community_paths = self._get_community_paths()
+            community_paths = await self._get_community_paths()
 
             # Create path analysis visualization
             embed, file = self._create_path_analysis(player, player_path, community_paths)
@@ -122,7 +122,7 @@ class DecisionDashboard(commands.Cog):
             await interaction.response.defer(ephemeral=True)
 
             # Get player data
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.followup.send(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
@@ -137,7 +137,7 @@ class DecisionDashboard(commands.Cog):
                 return
 
             # Get community faction data
-            community_factions = self._get_community_faction_data()
+            community_factions = await self._get_community_faction_data()
 
             # Create faction statistics visualization
             embed, file = self._create_faction_stats(player, player_faction, community_factions)
@@ -161,7 +161,7 @@ class DecisionDashboard(commands.Cog):
             await interaction.response.defer(ephemeral=True)
 
             # Get player data
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.followup.send(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
@@ -179,7 +179,7 @@ class DecisionDashboard(commands.Cog):
             style_analysis = self._analyze_gameplay_style(player, player_choices)
 
             # Get community style data
-            community_styles = self._get_community_style_data()
+            community_styles = await self._get_community_style_data()
 
             # Create style analysis visualization
             embed, file = self._create_style_analysis(player, style_analysis, community_styles)
@@ -207,7 +207,7 @@ class DecisionDashboard(commands.Cog):
             await interaction.response.defer(ephemeral=True)
 
             # Get player data
-            player = get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if not player:
                 await interaction.followup.send(
                     f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. "
@@ -332,224 +332,113 @@ class DecisionDashboard(commands.Cog):
             await interaction.followup.send(f"Ocorreu um erro ao gerar o dashboard: {str(e)}")
 
     def _get_player_choices(self, player: Dict[str, Any], chapter_id: str = None) -> Dict[str, Any]:
-        """
-        Gets the player's choices, optionally filtered by chapter.
-
-        Args:
-            player: The player data
-            chapter_id: Optional chapter ID to filter choices
-
-        Returns:
-            Dictionary of player choices
-        """
-        if 'story_progress' not in player or not player['story_progress']:
-            return {}
-
-        story_progress = json.loads(player['story_progress']) if isinstance(player['story_progress'], str) else player['story_progress']
-
-        if 'story_choices' not in story_progress:
-            return {}
-
+        """Get the player's narrative choices."""
+        choices = player.get("story_progress", {}).get("choices", {})
         if chapter_id:
-            return {chapter_id: story_progress['story_choices'].get(chapter_id, {})} if chapter_id in story_progress['story_choices'] else {}
-        else:
-            return story_progress['story_choices']
+            return {k: v for k, v in choices.items() if k.startswith(chapter_id)}
+        return choices
 
-    def _get_community_choices(self, chapter_id: str = None) -> Dict[str, Dict[str, Counter]]:
-        """
-        Gets aggregated choices from all players.
-
-        Args:
-            chapter_id: Optional chapter ID to filter choices
-
-        Returns:
-            Dictionary mapping chapters to choice keys to counts of each choice value
-        """
-        all_players = get_all_players()
+    async def _get_community_choices(self, chapter_id: str = None) -> Dict[str, Dict[str, Counter]]:
+        """Get the community's narrative choices."""
+        all_players = await db_provider.get_all_players()
         community_choices = defaultdict(lambda: defaultdict(Counter))
 
-        for player_data in all_players:
-            player_choices = self._get_player_choices(player_data, chapter_id)
+        for player in all_players:
+            choices = self._get_player_choices(player, chapter_id)
+            for choice_id, choice in choices.items():
+                community_choices[choice_id][choice["type"]][choice["value"]] += 1
 
-            for ch_id, choices in player_choices.items():
-                for choice_key, choice_value in choices.items():
-                    community_choices[ch_id][choice_key][choice_value] += 1
-
-        return community_choices
+        return dict(community_choices)
 
     def _get_player_path(self, player: Dict[str, Any]) -> List[str]:
-        """
-        Gets the player's path through the story (completed chapters).
+        """Get the player's narrative path."""
+        return player.get("story_progress", {}).get("path", [])
 
-        Args:
-            player: The player data
-
-        Returns:
-            List of completed chapter IDs in order
-        """
-        if 'story_progress' not in player or not player['story_progress']:
-            return []
-
-        story_progress = json.loads(player['story_progress']) if isinstance(player['story_progress'], str) else player['story_progress']
-
-        if 'completed_chapters' not in story_progress:
-            return []
-
-        return story_progress['completed_chapters']
-
-    def _get_community_paths(self) -> Dict[str, int]:
-        """
-        Gets aggregated paths from all players.
-
-        Returns:
-            Dictionary mapping path strings to counts
-        """
-        all_players = get_all_players()
+    async def _get_community_paths(self) -> Dict[str, int]:
+        """Get the community's narrative paths."""
+        all_players = await db_provider.get_all_players()
         path_counts = Counter()
 
-        for player_data in all_players:
-            player_path = self._get_player_path(player_data)
-            if player_path:
-                path_str = "->".join(player_path)
-                path_counts[path_str] += 1
+        for player in all_players:
+            path = self._get_player_path(player)
+            if path:
+                path_counts[tuple(path)] += 1
 
-        return path_counts
+        return dict(path_counts)
 
     def _get_player_faction_data(self, player: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Gets the player's faction data.
+        """Get the player's faction data."""
+        return player.get("story_progress", {}).get("factions", {})
 
-        Args:
-            player: The player data
+    async def _get_community_faction_data(self) -> Dict[str, Dict[str, int]]:
+        """Get the community's faction data."""
+        all_players = await db_provider.get_all_players()
+        faction_stats = defaultdict(lambda: defaultdict(int))
 
-        Returns:
-            Dictionary with faction information
-        """
-        # For now, we'll use club_id as a proxy for faction
-        club_id = player.get('club_id')
-        if not club_id:
-            return {}
+        for player in all_players:
+            factions = self._get_player_faction_data(player)
+            for faction, data in factions.items():
+                faction_stats[faction]["members"] += 1
+                faction_stats[faction]["total_reputation"] += data.get("reputation", 0)
+                faction_stats[faction]["total_contributions"] += data.get("contributions", 0)
 
-        # Get faction reputations if available
-        faction_data = {'club_id': club_id, 'reputations': {}}
-
-        if 'story_progress' in player and player['story_progress']:
-            story_progress = json.loads(player['story_progress']) if isinstance(player['story_progress'], str) else player['story_progress']
-
-            if 'faction_reputations' in story_progress:
-                faction_data['reputations'] = story_progress['faction_reputations']
-
-        return faction_data
-
-    def _get_community_faction_data(self) -> Dict[str, Dict[str, int]]:
-        """
-        Gets aggregated faction data from all players.
-
-        Returns:
-            Dictionary with faction statistics
-        """
-        all_players = get_all_players()
-        club_counts = Counter()
-        faction_reputations = defaultdict(list)
-
-        for player_data in all_players:
-            faction_data = self._get_player_faction_data(player_data)
-
-            if 'club_id' in faction_data and faction_data['club_id']:
-                club_counts[faction_data['club_id']] += 1
-
-            for faction_id, reputation in faction_data.get('reputations', {}).items():
-                faction_reputations[faction_id].append(reputation)
-
-        # Calculate average reputations
-        avg_reputations = {}
-        for faction_id, reputations in faction_reputations.items():
-            if reputations:
-                avg_reputations[faction_id] = sum(reputations) / len(reputations)
-
-        return {
-            'club_counts': dict(club_counts),
-            'avg_reputations': avg_reputations
-        }
+        return dict(faction_stats)
 
     def _analyze_gameplay_style(self, player: Dict[str, Any], player_choices: Dict[str, Any]) -> Dict[str, float]:
-        """
-        Analyzes the player's gameplay style based on their choices.
-
-        Args:
-            player: The player data
-            player_choices: The player's choices
-
-        Returns:
-            Dictionary mapping style dimensions to scores
-        """
-        # Define style dimensions
-        styles = {
-            'diplomático': 0,
-            'agressivo': 0,
-            'estratégico': 0,
-            'impulsivo': 0,
-            'leal': 0,
-            'individualista': 0
+        """Analyze the player's gameplay style based on their choices."""
+        style_metrics = {
+            "aggressive": 0.0,
+            "diplomatic": 0.0,
+            "strategic": 0.0,
+            "moral": 0.0,
+            "pragmatic": 0.0
         }
 
-        # Simple heuristic: count choice keys that contain certain keywords
-        choice_count = 0
+        for choice in player_choices.values():
+            choice_type = choice.get("type", "")
+            choice_value = choice.get("value", "")
 
-        for chapter_id, choices in player_choices.items():
-            for choice_key, choice_value in choices.items():
-                choice_count += 1
+            # Update metrics based on choice type and value
+            if choice_type == "combat":
+                style_metrics["aggressive"] += 1
+            elif choice_type == "dialogue":
+                style_metrics["diplomatic"] += 1
+            elif choice_type == "planning":
+                style_metrics["strategic"] += 1
+            elif choice_type == "moral":
+                if choice_value == "good":
+                    style_metrics["moral"] += 1
+                else:
+                    style_metrics["pragmatic"] += 1
 
-                # This is a simplified example - in a real implementation,
-                # you would have a more sophisticated mapping of choices to styles
-                if 'diplomatic' in choice_key or choice_value in [0, 3]:  # Assuming certain choice values indicate diplomatic choices
-                    styles['diplomático'] += 1
+        # Normalize metrics
+        total_choices = len(player_choices)
+        if total_choices > 0:
+            for key in style_metrics:
+                style_metrics[key] = (style_metrics[key] / total_choices) * 100
 
-                if 'aggressive' in choice_key or choice_value in [1, 4]:
-                    styles['agressivo'] += 1
+        return style_metrics
 
-                if 'strategic' in choice_key or choice_value in [2, 5]:
-                    styles['estratégico'] += 1
+    async def _get_community_style_data(self) -> Dict[str, float]:
+        """Get the community's gameplay style data."""
+        all_players = await db_provider.get_all_players()
+        community_styles = defaultdict(float)
+        total_players = 0
 
-                if 'impulsive' in choice_key or choice_value in [6, 9]:
-                    styles['impulsivo'] += 1
+        for player in all_players:
+            choices = self._get_player_choices(player)
+            if choices:
+                player_style = self._analyze_gameplay_style(player, choices)
+                for key, value in player_style.items():
+                    community_styles[key] += value
+                total_players += 1
 
-                if 'loyal' in choice_key or choice_value in [7, 10]:
-                    styles['leal'] += 1
+        # Calculate averages
+        if total_players > 0:
+            for key in community_styles:
+                community_styles[key] /= total_players
 
-                if 'individual' in choice_key or choice_value in [8, 11]:
-                    styles['individualista'] += 1
-
-        # Normalize scores
-        if choice_count > 0:
-            for style in styles:
-                styles[style] = (styles[style] / choice_count) * 10  # Scale to 0-10
-
-        return styles
-
-    def _get_community_style_data(self) -> Dict[str, float]:
-        """
-        Gets aggregated style data from all players.
-
-        Returns:
-            Dictionary mapping style dimensions to average scores
-        """
-        all_players = get_all_players()
-        all_styles = []
-
-        for player_data in all_players:
-            player_choices = self._get_player_choices(player_data)
-            if player_choices:
-                style = self._analyze_gameplay_style(player_data, player_choices)
-                all_styles.append(style)
-
-        # Calculate average styles
-        avg_styles = {}
-        if all_styles:
-            for style_dim in all_styles[0].keys():
-                avg_styles[style_dim] = sum(s[style_dim] for s in all_styles) / len(all_styles)
-
-        return avg_styles
+        return dict(community_styles)
 
     def _create_choice_comparison(self, player: Dict[str, Any], player_choices: Dict[str, Any], 
                                  community_choices: Dict[str, Dict[str, Counter]], chapter_id: str = None) -> tuple:
@@ -927,7 +816,7 @@ class DecisionDashboard(commands.Cog):
 
         return embed, file
 
-def setup(bot):
+async def setup(bot):
     """
     Adds the DecisionDashboard cog to the bot.
 
@@ -937,7 +826,7 @@ def setup(bot):
     try:
         # Check if matplotlib is available
         import matplotlib
-        bot.add_cog(DecisionDashboard(bot))
+        await bot.add_cog(DecisionDashboard(bot))
         logger.info("DecisionDashboard cog loaded successfully")
     except ImportError:
         logger.error("Failed to load DecisionDashboard cog: matplotlib is required")

@@ -9,7 +9,7 @@ import sqlite3
 import os
 from datetime import datetime, timedelta, time
 import pytz
-from src.utils.database import get_player, update_player, get_club, get_all_clubs, get_top_players, get_top_players_by_reputation, get_system_flag, set_system_flag, store_cooldown, update_player_grade, get_monthly_average_grades, update_player_reputation, get_player_grades, get_all_players
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from src.utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
 from src.utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
@@ -190,7 +190,7 @@ class ScheduledEvents(commands.Cog):
             daily_flag_name = f"daily_events_triggered_{today_date}"
 
             # Check if the daily events flag exists and is set to "true"
-            daily_events_triggered = get_system_flag(daily_flag_name)
+            daily_events_triggered = await db_provider.get_system_flag(daily_flag_name)
 
             if daily_events_triggered != "true":
                 logger.info("Daily events not triggered yet. Checking time conditions.")
@@ -198,7 +198,6 @@ class ScheduledEvents(commands.Cog):
                 # Get current hour to check time conditions
                 current_hour = datetime.now().hour
 
-                # Only check time conditions if daily events haven't been triggered
                 # Morning announcements at 8:00
                 if current_hour >= 8:
                     logger.info("Time for daily morning announcements after restart")
@@ -217,7 +216,7 @@ class ScheduledEvents(commands.Cog):
                     await self.announce_daily_subject()
 
                 # Set the flag to indicate daily events have been triggered
-                set_system_flag(daily_flag_name, "true")
+                await db_provider.set_system_flag(daily_flag_name, "true")
                 logger.info(f"Set daily events triggered flag: {daily_flag_name}")
             else:
                 logger.info(f"Daily events already triggered today: {daily_flag_name}")
@@ -227,9 +226,7 @@ class ScheduledEvents(commands.Cog):
         # Load active events from database
         try:
             logger.info("Loading active events from database")
-            from src.utils.database import get_active_events
-
-            db_events = get_active_events()
+            db_events = await db_provider.get_active_events()
             if db_events:
                 # Update the ACTIVE_EVENTS dictionary with events from the database
                 global ACTIVE_EVENTS
@@ -265,7 +262,7 @@ class ScheduledEvents(commands.Cog):
                     await self.announce_daily_subject()
 
                 # Set the flag to indicate daily events have been triggered
-                set_system_flag(daily_flag_name, "true")
+                await db_provider.set_system_flag(daily_flag_name, "true")
                 logger.info(f"Reset daily events triggered flag: {daily_flag_name}")
         except Exception as e:
             logger.error(f"Error loading active events from database: {e}")
@@ -273,15 +270,14 @@ class ScheduledEvents(commands.Cog):
         # Load cooldowns from database
         try:
             logger.info("Loading cooldowns from database")
-            from src.utils.database import get_cooldowns, clear_expired_cooldowns
 
             # First clear any expired cooldowns
-            removed = clear_expired_cooldowns()
+            removed = await db_provider.clear_expired_cooldowns()
             if removed > 0:
                 logger.info(f"Cleared {removed} expired cooldowns from database")
 
             # Then load active cooldowns
-            db_cooldowns = get_cooldowns()
+            db_cooldowns = await db_provider.get_cooldowns()
             if db_cooldowns:
                 # Update the COOLDOWNS dictionary with cooldowns from the database
                 from cogs.activities import COOLDOWNS

@@ -7,7 +7,7 @@ import discord
 from unittest.mock import Mock, patch, AsyncMock
 from src.bot.cogs.registration import Registration
 from src.bot.cogs.player_status import PlayerStatus
-from src.utils.persistence.db_provider import get_player, create_player, update_player
+from src.utils.persistence.db_provider import db_provider
 
 @pytest.fixture
 def mock_bot():
@@ -33,8 +33,8 @@ async def test_register_command(mock_bot, mock_ctx):
     cog = Registration(mock_bot)
     
     # Mock database functions
-    with patch('src.bot.cogs.registration.get_player', new_callable=AsyncMock) as mock_get_player, \
-         patch('src.bot.cogs.registration.create_player', new_callable=AsyncMock) as mock_create_player:
+    with patch.object(db_provider, 'get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch.object(db_provider, 'create_player', new_callable=AsyncMock) as mock_create_player:
         
         # Test case: New player
         mock_get_player.return_value = None
@@ -72,8 +72,8 @@ async def test_status_command(mock_bot, mock_ctx):
     cog = PlayerStatus(mock_bot)
     
     # Mock database functions
-    with patch('src.bot.cogs.player_status.get_player', new_callable=AsyncMock) as mock_get_player, \
-         patch('src.bot.cogs.player_status.get_club', new_callable=AsyncMock) as mock_get_club:
+    with patch.object(db_provider, 'get_player', new_callable=AsyncMock) as mock_get_player, \
+         patch.object(db_provider, 'get_club', new_callable=AsyncMock) as mock_get_club:
         # Test case: Player exists
         mock_get_player.return_value = {
             'name': 'TestUser',

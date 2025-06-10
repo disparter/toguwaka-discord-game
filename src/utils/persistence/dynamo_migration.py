@@ -164,4 +164,7 @@ async def normalize_player_data() -> bool:
 
     except Exception as e:
         logger.error(f"Error during normalization: {str(e)}")
-        return False 
+        return False
+
+# Export the normalize_player_data function
+__all__ = ['normalize_player_data'] 

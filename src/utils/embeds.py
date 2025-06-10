@@ -2,7 +2,7 @@ import discord
 from datetime import datetime
 from src.utils.game_mechanics import STRENGTH_LEVELS, RARITIES, calculate_exp_progress
 import json
-from src.utils.persistence.db_provider import get_relevant_npcs
+from src.utils.persistence.db_provider import db_provider
 from src.utils.club_perks import get_club_perk_description
 
 def create_basic_embed(title, description=None, color=0x1E90FF):
@@ -84,12 +84,8 @@ def create_player_embed(player, club=None):
 
     return embed
 
-def create_club_embed(club):
+async def create_club_embed(club):
     """Create an embed displaying club information."""
-    # Get club perks module
-    # club_perks = __import__('utils.club_perks')
-    # get_club_perk_description = club_perks.get_club_perk_description
-
     # Determine color based on club
     club_colors = {
         1: 0xFF0000,  # Clube das Chamas - Red
@@ -112,7 +108,7 @@ def create_club_embed(club):
     club_leader_name = club.get('leader_name', 'Nenhum')
     if club.get('club_id'):
         # Get NPCs for this club
-        npcs = get_relevant_npcs(club['club_id'])
+        npcs = await db_provider.get_relevant_npcs(club['club_id'])
         # Find the leader
         for npc in npcs:
             if npc.get('role') == 'Líder':

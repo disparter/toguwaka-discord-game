@@ -5,7 +5,7 @@ import logging
 import os
 from typing import Dict, List, Any, Optional, Union
 
-from src.utils.persistence.db_provider import get_player, update_player
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
 from src.utils.command_registrar import CommandRegistrar
@@ -41,7 +41,7 @@ class NPCInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -106,7 +106,7 @@ class NPCInteractionCog(commands.Cog):
                 player_data["story_progress"]["npc_interactions"][npc_name] = npc_interactions
 
                 # Update player data in database
-                update_player(user_id, story_progress=player_data["story_progress"])
+                await db_provider.update_player(user_id, story_progress=player_data["story_progress"])
 
                 await interaction.followup.send(embed=embed, ephemeral=True)
                 return
@@ -161,7 +161,7 @@ class NPCInteractionCog(commands.Cog):
         player_data["story_progress"]["npc_interactions"][npc_name] = npc_interactions
 
         # Update player data in database
-        update_player(user_id, story_progress=player_data["story_progress"])
+        await db_provider.update_player(user_id, story_progress=player_data["story_progress"])
 
         # Create embed for the dialogue
         # Get current affinity level for the footer
@@ -222,7 +222,7 @@ class NPCInteractionCog(commands.Cog):
                     }
                     
                     # Update player data
-                    update_player(user_id, story_progress=story_progress)
+                    await db_provider.update_player(user_id, story_progress=story_progress)
                 else:
                     logger.error(f"Welcome image not found at {image_path}")
 
@@ -258,7 +258,7 @@ class NPCInteractionCog(commands.Cog):
                     }
                     
                     # Update player data
-                    update_player(user_id, story_progress=story_progress)
+                    await db_provider.update_player(user_id, story_progress=story_progress)
                 else:
                     logger.error(f"Professor Quantum intro image not found at {image_path}")
 
@@ -280,7 +280,7 @@ class NPCInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)

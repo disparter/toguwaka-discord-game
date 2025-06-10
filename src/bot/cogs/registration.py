@@ -4,7 +4,7 @@ from discord import app_commands
 import asyncio
 import logging
 import random
-from src.utils.persistence.db_provider import get_player, create_player, get_all_clubs
+from src.utils.persistence.db_provider import db_provider
 from src.utils.embeds import create_basic_embed, create_player_embed
 from src.utils.game_mechanics import STRENGTH_LEVELS
 from src.utils.command_registrar import CommandRegistrar
@@ -27,7 +27,7 @@ class Registration(commands.Cog):
         """Slash command version of the register command."""
         try:
             # Check if player already exists
-            player = await get_player(interaction.user.id)
+            player = await db_provider.get_player(interaction.user.id)
             if player:
                 await interaction.response.send_message(f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
                 return
@@ -49,7 +49,7 @@ class Registration(commands.Cog):
         logger.info(f"Register command called by user {ctx.author.id} ({ctx.author.name})")
         
         # Check if player already exists
-        player = await get_player(ctx.author.id)
+        player = await db_provider.get_player(ctx.author.id)
         logger.info(f"Player lookup result for {ctx.author.id}: {player}")
         
         if player:
@@ -146,7 +146,7 @@ class Registration(commands.Cog):
                     await ctx.send("Por favor, digite apenas o número do clube escolhido.")
 
             # Create the player
-            success = await create_player(
+            success = await db_provider.create_player(
                 ctx.author.id,
                 character_name,
                 power=character_power,
@@ -156,7 +156,7 @@ class Registration(commands.Cog):
 
             if success:
                 # Get the created player and their club
-                player = await get_player(ctx.author.id)
+                player = await db_provider.get_player(ctx.author.id)
 
                 # Send welcome message
                 welcome_msg = create_basic_embed(

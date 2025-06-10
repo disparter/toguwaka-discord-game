@@ -4,7 +4,7 @@ from discord import app_commands
 import logging
 from typing import Dict, List, Any, Optional, Union
 
-from src.utils.persistence.db_provider import get_player, update_player
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed
 from story_mode.story_mode import StoryMode
 from src.utils.command_registrar import CommandRegistrar
@@ -36,7 +36,7 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -132,7 +132,7 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -166,7 +166,8 @@ class CompanionInteractionCog(commands.Cog):
             return
         
         # Update player data in database
-        update_player(user_id, story_progress=result["player_data"]["story_progress"])
+        player_data["story_progress"] = result["player_data"]["story_progress"]
+        await db_provider.update_player(user_id, player_data)
         
         # Create success embed
         embed = create_basic_embed(
@@ -198,7 +199,7 @@ class CompanionInteractionCog(commands.Cog):
     )
     async def slash_activate_companion(self, interaction: discord.Interaction, nome: str):
         """
-        Slash command to activate a companion.
+        Slash command to activate a recruited companion.
         """
         try:
             await interaction.response.defer(ephemeral=True)
@@ -207,7 +208,7 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -220,14 +221,9 @@ class CompanionInteractionCog(commands.Cog):
             await interaction.followup.send(f"Companheiro '{nome}' não encontrado.", ephemeral=True)
             return
         
-        # Check if recruited
+        # Check if companion is recruited
         if not companion.is_recruited(player_data):
-            await interaction.followup.send(f"Você ainda não recrutou {nome}. Use /recrutar para recrutá-lo primeiro.", ephemeral=True)
-            return
-        
-        # Check if already active
-        if companion.is_active(player_data):
-            await interaction.followup.send(f"{nome} já está ativo.", ephemeral=True)
+            await interaction.followup.send(f"Você precisa recrutar {nome} primeiro usando o comando /recrutar.", ephemeral=True)
             return
         
         # Activate the companion
@@ -238,35 +234,29 @@ class CompanionInteractionCog(commands.Cog):
             return
         
         # Update player data in database
-        update_player(user_id, story_progress=result["player_data"]["story_progress"])
+        player_data["story_progress"] = result["player_data"]["story_progress"]
+        await db_provider.update_player(user_id, player_data)
         
         # Create success embed
         embed = create_basic_embed(
             title=f"Companheiro Ativado: {nome}",
-            description=result.get("message", f"{nome} agora está ativo e acompanhando você!"),
+            description=result.get("message", f"Você ativou {nome} como seu companheiro ativo!"),
             color=discord.Color.green()
         )
         
         companion_info = result.get("companion_info", {})
-        
-        # Add available sync abilities if any
-        available_abilities = companion_info.get("available_sync_abilities", [])
-        if available_abilities:
-            abilities_text = ""
-            for ability in available_abilities:
-                status = "🔄 Em cooldown" if ability.get("on_cooldown", False) else "✅ Disponível"
-                abilities_text += f"**{ability['name']}**: {ability['description']}\n{status}\n\n"
-            
-            embed.add_field(
-                name="Habilidades de Sincronização Disponíveis",
-                value=abilities_text,
-                inline=False
-            )
+        embed.add_field(
+            name="Informações",
+            value=f"**Tipo de Poder**: {companion_info.get('power_type', 'Desconhecido').capitalize()}\n"
+                  f"**Especialização**: {companion_info.get('specialization', 'Desconhecida').capitalize()}\n"
+                  f"**Nível de Sincronização**: {companion_info.get('sync_level', 1)}",
+            inline=False
+        )
         
         embed.add_field(
             name="Próximos Passos",
-            value="Use `/sincronizar [habilidade]` para usar uma habilidade de sincronização.\n"
-                  "Use `/status_companheiro " + nome + "` para ver missões disponíveis.",
+            value="Use `/status_companheiro " + nome + "` para ver detalhes e missões disponíveis.\n"
+                  "Use `/sincronizar [habilidade]` para usar habilidades de sincronização.",
             inline=False
         )
         
@@ -275,7 +265,7 @@ class CompanionInteractionCog(commands.Cog):
     @app_commands.command(name="desativar_companheiro", description="Desativar seu companheiro atual")
     async def slash_deactivate_companion(self, interaction: discord.Interaction):
         """
-        Slash command to deactivate the current companion.
+        Slash command to deactivate the current active companion.
         """
         try:
             await interaction.response.defer(ephemeral=True)
@@ -284,34 +274,41 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             return
 
-        # Get active companion
+        # Check if there's an active companion
         active_companion = self.story_mode.get_active_companion(player_data)
-        
         if not active_companion:
             await interaction.followup.send("Você não tem nenhum companheiro ativo no momento.", ephemeral=True)
             return
-        
+
         # Deactivate the companion
-        result = self.story_mode.deactivate_companion(player_data, active_companion["id"])
+        result = self.story_mode.deactivate_companion(player_data)
         
         if "error" in result:
             await interaction.followup.send(f"Erro ao desativar companheiro: {result['error']}", ephemeral=True)
             return
         
         # Update player data in database
-        update_player(user_id, story_progress=result["player_data"]["story_progress"])
+        player_data["story_progress"] = result["player_data"]["story_progress"]
+        await db_provider.update_player(user_id, player_data)
         
         # Create success embed
         embed = create_basic_embed(
             title="Companheiro Desativado",
-            description=result.get("message", f"{active_companion['name']} não está mais acompanhando você."),
+            description=result.get("message", f"Você desativou {active_companion['name']} como seu companheiro ativo."),
             color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="Próximos Passos",
+            value="Use `/companheiros` para ver seus companheiros disponíveis.\n"
+                  "Use `/ativar_companheiro [nome]` para ativar outro companheiro.",
+            inline=False
         )
         
         await interaction.followup.send(embed=embed, ephemeral=True)
@@ -322,7 +319,7 @@ class CompanionInteractionCog(commands.Cog):
     )
     async def slash_companion_status(self, interaction: discord.Interaction, nome: str):
         """
-        Slash command to view companion status.
+        Slash command to view detailed status of a recruited companion.
         """
         try:
             await interaction.response.defer(ephemeral=True)
@@ -331,7 +328,7 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -344,9 +341,9 @@ class CompanionInteractionCog(commands.Cog):
             await interaction.followup.send(f"Companheiro '{nome}' não encontrado.", ephemeral=True)
             return
         
-        # Check if recruited
+        # Check if companion is recruited
         if not companion.is_recruited(player_data):
-            await interaction.followup.send(f"Você ainda não recrutou {nome}. Use /recrutar para recrutá-lo primeiro.", ephemeral=True)
+            await interaction.followup.send(f"Você precisa recrutar {nome} primeiro usando o comando /recrutar.", ephemeral=True)
             return
         
         # Get companion status
@@ -358,9 +355,9 @@ class CompanionInteractionCog(commands.Cog):
         
         # Create status embed
         embed = create_basic_embed(
-            title=f"Status de {status['name']}",
-            description=status['story_arc']['description'],
-            color=discord.Color.gold()
+            title=f"Status do Companheiro: {nome}",
+            description=status.get("description", f"Informações detalhadas sobre {nome}"),
+            color=discord.Color.blue()
         )
         
         # Add basic info
@@ -368,59 +365,52 @@ class CompanionInteractionCog(commands.Cog):
             name="Informações Básicas",
             value=f"**Tipo de Poder**: {status['power_type'].capitalize()}\n"
                   f"**Especialização**: {status['specialization'].capitalize()}\n"
-                  f"**Status**: {'Ativo' if status['active'] else 'Inativo'}\n"
-                  f"**Progresso da História**: {status['arc_progress']}%\n"
-                  f"**Nível de Sincronização**: {status['sync_level']}",
+                  f"**Nível de Sincronização**: {status['sync_level']}\n"
+                  f"**Progresso da História**: {status['arc_progress']}%",
             inline=False
         )
         
-        # Add available missions if any
-        available_missions = status.get("available_missions", [])
-        if available_missions:
-            missions_text = ""
-            for mission in available_missions:
-                missions_text += f"**{mission['name']}**: {mission['description']}\n"
-            
+        # Add background info
+        if "background" in status:
             embed.add_field(
-                name="Missões Disponíveis",
-                value=missions_text,
+                name="História",
+                value=f"**Origem**: {status['background'].get('origin', 'Desconhecida')}\n"
+                      f"**Motivação**: {status['background'].get('motivation', 'Desconhecida')}",
                 inline=False
             )
         
-        # Add completed missions if any
-        completed_missions = status.get("completed_missions", [])
-        if completed_missions:
-            completed_text = ""
-            for mission in completed_missions:
-                completed_text += f"**{mission['name']}**: {mission['description']}\n"
-            
-            embed.add_field(
-                name="Missões Completadas",
-                value=completed_text,
-                inline=False
-            )
-        
-        # Add available sync abilities if any
-        available_abilities = status.get("available_sync_abilities", [])
-        if available_abilities:
+        # Add abilities info
+        if "abilities" in status:
             abilities_text = ""
-            for ability in available_abilities:
-                status_text = "🔄 Em cooldown" if ability.get("on_cooldown", False) else "✅ Disponível"
-                abilities_text += f"**{ability['name']}**: {ability['description']}\n{status_text}\n\n"
+            for ability in status["abilities"]:
+                abilities_text += f"**{ability['name']}** - {ability['description']}\n"
+                if "cooldown" in ability:
+                    abilities_text += f"Cooldown: {ability['cooldown']} minutos\n"
+                abilities_text += "\n"
             
             embed.add_field(
-                name="Habilidades de Sincronização",
+                name="Habilidades",
                 value=abilities_text,
                 inline=False
             )
         
-        # Add commands
-        embed.add_field(
-            name="Comandos Disponíveis",
-            value="Use `/completar_missao [nome] [id_missao]` para completar uma missão.\n"
-                  "Use `/sincronizar [nome] [id_habilidade]` para usar uma habilidade de sincronização.",
-            inline=False
-        )
+        # Add missions info
+        if "missions" in status:
+            missions_text = ""
+            for mission in status["missions"]:
+                status_emoji = "✅" if mission["completed"] else "⏳"
+                missions_text += f"{status_emoji} **{mission['name']}**\n"
+                missions_text += f"{mission['description']}\n"
+                if "rewards" in mission:
+                    rewards_text = ", ".join([f"{k}: {v}" for k, v in mission["rewards"].items()])
+                    missions_text += f"Recompensas: {rewards_text}\n"
+                missions_text += "\n"
+            
+            embed.add_field(
+                name="Missões",
+                value=missions_text,
+                inline=False
+            )
         
         await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -440,7 +430,7 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
@@ -453,9 +443,9 @@ class CompanionInteractionCog(commands.Cog):
             await interaction.followup.send(f"Companheiro '{nome}' não encontrado.", ephemeral=True)
             return
         
-        # Check if recruited
+        # Check if companion is recruited
         if not companion.is_recruited(player_data):
-            await interaction.followup.send(f"Você ainda não recrutou {nome}. Use /recrutar para recrutá-lo primeiro.", ephemeral=True)
+            await interaction.followup.send(f"Você precisa recrutar {nome} primeiro usando o comando /recrutar.", ephemeral=True)
             return
         
         # Complete the mission
@@ -466,40 +456,34 @@ class CompanionInteractionCog(commands.Cog):
             return
         
         # Update player data in database
-        update_player(user_id, 
-                      story_progress=result["player_data"]["story_progress"],
-                      exp=result["player_data"].get("exp", player_data.get("exp", 0)),
-                      tusd=result["player_data"].get("tusd", player_data.get("tusd", 0)))
+        player_data["story_progress"] = result["player_data"]["story_progress"]
+        await db_provider.update_player(user_id, player_data)
         
         # Create success embed
         embed = create_basic_embed(
             title=f"Missão Completada: {result['mission_name']}",
-            description=result['mission_description'],
+            description=result.get("message", f"Você completou a missão de {nome}!"),
             color=discord.Color.green()
         )
         
-        # Add rewards
-        rewards = result.get("rewards", {})
-        rewards_text = ""
-        
-        if "exp" in rewards:
-            rewards_text += f"**EXP**: {rewards['exp']}\n"
-        
-        if "tusd" in rewards:
-            rewards_text += f"**TUSD**: {rewards['tusd']}\n"
-        
-        if "special_item" in rewards:
-            rewards_text += f"**Item Especial**: {rewards['special_item']}\n"
-        
-        if "arc_progress" in rewards:
-            rewards_text += f"**Progresso da História**: +{rewards['arc_progress']}%\n"
-        
-        if rewards_text:
+        # Add rewards info
+        if "rewards" in result:
+            rewards_text = ""
+            for reward_type, reward_value in result["rewards"].items():
+                rewards_text += f"**{reward_type.capitalize()}**: {reward_value}\n"
+            
             embed.add_field(
                 name="Recompensas",
                 value=rewards_text,
                 inline=False
             )
+        
+        # Add next steps
+        embed.add_field(
+            name="Próximos Passos",
+            value="Use `/status_companheiro " + nome + "` para ver outras missões disponíveis.",
+            inline=False
+        )
         
         await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -509,7 +493,7 @@ class CompanionInteractionCog(commands.Cog):
     )
     async def slash_sync_ability(self, interaction: discord.Interaction, id_habilidade: str):
         """
-        Slash command to use a synchronization ability.
+        Slash command to use a sync ability with the active companion.
         """
         try:
             await interaction.response.defer(ephemeral=True)
@@ -518,67 +502,55 @@ class CompanionInteractionCog(commands.Cog):
             return
 
         user_id = interaction.user.id
-        player_data = get_player(user_id)
+        player_data = await db_provider.get_player(user_id)
 
         if not player_data:
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             return
 
-        # Get active companion
+        # Check if there's an active companion
         active_companion = self.story_mode.get_active_companion(player_data)
-        
         if not active_companion:
-            await interaction.followup.send("Você não tem nenhum companheiro ativo. Use /ativar_companheiro para ativar um companheiro.", ephemeral=True)
+            await interaction.followup.send("Você não tem nenhum companheiro ativo no momento.", ephemeral=True)
             return
-        
-        # Perform the sync ability
-        result = self.story_mode.perform_sync_ability(player_data, active_companion["id"], id_habilidade)
+
+        # Use the sync ability
+        result = self.story_mode.use_sync_ability(player_data, id_habilidade)
         
         if "error" in result:
-            await interaction.followup.send(f"Erro ao usar habilidade de sincronização: {result['error']}", ephemeral=True)
+            await interaction.followup.send(f"Erro ao usar habilidade: {result['error']}", ephemeral=True)
             return
         
         # Update player data in database
-        update_player(user_id, story_progress=result["player_data"]["story_progress"])
+        player_data["story_progress"] = result["player_data"]["story_progress"]
+        await db_provider.update_player(user_id, player_data)
         
         # Create success embed
         embed = create_basic_embed(
-            title=f"Sincronização: {result['ability_name']}",
-            description=result['ability_description'],
-            color=discord.Color.purple()
+            title=f"Habilidade de Sincronização: {result['ability_name']}",
+            description=result.get("message", f"Você usou a habilidade de sincronização com {active_companion['name']}!"),
+            color=discord.Color.green()
         )
         
-        # Add applied effects
-        applied_effects = result.get("applied_effects", {})
-        effects_text = ""
-        
-        if "stat_boost" in applied_effects:
-            effects_text += "**Aumento de Atributos**:\n"
-            for stat, value in applied_effects["stat_boost"].items():
-                effects_text += f"- {stat.replace('_', ' ').capitalize()}: x{value}\n"
-        
-        if "power_boost" in applied_effects:
-            power_boost = applied_effects["power_boost"]
-            effects_text += f"\n**Aumento de Poder**:\n"
-            effects_text += f"- {power_boost['power_id'].capitalize()}: +{power_boost['amount']} pontos\n"
-        
-        if "special_action" in applied_effects:
-            special_action = applied_effects["special_action"]
-            effects_text += f"\n**Ação Especial**:\n"
-            effects_text += f"- Tipo: {special_action['type'].capitalize()}\n"
+        # Add effects info
+        if "effects" in result:
+            effects_text = ""
+            for effect_type, effect_value in result["effects"].items():
+                effects_text += f"**{effect_type.capitalize()}**: {effect_value}\n"
             
-            for key, value in special_action.items():
-                if key != "type":
-                    effects_text += f"- {key.replace('_', ' ').capitalize()}: {value}\n"
-        
-        if effects_text:
             embed.add_field(
-                name="Efeitos Aplicados",
+                name="Efeitos",
                 value=effects_text,
                 inline=False
             )
         
-        embed.set_footer(text=f"Sincronização com {active_companion['name']} bem-sucedida!")
+        # Add cooldown info
+        if "cooldown" in result:
+            embed.add_field(
+                name="Cooldown",
+                value=f"Esta habilidade estará disponível novamente em {result['cooldown']} minutos.",
+                inline=False
+            )
         
         await interaction.followup.send(embed=embed, ephemeral=True)
 

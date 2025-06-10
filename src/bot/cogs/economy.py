@@ -6,8 +6,8 @@ import random
 import asyncio
 import json
 import os
-from datetime import datetime
-from src.utils.database import get_player, update_player, get_club, store_cooldown, get_player_inventory, add_item_to_inventory
+from datetime import datetime, timedelta
+from src.utils.persistence import db_provider
 from src.utils.embeds import create_basic_embed
 from src.utils.game_mechanics import RARITIES
 from src.utils.club_perks import apply_shop_discount
@@ -199,306 +199,7 @@ TECHNIQUES = [
         "effects": {"duel_boost": {"type": "mental", "amount": 0.3}},
         "evolution": {
             "2": {"name": "Manipulação Mental Aprimorada", "description": "Confunde a mente do oponente com maior eficácia. +35% de chance de vencer duelos mentais.", "effects": {"duel_boost": {"type": "mental", "amount": 0.35}}},
-            "3": {"name": "Manipulação Mental Suprema", "description": "Domina completamente a mente do oponente. +40% de chance de vencer duelos mentais e 15% de chance de confundir o oponente por 1 turno.", "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "confusion_chance": 0.15}}
-        }
-    },
-    {
-        "id": 3,
-        "name": "Estratégia Básica",
-        "description": "Planeja alguns passos à frente. +30% de chance de vencer duelos estratégicos.",
-        "type": "strategic",
-        "category": "tactical",
-        "tier": "basic",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "effects": {"duel_boost": {"type": "strategic", "amount": 0.3}},
-        "evolution": {
-            "2": {"name": "Estratégia Intermediária", "description": "Planeja vários passos à frente. +35% de chance de vencer duelos estratégicos.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.35}}},
-            "3": {"name": "Estratégia Mestre", "description": "Planeja todo o duelo antecipadamente. +40% de chance de vencer duelos estratégicos e 20% de chance de prever o próximo movimento do oponente.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.4}, "prediction_chance": 0.2}}
-        }
-    },
-    {
-        "id": 4,
-        "name": "Charme Básico",
-        "description": "Encanta com palavras simples. +30% de chance de vencer duelos sociais.",
-        "type": "social",
-        "category": "support",
-        "tier": "basic",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "effects": {"duel_boost": {"type": "social", "amount": 0.3}},
-        "evolution": {
-            "2": {"name": "Charme Intermediário", "description": "Encanta com palavras elaboradas. +35% de chance de vencer duelos sociais.", "effects": {"duel_boost": {"type": "social", "amount": 0.35}}},
-            "3": {"name": "Charme Irresistível", "description": "Encanta qualquer um com palavras doces. +40% de chance de vencer duelos sociais e 10% de chance de ganhar um aliado temporário.", "effects": {"duel_boost": {"type": "social", "amount": 0.4}, "ally_chance": 0.1}}
-        }
-    },
-    {
-        "id": 5,
-        "name": "Escudo Básico",
-        "description": "Cria uma barreira simples que absorve parte do dano. Reduz o dano recebido em 15%.",
-        "type": "all",
-        "category": "defense",
-        "tier": "basic",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "effects": {"damage_reduction": 0.15},
-        "evolution": {
-            "2": {"name": "Escudo Intermediário", "description": "Cria uma barreira mais resistente. Reduz o dano recebido em 25%.", "effects": {"damage_reduction": 0.25}},
-            "3": {"name": "Escudo Avançado", "description": "Cria uma barreira quase impenetrável. Reduz o dano recebido em 35% e tem 10% de chance de refletir parte do dano.", "effects": {"damage_reduction": 0.35, "reflect_chance": 0.1}}
-        }
-    },
-
-    # Técnicas Avançadas (desbloqueadas por progressão)
-    {
-        "id": 6,
-        "name": "Punho de Aço",
-        "description": "Fortalece os punhos para um impacto devastador. +35% de chance de vencer duelos físicos.",
-        "type": "physical",
-        "category": "attack",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "unlock_requirement": {"level": 5},
-        "effects": {"duel_boost": {"type": "physical", "amount": 0.35}},
-        "evolution": {
-            "2": {"name": "Punho de Titânio", "description": "Fortalece os punhos com a dureza do titânio. +40% de chance de vencer duelos físicos e 15% de dano adicional.", "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.15}},
-            "3": {"name": "Punho Devastador", "description": "Fortalece os punhos com poder inimaginável. +45% de chance de vencer duelos físicos, 25% de dano adicional e 10% de chance de atordoar o oponente.", "effects": {"duel_boost": {"type": "physical", "amount": 0.45}, "damage_boost": 0.25, "stun_chance": 0.1}}
-        }
-    },
-    {
-        "id": 7,
-        "name": "Barreira Mental",
-        "description": "Cria uma barreira que protege contra ataques mentais. +35% de chance de vencer duelos mentais.",
-        "type": "mental",
-        "category": "defense",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "unlock_requirement": {"level": 5},
-        "effects": {"duel_boost": {"type": "mental", "amount": 0.35}},
-        "evolution": {
-            "2": {"name": "Barreira Mental Reforçada", "description": "Cria uma barreira mental quase impenetrável. +40% de chance de vencer duelos mentais e 20% de redução de dano mental.", "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "mental_damage_reduction": 0.2}},
-            "3": {"name": "Fortaleza Mental", "description": "Cria uma fortaleza mental inexpugnável. +45% de chance de vencer duelos mentais, 30% de redução de dano mental e 15% de chance de refletir ataques mentais.", "effects": {"duel_boost": {"type": "mental", "amount": 0.45}, "mental_damage_reduction": 0.3, "mental_reflect_chance": 0.15}}
-        }
-    },
-    {
-        "id": 8,
-        "name": "Tática Avançada",
-        "description": "Utiliza táticas de guerra avançadas. +35% de chance de vencer duelos estratégicos.",
-        "type": "strategic",
-        "category": "tactical",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "unlock_requirement": {"level": 5},
-        "effects": {"duel_boost": {"type": "strategic", "amount": 0.35}},
-        "evolution": {
-            "2": {"name": "Tática de Guerra", "description": "Utiliza táticas de guerra complexas. +40% de chance de vencer duelos estratégicos e 15% de chance de prever movimentos do oponente.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.4}, "prediction_chance": 0.15}},
-            "3": {"name": "Tática Suprema", "description": "Domina completamente o campo de batalha. +45% de chance de vencer duelos estratégicos, 25% de chance de prever movimentos e 10% de chance de contra-atacar automaticamente.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.45}, "prediction_chance": 0.25, "counter_chance": 0.1}}
-        }
-    },
-    {
-        "id": 9,
-        "name": "Persuasão Avançada",
-        "description": "Técnica de persuasão que influencia a vontade dos outros. +35% de chance de vencer duelos sociais.",
-        "type": "social",
-        "category": "support",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "unlock_requirement": {"level": 5},
-        "effects": {"duel_boost": {"type": "social", "amount": 0.35}},
-        "evolution": {
-            "2": {"name": "Persuasão Carismática", "description": "Técnica de persuasão que atrai seguidores. +40% de chance de vencer duelos sociais e 15% de chance de ganhar um aliado temporário.", "effects": {"duel_boost": {"type": "social", "amount": 0.4}, "ally_chance": 0.15}},
-            "3": {"name": "Persuasão Suprema", "description": "Técnica de persuasão que dobra a vontade dos outros. +45% de chance de vencer duelos sociais, 25% de chance de ganhar um aliado e 10% de chance de converter um inimigo.", "effects": {"duel_boost": {"type": "social", "amount": 0.45}, "ally_chance": 0.25, "convert_chance": 0.1}}
-        }
-    },
-    {
-        "id": 10,
-        "name": "Concentração Focada",
-        "description": "Foca sua energia em um objetivo. +25% de chance de vencer qualquer tipo de duelo.",
-        "type": "all",
-        "category": "support",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "unlock_requirement": {"level": 10},
-        "effects": {"duel_boost": {"type": "all", "amount": 0.25}},
-        "evolution": {
-            "2": {"name": "Concentração Intensa", "description": "Foca intensamente sua energia. +30% de chance de vencer qualquer tipo de duelo e +10% de precisão.", "effects": {"duel_boost": {"type": "all", "amount": 0.3}, "accuracy_boost": 0.1}},
-            "3": {"name": "Concentração Total", "description": "Foca toda sua energia em um único objetivo. +35% de chance de vencer qualquer tipo de duelo, +20% de precisão e +10% de chance crítica.", "effects": {"duel_boost": {"type": "all", "amount": 0.35}, "accuracy_boost": 0.2, "critical_chance": 0.1}}
-        }
-    },
-
-    # Técnicas Exclusivas de Clubes
-    {
-        "id": 11,
-        "name": "Técnica do Dragão",
-        "description": "Técnica ancestral que canaliza a força de um dragão. +40% de chance de vencer duelos físicos.",
-        "type": "physical",
-        "category": "attack",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "club_required": "Clube das Chamas",
-        "effects": {"duel_boost": {"type": "physical", "amount": 0.4}},
-        "evolution": {
-            "2": {"name": "Fúria do Dragão", "description": "Libera a fúria de um dragão ancestral. +45% de chance de vencer duelos físicos e 20% de dano adicional de fogo.", "effects": {"duel_boost": {"type": "physical", "amount": 0.45}, "fire_damage": 0.2}},
-            "3": {"name": "Rugido do Dragão Celestial", "description": "Invoca o poder de um dragão celestial. +50% de chance de vencer duelos físicos, 30% de dano adicional de fogo e 15% de chance de queimar o oponente.", "effects": {"duel_boost": {"type": "physical", "amount": 0.5}, "fire_damage": 0.3, "burn_chance": 0.15}}
-        }
-    },
-    {
-        "id": 12,
-        "name": "Ilusão Básica",
-        "description": "Cria ilusões simples que confundem o oponente. +40% de chance de vencer duelos mentais.",
-        "type": "mental",
-        "category": "tactical",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "club_required": "Ilusionistas Mentais",
-        "effects": {"duel_boost": {"type": "mental", "amount": 0.4}},
-        "evolution": {
-            "2": {"name": "Ilusão Complexa", "description": "Cria ilusões complexas que desorientam o oponente. +45% de chance de vencer duelos mentais e 20% de chance de confundir o oponente.", "effects": {"duel_boost": {"type": "mental", "amount": 0.45}, "confusion_chance": 0.2}},
-            "3": {"name": "Ilusão Suprema", "description": "Cria ilusões tão reais que confundem até os mais perspicazes. +50% de chance de vencer duelos mentais, 30% de chance de confundir o oponente e 15% de chance de fazê-lo atacar a si mesmo.", "effects": {"duel_boost": {"type": "mental", "amount": 0.5}, "confusion_chance": 0.3, "self_attack_chance": 0.15}}
-        }
-    },
-    {
-        "id": 13,
-        "name": "Xadrez Tático",
-        "description": "Visualiza o duelo como um jogo de xadrez. +40% de chance de vencer duelos estratégicos.",
-        "type": "strategic",
-        "category": "tactical",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "club_required": "Conselho Estratégico",
-        "effects": {"duel_boost": {"type": "strategic", "amount": 0.4}},
-        "evolution": {
-            "2": {"name": "Xadrez Tridimensional", "description": "Visualiza o duelo como um jogo de xadrez em múltiplas dimensões. +45% de chance de vencer duelos estratégicos e 20% de chance de prever movimentos do oponente.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.45}, "prediction_chance": 0.2}},
-            "3": {"name": "Xadrez Dimensional", "description": "Visualiza o duelo como um jogo de xadrez multidimensional. +50% de chance de vencer duelos estratégicos, 30% de chance de prever movimentos e 15% de chance de manipular o campo de batalha.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.5}, "prediction_chance": 0.3, "field_manipulation": 0.15}}
-        }
-    },
-    {
-        "id": 14,
-        "name": "Oratória Básica",
-        "description": "Utiliza técnicas de oratória para influenciar os outros. +40% de chance de vencer duelos sociais.",
-        "type": "social",
-        "category": "support",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "club_required": "Conselho Político",
-        "effects": {"duel_boost": {"type": "social", "amount": 0.4}},
-        "evolution": {
-            "2": {"name": "Oratória Avançada", "description": "Domina técnicas avançadas de oratória. +45% de chance de vencer duelos sociais e 20% de chance de ganhar aliados.", "effects": {"duel_boost": {"type": "social", "amount": 0.45}, "ally_chance": 0.2}},
-            "3": {"name": "Oratória Letal", "description": "Domina completamente a arte da oratória. +50% de chance de vencer duelos sociais, 30% de chance de ganhar aliados e 15% de chance de diminuir a moral do oponente.", "effects": {"duel_boost": {"type": "social", "amount": 0.5}, "ally_chance": 0.3, "morale_reduction": 0.15}}
-        }
-    },
-    {
-        "id": 15,
-        "name": "Despertar Básico",
-        "description": "Desperta parte do potencial oculto dentro de si. +30% de chance de vencer qualquer tipo de duelo.",
-        "type": "all",
-        "category": "support",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "club_required": "Academia Principal",
-        "effects": {"duel_boost": {"type": "all", "amount": 0.3}},
-        "evolution": {
-            "2": {"name": "Despertar Avançado", "description": "Desperta grande parte do potencial oculto. +35% de chance de vencer qualquer tipo de duelo e +15% em todos os atributos.", "effects": {"duel_boost": {"type": "all", "amount": 0.35}, "attribute_boost_all": 0.15}},
-            "3": {"name": "Despertar Interior", "description": "Desperta todo o potencial oculto dentro de si. +40% de chance de vencer qualquer tipo de duelo, +25% em todos os atributos e +10% de chance de ação extra.", "effects": {"duel_boost": {"type": "all", "amount": 0.4}, "attribute_boost_all": 0.25, "extra_action_chance": 0.1}}
-        }
-    },
-
-    # Técnicas Especiais Sazonais
-    {
-        "id": 16,
-        "name": "Aura Primaveril",
-        "description": "Canaliza a energia da primavera. +30% de chance de vencer duelos sociais e +15% de carisma.",
-        "type": "social",
-        "category": "support",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "seasonal": "spring",
-        "effects": {"duel_boost": {"type": "social", "amount": 0.3}, "attribute_boost": {"charisma": 0.15}},
-        "evolution": {
-            "2": {"name": "Florescimento", "description": "Floresce como as cerejeiras na primavera. +35% de chance de vencer duelos sociais, +20% de carisma e +10% de regeneração.", "effects": {"duel_boost": {"type": "social", "amount": 0.35}, "attribute_boost": {"charisma": 0.2}, "regeneration": 0.1}},
-            "3": {"name": "Renascimento Primaveril", "description": "Renova-se completamente como a natureza na primavera. +40% de chance de vencer duelos sociais, +25% de carisma, +15% de regeneração e +10% de chance de inspirar aliados.", "effects": {"duel_boost": {"type": "social", "amount": 0.4}, "attribute_boost": {"charisma": 0.25}, "regeneration": 0.15, "inspire_chance": 0.1}}
-        }
-    },
-    {
-        "id": 17,
-        "name": "Calor Estival",
-        "description": "Canaliza o calor do verão. +30% de chance de vencer duelos físicos e +15% de dano adicional.",
-        "type": "physical",
-        "category": "attack",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "seasonal": "summer",
-        "effects": {"duel_boost": {"type": "physical", "amount": 0.3}, "damage_boost": 0.15},
-        "evolution": {
-            "2": {"name": "Fúria Solar", "description": "Canaliza a fúria do sol do verão. +35% de chance de vencer duelos físicos, +20% de dano adicional e +10% de velocidade.", "effects": {"duel_boost": {"type": "physical", "amount": 0.35}, "damage_boost": 0.2, "speed_boost": 0.1}},
-            "3": {"name": "Sol Escaldante", "description": "Libera o poder máximo do sol do verão. +40% de chance de vencer duelos físicos, +25% de dano adicional, +15% de velocidade e +10% de chance de queimar o oponente.", "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.25, "speed_boost": 0.15, "burn_chance": 0.1}}
-        }
-    },
-    {
-        "id": 18,
-        "name": "Reflexão Outonal",
-        "description": "Canaliza a introspecção do outono. +30% de chance de vencer duelos mentais e +15% de intelecto.",
-        "type": "mental",
-        "category": "tactical",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "seasonal": "autumn",
-        "effects": {"duel_boost": {"type": "mental", "amount": 0.3}, "attribute_boost": {"intellect": 0.15}},
-        "evolution": {
-            "2": {"name": "Sabedoria Outonal", "description": "Absorve a sabedoria das folhas que caem no outono. +35% de chance de vencer duelos mentais, +20% de intelecto e +10% de resistência mental.", "effects": {"duel_boost": {"type": "mental", "amount": 0.35}, "attribute_boost": {"intellect": 0.2}, "mental_resistance": 0.1}},
-            "3": {"name": "Pilares Antigos", "description": "Conecta-se com a sabedoria ancestral do outono. +40% de chance de vencer duelos mentais, +25% de intelecto, +15% de resistência mental e +10% de chance de encontrar artefatos raros.", "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "attribute_boost": {"intellect": 0.25}, "mental_resistance": 0.15, "artifact_find_chance": 0.1}}
-        }
-    },
-    {
-        "id": 19,
-        "name": "Gélido Invernal",
-        "description": "Canaliza o frio do inverno. +30% de chance de vencer duelos estratégicos e +15% de defesa.",
-        "type": "strategic",
-        "category": "defense",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 3,
-        "seasonal": "winter",
-        "effects": {"duel_boost": {"type": "strategic", "amount": 0.3}, "defense_boost": 0.15},
-        "evolution": {
-            "2": {"name": "Tempestade de Neve", "description": "Invoca uma tempestade de neve que confunde os inimigos. +35% de chance de vencer duelos estratégicos, +20% de defesa e +10% de chance de congelar o oponente.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.35}, "defense_boost": 0.2, "freeze_chance": 0.1}},
-            "3": {"name": "Presença Fantasmal", "description": "Torna-se como um fantasma na névoa do inverno. +40% de chance de vencer duelos estratégicos, +25% de defesa, +15% de chance de congelar o oponente e +10% de furtividade.", "effects": {"duel_boost": {"type": "strategic", "amount": 0.4}, "defense_boost": 0.25, "freeze_chance": 0.15, "stealth": 0.1}}
-        }
-    },
-    {
-        "id": 20,
-        "name": "Harmonia Elemental",
-        "description": "Harmoniza as energias das quatro estações. +25% de chance de vencer qualquer tipo de duelo e +10% em todos os atributos.",
-        "type": "all",
-        "category": "support",
-        "tier": "master",
-        "level": 1,
-        "max_level": 3,
-        "unlock_requirement": {"level": 20, "techniques_mastered": 4},
-        "effects": {"duel_boost": {"type": "all", "amount": 0.25}, "attribute_boost_all": 0.1},
-        "evolution": {
-            "2": {"name": "Equilíbrio Cósmico", "description": "Alcança o equilíbrio perfeito entre as energias cósmicas. +30% de chance de vencer qualquer tipo de duelo, +15% em todos os atributos e +10% de resistência a todos os elementos.", "effects": {"duel_boost": {"type": "all", "amount": 0.3}, "attribute_boost_all": 0.15, "elemental_resistance": 0.1}},
-            "3": {"name": "Transcendência", "description": "Transcende as limitações mortais. +35% de chance de vencer qualquer tipo de duelo, +20% em todos os atributos, +15% de resistência a todos os elementos e +10% de chance de ação extra.", "effects": {"duel_boost": {"type": "all", "amount": 0.35}, "attribute_boost_all": 0.2, "elemental_resistance": 0.15, "extra_action_chance": 0.1}}
+            "3": {"name": "Manipulação Mental Suprema", "description": "Confunde a mente do oponente com precisão mortal. +40% de chance de vencer duelos mentais e 10% de dano adicional.", "effects": {"duel_boost": {"type": "mental", "amount": 0.4}, "damage_boost": 0.1}}
         }
     }
 ]
@@ -512,52 +213,34 @@ class Economy(commands.Cog):
         self.next_listing_id = 1
         self.exchange_cooldowns = {}  # {user_id: timestamp}
 
-    def _check_cooldown(self, user_id, command):
+    async def _check_cooldown(self, user_id, command):
         """Check if a command is on cooldown for a user."""
-        now = datetime.now().timestamp()
-
-        # Initialize user cooldowns if not exists
-        if user_id not in COOLDOWNS:
-            COOLDOWNS[user_id] = {}
-
-        # Check if command is on cooldown
-        if command in COOLDOWNS[user_id] and COOLDOWNS[user_id][command] > now:
-            # Calculate remaining time
-            remaining = COOLDOWNS[user_id][command] - now
-            minutes, seconds = divmod(int(remaining), 60)
-            hours, minutes = divmod(minutes, 60)
-
-            if hours > 0:
-                time_str = f"{hours}h {minutes}m {seconds}s"
-            elif minutes > 0:
-                time_str = f"{minutes}m {seconds}s"
-            else:
-                time_str = f"{seconds}s"
-
-            return time_str
-
-        return None
-
-    def _set_cooldown(self, user_id, command, custom_duration=None):
-        """Set a cooldown for a command for a user.
-
-        Args:
-            user_id: The user ID
-            command: The command name
-            custom_duration: Optional custom duration in seconds. If not provided, uses the default duration.
-        """
-        if user_id not in COOLDOWNS:
-            COOLDOWNS[user_id] = {}
-
-        duration = custom_duration if custom_duration is not None else COOLDOWN_DURATIONS.get(command, 3600)  # Default 1 hour
-        expiry_time = datetime.now().timestamp() + duration
-        COOLDOWNS[user_id][command] = expiry_time
-
-        # Store cooldown in database
         try:
-            store_cooldown(user_id, command, expiry_time)
+            # Get cooldowns from database
+            cooldowns = await db_provider.get_cooldowns()
+            user_cooldowns = cooldowns.get(str(user_id), {})
+            command_cooldown = user_cooldowns.get(command)
+
+            if command_cooldown:
+                expiry = datetime.fromtimestamp(command_cooldown)
+                if datetime.now() < expiry:
+                    remaining = expiry - datetime.now()
+                    minutes = int(remaining.total_seconds() // 60)
+                    seconds = int(remaining.total_seconds() % 60)
+                    return f"{minutes}m {seconds}s"
+            return None
         except Exception as e:
-            logger.error(f"Error storing cooldown in database: {e}")
+            logger.error(f"Error checking cooldown: {e}")
+            return None
+
+    async def _set_cooldown(self, user_id, command, custom_duration=None):
+        """Set a cooldown for a command for a user."""
+        try:
+            duration = custom_duration or COOLDOWN_DURATIONS.get(command, 3600)
+            expiry = datetime.now() + timedelta(seconds=duration)
+            await db_provider.store_cooldown(str(user_id), command, int(expiry.timestamp()))
+        except Exception as e:
+            logger.error(f"Error setting cooldown: {e}")
 
     # Group for economy commands
     economy_group = app_commands.Group(name="economia", description="Comandos de economia da Academia Tokugawa")
@@ -567,594 +250,428 @@ class Economy(commands.Cog):
 
     @technique_group.command(name="evoluir", description="Evoluir uma técnica para o próximo nível")
     async def slash_evolve_technique(self, interaction: discord.Interaction, technique_id: int):
-        """Evolui uma técnica para o próximo nível."""
-        # Check if player exists
-        player = get_player(interaction.user.id)
-        if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
-            return
+        """Evolve a technique to the next level."""
+        try:
+            # Check if player exists
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
 
-        # Check if player has the technique
-        techniques = player["techniques"]
-        if str(technique_id) not in techniques:
-            await interaction.response.send_message(f"{interaction.user.mention}, você não possui esta técnica. Use `/tecnica listar` para ver suas técnicas.", ephemeral=True)
-            return
+            # Get player's techniques
+            techniques = player.get('techniques', [])
+            if not techniques:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
+                return
 
-        # Get the technique from player's techniques
-        player_technique = techniques[str(technique_id)]
+            # Find the technique to evolve
+            technique = None
+            for t in techniques:
+                if t['id'] == technique_id:
+                    technique = t
+                    break
 
-        # Get the full technique data from TECHNIQUES
-        full_technique = next((t for t in TECHNIQUES if t["id"] == technique_id), None)
-        if not full_technique:
-            await interaction.response.send_message(f"{interaction.user.mention}, técnica não encontrada no sistema.")
-            return
+            if not technique:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui a técnica com ID {technique_id}.", ephemeral=True)
+                return
 
-        # Check if technique can be evolved
-        current_level = player_technique.get("level", 1)
-        max_level = full_technique.get("max_level", 3)
+            # Check if technique can be evolved
+            if technique['level'] >= technique['max_level']:
+                await interaction.response.send_message(f"{interaction.user.mention}, esta técnica já está no nível máximo.", ephemeral=True)
+                return
 
-        if current_level >= max_level:
-            await interaction.response.send_message(f"{interaction.user.mention}, a técnica **{player_technique['name']}** já está no nível máximo ({current_level}/{max_level}).")
-            return
+            # Get the evolution data
+            evolution = technique.get('evolution', {}).get(str(technique['level'] + 1))
+            if not evolution:
+                await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar os dados de evolução para esta técnica.", ephemeral=True)
+                return
 
-        # Check evolution requirements
-        # For now, we'll just require some TUSD and experience points
-        evolution_cost = {
-            1: 500,  # Level 1 to 2
-            2: 1000,  # Level 2 to 3
-        }
+            # Check if player has enough TUSD
+            cost = evolution.get('cost', 1000)  # Default cost if not specified
+            if player.get('tusd', 0) < cost:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui TUSD suficiente para evoluir esta técnica. Custo: {cost} TUSD", ephemeral=True)
+                return
 
-        exp_requirement = {
-            1: 1000,  # Level 1 to 2
-            2: 3000,  # Level 2 to 3
-        }
+            # Update the technique
+            technique['level'] += 1
+            technique['name'] = evolution['name']
+            technique['description'] = evolution['description']
+            technique['effects'] = evolution['effects']
 
-        cost = evolution_cost.get(current_level, 1000)
-        exp_needed = exp_requirement.get(current_level, 1000)
+            # Update player in database
+            success = await db_provider.update_player(
+                interaction.user.id,
+                techniques=techniques,
+                tusd=player['tusd'] - cost
+            )
 
-        # Check if player has enough TUSD
-        if player["tusd"] < cost:
-            await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para evoluir esta técnica. Custo: {cost} TUSD, Seu saldo: {player['tusd']} TUSD")
-            return
+            if success:
+                await interaction.response.send_message(
+                    embed=create_basic_embed(
+                        title="Técnica Evoluída!",
+                        description=(
+                            f"{interaction.user.mention}, sua técnica foi evoluída com sucesso!\n\n"
+                            f"**Nova Técnica:** {technique['name']}\n"
+                            f"**Nível:** {technique['level']}\n"
+                            f"**Descrição:** {technique['description']}\n\n"
+                            f"Custo: {cost} TUSD"
+                        ),
+                        color=0x00FF00
+                    )
+                )
+            else:
+                await interaction.response.send_message("Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error in slash_evolve_technique: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
 
-        # Check if player has enough experience
-        if player["exp"] < exp_needed:
-            await interaction.response.send_message(f"{interaction.user.mention}, você não tem experiência suficiente para evoluir esta técnica. Necessário: {exp_needed} EXP, Sua EXP: {player['exp']} EXP")
-            return
+    @technique_group.command(name="listar", description="Listar todas as suas técnicas")
+    async def slash_list_techniques(self, interaction: discord.Interaction):
+        """List all techniques owned by the player."""
+        try:
+            # Check if player exists
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
 
-        # Get the evolution data
-        next_level = current_level + 1
-        evolution_data = full_technique["evolution"].get(str(next_level))
+            # Get player's techniques
+            techniques = player.get('techniques', [])
+            if not techniques:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
+                return
 
-        if not evolution_data:
-            await interaction.response.send_message(f"{interaction.user.mention}, não foi possível encontrar os dados de evolução para o nível {next_level}.")
-            return
-
-        # Update the technique
-        player_technique["level"] = next_level
-        player_technique["name"] = evolution_data["name"]
-        player_technique["description"] = evolution_data["description"]
-        player_technique["effects"] = evolution_data["effects"]
-
-        # Update player data
-        update_data = {
-            "tusd": player["tusd"] - cost,
-            "exp": player["exp"] - exp_needed,
-            "techniques": json.dumps(techniques)
-        }
-
-        # Update player in database
-        success = update_player(interaction.user.id, **update_data)
-
-        if success:
-            # Create evolution confirmation embed
-            tier_name = TECHNIQUE_TIERS.get(full_technique["tier"], full_technique["tier"].capitalize())
-            category_name = TECHNIQUE_CATEGORIES.get(full_technique["category"], full_technique["category"].capitalize())
-
+            # Create embed for techniques list
             embed = create_basic_embed(
-                title="Técnica Evoluída!",
-                description=f"Você evoluiu a técnica **{player_technique['name']}** para o nível {next_level}/{max_level}!\n\n"
-                            f"Custo: {cost} TUSD e {exp_needed} EXP\n"
-                            f"Saldo atual: {update_data['tusd']} TUSD 💰 | EXP: {update_data['exp']} EXP",
-                color=0x9370DB  # Medium Purple
+                title="Suas Técnicas",
+                description=f"{interaction.user.mention}, aqui estão todas as suas técnicas:",
+                color=0x00FF00
+            )
+
+            # Group techniques by category
+            techniques_by_category = {}
+            for technique in techniques:
+                category = technique.get('category', 'other')
+                if category not in techniques_by_category:
+                    techniques_by_category[category] = []
+                techniques_by_category[category].append(technique)
+
+            # Add each category to the embed
+            for category, techs in techniques_by_category.items():
+                category_name = TECHNIQUE_CATEGORIES.get(category, category.capitalize())
+                tech_list = "\n".join([
+                    f"**{t['name']}** (Nível {t['level']}/{t['max_level']})"
+                    for t in techs
+                ])
+                embed.add_field(
+                    name=category_name,
+                    value=tech_list,
+                    inline=False
+                )
+
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error in slash_list_techniques: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao listar suas técnicas. Por favor, tente novamente mais tarde.", ephemeral=True)
+
+    @technique_group.command(name="info", description="Ver informações detalhadas sobre uma técnica")
+    async def slash_technique_info(self, interaction: discord.Interaction, technique_id: int):
+        """Show detailed information about a specific technique."""
+        try:
+            # Check if player exists
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
+
+            # Get player's techniques
+            techniques = player.get('techniques', [])
+            if not techniques:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não possui nenhuma técnica.", ephemeral=True)
+                return
+
+            # Find the technique
+            technique = None
+            for t in techniques:
+                if t['id'] == technique_id:
+                    technique = t
+                    break
+
+            if not technique:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui a técnica com ID {technique_id}.", ephemeral=True)
+                return
+
+            # Create embed for technique info
+            embed = create_basic_embed(
+                title=technique['name'],
+                description=technique['description'],
+                color=0x00FF00
+            )
+
+            # Add technique details
+            embed.add_field(
+                name="Nível",
+                value=f"{technique['level']}/{technique['max_level']}",
+                inline=True
             )
 
             embed.add_field(
-                name="Detalhes da Técnica",
-                value=f"Tipo: {full_technique['type'].capitalize()} | Categoria: {category_name} | Nível: {tier_name}\n"
-                      f"Descrição: {player_technique['description']}",
-                inline=False
+                name="Categoria",
+                value=TECHNIQUE_CATEGORIES.get(technique['category'], technique['category'].capitalize()),
+                inline=True
             )
 
-            # Add effects details
-            effects_text = []
-            for effect_type, effect_value in player_technique["effects"].items():
-                if effect_type == "duel_boost":
-                    duel_type = effect_value["type"]
-                    amount = effect_value["amount"] * 100
-                    effects_text.append(f"+{amount:.0f}% de chance em duelos {duel_type}")
-                elif effect_type == "damage_boost":
-                    amount = effect_value * 100
-                    effects_text.append(f"+{amount:.0f}% de dano")
-                elif effect_type == "damage_reduction":
-                    amount = effect_value * 100
-                    effects_text.append(f"-{amount:.0f}% de dano recebido")
-                elif effect_type == "attribute_boost":
-                    for attr, boost in effect_value.items():
-                        amount = boost * 100
-                        effects_text.append(f"+{amount:.0f}% em {attr}")
-                elif effect_type == "attribute_boost_all":
-                    amount = effect_value * 100
-                    effects_text.append(f"+{amount:.0f}% em todos os atributos")
-                else:
-                    effects_text.append(f"{effect_type}: {effect_value}")
+            embed.add_field(
+                name="Tipo",
+                value=technique['type'].capitalize(),
+                inline=True
+            )
+
+            # Add effects
+            effects_text = ""
+            for effect_type, effect_data in technique['effects'].items():
+                if effect_type == 'duel_boost':
+                    effects_text += f"**Bônus em Duelos:** +{int(effect_data['amount'] * 100)}% de chance de vencer duelos {effect_data['type']}\n"
+                elif effect_type == 'damage_boost':
+                    effects_text += f"**Bônus de Dano:** +{int(effect_data * 100)}%\n"
+                elif effect_type == 'exp_boost':
+                    effects_text += f"**Bônus de EXP:** +{int(effect_data * 100)}%\n"
+                elif effect_type == 'hp_boost':
+                    effects_text += f"**Bônus de HP:** +{int(effect_data * 100)}%\n"
 
             if effects_text:
                 embed.add_field(
                     name="Efeitos",
-                    value="\n".join(effects_text),
+                    value=effects_text,
                     inline=False
                 )
 
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("Ocorreu um erro ao evoluir a técnica. Por favor, tente novamente mais tarde.")
-
-    @technique_group.command(name="listar", description="Listar todas as suas técnicas")
-    async def slash_list_techniques(self, interaction: discord.Interaction):
-        """Lista todas as técnicas do jogador."""
-        # Check if player exists
-        player = get_player(interaction.user.id)
-        if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
-            return
-
-        # Get player's techniques
-        techniques = player["techniques"]
-
-        if not techniques:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não aprendeu nenhuma técnica. Compre pergaminhos de técnicas na loja para aprender novas técnicas.")
-            return
-
-        # Create techniques embed
-        embed = create_basic_embed(
-            title="Suas Técnicas",
-            description=f"Você conhece {len(techniques)} técnicas. Use `/tecnica evoluir <id>` para evoluir uma técnica.",
-            color=0x9370DB  # Medium Purple
-        )
-
-        # Group techniques by category
-        techniques_by_category = {}
-        for tech_id, technique in techniques.items():
-            category = technique.get("category", "unknown")
-            if category not in techniques_by_category:
-                techniques_by_category[category] = []
-            techniques_by_category[category].append((tech_id, technique))
-
-        # Add techniques to embed by category
-        for category, techs in techniques_by_category.items():
-            category_name = TECHNIQUE_CATEGORIES.get(category, "Outras")
-            embed.add_field(
-                name=f"--- {category_name} ---",
-                value="",
-                inline=False
-            )
-
-            for tech_id, technique in techs:
-                # Get the full technique data to check max level
-                full_technique = next((t for t in TECHNIQUES if t["id"] == int(tech_id)), None)
-                max_level = full_technique.get("max_level", 3) if full_technique else 3
-                current_level = technique.get("level", 1)
-
-                # Get tier name
-                tier_name = ""
-                if "tier" in technique:
-                    tier_name = f" | {TECHNIQUE_TIERS.get(technique['tier'], technique['tier'].capitalize())}"
-
-                # Add seasonal tag if applicable
-                seasonal_tag = ""
-                if full_technique and "seasonal" in full_technique:
-                    season_names = {
-                        "spring": "Primavera",
-                        "summer": "Verão",
-                        "autumn": "Outono",
-                        "winter": "Inverno"
-                    }
-                    season_name = season_names.get(full_technique["seasonal"], full_technique["seasonal"])
-                    seasonal_tag = f" [Sazonal: {season_name}]"
-
-                embed.add_field(
-                    name=f"{tech_id}. {technique['name']} (Nível {current_level}/{max_level}){tier_name}{seasonal_tag}",
-                    value=f"Tipo: {technique['type'].capitalize()}\n{technique['description']}",
-                    inline=False
-                )
-
-        await interaction.response.send_message(embed=embed)
-
-    @technique_group.command(name="info", description="Ver informações detalhadas sobre uma técnica")
-    async def slash_technique_info(self, interaction: discord.Interaction, technique_id: int):
-        """Mostra informações detalhadas sobre uma técnica."""
-        # Check if player exists
-        player = get_player(interaction.user.id)
-        if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
-            return
-
-        # Check if player has the technique
-        techniques = player["techniques"]
-        if str(technique_id) not in techniques:
-            await interaction.response.send_message(f"{interaction.user.mention}, você não possui esta técnica. Use `/tecnica listar` para ver suas técnicas.")
-            return
-
-        # Get the technique from player's techniques
-        player_technique = techniques[str(technique_id)]
-
-        # Get the full technique data from TECHNIQUES
-        full_technique = next((t for t in TECHNIQUES if t["id"] == technique_id), None)
-        if not full_technique:
-            await interaction.response.send_message(f"{interaction.user.mention}, técnica não encontrada no sistema.")
-            return
-
-        # Get technique details
-        current_level = player_technique.get("level", 1)
-        max_level = full_technique.get("max_level", 3)
-        tier_name = TECHNIQUE_TIERS.get(full_technique["tier"], full_technique["tier"].capitalize())
-        category_name = TECHNIQUE_CATEGORIES.get(full_technique["category"], full_technique["category"].capitalize())
-
-        # Create technique info embed
-        embed = create_basic_embed(
-            title=f"Técnica: {player_technique['name']}",
-            description=f"Nível: {current_level}/{max_level} | Tipo: {player_technique['type'].capitalize()} | Categoria: {category_name} | Nível: {tier_name}\n\n"
-                        f"{player_technique['description']}",
-            color=0x9370DB  # Medium Purple
-        )
-
-        # Add effects details
-        effects_text = []
-        for effect_type, effect_value in player_technique["effects"].items():
-            if effect_type == "duel_boost":
-                duel_type = effect_value["type"]
-                amount = effect_value["amount"] * 100
-                effects_text.append(f"+{amount:.0f}% de chance em duelos {duel_type}")
-            elif effect_type == "damage_boost":
-                amount = effect_value * 100
-                effects_text.append(f"+{amount:.0f}% de dano")
-            elif effect_type == "damage_reduction":
-                amount = effect_value * 100
-                effects_text.append(f"-{amount:.0f}% de dano recebido")
-            elif effect_type == "attribute_boost":
-                for attr, boost in effect_value.items():
-                    amount = boost * 100
-                    effects_text.append(f"+{amount:.0f}% em {attr}")
-            elif effect_type == "attribute_boost_all":
-                amount = effect_value * 100
-                effects_text.append(f"+{amount:.0f}% em todos os atributos")
-            else:
-                effects_text.append(f"{effect_type}: {effect_value}")
-
-        if effects_text:
-            embed.add_field(
-                name="Efeitos Atuais",
-                value="\n".join(effects_text),
-                inline=False
-            )
-
-        # Add evolution info if technique can be evolved
-        if current_level < max_level:
-            next_level = current_level + 1
-            evolution_data = full_technique["evolution"].get(str(next_level))
-
-            if evolution_data:
-                # Calculate evolution cost
-                evolution_cost = {
-                    1: 500,  # Level 1 to 2
-                    2: 1000,  # Level 2 to 3
-                }
-
-                exp_requirement = {
-                    1: 1000,  # Level 1 to 2
-                    2: 3000,  # Level 2 to 3
-                }
-
-                cost = evolution_cost.get(current_level, 1000)
-                exp_needed = exp_requirement.get(current_level, 1000)
-
-                embed.add_field(
-                    name=f"Próxima Evolução (Nível {next_level})",
-                    value=f"Nome: {evolution_data['name']}\nDescrição: {evolution_data['description']}\n\n"
-                          f"Custo: {cost} TUSD e {exp_needed} EXP",
-                    inline=False
-                )
-
-                # Add next level effects
-                next_effects_text = []
-                for effect_type, effect_value in evolution_data["effects"].items():
-                    if effect_type == "duel_boost":
-                        duel_type = effect_value["type"]
-                        amount = effect_value["amount"] * 100
-                        next_effects_text.append(f"+{amount:.0f}% de chance em duelos {duel_type}")
-                    elif effect_type == "damage_boost":
-                        amount = effect_value * 100
-                        next_effects_text.append(f"+{amount:.0f}% de dano")
-                    elif effect_type == "damage_reduction":
-                        amount = effect_value * 100
-                        next_effects_text.append(f"-{amount:.0f}% de dano recebido")
-                    elif effect_type == "attribute_boost":
-                        for attr, boost in effect_value.items():
-                            amount = boost * 100
-                            next_effects_text.append(f"+{amount:.0f}% em {attr}")
-                    elif effect_type == "attribute_boost_all":
-                        amount = effect_value * 100
-                        next_effects_text.append(f"+{amount:.0f}% em todos os atributos")
-                    else:
-                        next_effects_text.append(f"{effect_type}: {effect_value}")
-
-                if next_effects_text:
+            # Add evolution info if available
+            if technique['level'] < technique['max_level']:
+                evolution = technique.get('evolution', {}).get(str(technique['level'] + 1))
+                if evolution:
                     embed.add_field(
-                        name="Efeitos da Próxima Evolução",
-                        value="\n".join(next_effects_text),
+                        name="Próxima Evolução",
+                        value=(
+                            f"**Nome:** {evolution['name']}\n"
+                            f"**Descrição:** {evolution['description']}\n"
+                            f"**Custo:** {evolution.get('cost', 1000)} TUSD"
+                        ),
                         inline=False
                     )
 
-        await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error in slash_technique_info: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao mostrar informações da técnica. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @economy_group.command(name="loja", description="Acessar a loja da Academia Tokugawa")
     async def slash_shop(self, interaction: discord.Interaction):
-        """Slash command version of the shop command."""
-        # Check if player exists
-        player = get_player(interaction.user.id)
-        if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
-            return
+        """Access the Academy's shop."""
+        try:
+            # Check if player exists
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
 
-        # Get player's story progress to determine current bimester and active events
-        story_progress = player.get('story_progress', {})
-        bimestre = story_progress.get('bimestre_corrente', 1)
-        active_events = story_progress.get('eventos_ativos', [])
-        player_level = player.get('level', 1)
-        player_club = player.get('club', None)
-
-        # Get available items based on bimester, active events, player level, and club
-        available_items = get_available_shop_items(
-            bimestre=bimestre, 
-            active_events=active_events,
-            player_level=player_level,
-            player_club=player_club
-        )
-
-        # Create shop embed
-        season_name = {
-            "spring": "Primavera",
-            "summer": "Verão",
-            "autumn": "Outono",
-            "winter": "Inverno"
-        }.get(SEASONS.get(bimestre, "spring"), "Primavera")
-
-        # Get player's alternative currencies
-        alt_currencies = player.get('currencies', {})
-        currency_display = f"Você tem {player['tusd']} TUSD 💰\n"
-
-        # Add seasonal currency if applicable
-        season = SEASONS.get(bimestre, "spring")
-        season_token = f"{season}_token"
-        if season_token in ALTERNATIVE_CURRENCIES:
-            currency_info = ALTERNATIVE_CURRENCIES[season_token]
-            currency_amount = alt_currencies.get(season_token, 0)
-            currency_display += f"{currency_info['icon']} {currency_amount} {currency_info['name']}\n"
-
-        # Add event currency if player has any
-        if 'event_token' in alt_currencies and alt_currencies['event_token'] > 0:
-            currency_info = ALTERNATIVE_CURRENCIES['event_token']
-            currency_display += f"{currency_info['icon']} {alt_currencies['event_token']} {currency_info['name']}\n"
-
-        embed = create_basic_embed(
-            title=f"Loja da Academia Tokugawa - {season_name}",
-            description=f"Bem-vindo à loja oficial da Academia!\n{currency_display}\n"
-                        f"Estamos no {bimestre}º bimestre ({season_name}). Aproveite os itens sazonais!\n\n"
-                        f"Para comprar um item, use o comando `/economia comprar <id>`",
-            color=0xFFD700  # Gold
-        )
-
-        # Add items to embed by type
-        for item_type, items in available_items.items():
-            if not items:  # Skip empty categories
-                continue
-
-            type_name = ITEM_TYPES.get(item_type, item_type.capitalize())
-            embed.add_field(
-                name=f"--- {type_name} ---",
-                value="",
-                inline=False
+            # Get available items based on player's status
+            available_items = get_available_shop_items(
+                bimestre=player.get('bimestre', 1),
+                active_events=player.get('active_events', []),
+                player_level=player.get('level', 1),
+                player_club=player.get('club_id'),
+                current_date=datetime.now()
             )
 
-            for item in items:
-                rarity = RARITIES.get(item["rarity"], RARITIES["common"])
-                category = item.get("category", "fixed")
-
-                # Add special indicators for seasonal or event items
-                special_tag = ""
-                if category == "seasonal":
-                    special_tag = f" [Sazonal: {season_name}]"
-                elif category == "event":
-                    event_name = item.get("event", "").replace("_", " ").title()
-                    special_tag = f" [Evento: {event_name}]"
-                elif category == "thematic" and "club_required" in item:
-                    club_name = item["club_required"].replace("_", " ").title()
-                    special_tag = f" [Clube: {club_name}]"
-
-                # Check if item requires alternative currency
-                price_display = f"{item['price']} TUSD"
-                if "currency" in item and item["currency"] in ALTERNATIVE_CURRENCIES:
-                    currency_info = ALTERNATIVE_CURRENCIES[item["currency"]]
-                    price_display = f"{item['price']} {currency_info['icon']} {currency_info['name']}"
-
-                embed.add_field(
-                    name=f"{item['id']}. {rarity['emoji']} {item['name']} - {price_display}{special_tag}",
-                    value=f"{item['description']}\nTipo: {ITEM_TYPES.get(item_type, item_type.capitalize())}",
-                    inline=False
-                )
-
-        # Add special currency items if applicable
-        season_token = f"{season}_token"
-        if season_token in SPECIAL_CURRENCY_ITEMS:
-            embed.add_field(
-                name=f"--- Itens Especiais ({ALTERNATIVE_CURRENCIES[season_token]['name']}) ---",
-                value="",
-                inline=False
+            # Create embed for shop
+            embed = create_basic_embed(
+                title="Loja da Academia Tokugawa",
+                description=f"{interaction.user.mention}, bem-vindo à loja! Aqui estão os itens disponíveis:",
+                color=0x00FF00
             )
 
-            for item in SPECIAL_CURRENCY_ITEMS[season_token]:
-                rarity = RARITIES.get(item["rarity"], RARITIES["common"])
-                currency_info = ALTERNATIVE_CURRENCIES[item["currency"]]
+            # Add items by category
+            for category, items in available_items.items():
+                if items:
+                    item_list = "\n".join([
+                        f"**{item['name']}** (ID: {item['id']}) - {item['price']} TUSD\n{item['description']}"
+                        for item in items
+                    ])
+                    embed.add_field(
+                        name=category.capitalize(),
+                        value=item_list,
+                        inline=False
+                    )
 
-                embed.add_field(
-                    name=f"{item['id']}. {rarity['emoji']} {item['name']} - {item['price']} {currency_info['icon']} {currency_info['name']}",
-                    value=f"{item['description']}\nTipo: {ITEM_TYPES.get(item['type'], item['type'].capitalize())}",
-                    inline=False
-                )
-
-        # Add item exchanges section
-        if ITEM_EXCHANGES:
-            embed.add_field(
-                name="--- Sistema de Trocas ---",
-                value="Troque itens antigos por novos itens ou moedas especiais!",
-                inline=False
-            )
-
-            for exchange in ITEM_EXCHANGES:
-                requirements = []
-                if "items" in exchange["requirements"]:
-                    req = exchange["requirements"]["items"]
-                    requirements.append(f"{req['count']} itens de raridade {req.get('rarity', 'qualquer').capitalize()}")
-
-                if "currency" in exchange["requirements"]:
-                    req = exchange["requirements"]["currency"]
-                    requirements.append(f"{req['amount']} {req['type']}")
-
-                reward = ""
-                if "item_rarity" in exchange["reward"]:
-                    reward = f"1 item de raridade {exchange['reward']['item_rarity'].capitalize()}"
-                    if exchange["reward"].get("random", False):
-                        reward += " aleatório"
-
-                if "currency" in exchange["reward"]:
-                    req = exchange["reward"]["currency"]
-                    reward = f"{req['amount']} {req['type']}"
-
-                embed.add_field(
-                    name=f"Troca #{exchange['id']}: {exchange['name']}",
-                    value=f"{exchange['description']}\nRequisitos: {', '.join(requirements)}\nRecompensa: {reward}",
-                    inline=False
-                )
-
-        await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error in slash_shop: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @economy_group.command(name="comprar", description="Comprar um item da loja")
     async def slash_buy(self, interaction: discord.Interaction, item_id: int):
-        """Slash command version of the buy command."""
-        # Check if player exists
-        player = await get_player(interaction.user.id)
-        if not player:
-            await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
-            return
-
-        # Get player's story progress to determine current bimester and active events
-        story_progress = player.get('story_progress', {})
-        bimestre = story_progress.get('bimestre_corrente', 1)
-        active_events = story_progress.get('eventos_ativos', [])
-        player_level = player.get('level', 1)
-        player_club = player.get('club', None)
-
-        # Get player's alternative currencies
-        alt_currencies = player.get('currencies', {})
-
-        # Get current season
-        season = SEASONS.get(bimestre, "spring")
-        season_token = f"{season}_token"
-
-        # Get available items based on bimester, active events, player level, and club
-        available_items_dict = get_available_shop_items(
-            bimestre=bimestre, 
-            active_events=active_events,
-            player_level=player_level,
-            player_club=player_club
-        )
-
-        # Flatten the items dictionary for easier searching
-        available_items = []
-        for item_list in available_items_dict.values():
-            available_items.extend(item_list)
-
-        # Check special currency items
-        if season_token in SPECIAL_CURRENCY_ITEMS:
-            available_items.extend(SPECIAL_CURRENCY_ITEMS[season_token])
-
-        # Find the item
-        item = next((i for i in available_items if i["id"] == item_id), None)
-        if not item:
-            await interaction.response.send_message(f"{interaction.user.mention}, item não encontrado ou não disponível neste momento. Use `/economia loja` para ver os itens disponíveis.")
-            return
-
-        # Buscar inventário na tabela Inventario
-        inventory = await get_player_inventory(interaction.user.id)
-
-        # Check if item requires alternative currency
-        if "currency" in item and item["currency"] in ALTERNATIVE_CURRENCIES:
-            currency_type = item["currency"]
-            currency_info = ALTERNATIVE_CURRENCIES[currency_type]
-
-            # Check if player has enough of the alternative currency
-            if alt_currencies.get(currency_type, 0) < item["price"]:
-                await interaction.response.send_message(
-                    f"{interaction.user.mention}, você não tem {currency_info['name']} suficiente para comprar este item. "
-                    f"Preço: {item['price']} {currency_info['name']}, Seu saldo: {alt_currencies.get(currency_type, 0)} {currency_info['name']}"
-                )
+        """Buy an item from the shop."""
+        try:
+            # Check if player exists
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
                 return
 
-            # Process the purchase with alternative currency
-            # Add or update item in inventory table
-            item_key = str(item["id"])
-            if item_key in inventory:
-                # If player already has this item, increase quantity
-                await add_item_to_inventory(interaction.user.id, item_key, inventory[item_key]["quantity"] + 1)
-            else:
-                # Add new item to inventory
-                await add_item_to_inventory(interaction.user.id, item_key, 1)
+            # Get available items
+            available_items = get_available_shop_items(
+                bimestre=player.get('bimestre', 1),
+                active_events=player.get('active_events', []),
+                player_level=player.get('level', 1),
+                player_club=player.get('club_id'),
+                current_date=datetime.now()
+            )
 
-            # Update player data (currencies)
-            alt_currencies[currency_type] = alt_currencies.get(currency_type, 0) - item["price"]
-            await update_player(interaction.user.id, currencies=json.dumps(alt_currencies))
-        else:
-            # Standard TUSD purchase
-            from utils.club_perks import apply_shop_discount
-            original_price = item["price"]
-            discounted_price = apply_shop_discount(original_price, player.get('club_id'))
+            # Find the item
+            item = None
+            for category_items in available_items.values():
+                for i in category_items:
+                    if i['id'] == item_id:
+                        item = i
+                        break
+                if item:
+                    break
+
+            if not item:
+                await interaction.response.send_message(f"{interaction.user.mention}, o item com ID {item_id} não está disponível na loja.", ephemeral=True)
+                return
 
             # Check if player has enough TUSD
-            if player["tusd"] < discounted_price:
-                if discounted_price < original_price:
-                    await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: ~~{original_price}~~ {discounted_price} TUSD (Desconto de Clube), Seu saldo: {player['tusd']} TUSD")
-                else:
-                    await interaction.response.send_message(f"{interaction.user.mention}, você não tem TUSD suficiente para comprar este item. Preço: {discounted_price} TUSD, Seu saldo: {player['tusd']} TUSD")
+            price = item['price']
+            if player.get('tusd', 0) < price:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui TUSD suficiente para comprar este item. Preço: {price} TUSD", ephemeral=True)
                 return
 
-            # Store the discounted price for later use
-            item["discounted_price"] = discounted_price
+            # Add item to player's inventory
+            inventory = player.get('inventory', {})
+            if isinstance(inventory, str):
+                try:
+                    inventory = json.loads(inventory)
+                except Exception:
+                    inventory = {}
+            if not isinstance(inventory, dict):
+                inventory = {}
 
-            # Add or update item in inventory table
-            item_key = str(item["id"])
-            if item_key in inventory:
-                await add_item_to_inventory(interaction.user.id, item_key, inventory[item_key]["quantity"] + 1)
+            item_id = f"item_{datetime.now().timestamp()}"
+            inventory[item_id] = item
+
+            # Update player in database
+            success = await db_provider.update_player(
+                interaction.user.id,
+                inventory=json.dumps(inventory),
+                tusd=player['tusd'] - price
+            )
+
+            if success:
+                await interaction.response.send_message(
+                    embed=create_basic_embed(
+                        title="Item Comprado!",
+                        description=(
+                            f"{interaction.user.mention}, você comprou o item com sucesso!\n\n"
+                            f"**Item:** {item['name']}\n"
+                            f"**Preço:** {price} TUSD\n"
+                            f"**Descrição:** {item['description']}\n\n"
+                            f"O item foi adicionado ao seu inventário."
+                        ),
+                        color=0x00FF00
+                    )
+                )
             else:
-                await add_item_to_inventory(interaction.user.id, item_key, 1)
+                await interaction.response.send_message("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error in slash_buy: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
 
-            # Update player data (TUSD)
-            price_to_deduct = item.get("discounted_price", item["price"])
-            await update_player(interaction.user.id, tusd=player["tusd"] - price_to_deduct)
+    @economy_group.command(name="usar", description="Usar um item do inventário")
+    async def slash_use_item(self, interaction: discord.Interaction, item_id: int):
+        """Use an item from the inventory."""
+        try:
+            # Check if player exists
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                return
 
-        # TODO: Tratar efeitos especiais (permanent_attribute, learn_technique, etc) migrando lógica para Inventario se necessário
+            # Get player's inventory
+            inventory = player.get('inventory', {})
+            if isinstance(inventory, str):
+                try:
+                    inventory = json.loads(inventory)
+                except Exception:
+                    inventory = {}
+            if not isinstance(inventory, dict):
+                inventory = {}
 
-        await interaction.response.send_message(f"{interaction.user.mention}, você comprou o item {item['name']} com sucesso!")
+            # Find the item
+            item = None
+            for i_id, i in inventory.items():
+                if i['id'] == item_id:
+                    item = i
+                    item_key = i_id
+                    break
+
+            if not item:
+                await interaction.response.send_message(f"{interaction.user.mention}, você não possui o item com ID {item_id}.", ephemeral=True)
+                return
+
+            # Check if item is usable
+            if item.get('type') not in ['consumable', 'accessory']:
+                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado.", ephemeral=True)
+                return
+
+            # Apply item effects
+            update_data = {}
+            effects_applied = []
+
+            for effect_type, effect_data in item.get('effects', {}).items():
+                if effect_type == 'hp_boost':
+                    current_hp = player.get('hp', 100)
+                    max_hp = player.get('max_hp', 100)
+                    hp_gain = int(max_hp * effect_data)
+                    new_hp = min(max_hp, current_hp + hp_gain)
+                    update_data['hp'] = new_hp
+                    effects_applied.append(f"+{hp_gain} HP")
+                elif effect_type == 'exp_boost':
+                    exp_gain = int(player.get('exp', 0) * effect_data)
+                    update_data['exp'] = player.get('exp', 0) + exp_gain
+                    effects_applied.append(f"+{exp_gain} EXP")
+                elif effect_type == 'attribute_boost':
+                    for attr, boost in effect_data.items():
+                        current_value = player.get(attr, 5)
+                        update_data[attr] = current_value + boost
+                        effects_applied.append(f"+{boost} {attr.capitalize()}")
+
+            # Remove item from inventory if it's consumable
+            if item['type'] == 'consumable':
+                inventory.pop(item_key)
+                update_data['inventory'] = json.dumps(inventory)
+
+            # Update player in database
+            success = await db_provider.update_player(interaction.user.id, **update_data)
+
+            if success:
+                await interaction.response.send_message(
+                    embed=create_basic_embed(
+                        title="Item Usado!",
+                        description=(
+                            f"{interaction.user.mention}, você usou o item com sucesso!\n\n"
+                            f"**Item:** {item['name']}\n"
+                            f"**Efeitos Aplicados:**\n" + "\n".join(effects_applied)
+                        ),
+                        color=0x00FF00
+                    )
+                )
+            else:
+                await interaction.response.send_message("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error in slash_use_item: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @economy_group.command(name="mercado", description="Acessar o mercado de itens entre jogadores")
     async def slash_market(self, interaction: discord.Interaction):
@@ -1571,134 +1088,6 @@ class Economy(commands.Cog):
                 f"Você poderá fazer outra troca em 1 hora."
             )
 
-    @economy_group.command(name="usar", description="Usar um item do inventário")
-    async def slash_use_item(self, interaction: discord.Interaction, item_id: int):
-        """Slash command version of the use_item command."""
-        try:
-            # Check if player exists
-            player = get_player(interaction.user.id)
-            if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.")
-                return
-
-            # Check if player has the item
-            inventory = player["inventory"]
-            if str(item_id) not in inventory:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui este item em seu inventário.", ephemeral=True)
-                return
-
-            # Get item data
-            item_data = inventory[str(item_id)]
-
-            # Check if item is usable
-            if item_data["type"] != "consumable":
-                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado diretamente. Itens do tipo {item_data['type']} são aplicados automaticamente.", ephemeral=True)
-                return
-
-            # Process item use
-            update_data = {}
-            use_message = ""
-
-            # Handle different item effects
-            if "cooldown_reduction" in item_data["effects"]:
-                # Reduce cooldown for a command
-                command = item_data["effects"]["cooldown_reduction"]["command"]
-                amount = item_data["effects"]["cooldown_reduction"]["amount"]
-
-                # Check if command is on cooldown
-                if interaction.user.id in COOLDOWNS and command in COOLDOWNS[interaction.user.id]:
-                    COOLDOWNS[interaction.user.id][command] -= amount
-                    use_message = f"Você usou {item_data['name']} e reduziu o cooldown do comando /{command} em 30 minutos!"
-                else:
-                    await interaction.response.send_message(f"{interaction.user.mention}, este comando não está em cooldown no momento.", ephemeral=True)
-                    return
-
-            elif "club_reputation" in item_data["effects"]:
-                # Increase club reputation
-                if not player["club_id"]:
-                    await interaction.response.send_message(f"{interaction.user.mention}, você precisa estar em um clube para usar este item.", ephemeral=True)
-                    return
-
-                # Get club data
-                club = get_club(player["club_id"])
-                if not club:
-                    await interaction.response.send_message(f"{interaction.user.mention}, seu clube não existe mais.")
-                    return
-
-                # TODO: Implement club reputation update
-                use_message = f"Você usou {item_data['name']} e aumentou sua reputação no clube {club['name']}!"
-
-            elif "potion" in item_data["effects"]:
-                # Handle potion effects
-                potion_type = item_data["effects"]["potion"]["type"]
-                amount = item_data["effects"]["potion"]["amount"]
-
-                if potion_type == "training":
-                    # Training potion increases experience
-                    update_data["exp"] = player["exp"] + amount
-                    use_message = f"Você bebeu {item_data['name']} e ganhou {amount} de experiência! Seu treinamento foi acelerado."
-
-                elif potion_type == "attribute":
-                    # Attribute potion increases a specific attribute
-                    attribute = item_data["effects"]["potion"]["attribute"]
-                    if attribute in ["dexterity", "intellect", "charisma", "power_stat"]:
-                        update_data[attribute] = player[attribute] + amount
-                        attribute_names = {
-                            "dexterity": "Destreza",
-                            "intellect": "Intelecto",
-                            "charisma": "Carisma",
-                            "power_stat": "Poder"
-                        }
-                        use_message = f"Você bebeu {item_data['name']} e aumentou seu atributo de {attribute_names[attribute]} em {amount} pontos!"
-                    else:
-                        await interaction.response.send_message(f"{interaction.user.mention}, esta poção tem um atributo inválido.", ephemeral=True)
-                        return
-
-                elif potion_type == "currency":
-                    # Currency potion increases TUSD
-                    update_data["tusd"] = player["tusd"] + amount
-                    use_message = f"Você bebeu {item_data['name']} e ganhou {amount} TUSD! Sua carteira está mais cheia."
-
-                elif potion_type == "health":
-                    # Health potion would be used in combat (not implemented yet)
-                    use_message = f"Você bebeu {item_data['name']} e se sente revigorado! Sua saúde foi restaurada."
-
-                else:
-                    await interaction.response.send_message(f"{interaction.user.mention}, este tipo de poção não é reconhecido.", ephemeral=True)
-                    return
-
-            else:
-                await interaction.response.send_message(f"{interaction.user.mention}, este item não pode ser usado no momento.", ephemeral=True)
-                return
-
-            # Remove item from inventory
-            inventory[str(item_id)]["quantity"] -= 1
-            if inventory[str(item_id)]["quantity"] <= 0:
-                del inventory[str(item_id)]
-
-            update_data["inventory"] = json.dumps(inventory)
-
-            # Update player in database
-            success = update_player(interaction.user.id, **update_data)
-
-            if success:
-                # Create use confirmation embed
-                rarity = RARITIES.get(item_data["rarity"], RARITIES["common"])
-                embed = create_basic_embed(
-                    title="Item Usado!",
-                    description=use_message,
-                    color=rarity["color"]
-                )
-
-                await interaction.response.send_message(embed=embed, ephemeral=True)
-            else:
-                await interaction.response.send_message("Ocorreu um erro ao usar o item. Por favor, tente novamente mais tarde.")
-        except discord.errors.NotFound:
-            # If the interaction has expired, log it but don't try to respond
-            logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia usar")
-        except Exception as e:
-            logger.error(f"Error in slash_use_item: {e}")
-
     @economy_group.command(name="equipar", description="Equipar um acessório do inventário")
     async def slash_equip_item(self, interaction: discord.Interaction, item_id: int):
         """Slash command to equip an accessory item."""
@@ -1738,7 +1127,7 @@ class Economy(commands.Cog):
                     )
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                 else:
-                    await interaction.response.send_message("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.")
+                    await interaction.response.send_message("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
                 return
 
             # Check if there's a cooldown for this accessory
@@ -1773,7 +1162,7 @@ class Economy(commands.Cog):
 
                 await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
-                await interaction.response.send_message("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.")
+                await interaction.response.send_message("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
         except discord.errors.NotFound:
             # If the interaction has expired, log it but don't try to respond
             logger.warning(f"Interaction expired for user {interaction.user.id} when using /economia equipar")
@@ -2169,7 +1558,7 @@ class Economy(commands.Cog):
                 )
                 await ctx.send(embed=embed, ephemeral=True)
             else:
-                await ctx.send("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.")
+                await ctx.send("Ocorreu um erro ao desequipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
             return
 
         # Check if there's a cooldown for this accessory
@@ -2204,7 +1593,7 @@ class Economy(commands.Cog):
 
             await ctx.send(embed=embed, ephemeral=True)
         else:
-            await ctx.send("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.")
+            await ctx.send("Ocorreu um erro ao equipar o acessório. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     @commands.command(name="usar")
     async def use_item(self, ctx, item_id: int = None):
