@@ -60,8 +60,11 @@ pip install -r requirements.txt
 print_section "Running tests with coverage"
 python tests/run_tests.py
 
+# Store the exit code
+TEST_EXIT_CODE=$?
+
 # Check if tests passed
-if [ $? -eq 0 ]; then
+if [ $TEST_EXIT_CODE -eq 0 ]; then
     echo -e "\n${GREEN}All tests passed successfully!${NC}"
     
     # Print coverage summary
@@ -81,7 +84,8 @@ if [ $? -eq 0 ]; then
     git commit -m "✅ All tests passed – build verified and coverage updated"
     git push
 else
-    echo -e "\n${RED}Some tests failed!${NC}"
+    echo -e "\n${RED}Some tests failed! No commit will be made.${NC}"
+    echo -e "${YELLOW}Please fix the failing tests before committing.${NC}"
     exit 1
 fi
 
