@@ -30,8 +30,7 @@ def patched_import(name, *args, **kwargs):
     # Não modifica imports de bibliotecas externas ou imports relativos
     if (name.startswith(('discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore')) or
         name.startswith('.') or
-        name.startswith('src.') or
-        '.' in name and name.split('.')[0] in ['discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore']):
+        name.startswith('src.')):
         return original_import(name, *args, **kwargs)
 
     # Verifica se o módulo está na lista e adiciona o prefixo src
@@ -39,6 +38,16 @@ def patched_import(name, *args, **kwargs):
         if name == module or name.startswith(f"{module}."):
             name = f"src.{name}"
             break
+
+    # Prevent adding 'src' to imports from external libraries with dots
+    if '.' in name and not name.startswith('src.'):
+        module_root = name.split('.')[0]
+        if module_root in ['discord', 'pytest', 'unittest', 'mock', 'asyncio', 'botocore']:
+            return original_import(name, *args, **kwargs)
+
+    # Prevent adding 'src' to already prefixed imports
+    if name.startswith('src.') and '.src.' in name:
+        name = name.replace('.src.', '.')
 
     return original_import(name, *args, **kwargs)
 
