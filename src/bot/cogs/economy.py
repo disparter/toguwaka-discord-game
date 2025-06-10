@@ -475,20 +475,37 @@ class Economy(commands.Cog):
     async def slash_shop(self, interaction: discord.Interaction):
         """Access the Academy's shop."""
         try:
+            # Acknowledge the interaction immediately to prevent timeout
+            await interaction.response.defer(ephemeral=True)
+
+            logger.info(f"Player {interaction.user.id} is accessing the shop")
+
             # Check if player exists
-            player = await db_provider.get_player(interaction.user.id)
-            if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+            try:
+                player = await db_provider.get_player(interaction.user.id)
+                if not player:
+                    await interaction.followup.send(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                    return
+                logger.info(f"Successfully retrieved player data for {interaction.user.id}")
+            except Exception as e:
+                logger.error(f"Error retrieving player data for {interaction.user.id}: {e}")
+                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao acessar seus dados. Por favor, tente novamente mais tarde.", ephemeral=True)
                 return
 
             # Get available items based on player's status
-            available_items = get_available_shop_items(
-                bimestre=player.get('bimestre', 1),
-                active_events=player.get('active_events', []),
-                player_level=player.get('level', 1),
-                player_club=player.get('club_id'),
-                current_date=datetime.now()
-            )
+            try:
+                available_items = get_available_shop_items(
+                    bimestre=player.get('bimestre', 1),
+                    active_events=player.get('active_events', []),
+                    player_level=player.get('level', 1),
+                    player_club=player.get('club_id'),
+                    current_date=datetime.now()
+                )
+                logger.info(f"Successfully retrieved shop items for player {interaction.user.id}")
+            except Exception as e:
+                logger.error(f"Error retrieving shop items for player {interaction.user.id}: {e}")
+                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao carregar os itens da loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                return
 
             # Create embed for shop
             embed = create_basic_embed(
@@ -510,29 +527,54 @@ class Economy(commands.Cog):
                         inline=False
                     )
 
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            logger.info(f"Successfully displayed shop for player {interaction.user.id}")
         except Exception as e:
             logger.error(f"Error in slash_shop: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+            try:
+                await interaction.followup.send("Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+            except:
+                # If followup fails, the interaction might have already been responded to
+                try:
+                    await interaction.response.send_message("Ocorreu um erro ao acessar a loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                except:
+                    logger.error(f"Failed to send error message to player {interaction.user.id}")
 
     @economy_group.command(name="comprar", description="Comprar um item da loja")
     async def slash_buy(self, interaction: discord.Interaction, item_id: int):
         """Buy an item from the shop."""
         try:
+            # Acknowledge the interaction immediately to prevent timeout
+            await interaction.response.defer(ephemeral=True)
+
+            logger.info(f"Player {interaction.user.id} is trying to buy item {item_id}")
+
             # Check if player exists
-            player = await db_provider.get_player(interaction.user.id)
-            if not player:
-                await interaction.response.send_message(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+            try:
+                player = await db_provider.get_player(interaction.user.id)
+                if not player:
+                    await interaction.followup.send(f"{interaction.user.mention}, você ainda não está registrado na Academia Tokugawa. Use /registro ingressar para criar seu personagem.", ephemeral=True)
+                    return
+                logger.info(f"Successfully retrieved player data for {interaction.user.id}")
+            except Exception as e:
+                logger.error(f"Error retrieving player data for {interaction.user.id}: {e}")
+                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao acessar seus dados. Por favor, tente novamente mais tarde.", ephemeral=True)
                 return
 
             # Get available items
-            available_items = get_available_shop_items(
-                bimestre=player.get('bimestre', 1),
-                active_events=player.get('active_events', []),
-                player_level=player.get('level', 1),
-                player_club=player.get('club_id'),
-                current_date=datetime.now()
-            )
+            try:
+                available_items = get_available_shop_items(
+                    bimestre=player.get('bimestre', 1),
+                    active_events=player.get('active_events', []),
+                    player_level=player.get('level', 1),
+                    player_club=player.get('club_id'),
+                    current_date=datetime.now()
+                )
+                logger.info(f"Successfully retrieved shop items for player {interaction.user.id}")
+            except Exception as e:
+                logger.error(f"Error retrieving shop items for player {interaction.user.id}: {e}")
+                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao carregar os itens da loja. Por favor, tente novamente mais tarde.", ephemeral=True)
+                return
 
             # Find the item
             item = None
@@ -545,37 +587,49 @@ class Economy(commands.Cog):
                     break
 
             if not item:
-                await interaction.response.send_message(f"{interaction.user.mention}, o item com ID {item_id} não está disponível na loja.", ephemeral=True)
+                await interaction.followup.send(f"{interaction.user.mention}, o item com ID {item_id} não está disponível na loja.", ephemeral=True)
                 return
 
             # Check if player has enough TUSD
             price = item['price']
             if player.get('tusd', 0) < price:
-                await interaction.response.send_message(f"{interaction.user.mention}, você não possui TUSD suficiente para comprar este item. Preço: {price} TUSD", ephemeral=True)
+                await interaction.followup.send(f"{interaction.user.mention}, você não possui TUSD suficiente para comprar este item. Preço: {price} TUSD", ephemeral=True)
                 return
 
             # Add item to player's inventory
-            inventory = player.get('inventory', {})
-            if isinstance(inventory, str):
-                try:
-                    inventory = json.loads(inventory)
-                except Exception:
+            try:
+                inventory = player.get('inventory', {})
+                if isinstance(inventory, str):
+                    try:
+                        inventory = json.loads(inventory)
+                    except Exception:
+                        inventory = {}
+                if not isinstance(inventory, dict):
                     inventory = {}
-            if not isinstance(inventory, dict):
-                inventory = {}
 
-            item_id = f"item_{datetime.now().timestamp()}"
-            inventory[item_id] = item
+                item_id = f"item_{datetime.now().timestamp()}"
+                inventory[item_id] = item
+                logger.info(f"Prepared inventory update for player {interaction.user.id}")
+            except Exception as e:
+                logger.error(f"Error preparing inventory for player {interaction.user.id}: {e}")
+                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao processar seu inventário. Por favor, tente novamente mais tarde.", ephemeral=True)
+                return
 
             # Update player in database
-            success = await db_provider.update_player(
-                interaction.user.id,
-                inventory=json.dumps(inventory),
-                tusd=player['tusd'] - price
-            )
+            try:
+                success = await db_provider.update_player(
+                    interaction.user.id,
+                    inventory=json.dumps(inventory),
+                    tusd=player['tusd'] - price
+                )
+                logger.info(f"Database update for player {interaction.user.id} purchase: {success}")
+            except Exception as e:
+                logger.error(f"Error updating database for player {interaction.user.id} purchase: {e}")
+                await interaction.followup.send(f"{interaction.user.mention}, ocorreu um erro ao atualizar seus dados. Por favor, tente novamente mais tarde.", ephemeral=True)
+                return
 
             if success:
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     embed=create_basic_embed(
                         title="Item Comprado!",
                         description=(
@@ -588,11 +642,20 @@ class Economy(commands.Cog):
                         color=0x00FF00
                     )
                 )
+                logger.info(f"Player {interaction.user.id} successfully purchased item {item['name']}")
             else:
-                await interaction.response.send_message("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                await interaction.followup.send("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                logger.error(f"Database update failed for player {interaction.user.id} purchase")
         except Exception as e:
             logger.error(f"Error in slash_buy: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+            try:
+                await interaction.followup.send("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+            except:
+                # If followup fails, the interaction might have already been responded to
+                try:
+                    await interaction.response.send_message("Ocorreu um erro ao comprar o item. Por favor, tente novamente mais tarde.", ephemeral=True)
+                except:
+                    logger.error(f"Failed to send error message to player {interaction.user.id}")
 
     @economy_group.command(name="usar", description="Usar um item do inventário")
     async def slash_use_item(self, interaction: discord.Interaction, item_id: int):

@@ -20,6 +20,9 @@ async def update_player(user_id, **kwargs):
 
 async def get_all_players():
     return await db_provider.get_all_players()
+
+async def get_all_clubs():
+    return await db_provider.get_all_clubs()
 from src.utils.embeds import create_basic_embed, create_event_embed, create_duel_embed, create_leaderboard_embed
 from src.utils.game_mechanics import calculate_level_from_exp, calculate_hp_factor
 from src.utils.narrative_events import generate_dynamic_event, apply_event_rewards, generate_event_choices, apply_choice_consequences
@@ -1919,7 +1922,7 @@ class ScheduledEvents(commands.Cog):
             from src.utils.ranking_formatter import ClubEffectEngine
 
             # Get all clubs
-            clubs = get_all_clubs()
+            clubs = await get_all_clubs()
 
             # Variables to store news data
             featured_club = None

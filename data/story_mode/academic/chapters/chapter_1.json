@@ -15,7 +15,8 @@
                     "dexterity": 1
                 },
                 "reputation_change": 5
-            }
+            },
+            "next_scene": "campus_exploration"
         },
         {
             "id": "choice_2",
@@ -25,7 +26,8 @@
                     "intellect": 1
                 },
                 "reputation_change": 5
-            }
+            },
+            "next_scene": "library_visit"
         },
         {
             "id": "choice_3",
@@ -35,7 +37,38 @@
                     "charisma": 1
                 },
                 "reputation_change": 5
-            }
+            },
+            "next_scene": "student_meeting"
         }
-    ]
+    ],
+    "scenes": {
+        "campus_exploration": {
+            "description": "You explore the vast campus of Academia Tokugawa",
+            "dialogue": [
+                {"speaker": "narrator", "text": "You spend some time exploring the beautiful campus, discovering hidden spots and getting familiar with the layout."}
+            ]
+        },
+        "library_visit": {
+            "description": "You visit the grand library of Academia Tokugawa",
+            "dialogue": [
+                {"speaker": "narrator", "text": "The library is vast and filled with ancient tomes. You spend some time browsing the shelves and getting acquainted with the resources available."}
+            ]
+        },
+        "student_meeting": {
+            "description": "You meet some of your fellow students",
+            "dialogue": [
+                {"speaker": "narrator", "text": "You introduce yourself to some of your classmates and start forming connections that might be valuable in the future."}
+            ]
+        }
+    },
+    "next_chapter": "academic_1_1_first_class",
+    "rewards": {
+        "experience": 50,
+        "skills": {
+            "academic_knowledge": 1
+        }
+    },
+    "flags": {
+        "introduction_completed": true
+    }
 }

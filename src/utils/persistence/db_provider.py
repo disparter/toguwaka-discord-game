@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 import json
 import boto3
 from botocore.exceptions import ClientError
+from decimal import Decimal
 
 from config import DYNAMODB_PLAYERS_TABLE, DYNAMODB_INVENTORY_TABLE, DYNAMODB_CLUBS_TABLE, DYNAMODB_TABLE
 
@@ -331,10 +332,10 @@ class DBProvider:
             # Get current grades
             grades = await self.get_player_grades(user_id)
 
-            # Update grade
+            # Update grade - convert float to Decimal for DynamoDB compatibility
             if subject not in grades:
                 grades[subject] = {}
-            grades[subject][datetime.now().strftime('%Y-%m')] = grade
+            grades[subject][datetime.now().strftime('%Y-%m')] = Decimal(str(grade))
 
             # Store updated grades
             self.PLAYERS_TABLE.put_item(Item={
@@ -543,6 +544,15 @@ class DBProvider:
             )
 
             players = response.get('Items', [])
+
+            # Extract user_id from PK field and add it to player objects
+            for player in players:
+                if 'PK' in player:
+                    # Extract user_id from PK (format: 'PLAYER#{user_id}')
+                    pk_parts = player['PK'].split('#')
+                    if len(pk_parts) > 1:
+                        player['user_id'] = pk_parts[1]
+
             return sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)[:limit]
         except Exception as e:
             logger.error(f"Error getting top players by reputation: {str(e)}")
