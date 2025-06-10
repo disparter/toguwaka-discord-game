@@ -190,13 +190,22 @@ async def on_ready():
 
         # Normalize player data
         logger.info("Starting player data normalization...")
-        success = await normalize_player_data()
-        if success:
-            logger.info("Player data normalization completed successfully!")
-        else:
-            logger.error("Player data normalization failed!")
-            await bot.close()
-            return
+        try:
+            logger.info("Calling normalize_player_data function...")
+            success = await normalize_player_data()
+            logger.info(f"normalize_player_data function returned: {success}")
+            if success:
+                logger.info("Player data normalization completed successfully!")
+            else:
+                logger.error("Player data normalization failed!")
+                # Don't close the bot, just log the error and continue
+                logger.warning("Continuing bot execution despite player migration failure")
+        except Exception as e:
+            logger.error(f"Exception during player data normalization: {str(e)}")
+            logger.error(f"Exception type: {type(e).__name__}")
+            logger.error(f"Exception args: {e.args}")
+            # Continue execution despite the error
+            logger.warning("Continuing bot execution despite player migration error")
 
     except Exception as e:
         logger.error(f"Error during database initialization: {e}")

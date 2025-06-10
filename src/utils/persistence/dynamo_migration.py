@@ -20,7 +20,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('tokugawa_bot')
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
@@ -95,66 +95,104 @@ def migrate_inventory(inventory_str: str, user_id: str) -> List[Dict[str, Any]]:
 
 async def normalize_player_data() -> bool:
     """Normalize all players' data in DynamoDB.
-    
+
     Returns:
         bool: True if normalization was successful, False otherwise
     """
     logger.info("Starting player data normalization process...")
-    
+
     # Wait for DynamoDB to be ready
     if not wait_for_dynamodb():
         logger.error("Failed to start normalization: DynamoDB not ready")
         return False
 
+    # Add more detailed logging
+    logger.info("DynamoDB is ready, proceeding with normalization")
+
     try:
         # Get table references
+        logger.info(f"Getting table references for {PLAYERS_TABLE} and {INVENTORY_TABLE}...")
         players_table = dynamodb.Table(PLAYERS_TABLE)
         inventory_table = dynamodb.Table(INVENTORY_TABLE)
+        logger.info("Table references obtained successfully")
 
         logger.info("Scanning players table...")
-        # Scan all players
-        response = players_table.scan()
-        players = response.get('Items', [])
-        
-        # Handle pagination if needed
-        while 'LastEvaluatedKey' in response:
-            response = players_table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-            players.extend(response.get('Items', []))
+        try:
+            # Scan all players
+            response = players_table.scan()
+            players = response.get('Items', [])
+            logger.info(f"Initial scan returned {len(players)} players")
+
+            # Handle pagination if needed
+            while 'LastEvaluatedKey' in response:
+                logger.info(f"Pagination detected, fetching more players...")
+                response = players_table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+                new_players = response.get('Items', [])
+                logger.info(f"Additional scan returned {len(new_players)} more players")
+                players.extend(new_players)
+        except Exception as e:
+            logger.error(f"Error scanning players table: {str(e)}")
+            return False
 
         logger.info(f"Found {len(players)} players to normalize")
 
         # Process each player
         success_count = 0
         error_count = 0
-        for player in players:
+        logger.info("Starting to process players one by one...")
+
+        for index, player in enumerate(players):
+            player_id = player.get('PK', 'unknown')
+            logger.info(f"Processing player {index+1}/{len(players)}: {player_id}")
+
             try:
                 # Extract and migrate inventory if it exists
                 inventory_str = player.pop('inventory', None)
                 if inventory_str:
+                    logger.info(f"Found inventory data for player {player_id}, migrating...")
                     inventory_items = migrate_inventory(inventory_str, player['PK'].split('#')[1])
-                    for item in inventory_items:
+                    logger.info(f"Migrating {len(inventory_items)} items for player {player_id}")
+                    for item_index, item in enumerate(inventory_items):
                         inventory_table.put_item(Item=item)
-                    logger.info(f"Migrated inventory for player {player['PK']}")
+                        if item_index % 10 == 0 and item_index > 0:  # Log every 10 items
+                            logger.info(f"Migrated {item_index}/{len(inventory_items)} items for player {player_id}")
+                    logger.info(f"Successfully migrated all inventory items for player {player_id}")
+                else:
+                    logger.info(f"No inventory data found for player {player_id}")
 
                 # Add missing default attributes
+                missing_attrs = []
                 for key, value in DEFAULT_PLAYER_VALUES.items():
                     if key not in player or player[key] is None:
                         player[key] = value
+                        missing_attrs.append(key)
+
+                if missing_attrs:
+                    logger.info(f"Added missing attributes for player {player_id}: {', '.join(missing_attrs)}")
+                else:
+                    logger.info(f"No missing attributes for player {player_id}")
 
                 # Update timestamps
                 player['last_active'] = datetime.now().isoformat()
                 if 'created_at' not in player:
                     player['created_at'] = datetime.now().isoformat()
+                    logger.info(f"Added missing created_at timestamp for player {player_id}")
 
                 # Write updated player data
+                logger.info(f"Writing updated data for player {player_id} to DynamoDB...")
                 players_table.put_item(Item=player)
-                logger.info(f"Normalized player data for {player['PK']}")
+                logger.info(f"Successfully normalized player data for {player_id}")
                 success_count += 1
 
             except Exception as e:
-                logger.error(f"Error processing player {player.get('PK', 'unknown')}: {str(e)}")
+                logger.error(f"Error processing player {player_id}: {str(e)}")
+                logger.error(f"Exception type: {type(e).__name__}")
                 error_count += 1
                 continue
+
+            # Log progress every 10 players
+            if (index + 1) % 10 == 0:
+                logger.info(f"Progress: {index+1}/{len(players)} players processed ({success_count} successful, {error_count} errors)")
 
         logger.info(f"Normalization completed:")
         logger.info(f"- Total players processed: {len(players)}")
