@@ -53,12 +53,13 @@ class DuelCalculator(IDuelCalculator):
         challenger_attributes = challenger.copy()
         opponent_attributes = opponent.copy()
 
-        # Calcula o fator de HP para o desafiante
-        hp_factor = self.hp_calculator.calculate_factor(challenger['hp'], challenger['max_hp'])
+        # Calcula o fator de HP para o desafiante e oponente
+        challenger_hp_factor = self.hp_calculator.calculate_factor(challenger['hp'], challenger['max_hp'])
+        opponent_hp_factor = self.hp_calculator.calculate_factor(opponent['hp'], opponent['max_hp'])
         
         # Calcula a pontuação base do desafiante
         challenger_score = (
-            challenger['power_stat'] * hp_factor +
+            challenger['power_stat'] * challenger_hp_factor +
             challenger['dexterity'] * 0.5 +
             challenger['intellect'] * 0.3 +
             challenger['charisma'] * 0.2
@@ -69,7 +70,7 @@ class DuelCalculator(IDuelCalculator):
         
         # Calcula a pontuação base do oponente
         opponent_score = (
-            opponent['power_stat'] +
+            opponent['power_stat'] * opponent_hp_factor +
             opponent['dexterity'] * 0.5 +
             opponent['intellect'] * 0.3 +
             opponent['charisma'] * 0.2

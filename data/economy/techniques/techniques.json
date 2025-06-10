@@ -1,0 +1,116 @@
+{
+    "techniques": [
+        {
+            "id": 1,
+            "name": "Golpe Relâmpago",
+            "description": "Um ataque rápido que surpreende o oponente. +30% de chance de vencer duelos físicos.",
+            "type": "physical",
+            "category": "attack",
+            "tier": "basic",
+            "level": 1,
+            "max_level": 3,
+            "club_required": null,
+            "effects": {"duel_boost": {"type": "physical", "amount": 0.3}},
+            "evolution": {
+                "2": {
+                    "name": "Golpe Relâmpago Aprimorado",
+                    "description": "Um ataque rápido com maior precisão. +35% de chance de vencer duelos físicos.",
+                    "effects": {"duel_boost": {"type": "physical", "amount": 0.35}}
+                },
+                "3": {
+                    "name": "Golpe Relâmpago Supremo",
+                    "description": "Um ataque rápido com precisão mortal. +40% de chance de vencer duelos físicos e 10% de dano adicional.",
+                    "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.1}
+                }
+            }
+        },
+        {
+            "id": 20,
+            "name": "Toque Curativo",
+            "description": "Uma técnica básica de cura que recupera 15% do HP máximo de um aliado. Custo de energia: 20",
+            "type": "support",
+            "category": "healing",
+            "tier": "basic",
+            "level": 1,
+            "max_level": 3,
+            "energy_cost": 20,
+            "effects": {
+                "heal_amount": 0.15,
+                "heal_type": "percentage",
+                "target": "ally",
+                "turf_wars_usable": true
+            },
+            "evolution": {
+                "2": {
+                    "name": "Toque Curativo Aprimorado",
+                    "description": "Recupera 20% do HP máximo de um aliado. Custo de energia: 25",
+                    "energy_cost": 25,
+                    "effects": {
+                        "heal_amount": 0.2,
+                        "heal_type": "percentage",
+                        "target": "ally",
+                        "turf_wars_usable": true
+                    }
+                },
+                "3": {
+                    "name": "Toque Curativo Supremo",
+                    "description": "Recupera 25% do HP máximo de um aliado e aplica regeneração de 2% por minuto por 2 minutos. Custo de energia: 30",
+                    "energy_cost": 30,
+                    "effects": {
+                        "heal_amount": 0.25,
+                        "heal_type": "percentage",
+                        "target": "ally",
+                        "turf_wars_usable": true,
+                        "regen_amount": 0.02,
+                        "regen_duration": 120
+                    }
+                }
+            }
+        },
+        {
+            "id": 21,
+            "name": "Barreira Protetora",
+            "description": "Cria uma barreira que reduz o dano recebido por um aliado em 20% por 3 minutos. Custo de energia: 30",
+            "type": "support",
+            "category": "protection",
+            "tier": "advanced",
+            "level": 1,
+            "max_level": 3,
+            "energy_cost": 30,
+            "effects": {
+                "damage_reduction": 0.2,
+                "duration": 180,
+                "target": "ally",
+                "turf_wars_usable": true
+            },
+            "evolution": {
+                "2": {
+                    "name": "Barreira Protetora Aprimorada",
+                    "description": "Reduz o dano recebido em 25% e regenera 1% do HP por minuto por 3 minutos. Custo de energia: 35",
+                    "energy_cost": 35,
+                    "effects": {
+                        "damage_reduction": 0.25,
+                        "duration": 180,
+                        "target": "ally",
+                        "turf_wars_usable": true,
+                        "regen_amount": 0.01,
+                        "regen_duration": 180
+                    }
+                },
+                "3": {
+                    "name": "Barreira Protetora Suprema",
+                    "description": "Reduz o dano recebido em 30% e regenera 2% do HP por minuto por 4 minutos. Custo de energia: 40",
+                    "energy_cost": 40,
+                    "effects": {
+                        "damage_reduction": 0.3,
+                        "duration": 240,
+                        "target": "ally",
+                        "turf_wars_usable": true,
+                        "regen_amount": 0.02,
+                        "regen_duration": 240
+                    }
+                }
+            }
+        }
+    ]
+} 

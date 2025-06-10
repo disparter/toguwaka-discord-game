@@ -58,6 +58,15 @@ LEGENDARY_ITEMS = load_json('data/economy/legendary_items.json')
 # Itens temáticos de clubes (disponíveis apenas para membros de clubes específicos)
 CLUB_ITEMS = load_json('data/economy/club_items.json')
 
+# Carrega dados de técnicas
+TECHNIQUE_DATA = load_json('data/economy/techniques/techniques.json')
+TECHNIQUE_CATEGORIES = load_json('data/economy/techniques/technique_categories.json')
+
+# Extrai as técnicas e categorias dos dados carregados
+TECHNIQUES = TECHNIQUE_DATA.get('techniques', [])
+TECHNIQUE_CATEGORIES = TECHNIQUE_CATEGORIES.get('categories', {})
+TECHNIQUE_TIERS = TECHNIQUE_CATEGORIES.get('tiers', {})
+
 
 # Função para obter os itens disponíveis com base no bimestre atual, eventos ativos, nível do jogador e clube
 def get_available_shop_items(bimestre=1, active_events=None, player_level=1, player_club=None, current_date=None):
@@ -137,199 +146,6 @@ SHOP_ITEMS.extend(COMBAT_ITEMS)
 SHOP_ITEMS.extend(ENERGY_ITEMS)
 SHOP_ITEMS.extend(ATTRIBUTE_ITEMS)
 SHOP_ITEMS.extend(SOCIAL_ITEMS)
-
-# Categorias de técnicas
-TECHNIQUE_CATEGORIES = {
-    "attack": "Ataque",
-    "defense": "Defesa",
-    "support": "Suporte",
-    "tactical": "Tática Especial"
-}
-
-# Níveis de técnicas
-TECHNIQUE_TIERS = {
-    "basic": "Básica",
-    "advanced": "Avançada",
-    "exclusive": "Exclusiva",
-    "master": "Mestre"
-}
-
-# Sistema de técnicas expandido
-TECHNIQUES = [
-    # Técnicas Básicas (disponíveis para todos no início)
-    {
-        "id": 1,
-        "name": "Golpe Relâmpago",
-        "description": "Um ataque rápido que surpreende o oponente. +30% de chance de vencer duelos físicos.",
-        "type": "physical",
-        "category": "attack",
-        "tier": "basic",
-        "level": 1,
-        "max_level": 3,
-        "club_required": None,
-        "effects": {"duel_boost": {"type": "physical", "amount": 0.3}},
-        "evolution": {
-            "2": {"name": "Golpe Relâmpago Aprimorado",
-                  "description": "Um ataque rápido com maior precisão. +35% de chance de vencer duelos físicos.",
-                  "effects": {"duel_boost": {"type": "physical", "amount": 0.35}}},
-            "3": {"name": "Golpe Relâmpago Supremo",
-                  "description": "Um ataque rápido com precisão mortal. +40% de chance de vencer duelos físicos e 10% de dano adicional.",
-                  "effects": {"duel_boost": {"type": "physical", "amount": 0.4}, "damage_boost": 0.1}}
-        }
-    },
-    # Técnicas de Cura (novas)
-    {
-        "id": 20,
-        "name": "Toque Curativo",
-        "description": "Uma técnica básica de cura que recupera 15% do HP máximo de um aliado. Custo de energia: 20",
-        "type": "support",
-        "category": "healing",
-        "tier": "basic",
-        "level": 1,
-        "max_level": 3,
-        "energy_cost": 20,
-        "effects": {
-            "heal_amount": 0.15,
-            "heal_type": "percentage",
-            "target": "ally",
-            "turf_wars_usable": true
-        },
-        "evolution": {
-            "2": {
-                "name": "Toque Curativo Aprimorado",
-                "description": "Recupera 20% do HP máximo de um aliado. Custo de energia: 25",
-                "energy_cost": 25,
-                "effects": {
-                    "heal_amount": 0.2,
-                    "heal_type": "percentage",
-                    "target": "ally",
-                    "turf_wars_usable": true
-                }
-            },
-            "3": {
-                "name": "Toque Curativo Supremo",
-                "description": "Recupera 25% do HP máximo de um aliado e aplica regeneração de 2% por minuto por 2 minutos. Custo de energia: 30",
-                "energy_cost": 30,
-                "effects": {
-                    "heal_amount": 0.25,
-                    "heal_type": "percentage",
-                    "target": "ally",
-                    "turf_wars_usable": true,
-                    "regen_amount": 0.02,
-                    "regen_duration": 120
-                }
-            }
-        }
-    },
-    {
-        "id": 21,
-        "name": "Barreira Protetora",
-        "description": "Cria uma barreira que reduz o dano recebido por um aliado em 20% por 3 minutos. Custo de energia: 30",
-        "type": "support",
-        "category": "protection",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "energy_cost": 30,
-        "effects": {
-            "damage_reduction": 0.2,
-            "duration": 180,
-            "target": "ally",
-            "turf_wars_usable": true
-        },
-        "evolution": {
-            "2": {
-                "name": "Barreira Protetora Aprimorada",
-                "description": "Reduz o dano recebido em 25% e regenera 1% do HP por minuto por 3 minutos. Custo de energia: 35",
-                "energy_cost": 35,
-                "effects": {
-                    "damage_reduction": 0.25,
-                    "duration": 180,
-                    "target": "ally",
-                    "turf_wars_usable": true,
-                    "regen_amount": 0.01,
-                    "regen_duration": 180
-                }
-            },
-            "3": {
-                "name": "Barreira Protetora Suprema",
-                "description": "Reduz o dano recebido em 30% e regenera 2% do HP por minuto por 4 minutos. Custo de energia: 40",
-                "energy_cost": 40,
-                "effects": {
-                    "damage_reduction": 0.3,
-                    "duration": 240,
-                    "target": "ally",
-                    "turf_wars_usable": true,
-                    "regen_amount": 0.02,
-                    "regen_duration": 240
-                }
-            }
-        }
-    },
-    {
-        "id": 22,
-        "name": "Cura em Área",
-        "description": "Recupera 10% do HP máximo de todos os aliados em uma área. Custo de energia: 40",
-        "type": "support",
-        "category": "healing",
-        "tier": "advanced",
-        "level": 1,
-        "max_level": 3,
-        "energy_cost": 40,
-        "effects": {
-            "heal_amount": 0.1,
-            "heal_type": "percentage",
-            "target": "area",
-            "turf_wars_usable": true
-        },
-        "evolution": {
-            "2": {
-                "name": "Cura em Área Aprimorada",
-                "description": "Recupera 15% do HP máximo e aplica regeneração de 1% por minuto por 2 minutos em todos os aliados. Custo de energia: 45",
-                "energy_cost": 45,
-                "effects": {
-                    "heal_amount": 0.15,
-                    "heal_type": "percentage",
-                    "target": "area",
-                    "turf_wars_usable": true,
-                    "regen_amount": 0.01,
-                    "regen_duration": 120
-                }
-            },
-            "3": {
-                "name": "Cura em Área Suprema",
-                "description": "Recupera 20% do HP máximo e aplica regeneração de 2% por minuto por 3 minutos em todos os aliados. Custo de energia: 50",
-                "energy_cost": 50,
-                "effects": {
-                    "heal_amount": 0.2,
-                    "heal_type": "percentage",
-                    "target": "area",
-                    "turf_wars_usable": true,
-                    "regen_amount": 0.02,
-                    "regen_duration": 180
-                }
-            }
-        }
-    },
-    {
-        "id": 23,
-        "name": "Ressurreição",
-        "description": "Técnica exclusiva que permite reviver um aliado caído com 30% do HP máximo. Custo de energia: 100",
-        "type": "support",
-        "category": "healing",
-        "tier": "exclusive",
-        "level": 1,
-        "max_level": 1,
-        "energy_cost": 100,
-        "effects": {
-            "revive_amount": 0.3,
-            "target": "ally",
-            "turf_wars_usable": true,
-            "cooldown": 3600
-        }
-    }
-]
-
 
 class Economy(commands.Cog):
     """Cog for economy and shop commands."""

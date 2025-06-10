@@ -1,0 +1,14 @@
+{
+    "categories": {
+        "attack": "Ataque",
+        "defense": "Defesa",
+        "support": "Suporte",
+        "tactical": "Tática Especial"
+    },
+    "tiers": {
+        "basic": "Básica",
+        "advanced": "Avançada",
+        "exclusive": "Exclusiva",
+        "master": "Mestre"
+    }
+} 
