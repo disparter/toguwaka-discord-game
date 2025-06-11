@@ -22,16 +22,30 @@ def get_table(table_name: str):
     return dynamodb.Table(table_name)
 
 @handle_dynamo_error
-async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
-    """Get club data from database."""
+async def get_club(club_id: int) -> Optional[Dict[str, Any]]:
+    """Get club data from DynamoDB."""
     try:
-        response = await get_table('Clubes').get_item(
+        if not club_id:
+            logger.warning("Empty club_id provided to get_club")
+            return None
+        
+        # Ensure club_id is a string
+        club_id = str(club_id)
+        
+        # Get club data
+        response = get_table('Clubes').get_item(
             Key={
                 'PK': f'CLUB#{club_id}',
-                'SK': 'PROFILE'
+                'SK': 'INFO'
             }
         )
-        return response.get('Item')
+        
+        if 'Item' not in response:
+            logger.info(f"No club found for club_id: {club_id}")
+            return None
+        
+        return response['Item']
+        
     except Exception as e:
         logger.error(f"Error getting club {club_id}: {e}")
         return None

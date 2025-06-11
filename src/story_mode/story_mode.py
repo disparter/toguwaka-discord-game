@@ -21,6 +21,7 @@ from .club_content import ClubContentManager
 from .player_manager import PlayerManager
 from .choice_processor import ChoiceProcessor
 from .image_manager import ImageManager
+import discord
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -61,52 +62,45 @@ class StoryMode:
             logger.error(f"Error loading story data: {str(e)}")
             return {}
 
-    async def start_story(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Start the story mode for a player.
-
-        Args:
-            player_data: The player's data.
-
-        Returns:
-            The updated player data.
-        """
+    async def start_story(self, interaction: discord.Interaction) -> None:
+        """Start the story mode for a player."""
         try:
-            # Ensure player_data is a dictionary
-            if not isinstance(player_data, dict):
-                logger.error(f"Invalid player_data type: {type(player_data)}")
-                return {"error": "Invalid player data format"}
-
-            # Initialize story progress if needed
-            player_data = await self.progress_manager.initialize_story_progress(player_data)
-
-            # Get the first chapter
-            first_chapter = self._get_first_chapter()
-            if not first_chapter:
-                logger.error("No first chapter found in story data")
-                return player_data  # Return player data with initialized story progress
-
-            # Set the current chapter
-            player_data = await self.progress_manager.set_current_chapter(player_data, first_chapter)
-
-            # Load the chapter
-            chapter_data = await self._load_chapter(first_chapter)
-            if not chapter_data:
-                logger.error(f"Failed to load chapter {first_chapter}")
-                return player_data  # Return player data with current chapter set
-
-            # Process the chapter
-            await self._process_chapter(player_data, chapter_data)
-            logger.info(
-                f"start_story result: user_id={player_data.get('user_id')}, "
-                f"current_chapter={player_data.get('story_progress', {}).get('current_chapter')}, "
-                f"completed_chapters={player_data.get('story_progress', {}).get('completed_chapters')}"
+            # Get player data
+            player = await self.db.get_player(str(interaction.user.id))
+            if not player:
+                await interaction.response.send_message("Você precisa criar um personagem primeiro! Use `/criar` para começar.", ephemeral=True)
+                return
+            
+            # Get current chapter
+            story_progress = json.loads(player.get('story_progress', '{"current_chapter": "1_1_arrival"}'))
+            current_chapter = story_progress.get('current_chapter', '1_1_arrival')
+            
+            # Get chapter data
+            chapter = self.chapters.get(current_chapter)
+            if not chapter:
+                await interaction.response.send_message("Erro ao carregar o capítulo. Por favor, tente novamente mais tarde.", ephemeral=True)
+                return
+            
+            # Create chapter embed
+            embed = discord.Embed(
+                title=chapter['title'],
+                description=chapter['description'],
+                color=discord.Color.blue()
             )
-            logger.debug(f"Full start_story result: {json.dumps(player_data, default=str)[:1000]}")  # Truncate if needed
-            return player_data
+            
+            # Add chapter image if available
+            if chapter.get('image'):
+                embed.set_image(url=chapter['image'])
+            
+            # Create view with choices
+            view = StoryChoiceView(chapter['choices'], self)
+            
+            # Send chapter
+            await interaction.response.send_message(embed=embed, view=view)
+            
         except Exception as e:
-            logger.error(f"Error starting story: {str(e)}")
-            return player_data  # Return player data even on error to preserve story progress
+            logger.error(f"Error starting story: {e}")
+            await interaction.response.send_message("Ocorreu um erro ao iniciar a história. Por favor, tente novamente mais tarde.", ephemeral=True)
 
     async def _process_chapter(self, player_data: Dict[str, Any], chapter_data: Dict[str, Any]) -> None:
         """

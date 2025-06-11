@@ -32,6 +32,14 @@ class DynamoDBInventory:
     async def get_player_inventory(self, user_id: str) -> Dict[str, Any]:
         """Get player inventory from DynamoDB."""
         try:
+            if not user_id:
+                logger.warning("Empty user_id provided to get_player_inventory")
+                return {}
+            
+            # Ensure user_id is a string
+            user_id = str(user_id)
+            
+            # Get inventory data
             response = self.table.get_item(
                 Key={
                     'PK': f'PLAYER#{user_id}',
@@ -40,25 +48,23 @@ class DynamoDBInventory:
             )
             
             if 'Item' not in response:
-                # Create empty inventory if none exists
+                logger.info(f"No inventory found for player {user_id}, creating empty inventory")
+                # Create empty inventory
                 empty_inventory = {
                     'PK': f'PLAYER#{user_id}',
                     'SK': 'INVENTORY',
                     'items': {},
+                    'created_at': datetime.now().isoformat(),
                     'last_updated': datetime.now().isoformat()
                 }
                 await self.table.put_item(Item=empty_inventory)
                 return empty_inventory
             
             return response['Item']
+            
         except Exception as e:
             logger.error(f"Error getting inventory for player {user_id}: {e}")
-            return {
-                'PK': f'PLAYER#{user_id}',
-                'SK': 'INVENTORY',
-                'items': {},
-                'last_updated': datetime.now().isoformat()
-            }
+            return {}
     
     async def add_item_to_inventory(self, user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
         """Add item to player inventory."""

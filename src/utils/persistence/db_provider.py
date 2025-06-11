@@ -154,8 +154,32 @@ class DBProvider:
 
     # --- Player operations ---
     async def get_player(self, user_id: str) -> Optional[Dict[str, Any]]:
-        """Get player data from database."""
-        return await _get_player(user_id)
+        """Get player data from DynamoDB."""
+        try:
+            if not user_id:
+                logger.warning("Empty user_id provided to get_player")
+                return None
+            
+            # Ensure user_id is a string
+            user_id = str(user_id)
+            
+            # Get player data
+            response = self.PLAYERS_TABLE.get_item(
+                Key={
+                    'PK': f'PLAYER#{user_id}',
+                    'SK': 'PROFILE'
+                }
+            )
+            
+            if 'Item' not in response:
+                logger.info(f"No player found for user_id: {user_id}")
+                return None
+            
+            return response['Item']
+            
+        except Exception as e:
+            logger.error(f"Error getting player data: {e}")
+            return None
 
     async def create_player(self, user_id: str, name: str, **kwargs) -> bool:
         """Create a new player in database."""
