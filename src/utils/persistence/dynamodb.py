@@ -78,6 +78,41 @@ class DecimalEncoder(json.JSONEncoder):
             return float(o) if o % 1 else int(o)
         return super(DecimalEncoder, self).default(o)
 
+class AsyncDynamoDBTable:
+    """Async wrapper for DynamoDB table operations."""
+    def __init__(self, table):
+        self.table = table
+
+    async def get_item(self, **kwargs):
+        """Async wrapper for get_item operation."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: self.table.get_item(**kwargs))
+
+    async def put_item(self, **kwargs):
+        """Async wrapper for put_item operation."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: self.table.put_item(**kwargs))
+
+    async def update_item(self, **kwargs):
+        """Async wrapper for update_item operation."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: self.table.update_item(**kwargs))
+
+    async def delete_item(self, **kwargs):
+        """Async wrapper for delete_item operation."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: self.table.delete_item(**kwargs))
+
+    async def query(self, **kwargs):
+        """Async wrapper for query operation."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: self.table.query(**kwargs))
+
+    async def scan(self, **kwargs):
+        """Async wrapper for scan operation."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: self.table.scan(**kwargs))
+
 def get_dynamodb_client():
     """Get a DynamoDB client with proper error handling."""
     try:
@@ -114,7 +149,7 @@ def get_table(table_name):
             logger.error(f"Error accessing table {table_name}: {e}")
             raise
 
-        return table
+        return AsyncDynamoDBTable(table)
     except Exception as e:
         logger.error(f"Error getting table {table_name}: {e}")
         raise DynamoDBConnectionError(f"Failed to get table {table_name}") from e
