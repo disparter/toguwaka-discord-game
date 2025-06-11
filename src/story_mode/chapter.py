@@ -62,7 +62,61 @@ class BaseChapter(Chapter):
         Returns:
             Dictionary containing updated player data and chapter information
         """
-        raise NotImplementedError("Subclasses must implement process_choice")
+        try:
+            story_progress = player_data.get("story_progress", {})
+            current_scene_index = story_progress.get("current_scene_index", 0)
+
+            if current_scene_index >= len(self.scenes):
+                return {"error": "No more scenes to process"}
+
+            current_scene = self.scenes[current_scene_index]
+            choices = current_scene.get("choices", [])
+
+            if choice_index >= len(choices):
+                return {"error": "Invalid choice index"}
+
+            choice = choices[choice_index]
+            
+            # Handle both string and dictionary choices
+            if isinstance(choice, str):
+                # If choice is a string, create a simple dictionary with the text
+                choice = {"text": choice, "next_scene": current_scene_index + 1}
+            elif not isinstance(choice, dict):
+                return {"error": f"Invalid choice format: {type(choice)}"}
+
+            next_scene_id = choice.get("next_scene")
+
+            # Find the next scene
+            next_scene_index = None
+            for i, scene in enumerate(self.scenes):
+                if scene.get("scene_id") == next_scene_id:
+                    next_scene_index = i
+                    break
+
+            if next_scene_index is None:
+                return {"error": f"Next scene {next_scene_id} not found"}
+
+            # Update player data with choice effects
+            if "effects" in choice:
+                for effect, value in choice["effects"].items():
+                    if effect == "reputation":
+                        for npc, points in value.items():
+                            player_data["reputation"] = player_data.get("reputation", {})
+                            player_data["reputation"][npc] = player_data["reputation"].get(npc, 0) + points
+                    else:
+                        player_data[effect] = value
+
+            # Update story progress
+            story_progress["current_scene_index"] = next_scene_index
+            player_data["story_progress"] = story_progress
+
+            # Process the next scene
+            next_scene = self.scenes[next_scene_index]
+            return self._process_scene(next_scene, player_data)
+
+        except Exception as e:
+            logger.error(f"Error processing choice: {str(e)}")
+            return {"error": f"Error processing choice: {str(e)}"}
 
     def complete(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -430,65 +484,6 @@ class StoryChapter(BaseChapter):
         except Exception as e:
             logger.error(f"Error processing dialogue scene: {str(e)}")
             return {"error": f"Error processing dialogue scene: {str(e)}"}
-
-    def process_choice(self, player_data: Dict, choice_index: int) -> Dict:
-        """
-        Process a player's choice and return updated player data and chapter information.
-
-        Args:
-            player_data: The player's current data
-            choice_index: The index of the chosen option
-
-        Returns:
-            Dictionary containing updated player data and chapter information
-        """
-        try:
-            story_progress = player_data.get("story_progress", {})
-            current_scene_index = story_progress.get("current_scene_index", 0)
-
-            if current_scene_index >= len(self.scenes):
-                return {"error": "No more scenes to process"}
-
-            current_scene = self.scenes[current_scene_index]
-            choices = current_scene.get("choices", [])
-
-            if choice_index >= len(choices):
-                return {"error": "Invalid choice index"}
-
-            choice = choices[choice_index]
-            next_scene_id = choice.get("next_scene")
-
-            # Find the next scene
-            next_scene_index = None
-            for i, scene in enumerate(self.scenes):
-                if scene.get("scene_id") == next_scene_id:
-                    next_scene_index = i
-                    break
-
-            if next_scene_index is None:
-                return {"error": f"Next scene {next_scene_id} not found"}
-
-            # Update player data with choice effects
-            if "effects" in choice:
-                for effect, value in choice["effects"].items():
-                    if effect == "reputation":
-                        for npc, points in value.items():
-                            player_data["reputation"] = player_data.get("reputation", {})
-                            player_data["reputation"][npc] = player_data["reputation"].get(npc, 0) + points
-                    else:
-                        player_data[effect] = value
-
-            # Update story progress
-            story_progress["current_scene_index"] = next_scene_index
-            player_data["story_progress"] = story_progress
-
-            # Process the next scene
-            next_scene = self.scenes[next_scene_index]
-            return self._process_scene(next_scene, player_data)
-
-        except Exception as e:
-            logger.error(f"Error processing choice: {str(e)}")
-            return {"error": f"Error processing choice: {str(e)}"}
 
     def get_available_events(self, player_data: Dict) -> List[Dict]:
         """

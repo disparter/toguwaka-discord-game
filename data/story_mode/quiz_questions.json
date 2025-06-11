@@ -1,0 +1,44 @@
+[
+    {
+        "id": "1",
+        "question": "Qual é o nome da escola onde a história se passa?",
+        "answers": [
+            {
+                "id": "1",
+                "text": "Academia Tokugawa",
+                "is_correct": true
+            },
+            {
+                "id": "2",
+                "text": "Escola Shogun",
+                "is_correct": false
+            },
+            {
+                "id": "3",
+                "text": "Colégio Imperial",
+                "is_correct": false
+            }
+        ]
+    },
+    {
+        "id": "2",
+        "question": "Qual é a moeda utilizada na escola?",
+        "answers": [
+            {
+                "id": "4",
+                "text": "TUSD",
+                "is_correct": true
+            },
+            {
+                "id": "5",
+                "text": "Yen",
+                "is_correct": false
+            },
+            {
+                "id": "6",
+                "text": "Dólar",
+                "is_correct": false
+            }
+        ]
+    }
+] 

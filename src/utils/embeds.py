@@ -32,7 +32,8 @@ def create_player_embed(player: Dict[str, Any], club: Optional[Dict[str, Any]] =
     power_stat = player.get('power_stat', 10)
     reputation = player.get('reputation', 0)
     strength_level = player.get('strength_level', 1)
-    power = player.get('power', 'no_power')
+    power_name = player.get('power_name', 'Sem Poder')
+    power_description = player.get('power_description', '')
 
     # Calculate HP factor and regeneration
     hp_factor = calculate_hp_factor(hp, max_hp)
@@ -87,10 +88,13 @@ def create_player_embed(player: Dict[str, Any], club: Optional[Dict[str, Any]] =
         )
 
     # Add power info
-    if power != 'no_power':
+    if power_name != 'Sem Poder':
+        power_text = f"**{power_name}**"
+        if power_description:
+            power_text += f"\n{power_description}"
         embed.add_field(
             name="Poder",
-            value=f"**{power}**",
+            value=power_text,
             inline=True
         )
 

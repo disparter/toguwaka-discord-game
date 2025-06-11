@@ -2445,19 +2445,20 @@ class ScheduledEvents(commands.Cog):
 
             # Determine villain strength based on server activity and tier
             base_strength = 100
-            activity_multiplier = max(1.0, min(3.0, 1.0 + (activity_count / 20)))
-            tier_multiplier = tier_data['multiplier']
+            from decimal import Decimal  # Ensure import is present
+            activity_multiplier = max(Decimal('1.0'), min(Decimal('3.0'), Decimal('1.0') + Decimal(str(activity_count)) / Decimal('20')))
+            tier_multiplier = Decimal(str(tier_data['multiplier']))
 
-            villain_strength = int(base_strength * activity_multiplier * tier_multiplier)
+            villain_strength = int(Decimal(base_strength) * activity_multiplier * tier_multiplier)
 
             # Calculate rewards based on tier and strength
             base_exp_reward = 50
             base_tusd_reward = 25
             base_reputation_reward = 10
 
-            exp_reward = int(base_exp_reward * tier_multiplier)
-            tusd_reward = int(base_tusd_reward * tier_multiplier)
-            reputation_reward = int(base_reputation_reward * tier_multiplier)
+            exp_reward = int(Decimal(base_exp_reward) * tier_multiplier)
+            tusd_reward = int(Decimal(base_tusd_reward) * tier_multiplier)
+            reputation_reward = int(Decimal(base_reputation_reward) * tier_multiplier)
 
             # Create dynamic descriptions based on tier
             descriptions = {
@@ -2548,11 +2549,14 @@ class ScheduledEvents(commands.Cog):
                 from utils.database import store_event
                 store_event(
                     event_id=event_id,
+                    name=f"{tier_data['title']} {villain_name}",
+                    description=description,
                     event_type='villain',
                     channel_id=channel.id,
                     message_id=message.id,
                     start_time=now,
                     end_time=end_time,
+                    participants=[],
                     data=event_data['data'],
                     completed=False
                 )

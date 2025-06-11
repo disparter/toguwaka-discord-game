@@ -88,8 +88,20 @@ class StoryMode:
             # Update the player's story progress
             player_data["story_progress"] = result.get("player_data", {}).get("story_progress", {})
 
+            # Convert chapter data to dictionary
+            chapter_data = {
+                "id": chapter.chapter_id,
+                "title": chapter.title,
+                "description": chapter.description,
+                "type": chapter.type,
+                "phase": chapter.phase,
+                "completion_exp": chapter.completion_exp,
+                "completion_tusd": chapter.completion_tusd,
+                "scenes": chapter.scenes
+            }
+
             # Add the chapter data to the result
-            result["chapter_data"] = chapter
+            result["chapter_data"] = chapter_data
 
             return result
 
