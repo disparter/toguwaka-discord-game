@@ -181,36 +181,92 @@ class StoryProgressManager(ABC):
     from other story mode functionality.
     """
     @abstractmethod
-    def get_current_chapter(self, player_data: Dict[str, Any]) -> Optional[str]:
+    async def get_current_chapter(self, player_data: Dict[str, Any]) -> Optional[str]:
         """
         Returns the ID of the player's current chapter.
         """
         pass
     
     @abstractmethod
-    def set_current_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:
+    async def set_current_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:
         """
         Sets the player's current chapter and returns updated player data.
         """
         pass
     
     @abstractmethod
-    def complete_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:
+    async def complete_chapter(self, player_data: Dict[str, Any], chapter_id: str) -> Dict[str, Any]:
         """
         Marks a chapter as completed and returns updated player data.
         """
         pass
     
     @abstractmethod
-    def record_choice(self, player_data: Dict[str, Any], chapter_id: str, choice_key: str, choice_value: Any) -> Dict[str, Any]:
+    async def record_choice(self, player_data: Dict[str, Any], chapter_id: str, choice_key: str, choice_value: Any) -> Dict[str, Any]:
         """
         Records a player's choice and returns updated player data.
         """
         pass
     
     @abstractmethod
-    def get_completed_chapters(self, player_data: Dict[str, Any]) -> List[str]:
+    async def get_completed_chapters(self, player_data: Dict[str, Any]) -> List[str]:
         """
         Returns a list of chapter IDs completed by the player.
+        """
+        pass
+    
+    @abstractmethod
+    async def get_completed_challenge_chapters(self, player_data: Dict[str, Any]) -> List[str]:
+        """
+        Returns a list of challenge chapter IDs completed by the player.
+        """
+        pass
+    
+    @abstractmethod
+    async def get_story_choice(self, player_data: Dict[str, Any], chapter_id: str, choice_key: str) -> Optional[Any]:
+        """
+        Returns a player's choice for a specific chapter and key.
+        """
+        pass
+    
+    @abstractmethod
+    async def get_all_story_choices(self, player_data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+        """
+        Returns all story choices made by the player.
+        """
+        pass
+    
+    @abstractmethod
+    async def get_next_available_chapters(self, player_data: Dict[str, Any]) -> List[str]:
+        """
+        Returns a list of chapter IDs that are available to the player next.
+        """
+        pass
+    
+    @abstractmethod
+    async def initialize_story_progress(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Initializes story progress for a new player.
+        """
+        pass
+    
+    @abstractmethod
+    async def update_hierarchy_tier(self, player_data: Dict[str, Any], new_tier: int) -> Dict[str, Any]:
+        """
+        Updates the player's hierarchy tier and returns updated player data.
+        """
+        pass
+    
+    @abstractmethod
+    async def add_hierarchy_points(self, player_data: Dict[str, Any], points: int) -> Dict[str, Any]:
+        """
+        Adds hierarchy points to the player and updates tier if necessary.
+        """
+        pass
+    
+    @abstractmethod
+    async def save_progress(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Saves player progress to persistent storage.
         """
         pass

@@ -6,6 +6,7 @@ from .narrative_logger import get_narrative_logger
 from pathlib import Path
 import os
 from story_mode.image_manager import ImageManager
+from .interfaces import StoryProgressManager
 
 # Set up logging
 logger = logging.getLogger('tokugawa_bot')
@@ -16,17 +17,19 @@ class StoryValidator:
     This helps ensure that the narrative flow is properly tracked and errors are minimized.
     """
 
-    def __init__(self, data_dir: str = "data"):
+    def __init__(self, data_dir: str = "data", progress_manager: StoryProgressManager = None):
         """
         Initialize the story validator.
 
         Args:
             data_dir: Path to the data directory containing story mode files
+            progress_manager: The story progress manager
         """
         self.data_dir = Path(data_dir)
         self.narrative_dir = self.data_dir / "story_mode" / "narrative"
         self.chapters_dir = self.narrative_dir / "chapters"
         self.narrative_logger = get_narrative_logger()
+        self.progress_manager = progress_manager
 
     def validate_chapter_id(self, chapter_id: str) -> bool:
         """
@@ -510,6 +513,68 @@ class StoryValidator:
             
             except Exception as e:
                 results["errors"].append(f"Error checking assets in {chapter_file.name}: {e}")
+
+    async def validate_chapter_availability(self, player_data: Dict[str, Any], chapter_id: str) -> bool:
+        """
+        Validates if a chapter is available to the player.
+        """
+        # Get completed chapters
+        completed_chapters = await self.progress_manager.get_completed_chapters(player_data)
+        
+        # Get current chapter
+        current_chapter = await self.progress_manager.get_current_chapter(player_data)
+        
+        # If no current chapter, only first chapter is available
+        if not current_chapter:
+            return chapter_id == "chapter_1"
+        
+        # If chapter is already completed, it's not available
+        if chapter_id in completed_chapters:
+            return False
+        
+        # Get next available chapters
+        next_chapters = await self.progress_manager.get_next_available_chapters(player_data)
+        
+        return chapter_id in next_chapters
+    
+    async def validate_choice(self, player_data: Dict[str, Any], chapter_id: str, choice_key: str, choice_value: Any) -> bool:
+        """
+        Validates if a choice is valid for the current chapter.
+        """
+        # Get current chapter
+        current_chapter = await self.progress_manager.get_current_chapter(player_data)
+        
+        # Choice must be for current chapter
+        if chapter_id != current_chapter:
+            return False
+        
+        # Get previous choices for this chapter
+        previous_choice = await self.progress_manager.get_story_choice(player_data, chapter_id, choice_key)
+        
+        # If choice already exists, it's not valid
+        if previous_choice is not None:
+            return False
+        
+        return True
+    
+    async def validate_chapter_completion(self, player_data: Dict[str, Any], chapter_id: str) -> bool:
+        """
+        Validates if a chapter can be marked as completed.
+        """
+        # Get current chapter
+        current_chapter = await self.progress_manager.get_current_chapter(player_data)
+        
+        # Can only complete current chapter
+        if chapter_id != current_chapter:
+            return False
+        
+        # Get all choices for this chapter
+        all_choices = await self.progress_manager.get_all_story_choices(player_data)
+        chapter_choices = all_choices.get(chapter_id, {})
+        
+        # Check if all required choices are made
+        required_choices = ["name", "gender", "background"]
+        return all(choice in chapter_choices for choice in required_choices)
 
 # Singleton instance
 _story_validator = None

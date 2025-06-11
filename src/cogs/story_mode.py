@@ -4,15 +4,20 @@ import os
 from datetime import datetime
 from discord import app_commands
 from discord.ext import commands
+from typing import Dict, Any, Optional
+import json
 
 from story_mode.club_system import ClubSystem
 from story_mode.consequences import DynamicConsequencesSystem
 from story_mode.relationship_system import RelationshipSystem
 from story_mode.story_mode import StoryMode
 from story_mode.image_manager import ImageManager
+from story_mode.progress import DefaultStoryProgressManager
 from utils.embeds import create_basic_embed, create_event_embed
 from utils.json_utils import dumps as json_dumps
 from utils.persistence import db_provider
+from utils.persistence.dynamodb_story import get_story_progress, update_story_progress
+from utils.config import STORY_MODE_DIR
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -25,7 +30,8 @@ class StoryModeCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.story_mode = StoryMode()
+        self.story_mode = StoryMode(STORY_MODE_DIR)
+        self.progress_manager = DefaultStoryProgressManager()
         self.active_sessions = {}  # user_id -> session_data
         self.club_system = ClubSystem()
         self.consequences_system = DynamicConsequencesSystem()
@@ -38,77 +44,135 @@ class StoryModeCog(commands.Cog):
         """Called when the cog is loaded."""
         logger.info("StoryModeCog loaded")
 
-    @commands.command(name="historia")
+    async def _load_chapter(self, chapter_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Load chapter data from JSON file.
+        """
+        try:
+            chapter_file = os.path.join(STORY_MODE_DIR, "chapters", f"{chapter_id}.json")
+            if not os.path.exists(chapter_file):
+                logger.error(f"Chapter file not found: {chapter_file}")
+                return None
+            
+            with open(chapter_file, 'r', encoding='utf-8') as f:
+                chapter_data = json.load(f)
+            
+            return chapter_data
+        except Exception as e:
+            logger.error(f"Error loading chapter {chapter_id}: {e}")
+            return None
+
+    @commands.command(name="start_story")
     async def start_story(self, ctx):
         """
-        Regular command to start or continue the story mode.
+        Start the story mode.
         """
-        user_id = ctx.author.id
-        player_data = await db_provider.get_player(user_id)
-
-        if not player_data:
-            await ctx.send("Você precisa criar um personagem primeiro! Use /registrar")
-            return
-
-        # Start or continue the story
-        result = self.story_mode.start_story(player_data)
-        logger.info(f"start_story result: {result}")
-        logger.debug(f"start_story result type: {type(result)}")
-        logger.debug(f"chapter_data type: {type(result.get('chapter_data'))}")
-        logger.debug(f"chapter_data content: {result.get('chapter_data')}")
-
-        if "error" in result:
-            await ctx.send(f"Erro ao iniciar o modo história: {result['error']}")
-            return
-
-        if "player_data" not in result or "chapter_data" not in result:
-            await ctx.send("Erro interno: dados do modo história ausentes. Por favor, contate um administrador.")
-            logger.error(f"start_story returned incomplete result: {result}")
-            return
-
-        # Update player data in database
-        update_data = {"story_progress": json_dumps(result["player_data"]["story_progress"])}
-
-        # Also update club_id if it's in the player data
-        if "club_id" in result["player_data"]:
-            update_data["club_id"] = result["player_data"]["club_id"]
-
-        await db_provider.update_player(user_id, **update_data)
-
-        # Store session data
-        self.active_sessions[user_id] = {
-            "channel_id": ctx.channel.id,
-            "last_activity": datetime.now()
-        }
-
-        # Send chapter information
-        chapter_data = result["chapter_data"]
-        if isinstance(chapter_data, dict) and "chapter_data" in chapter_data:
-            chapter_data = chapter_data["chapter_data"]
-
-        # Handle StoryChapter object or dictionary
-        if hasattr(chapter_data, 'get_title') and hasattr(chapter_data, 'get_description'):
-            # It's a StoryChapter object
-            title = chapter_data.get_title()
-            description = chapter_data.get_description()
-        else:
-            # It's a dictionary
-            title = chapter_data['title']
-            description = chapter_data['description']
-
-        embed = create_basic_embed(
-            title=f"Capítulo: {title}",
-            description=description,
-            color=discord.Color.blue()
-        )
-        await ctx.send(embed=embed)
-
-        # Send first dialogue or choices
-        await self._send_dialogue_or_choices(ctx, chapter_data, player_data)
-
-        # Check for available events
-        if "available_events" in result and result["available_events"]:
-            await self._notify_about_events(ctx.channel, user_id, result["available_events"])
+        try:
+            # Get player data
+            player_data = {"user_id": str(ctx.author.id)}
+            
+            # Initialize story progress
+            player_data = await self.progress_manager.initialize_story_progress(player_data)
+            
+            # Get current chapter
+            current_chapter = await self.progress_manager.get_current_chapter(player_data)
+            if not current_chapter:
+                # Start with first chapter
+                current_chapter = "chapter_1"
+                player_data = await self.progress_manager.set_current_chapter(player_data, current_chapter)
+            
+            # Load chapter data
+            chapter_data = await self._load_chapter(current_chapter)
+            if not chapter_data:
+                await ctx.send("Error: Could not load chapter data.")
+                return
+            
+            # Get first scene
+            first_scene = chapter_data.get("scenes", [{}])[0]
+            scene_text = first_scene.get("text", "No text available.")
+            choices = first_scene.get("choices", [])
+            
+            # Send scene text
+            await ctx.send(scene_text)
+            
+            # Send choices if any
+            if choices:
+                choice_text = "Your choices:\n"
+                for i, choice in enumerate(choices, 1):
+                    choice_text += f"{i}. {choice['text']}\n"
+                await ctx.send(choice_text)
+            
+        except Exception as e:
+            logger.error(f"Error in start_story: {e}")
+            await ctx.send("An error occurred while starting the story.")
+    
+    @commands.command(name="continue_story")
+    async def continue_story(self, ctx):
+        """
+        Continue the story from where you left off.
+        """
+        try:
+            # Get player data
+            player_data = {"user_id": str(ctx.author.id)}
+            
+            # Get current chapter
+            current_chapter = await self.progress_manager.get_current_chapter(player_data)
+            if not current_chapter:
+                await ctx.send("You haven't started the story yet. Use !start_story to begin.")
+                return
+            
+            # Load chapter data
+            chapter_data = await self._load_chapter(current_chapter)
+            if not chapter_data:
+                await ctx.send("Error: Could not load chapter data.")
+                return
+            
+            # Get current scene
+            current_scene = chapter_data.get("scenes", [{}])[0]  # For now, just get first scene
+            scene_text = current_scene.get("text", "No text available.")
+            choices = current_scene.get("choices", [])
+            
+            # Send scene text
+            await ctx.send(scene_text)
+            
+            # Send choices if any
+            if choices:
+                choice_text = "Your choices:\n"
+                for i, choice in enumerate(choices, 1):
+                    choice_text += f"{i}. {choice['text']}\n"
+                await ctx.send(choice_text)
+            
+        except Exception as e:
+            logger.error(f"Error in continue_story: {e}")
+            await ctx.send("An error occurred while continuing the story.")
+    
+    @commands.command(name="story_progress")
+    async def story_progress(self, ctx):
+        """
+        Show your story progress.
+        """
+        try:
+            # Get player data
+            player_data = {"user_id": str(ctx.author.id)}
+            
+            # Get story progress
+            progress = await get_story_progress(player_data["user_id"])
+            if not progress:
+                await ctx.send("You haven't started the story yet. Use !start_story to begin.")
+                return
+            
+            # Format progress message
+            message = "Your Story Progress:\n"
+            message += f"Current Chapter: {progress.get('current_chapter', 'None')}\n"
+            message += f"Completed Chapters: {', '.join(progress.get('completed_chapters', []))}\n"
+            message += f"Hierarchy Tier: {progress.get('hierarchy_tier', 1)}\n"
+            message += f"Hierarchy Points: {progress.get('hierarchy_points', 0)}"
+            
+            await ctx.send(message)
+            
+        except Exception as e:
+            logger.error(f"Error in story_progress: {e}")
+            await ctx.send("An error occurred while retrieving your story progress.")
 
     @app_commands.command(name="historia", description="Inicia ou continua o modo história")
     async def slash_start_story(self, interaction: discord.Interaction):
@@ -129,8 +193,13 @@ class StoryModeCog(commands.Cog):
             return
 
         # Start or continue the story
-        result = self.story_mode.start_story(player_data)
-        logger.info(f"start_story result: {result}")
+        result = await self.story_mode.start_story(player_data)
+        logger.info(
+            f"start_story result: user_id={result.get('user_id')}, "
+            f"current_chapter={result.get('story_progress', {}).get('current_chapter')}, "
+            f"completed_chapters={result.get('story_progress', {}).get('completed_chapters')}"
+        )
+        logger.debug(f"Full start_story result: {json.dumps(result, default=str)[:1000]}")  # Truncate if needed
         logger.debug(f"start_story result type: {type(result)}")
         logger.debug(f"chapter_data type: {type(result.get('chapter_data'))}")
         logger.debug(f"chapter_data content: {result.get('chapter_data')}")
@@ -208,7 +277,7 @@ class StoryModeCog(commands.Cog):
             return
 
         # Get story status
-        status = self.story_mode.get_story_status(player_data)
+        status = await self.story_mode.get_story_status(player_data)
 
         # Create embed
         embed = create_basic_embed(
@@ -304,7 +373,7 @@ class StoryModeCog(commands.Cog):
 
         # If no character specified, show all relationships
         if not personagem:
-            status = self.story_mode.get_story_status(player_data)
+            status = await self.story_mode.get_story_status(player_data)
 
             if not status["relationships"]:
                 await interaction.followup.send("Você ainda não tem relacionamentos com personagens.", ephemeral=True)
@@ -334,7 +403,7 @@ class StoryModeCog(commands.Cog):
                                                 ephemeral=True)
                 return
 
-            result = self.story_mode.update_affinity(player_data, personagem, afinidade)
+            result = await self.story_mode.update_affinity(player_data, personagem, afinidade)
 
             if "error" in result:
                 await interaction.followup.send(f"Erro ao atualizar afinidade: {result['error']}", ephemeral=True)
@@ -367,7 +436,7 @@ class StoryModeCog(commands.Cog):
             return
 
         # If character specified but no affinity, show relationship with that character
-        status = self.story_mode.get_story_status(player_data)
+        status = await self.story_mode.get_story_status(player_data)
 
         relationship = None
         for rel in status["relationships"]:
@@ -422,7 +491,7 @@ class StoryModeCog(commands.Cog):
 
         # If no event ID specified, show available events
         if not evento_id:
-            result = self.story_mode.start_story(player_data)
+            result = await self.story_mode.start_story(player_data)
 
             if "error" in result:
                 try:
@@ -467,7 +536,7 @@ class StoryModeCog(commands.Cog):
             return
 
         # Trigger the event
-        result = self.story_mode.trigger_event(player_data, evento_id)
+        result = await self.story_mode.trigger_event(player_data, evento_id)
 
         if "error" in result:
             try:
@@ -592,7 +661,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Process the choice
-            result = self.story_mode.process_choice(player_data, choice_index)
+            result = await self.story_mode.process_choice(player_data, choice_index)
 
             if "error" in result:
                 await interaction.followup.send(f"Erro ao processar escolha: {result['error']}", ephemeral=True)
@@ -658,7 +727,7 @@ class StoryModeCog(commands.Cog):
                 return
 
             # Process the choice (continue is equivalent to choice 0)
-            result = self.story_mode.process_choice(player_data, 0)
+            result = await self.story_mode.process_choice(player_data, 0)
 
             if "error" in result:
                 await interaction.followup.send(f"Erro ao continuar: {result['error']}", ephemeral=True)

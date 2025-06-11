@@ -15,7 +15,7 @@ async def get_system_flag(flag_name: str) -> Optional[str]:
     """Get a system flag value."""
     try:
         table = get_table('SystemFlags')
-        response = table.get_item(
+        response = await table.get_item(
             Key={
                 'PK': 'SYSTEM',
                 'SK': f'FLAG#{flag_name}'

@@ -71,54 +71,37 @@ async def get_cooldown(user_id: str, command: str) -> Optional[datetime]:
         return None
 
 @handle_dynamo_error
-async def clear_expired_cooldowns(user_id: Optional[str] = None) -> int:
+async def clear_expired_cooldowns() -> int:
     """
-    Clear expired cooldowns from the database.
-    
-    Args:
-        user_id: Optional user ID to clear cooldowns for a specific user only.
-                 If None, clears all expired cooldowns.
+    Clear expired cooldowns.
     
     Returns:
-        Number of cooldowns cleared
+        Number of records cleared
     """
     try:
         table = get_table('Cooldowns')
         now = datetime.now().isoformat()
         cleared_count = 0
         
-        if user_id:
-            # Clear expired cooldowns for specific user
-            response = table.query(
-                KeyConditionExpression='PK = :pk',
-                FilterExpression='expiry_time < :now',
-                ExpressionAttributeValues={
-                    ':pk': f'PLAYER#{user_id}',
-                    ':now': now
-                }
-            )
-        else:
-            # Clear all expired cooldowns
-            response = table.scan(
-                FilterExpression='expiry_time < :now',
-                ExpressionAttributeValues={
-                    ':now': now
-                }
-            )
+        # Scan for expired records
+        response = await table.scan(
+            FilterExpression='expires_at < :now',
+            ExpressionAttributeValues={
+                ':now': now
+            }
+        )
         
-        items = response.get('Items', [])
-        for item in items:
-            table.delete_item(
+        # Delete expired records
+        for item in response.get('Items', []):
+            await table.delete_item(
                 Key={
                     'PK': item['PK'],
                     'SK': item['SK']
                 }
             )
             cleared_count += 1
-        
-        logger.info(f"Cleared {cleared_count} expired cooldowns" + (f" for user {user_id}" if user_id else ""))
+            
         return cleared_count
-        
     except Exception as e:
-        logger.error(f"Error clearing expired cooldowns: {e}")
+        logger.error(f"Error clearing expired cooldowns: {str(e)}")
         return 0 

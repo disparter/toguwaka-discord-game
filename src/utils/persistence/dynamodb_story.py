@@ -15,37 +15,33 @@ logger = get_logger('tokugawa_bot.story')
 async def get_story_progress(user_id: str) -> Dict[str, Any]:
     """Get a player's story progress."""
     try:
-        table = get_table('Historia')
-        response = table.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROGRESS'})
+        table = get_table('AcademiaTokugawa')
+        response = await table.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'STORY_PROGRESS'})
         return response.get('Item', {})
     except Exception as e:
         logger.error(f"Error getting story progress for player {user_id}: {str(e)}")
         return {}
 
 @handle_dynamo_error
-async def update_story_progress(user_id: str, chapter: str, progress: Dict[str, Any]) -> bool:
+async def update_story_progress(user_id: str, progress_data: Dict[str, Any]) -> bool:
     """Update a player's story progress."""
     try:
-        table = get_table('Historia')
+        table = get_table('AcademiaTokugawa')
         
         # Get current progress
         current_data = await get_story_progress(user_id)
-        chapters = current_data.get('chapters', {})
         
-        # Update chapter progress
-        chapters[chapter] = {
-            **chapters.get(chapter, {}),
-            **progress,
+        # Update progress
+        updated_data = {
+            'PK': f'PLAYER#{user_id}',
+            'SK': 'STORY_PROGRESS',
+            **current_data,
+            **progress_data,
             'last_updated': datetime.now().isoformat()
         }
         
         # Store updated progress
-        table.put_item(Item={
-            'PK': f'PLAYER#{user_id}',
-            'SK': 'PROGRESS',
-            'chapters': chapters,
-            'last_updated': datetime.now().isoformat()
-        })
+        await table.put_item(Item=updated_data)
         return True
     except Exception as e:
         logger.error(f"Error updating story progress for player {user_id}: {str(e)}")
@@ -81,7 +77,7 @@ async def record_story_choice(user_id: str, chapter: str, choice: Dict[str, Any]
             'timestamp': datetime.now().isoformat()
         })
         
-        return await update_story_progress(user_id, chapter, {'choices': current_choices})
+        return await update_story_progress(user_id, {'choices': current_choices})
     except Exception as e:
         logger.error(f"Error recording story choice for player {user_id}: {str(e)}")
         return False
@@ -90,11 +86,11 @@ async def record_story_choice(user_id: str, chapter: str, choice: Dict[str, Any]
 async def get_story_stats() -> Dict[str, Any]:
     """Get overall story statistics."""
     try:
-        table = get_table('Historia')
-        response = table.scan(
+        table = get_table('AcademiaTokugawa')
+        response = await table.scan(
             FilterExpression='SK = :sk',
             ExpressionAttributeValues={
-                ':sk': 'PROGRESS'
+                ':sk': 'STORY_PROGRESS'
             }
         )
         
@@ -109,19 +105,19 @@ async def get_story_stats() -> Dict[str, Any]:
         }
         
         for player in players:
-            chapters = player.get('chapters', {})
-            for chapter, data in chapters.items():
+            chapters = player.get('completed_chapters', [])
+            for chapter in chapters:
                 if chapter not in stats['chapters']:
                     stats['chapters'][chapter] = 0
                 stats['chapters'][chapter] += 1
                 
-                choices = data.get('choices', [])
-                for choice in choices:
-                    choice_id = choice.get('choice_id')
-                    if choice_id:
-                        if choice_id not in stats['choices']:
-                            stats['choices'][choice_id] = 0
-                        stats['choices'][choice_id] += 1
+            choices = player.get('story_choices', {})
+            for chapter_id, chapter_choices in choices.items():
+                for choice_key, choice_value in chapter_choices.items():
+                    choice_id = f"{chapter_id}:{choice_key}"
+                    if choice_id not in stats['choices']:
+                        stats['choices'][choice_id] = 0
+                    stats['choices'][choice_id] += 1
         
         return stats
     except Exception as e:

@@ -73,21 +73,16 @@ async def get_all_events() -> List[Dict[str, Any]]:
 
 @handle_dynamo_error
 async def get_active_events() -> List[Dict[str, Any]]:
-    """Get all active (non-completed) events from database."""
+    """Get currently active events."""
     try:
-        table = get_table('Eventos')
-        current_time = datetime.now().isoformat()
-        response = table.scan(
-            FilterExpression='begins_with(PK, :pk) AND SK = :sk AND #completed = :completed AND #end_time > :current_time',
+        table = get_table('Events')
+        now = datetime.now().isoformat()
+        
+        response = await table.scan(
+            FilterExpression='begins_with(SK, :sk) AND start_time <= :now AND end_time > :now',
             ExpressionAttributeValues={
-                ':pk': 'EVENT#',
-                ':sk': 'EVENT',
-                ':completed': False,
-                ':current_time': current_time
-            },
-            ExpressionAttributeNames={
-                '#completed': 'completed',
-                '#end_time': 'end_time'
+                ':sk': 'SCHEDULED#',
+                ':now': now
             }
         )
         return response.get('Items', [])

@@ -11,7 +11,7 @@ from .powers import PowerEvolutionSystem
 from .seasonal_events import SeasonalEventSystem
 from .companions import CompanionSystem
 from .narrative_logger import get_narrative_logger
-from .validation import get_story_validator, validate_story_data
+from .validation import get_story_validator, validate_story_data, StoryValidator
 from .arcs.arc_manager import ArcManager
 from .image_processor import ImageProcessor
 from pathlib import Path
@@ -29,15 +29,18 @@ class StoryMode:
     Main class for managing the story mode.
     """
 
-    def __init__(self):
+    def __init__(self, data_dir: str):
         """
         Initialize the story mode.
         """
+        self.data_dir = data_dir
+        self.progress_manager = DefaultStoryProgressManager()
+        self.validator = StoryValidator(self.progress_manager)
         self.story_data = self._load_story_data()
         self.image_manager = ImageManager()
         logger.info("StoryMode initialized")
 
-    def _load_story_data(self) -> Dict:
+    def _load_story_data(self) -> Dict[str, Any]:
         """
         Load the story data from the JSON file.
 
@@ -45,145 +48,196 @@ class StoryMode:
             Dict: The story data.
         """
         try:
-            with open("data/story_mode/narrative/index.json", 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            logger.error("Story data file not found")
-            return {}
-        except json.JSONDecodeError:
-            logger.error("Error decoding story data file")
+            story_file = os.path.join(self.data_dir, "story.json")
+            if not os.path.exists(story_file):
+                logger.error(f"Story file not found: {story_file}")
+                return {}
+
+            with open(story_file, "r") as f:
+                story_data = json.load(f)
+
+            return story_data
+        except Exception as e:
+            logger.error(f"Error loading story data: {str(e)}")
             return {}
 
-    def start_story(self, player_data: Dict) -> Dict:
+    async def start_story(self, player_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Start or continue the story for a player.
+        Start the story mode for a player.
 
         Args:
-            player_data (Dict): The player's data.
+            player_data: The player's data.
 
         Returns:
-            Dict: The result of starting the story.
+            The updated player data.
         """
         try:
-            # Get the current chapter ID from the player's story progress
-            story_progress = player_data.get("story_progress", {})
-            current_chapter_id = story_progress.get("current_chapter")
+            # Initialize story progress if needed
+            player_data = await self.progress_manager.initialize_story_progress(player_data)
 
-            # If no current chapter, start from the beginning
-            if not current_chapter_id:
-                current_chapter_id = "1_1_arrival"
-                story_progress["current_chapter"] = current_chapter_id
-                player_data["story_progress"] = story_progress
+            # Get the first chapter
+            first_chapter = self._get_first_chapter()
+            if not first_chapter:
+                logger.error("No first chapter found in story data")
+                return player_data
+
+            # Set the current chapter
+            player_data = await self.progress_manager.set_current_chapter(player_data, first_chapter)
 
             # Load the chapter
-            chapter = self._load_chapter(current_chapter_id)
-            if not chapter:
-                return {"error": f"Chapter {current_chapter_id} not found"}
+            chapter_data = await self._load_chapter(first_chapter)
+            if not chapter_data:
+                logger.error(f"Failed to load chapter {first_chapter}")
+                return player_data
 
             # Process the chapter
-            result = chapter.process(player_data)
-            if "error" in result:
-                return result
-
-            # Update the player's story progress
-            player_data["story_progress"] = result.get("player_data", {}).get("story_progress", {})
-
-            # Convert chapter data to dictionary
-            chapter_data = {
-                "id": chapter.chapter_id,
-                "title": chapter.title,
-                "description": chapter.description,
-                "type": chapter.type,
-                "phase": chapter.phase,
-                "completion_exp": chapter.completion_exp,
-                "completion_tusd": chapter.completion_tusd,
-                "scenes": chapter.scenes
-            }
-
-            # Add the chapter data to the result
-            result["chapter_data"] = chapter_data
-
-            return result
-
+            await self._process_chapter(player_data, chapter_data)
+            logger.info(
+                f"start_story result: user_id={player_data.get('user_id')}, "
+                f"current_chapter={player_data.get('story_progress', {}).get('current_chapter')}, "
+                f"completed_chapters={player_data.get('story_progress', {}).get('completed_chapters')}"
+            )
+            logger.debug(f"Full start_story result: {json.dumps(player_data, default=str)[:1000]}")  # Truncate if needed
+            return player_data
         except Exception as e:
             logger.error(f"Error starting story: {str(e)}")
-            return {"error": f"Error starting story: {str(e)}"}
+            return player_data
 
-    def _load_chapter(self, chapter_id: str) -> Optional[StoryChapter]:
+    async def _process_chapter(self, player_data: Dict[str, Any], chapter_data: Dict[str, Any]) -> None:
         """
-        Load a chapter from the JSON file.
+        Process a chapter.
 
         Args:
-            chapter_id (str): The ID of the chapter to load.
-
-        Returns:
-            Optional[StoryChapter]: The loaded chapter, or None if not found.
+            player_data: The player's data.
+            chapter_data: The chapter data.
         """
         try:
-            # Get the chapter path from the story data
-            chapter_path = self.story_data.get("chapters", {}).get(chapter_id, {}).get("path")
-            if not chapter_path:
-                logger.error(f"Chapter path not found for chapter {chapter_id}")
+            # Get current scene
+            current_scene = chapter_data.get("scenes", [])[0]
+            if not current_scene:
+                logger.error("No scenes found in chapter")
+                return
+
+            # Process the scene
+            await self._process_scene(player_data, current_scene)
+        except Exception as e:
+            logger.error(f"Error processing chapter: {str(e)}")
+
+    async def _process_scene(self, player_data: Dict[str, Any], scene_data: Dict[str, Any]) -> None:
+        """
+        Process a scene.
+
+        Args:
+            player_data: The player's data.
+            scene_data: The scene data.
+        """
+        try:
+            # Get scene text
+            scene_text = scene_data.get("text", "")
+            if not scene_text:
+                logger.error("No text found in scene")
+                return
+
+            # Get scene choices
+            choices = scene_data.get("choices", [])
+            if not choices:
+                logger.error("No choices found in scene")
+                return
+
+            # Record the scene text
+            for choice in choices:
+                choice_key = choice.get("key")
+                choice_value = choice.get("value")
+                if choice_key and choice_value:
+                    await self.progress_manager.record_choice(player_data, scene_data.get("id", "unknown"), choice_key, choice_value)
+        except Exception as e:
+            logger.error(f"Error processing scene: {str(e)}")
+
+    def _get_first_chapter(self) -> Optional[str]:
+        """
+        Get the first chapter ID.
+
+        Returns:
+            The first chapter ID or None if not found.
+        """
+        try:
+            chapters = self.story_data.get("chapters", {})
+            if not chapters:
+                logger.error("No chapters found in story data")
                 return None
 
-            # Load the chapter file
-            with open(chapter_path, 'r', encoding='utf-8') as f:
-                chapter_data = json.load(f)
-
-            # Create a new StoryChapter instance
-            return StoryChapter(chapter_id, chapter_data, self.image_manager)
-
-        except FileNotFoundError:
-            logger.error(f"Chapter file not found: {chapter_path}")
-            return None
-        except json.JSONDecodeError:
-            logger.error(f"Error decoding chapter file: {chapter_path}")
-            return None
+            # Get the first chapter ID
+            first_chapter = next(iter(chapters))
+            return first_chapter
         except Exception as e:
-            logger.error(f"Error loading chapter {chapter_id}: {str(e)}")
+            logger.error(f"Error getting first chapter: {str(e)}")
             return None
 
-    def process_choice(self, player_data: Dict, choice_index: int) -> Dict:
+    async def _load_chapter(self, chapter_id: str) -> Optional[Dict[str, Any]]:
         """
-        Process a player's choice in the story.
+        Load a chapter.
 
         Args:
-            player_data (Dict): The player's data.
-            choice_index (int): The index of the choice made.
+            chapter_id: The chapter ID.
 
         Returns:
-            Dict: The result of processing the choice.
+            The chapter data or None if not found.
         """
         try:
-            # Get the current chapter ID from the player's story progress
-            story_progress = player_data.get("story_progress", {})
-            current_chapter_id = story_progress.get("current_chapter")
+            chapter_file = os.path.join(self.data_dir, "chapters", f"{chapter_id}.json")
+            if not os.path.exists(chapter_file):
+                logger.error(f"Chapter file not found: {chapter_file}")
+                return None
 
-            # If no current chapter, return an error
-            if not current_chapter_id:
-                return {"error": "No current chapter found"}
+            with open(chapter_file, "r") as f:
+                chapter_data = json.load(f)
 
-            # Load the chapter
-            chapter = self._load_chapter(current_chapter_id)
-            if not chapter:
-                return {"error": f"Chapter {current_chapter_id} not found"}
+            return chapter_data
+        except Exception as e:
+            logger.error(f"Error loading chapter: {str(e)}")
+            return None
 
-            # Process the choice
-            result = chapter.process_choice(player_data, choice_index)
-            if "error" in result:
-                return result
+    async def process_choice(self, player_data: Dict[str, Any], chapter_id: str, choice_key: str, choice_value: Any) -> Dict[str, Any]:
+        """
+        Process a player's choice.
 
-            # Update the player's story progress
-            player_data["story_progress"] = result.get("player_data", {}).get("story_progress", {})
+        Args:
+            player_data: The player's data.
+            chapter_id: The ID of the chapter.
+            choice_key: The key identifying the choice.
+            choice_value: The value of the choice.
 
-            # Add the chapter data to the result
-            result["chapter_data"] = chapter
+        Returns:
+            The updated player data.
+        """
+        try:
+            # Validate choice
+            if not await self.validator.validate_choice(player_data, chapter_id, choice_key, choice_value):
+                logger.error(f"Invalid choice: {choice_key}={choice_value}")
+                return player_data
 
-            return result
+            # Record choice
+            player_data = await self.progress_manager.record_choice(player_data, chapter_id, choice_key, choice_value)
 
+            # Check if chapter is complete
+            if await self.validator.validate_chapter_completion(player_data, chapter_id):
+                player_data = await self.progress_manager.complete_chapter(player_data, chapter_id)
+
+                # Get next chapter
+                next_chapters = await self.progress_manager.get_next_available_chapters(player_data)
+                if next_chapters:
+                    next_chapter = next_chapters[0]
+                    player_data = await self.progress_manager.set_current_chapter(player_data, next_chapter)
+
+                    # Load next chapter
+                    chapter_data = await self._load_chapter(next_chapter)
+                    if chapter_data:
+                        await self._process_chapter(player_data, chapter_data)
+
+            return player_data
         except Exception as e:
             logger.error(f"Error processing choice: {str(e)}")
-            return {"error": f"Error processing choice: {str(e)}"}
+            return player_data
 
     def get_available_events(self, player_data: Dict) -> List[Dict]:
         """
