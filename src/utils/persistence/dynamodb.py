@@ -204,12 +204,12 @@ def init_db() -> bool:
             dynamodb.create_table(
                 TableName='Inventario',
                 KeySchema=[
-                    {'AttributeName': 'user_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'item_id', 'KeyType': 'RANGE'}
+                    {'AttributeName': 'PK', 'KeyType': 'HASH'},
+                    {'AttributeName': 'SK', 'KeyType': 'RANGE'}
                 ],
                 AttributeDefinitions=[
-                    {'AttributeName': 'user_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'item_id', 'AttributeType': 'S'}
+                    {'AttributeName': 'PK', 'AttributeType': 'S'},
+                    {'AttributeName': 'SK', 'AttributeType': 'S'}
                 ],
                 ProvisionedThroughput={
                     'ReadCapacityUnits': 5,
@@ -217,11 +217,9 @@ def init_db() -> bool:
                 }
             )
 
-        logger.info("DynamoDB tables initialized successfully")
         return True
-
     except Exception as e:
-        logger.error(f"Error initializing DynamoDB tables: {str(e)}")
+        logger.error(f"Error initializing database: {e}")
         return False
 
 def create_table(dynamodb, table_name):

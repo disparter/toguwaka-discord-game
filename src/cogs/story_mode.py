@@ -192,6 +192,15 @@ class StoryModeCog(commands.Cog):
             await interaction.followup.send("Você precisa criar um personagem primeiro! Use /registrar", ephemeral=True)
             return
 
+        # Ensure player_data is a dictionary
+        if isinstance(player_data, str):
+            try:
+                player_data = json.loads(player_data)
+            except json.JSONDecodeError:
+                logger.error(f"Invalid player data format for user {user_id}: {player_data}")
+                await interaction.followup.send("Erro interno: dados do jogador inválidos. Por favor, contate um administrador.", ephemeral=True)
+                return
+
         # Start or continue the story
         result = await self.story_mode.start_story(player_data)
         logger.info(

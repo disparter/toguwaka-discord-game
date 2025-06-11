@@ -26,7 +26,10 @@ async def get_player_inventory(user_id: str) -> List[Dict[str, Any]]:
     try:
         table = get_table(TABLES['inventory'])
         response = await table.get_item(
-            Key={'user_id': user_id}
+            Key={
+                'PK': f'USER#{user_id}',
+                'SK': 'INVENTORY'
+            }
         )
         
         if 'Item' not in response:
@@ -56,7 +59,10 @@ async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str,
         
         # Get current inventory
         response = await table.get_item(
-            Key={'user_id': user_id}
+            Key={
+                'PK': f'USER#{user_id}',
+                'SK': 'INVENTORY'
+            }
         )
         
         current_items = []
@@ -82,8 +88,10 @@ async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str,
         # Update inventory
         await table.put_item(
             Item={
-                'user_id': user_id,
-                'items': current_items
+                'PK': f'USER#{user_id}',
+                'SK': 'INVENTORY',
+                'items': current_items,
+                'last_updated': datetime.now().isoformat()
             }
         )
         
@@ -110,7 +118,10 @@ async def remove_item_from_inventory(user_id: str, item_id: str, quantity: int =
         
         # Get current inventory
         response = await table.get_item(
-            Key={'user_id': user_id}
+            Key={
+                'PK': f'USER#{user_id}',
+                'SK': 'INVENTORY'
+            }
         )
         
         if 'Item' not in response:
@@ -135,8 +146,10 @@ async def remove_item_from_inventory(user_id: str, item_id: str, quantity: int =
                 # Update inventory
                 await table.put_item(
                     Item={
-                        'user_id': user_id,
-                        'items': current_items
+                        'PK': f'USER#{user_id}',
+                        'SK': 'INVENTORY',
+                        'items': current_items,
+                        'last_updated': datetime.now().isoformat()
                     }
                 )
                 
@@ -165,7 +178,10 @@ async def use_item(user_id: str, item_id: str) -> bool:
         
         # Get current inventory
         response = await table.get_item(
-            Key={'user_id': user_id}
+            Key={
+                'PK': f'USER#{user_id}',
+                'SK': 'INVENTORY'
+            }
         )
         
         if 'Item' not in response:
