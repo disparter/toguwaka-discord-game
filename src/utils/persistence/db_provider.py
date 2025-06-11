@@ -218,6 +218,69 @@ class DBProvider:
             logger.error(f"Error getting all events: {str(e)}")
             return []
 
+    async def get_active_events(self) -> List[Dict[str, Any]]:
+        """Get all active (non-completed) events from database."""
+        try:
+            current_time = datetime.now().isoformat()
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk AND #completed = :completed AND #end_time > :current_time',
+                ExpressionAttributeValues={
+                    ':pk': 'EVENTOS#',
+                    ':sk': 'EVENTOS',
+                    ':completed': False,
+                    ':current_time': current_time
+                },
+                ExpressionAttributeNames={
+                    '#completed': 'completed',
+                    '#end_time': 'end_time'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting active events: {str(e)}")
+            return []
+
+    async def clear_expired_cooldowns(self) -> int:
+        """Clear all expired cooldowns from the database.
+        
+        Returns:
+            int: Number of cooldowns cleared
+        """
+        try:
+            current_time = datetime.now().isoformat()
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk AND #expiry_time < :current_time',
+                ExpressionAttributeValues={
+                    ':pk': 'COOLDOWN#',
+                    ':sk': 'COOLDOWN',
+                    ':current_time': current_time
+                },
+                ExpressionAttributeNames={
+                    '#expiry_time': 'expiry_time'
+                }
+            )
+            
+            expired_cooldowns = response.get('Items', [])
+            cleared_count = 0
+            
+            for cooldown in expired_cooldowns:
+                try:
+                    self.MAIN_TABLE.delete_item(
+                        Key={
+                            'PK': cooldown['PK'],
+                            'SK': cooldown['SK']
+                        }
+                    )
+                    cleared_count += 1
+                except Exception as e:
+                    logger.error(f"Error deleting expired cooldown: {str(e)}")
+                    continue
+            
+            return cleared_count
+        except Exception as e:
+            logger.error(f"Error clearing expired cooldowns: {str(e)}")
+            return 0
+
     # --- Item operations ---
     async def get_item(self, item_id: str) -> Optional[Dict[str, Any]]:
         """Get item data from database."""
