@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 import logging
 from utils.persistence.db_provider import db_provider
+from utils.persistence.data_migration import data_migration
 
 # Set up logging
 logging.basicConfig(
@@ -180,6 +181,25 @@ async def on_ready():
         logger.error(f"Exception args: {e.args}")
         logger.warning("Continuing bot execution despite database initialization error")
 
+    # Check if migration has been completed
+    migration_completed = await db_provider.get_system_flag('migration_completed')
+    if not migration_completed:
+        try:
+            logger.info("Starting data migration process...")
+            migration_success = await data_migration.migrate_data()
+            if migration_success:
+                logger.info("Data migration completed successfully")
+                # Set migration flag
+                await db_provider.set_system_flag('migration_completed', 'true')
+            else:
+                logger.error("Data migration failed")
+        except Exception as e:
+            logger.error(f"Error during data migration: {e}")
+            logger.error(f"Exception type: {type(e).__name__}")
+            logger.error(f"Exception args: {e.args}")
+    else:
+        logger.info("Data migration already completed, skipping")
+
     # Try to sync data if needed (only if database initialization failed)
     if not db_initialized:
         try:
@@ -192,7 +212,6 @@ async def on_ready():
             logger.error(f"Error syncing data to DynamoDB: {e}")
             logger.error(f"Exception type: {type(e).__name__}")
             logger.warning("Continuing bot execution despite DynamoDB sync error")
-
 
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:

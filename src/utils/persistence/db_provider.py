@@ -109,7 +109,18 @@ class DBProvider:
             expr_attr_names = {}
 
             for key, value in kwargs.items():
-                if key in current_player or key in ['level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma', 'power_stat', 'reputation', 'hp', 'max_hp', 'strength_level']:
+                if key in current_player or key in ['level', 'exp', 'tusd', 'club_id', 'dexterity', 'intellect', 'charisma', 'power_stat', 'reputation', 'hp', 'max_hp', 'strength_level', 'story_progress']:
+                    # Special handling for story_progress to ensure it's serialized
+                    if key == 'story_progress' and isinstance(value, dict):
+                        # Convert any non-serializable objects to their string representation
+                        serialized_progress = {}
+                        for k, v in value.items():
+                            if isinstance(v, (list, dict)):
+                                serialized_progress[k] = v
+                            else:
+                                serialized_progress[k] = str(v)
+                        value = serialized_progress
+                    
                     update_expr += f"#{key} = :{key}, "
                     expr_attr_values[f":{key}"] = value
                     expr_attr_names[f"#{key}"] = key
