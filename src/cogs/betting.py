@@ -309,240 +309,225 @@ class BettingCog(commands.Cog):
     async def slash_bet(self, interaction: discord.Interaction, tipo: str, id: str, valor: int):
         """Place a bet on a duel or event."""
         try:
-            # Check if user has enough money
-            player_data = await db_provider.get_player(str(interaction.user.id))
-            if not player_data:
-                await interaction.response.send_message("Você precisa criar um personagem primeiro!", ephemeral=True)
+            # Check if user has enough funds
+            player = await db_provider.get_player(str(interaction.user.id))
+            if not player or player.get('coins', 0) < valor:
+                await interaction.response.send_message("Você não tem moedas suficientes para fazer esta aposta.", ephemeral=True)
                 return
             
-            if player_data.get('money', 0) < valor:
-                await interaction.response.send_message("Você não tem dinheiro suficiente para fazer essa aposta!", ephemeral=True)
-                return
-            
-            # Handle different bet types
-            if tipo.lower() == "duelo":
-                # Get duel data
-                duel_data = await db_provider.get_duel(id)
-                if not duel_data:
-                    await interaction.response.send_message("Duelo não encontrado!", ephemeral=True)
+            # Get duel or event data
+            if tipo.lower() == 'duelo':
+                duel = await db_provider.get_event(id)
+                if not duel or duel.get('type') != 'duel':
+                    await interaction.response.send_message("Duelo não encontrado.", ephemeral=True)
                     return
-                
-                # Check if duel is still open for bets
-                if datetime.fromisoformat(duel_data['end_time']) < datetime.now():
-                    await interaction.response.send_message("Este duelo já está fechado para apostas!", ephemeral=True)
-                    return
-                
-                # Place bet
-                success = await db_provider.place_bet(
-                    user_id=str(interaction.user.id),
-                    bet_type="duel",
-                    target_id=id,
-                    amount=valor
-                )
-                
-                if success:
-                    await interaction.response.send_message(f"Aposta de {valor} moedas realizada com sucesso!", ephemeral=True)
-                else:
-                    await interaction.response.send_message("Erro ao realizar aposta. Tente novamente mais tarde.", ephemeral=True)
-            
-            elif tipo.lower() == "evento":
-                # Get event data
-                event_data = await db_provider.get_event(id)
-                if not event_data:
-                    await interaction.response.send_message("Evento não encontrado!", ephemeral=True)
-                    return
-                
-                # Check if event is still open for bets
-                if datetime.fromisoformat(event_data['end_time']) < datetime.now():
-                    await interaction.response.send_message("Este evento já está fechado para apostas!", ephemeral=True)
-                    return
-                
-                # Place bet
-                success = await db_provider.place_bet(
-                    user_id=str(interaction.user.id),
-                    bet_type="event",
-                    target_id=id,
-                    amount=valor
-                )
-                
-                if success:
-                    await interaction.response.send_message(f"Aposta de {valor} moedas realizada com sucesso!", ephemeral=True)
-                else:
-                    await interaction.response.send_message("Erro ao realizar aposta. Tente novamente mais tarde.", ephemeral=True)
-            
             else:
-                await interaction.response.send_message("Tipo de aposta inválido! Use 'duelo' ou 'evento'.", ephemeral=True)
-        
+                event = await db_provider.get_event(id)
+                if not event:
+                    await interaction.response.send_message("Evento não encontrado.", ephemeral=True)
+                    return
+            
+            # Place bet
+            bet_data = {
+                'user_id': str(interaction.user.id),
+                'type': tipo,
+                'target_id': id,
+                'amount': valor,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            await db_provider.store_event(
+                f"BET#{interaction.user.id}#{id}",
+                f"Aposta de {interaction.user.name}",
+                f"Aposta de {valor} moedas em {tipo} {id}",
+                'bet',
+                str(interaction.channel_id),
+                None,
+                datetime.now(),
+                datetime.now() + timedelta(days=7),
+                [str(interaction.user.id)],
+                bet_data
+            )
+            
+            # Deduct coins
+            player['coins'] -= valor
+            await db_provider.update_player(str(interaction.user.id), **player)
+            
+            await interaction.response.send_message(f"Aposta de {valor} moedas realizada com sucesso!", ephemeral=True)
+            
         except Exception as e:
             logger.error(f"Error in slash_bet: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao processar sua aposta. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message("Ocorreu um erro ao processar sua aposta. Por favor, tente novamente.", ephemeral=True)
     
-    @app_commands.command(name="apostas", description="Veja suas apostas ativas")
+    @app_commands.command(name="minhas_apostas", description="Veja suas apostas ativas")
     async def slash_my_bets(self, interaction: discord.Interaction):
-        """Show active bets."""
+        """Show active bets for the user."""
         try:
-            # Get user's active bets
-            bets = await db_provider.get_active_bets(str(interaction.user.id))
-            if not bets:
-                await interaction.response.send_message("Você não tem apostas ativas!", ephemeral=True)
+            # Get user's bets
+            bets = await db_provider.get_all_events()
+            user_bets = [bet for bet in bets if bet.get('type') == 'bet' and str(interaction.user.id) in bet.get('participants', [])]
+            
+            if not user_bets:
+                await interaction.response.send_message("Você não tem apostas ativas.", ephemeral=True)
                 return
             
             # Create embed
             embed = discord.Embed(
-                title="🎲 Suas Apostas Ativas",
+                title="Suas Apostas Ativas",
                 color=discord.Color.blue()
             )
             
-            for bet in bets:
-                if bet['type'] == 'duel':
-                    duel_data = await db_provider.get_duel(bet['target_id'])
-                    if duel_data:
-                        embed.add_field(
-                            name=f"Duelo: {duel_data['name']}",
-                            value=f"Valor: {bet['amount']} moedas\nStatus: {duel_data['status']}",
-                            inline=False
-                        )
-                elif bet['type'] == 'event':
-                    event_data = await db_provider.get_event(bet['target_id'])
-                    if event_data:
-                        embed.add_field(
-                            name=f"Evento: {event_data['name']}",
-                            value=f"Valor: {bet['amount']} moedas\nStatus: {event_data['status']}",
-                            inline=False
-                        )
+            for bet in user_bets:
+                bet_data = bet.get('data', {})
+                embed.add_field(
+                    name=f"Aposta em {bet_data.get('type', 'Desconhecido')} {bet_data.get('target_id', 'N/A')}",
+                    value=f"Valor: {bet_data.get('amount', 0)} moedas",
+                    inline=False
+                )
             
             await interaction.response.send_message(embed=embed, ephemeral=True)
-        
+            
         except Exception as e:
             logger.error(f"Error in slash_my_bets: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao buscar suas apostas. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message("Ocorreu um erro ao buscar suas apostas. Por favor, tente novamente.", ephemeral=True)
     
     @app_commands.command(name="ranking_apostas", description="Veja o ranking de apostadores")
     async def slash_betting_ranking(self, interaction: discord.Interaction):
         """Show betting ranking."""
         try:
-            # Get betting ranking
-            ranking = await db_provider.get_betting_ranking()
-            if not ranking:
-                await interaction.response.send_message("Não há dados de apostas disponíveis!", ephemeral=True)
-                return
+            # Get all bets
+            bets = await db_provider.get_all_events()
+            betting_stats = {}
+            
+            for bet in bets:
+                if bet.get('type') == 'bet':
+                    user_id = bet.get('participants', [None])[0]
+                    if user_id:
+                        if user_id not in betting_stats:
+                            betting_stats[user_id] = {'total_bets': 0, 'total_amount': 0}
+                        betting_stats[user_id]['total_bets'] += 1
+                        betting_stats[user_id]['total_amount'] += bet.get('data', {}).get('amount', 0)
+            
+            # Sort by total amount
+            sorted_stats = sorted(betting_stats.items(), key=lambda x: x[1]['total_amount'], reverse=True)
             
             # Create embed
             embed = discord.Embed(
-                title="🏆 Ranking de Apostadores",
+                title="Ranking de Apostadores",
                 color=discord.Color.gold()
             )
             
-            for i, player in enumerate(ranking[:10], 1):
+            for i, (user_id, stats) in enumerate(sorted_stats[:10], 1):
+                user = await self.bot.fetch_user(int(user_id))
                 embed.add_field(
-                    name=f"{i}. {player['name']}",
-                    value=f"Ganhos: {player['total_winnings']} moedas\nApostas: {player['total_bets']}",
+                    name=f"{i}. {user.name}",
+                    value=f"Total apostado: {stats['total_amount']} moedas\nApostas: {stats['total_bets']}",
                     inline=False
                 )
             
             await interaction.response.send_message(embed=embed)
-        
+            
         except Exception as e:
             logger.error(f"Error in slash_betting_ranking: {e}")
-            await interaction.response.send_message("Ocorreu um erro ao buscar o ranking. Por favor, tente novamente mais tarde.", ephemeral=True)
+            await interaction.response.send_message("Ocorreu um erro ao buscar o ranking. Por favor, tente novamente.", ephemeral=True)
     
     async def handle_duel_completion(self, duel_id: str, winner_id: str):
-        """Handle duel completion and pay out bets."""
+        """Handle duel completion and distribute winnings."""
         try:
-            # Get duel data
-            duel_data = await db_provider.get_duel(duel_id)
-            if not duel_data:
-                logger.error(f"Duel {duel_id} not found")
-                return
-            
             # Get all bets for this duel
-            bets = await db_provider.get_bets_for_target(duel_id)
-            if not bets:
-                logger.info(f"No bets found for duel {duel_id}")
-                return
+            bets = await db_provider.get_all_events()
+            duel_bets = [bet for bet in bets if bet.get('type') == 'bet' and bet.get('data', {}).get('target_id') == duel_id]
             
-            # Calculate total pot and winning bets
-            total_pot = sum(bet['amount'] for bet in bets)
-            winning_bets = [bet for bet in bets if bet['user_id'] == winner_id]
+            total_pot = sum(bet.get('data', {}).get('amount', 0) for bet in duel_bets)
+            winning_bets = [bet for bet in duel_bets if bet.get('data', {}).get('user_id') == winner_id]
             
-            if not winning_bets:
-                logger.info(f"No winning bets for duel {duel_id}")
-                return
-            
-            # Calculate winnings per bet
-            winnings_per_bet = total_pot / len(winning_bets)
-            
-            # Pay out winners
-            for bet in winning_bets:
-                await db_provider.update_player_money(
-                    bet['user_id'],
-                    winnings_per_bet
-                )
+            if winning_bets:
+                # Calculate winnings
+                winning_amount = total_pot // len(winning_bets)
                 
-                # Notify winner
-                user = self.bot.get_user(int(bet['user_id']))
-                if user:
-                    try:
-                        await user.send(f"Você ganhou {winnings_per_bet} moedas na aposta do duelo {duel_data['name']}!")
-                    except:
-                        logger.error(f"Could not send DM to user {bet['user_id']}")
+                # Distribute winnings
+                for bet in winning_bets:
+                    user_id = bet.get('data', {}).get('user_id')
+                    player = await db_provider.get_player(user_id)
+                    if player:
+                        player['coins'] = player.get('coins', 0) + winning_amount
+                        await db_provider.update_player(user_id, **player)
+                        
+                        # Notify user
+                        try:
+                            user = await self.bot.fetch_user(int(user_id))
+                            await user.send(f"Você ganhou {winning_amount} moedas na aposta do duelo {duel_id}!")
+                        except:
+                            pass
             
             # Mark bets as completed
-            await db_provider.complete_bets_for_target(duel_id)
+            for bet in duel_bets:
+                bet['completed'] = True
+                await db_provider.store_event(
+                    bet['PK'].split('#')[1],
+                    bet['name'],
+                    bet['description'],
+                    bet['type'],
+                    bet['channel_id'],
+                    bet['message_id'],
+                    datetime.fromisoformat(bet['start_time']),
+                    datetime.fromisoformat(bet['end_time']),
+                    bet['participants'],
+                    bet['data'],
+                    True
+                )
             
-            logger.info(f"Successfully paid out bets for duel {duel_id}")
-        
         except Exception as e:
-            logger.error(f"Error handling duel completion: {e}")
+            logger.error(f"Error in handle_duel_completion: {e}")
     
     async def handle_event_completion(self, event_id: str, winners: list):
-        """Handle event completion and pay out bets."""
+        """Handle event completion and distribute winnings."""
         try:
-            # Get event data
-            event_data = await db_provider.get_event(event_id)
-            if not event_data:
-                logger.error(f"Event {event_id} not found")
-                return
-            
             # Get all bets for this event
-            bets = await db_provider.get_bets_for_target(event_id)
-            if not bets:
-                logger.info(f"No bets found for event {event_id}")
-                return
+            bets = await db_provider.get_all_events()
+            event_bets = [bet for bet in bets if bet.get('type') == 'bet' and bet.get('data', {}).get('target_id') == event_id]
             
-            # Calculate total pot and winning bets
-            total_pot = sum(bet['amount'] for bet in bets)
-            winning_bets = [bet for bet in bets if bet['user_id'] in winners]
+            total_pot = sum(bet.get('data', {}).get('amount', 0) for bet in event_bets)
+            winning_bets = [bet for bet in event_bets if bet.get('data', {}).get('user_id') in winners]
             
-            if not winning_bets:
-                logger.info(f"No winning bets for event {event_id}")
-                return
-            
-            # Calculate winnings per bet
-            winnings_per_bet = total_pot / len(winning_bets)
-            
-            # Pay out winners
-            for bet in winning_bets:
-                await db_provider.update_player_money(
-                    bet['user_id'],
-                    winnings_per_bet
-                )
+            if winning_bets:
+                # Calculate winnings
+                winning_amount = total_pot // len(winning_bets)
                 
-                # Notify winner
-                user = self.bot.get_user(int(bet['user_id']))
-                if user:
-                    try:
-                        await user.send(f"Você ganhou {winnings_per_bet} moedas na aposta do evento {event_data['name']}!")
-                    except:
-                        logger.error(f"Could not send DM to user {bet['user_id']}")
+                # Distribute winnings
+                for bet in winning_bets:
+                    user_id = bet.get('data', {}).get('user_id')
+                    player = await db_provider.get_player(user_id)
+                    if player:
+                        player['coins'] = player.get('coins', 0) + winning_amount
+                        await db_provider.update_player(user_id, **player)
+                        
+                        # Notify user
+                        try:
+                            user = await self.bot.fetch_user(int(user_id))
+                            await user.send(f"Você ganhou {winning_amount} moedas na aposta do evento {event_id}!")
+                        except:
+                            pass
             
             # Mark bets as completed
-            await db_provider.complete_bets_for_target(event_id)
+            for bet in event_bets:
+                bet['completed'] = True
+                await db_provider.store_event(
+                    bet['PK'].split('#')[1],
+                    bet['name'],
+                    bet['description'],
+                    bet['type'],
+                    bet['channel_id'],
+                    bet['message_id'],
+                    datetime.fromisoformat(bet['start_time']),
+                    datetime.fromisoformat(bet['end_time']),
+                    bet['participants'],
+                    bet['data'],
+                    True
+                )
             
-            logger.info(f"Successfully paid out bets for event {event_id}")
-        
         except Exception as e:
-            logger.error(f"Error handling event completion: {e}")
+            logger.error(f"Error in handle_event_completion: {e}")
 
 
 async def setup(bot):

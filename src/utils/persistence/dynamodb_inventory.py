@@ -22,71 +22,102 @@ def get_table(table_name: str):
     """Get DynamoDB table."""
     return dynamodb.Table(table_name)
 
-@handle_dynamo_error
-async def get_player_inventory(user_id: str) -> Dict[str, Any]:
-    """Get player inventory from database."""
-    try:
-        table = get_table('Inventario')
-        response = await table.get_item(
-            Key={
-                'PK': f'PLAYER#{user_id}',
-                'SK': 'INVENTORY'
-            }
-        )
-        return response.get('Item', {}).get('items', {})
-    except Exception as e:
-        logger.error(f"Error getting inventory for player {user_id}: {e}")
-        return {}
-
-@handle_dynamo_error
-async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
-    """Add item to player inventory."""
-    try:
-        # Get current inventory
-        current_inventory = await get_player_inventory(user_id)
-        
-        # Add new item
-        current_inventory[item_id] = item_data
-        
-        # Update inventory
-        table = get_table('Inventario')
-        await table.put_item(
-            Item={
-                'PK': f'PLAYER#{user_id}',
-                'SK': 'INVENTORY',
-                'items': current_inventory
-            }
-        )
-        return True
-    except Exception as e:
-        logger.error(f"Error adding item to inventory for player {user_id}: {e}")
-        return False
-
-@handle_dynamo_error
-async def remove_item_from_inventory(user_id: str, item_id: str) -> bool:
-    """Remove item from player inventory."""
-    try:
-        # Get current inventory
-        current_inventory = await get_player_inventory(user_id)
-        
-        # Remove item
-        if item_id in current_inventory:
-            del current_inventory[item_id]
-            
-            # Update inventory
-            table = get_table('Inventario')
-            await table.put_item(
-                Item={
+class DynamoDBInventory:
+    """Class for handling inventory data in DynamoDB."""
+    
+    def __init__(self):
+        self.dynamodb = boto3.resource('dynamodb')
+        self.table = self.dynamodb.Table('Inventario')
+    
+    async def get_player_inventory(self, user_id: str) -> Dict[str, Any]:
+        """Get player inventory from DynamoDB."""
+        try:
+            response = self.table.get_item(
+                Key={
                     'PK': f'PLAYER#{user_id}',
-                    'SK': 'INVENTORY',
-                    'items': current_inventory
+                    'SK': 'INVENTORY'
                 }
             )
+            
+            if 'Item' not in response:
+                # Create empty inventory if none exists
+                empty_inventory = {
+                    'PK': f'PLAYER#{user_id}',
+                    'SK': 'INVENTORY',
+                    'items': {},
+                    'last_updated': datetime.now().isoformat()
+                }
+                await self.table.put_item(Item=empty_inventory)
+                return empty_inventory
+            
+            return response['Item']
+        except Exception as e:
+            logger.error(f"Error getting inventory for player {user_id}: {e}")
+            return {
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'INVENTORY',
+                'items': {},
+                'last_updated': datetime.now().isoformat()
+            }
+    
+    async def add_item_to_inventory(self, user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
+        """Add item to player inventory."""
+        try:
+            # Get current inventory
+            inventory = await self.get_player_inventory(user_id)
+            
+            # Update items
+            items = inventory.get('items', {})
+            if item_id in items:
+                # Update quantity if item exists
+                current_quantity = items[item_id].get('quantity', 0)
+                items[item_id]['quantity'] = current_quantity + item_data.get('quantity', 1)
+            else:
+                # Add new item
+                items[item_id] = {
+                    'id': item_id,
+                    'quantity': item_data.get('quantity', 1),
+                    'added_at': datetime.now().isoformat(),
+                    **item_data
+                }
+            
+            # Update inventory
+            inventory['items'] = items
+            inventory['last_updated'] = datetime.now().isoformat()
+            
+            await self.table.put_item(Item=inventory)
             return True
-        return False
-    except Exception as e:
-        logger.error(f"Error removing item from inventory for player {user_id}: {e}")
-        return False
+        except Exception as e:
+            logger.error(f"Error adding item to inventory for player {user_id}: {e}")
+            return False
+    
+    async def remove_item_from_inventory(self, user_id: str, item_id: str) -> bool:
+        """Remove item from player inventory."""
+        try:
+            # Get current inventory
+            inventory = await self.get_player_inventory(user_id)
+            
+            # Update items
+            items = inventory.get('items', {})
+            if item_id in items:
+                del items[item_id]
+                inventory['items'] = items
+                inventory['last_updated'] = datetime.now().isoformat()
+                
+                await self.table.put_item(Item=inventory)
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error removing item from inventory for player {user_id}: {e}")
+            return False
+
+# Create singleton instance
+dynamodb_inventory = DynamoDBInventory()
+
+# Export functions
+get_player_inventory = dynamodb_inventory.get_player_inventory
+add_item_to_inventory = dynamodb_inventory.add_item_to_inventory
+remove_item_from_inventory = dynamodb_inventory.remove_item_from_inventory
 
 @handle_dynamo_error
 async def use_item(user_id: str, item_id: str) -> bool:
