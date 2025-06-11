@@ -21,12 +21,17 @@ from utils.persistence.dynamodb import (
     handle_dynamo_error,
     DynamoDBOperationError
 )
+from botocore.exceptions import ClientError
 
 logger = get_logger('tokugawa_bot.players')
 
 @handle_dynamo_error
 async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
     """Get player data from DynamoDB."""
+    if not user_id:
+        logger.warning("Attempted to get player with empty user_id")
+        return None
+
     try:
         table = get_table(TABLES['players'])
         response = await table.get_item(
@@ -37,6 +42,7 @@ async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
         )
         
         if 'Item' not in response:
+            logger.info(f"No player found for user_id: {user_id}")
             return None
             
         item = response['Item']
@@ -69,9 +75,17 @@ async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
                     'quantity': 1
                 }
                 
+        # Check for missing attributes
+        missing_attrs = []
+        required_attrs = ['power_stat', 'dexterity', 'intellect', 'charisma', 'exp', 'hp', 'tusd', 'level', 'reputation']
+        for attr in required_attrs:
+            if attr not in item:
+                missing_attrs.append(attr)
+                item[attr] = 0  # Set default value
+                
         # If any attributes were missing, update the player record
         if missing_attrs:
-            logger.info(f"Updating player {user_id} with missing attributes")
+            logger.info(f"Updating player {user_id} with missing attributes: {missing_attrs}")
             update_item = {
                 'PK': f"PLAYER#{user_id}",
                 'SK': 'PROFILE',
@@ -83,13 +97,30 @@ async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
                     update_item[k] = decimal.Decimal(str(v))
                 elif k == 'inventory' and isinstance(v, dict):
                     update_item[k] = json.dumps(v)
-            await table.put_item(Item=update_item)
-            logger.info(f"Successfully updated player {user_id} with missing attributes")
+            try:
+                await table.put_item(Item=update_item)
+                logger.info(f"Successfully updated player {user_id} with missing attributes")
+            except Exception as e:
+                logger.error(f"Failed to update player {user_id} with missing attributes: {e}")
+                # Continue with the current item data even if update fails
             
-        logger.info(f"Final player data after normalization: {item}")
+        logger.debug(f"Retrieved player data for {user_id}")
         return item
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        if error_code == 'ProvisionedThroughputExceededException':
+            logger.warning(f"Provisioned throughput exceeded for player {user_id}")
+            # Return None to allow retry at a higher level
+            return None
+        elif error_code == 'ThrottlingException':
+            logger.warning(f"Request throttled for player {user_id}")
+            # Return None to allow retry at a higher level
+            return None
+        else:
+            logger.error(f"DynamoDB error getting player {user_id}: {e}")
+            raise DynamoDBOperationError(f"Failed to get player: {e}") from e
     except Exception as e:
-        logger.error(f"Error getting player: {e}")
+        logger.error(f"Unexpected error getting player {user_id}: {e}")
         raise DynamoDBOperationError(f"Failed to get player: {e}") from e
 
 @handle_dynamo_error

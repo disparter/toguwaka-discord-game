@@ -14,8 +14,26 @@ from datetime import datetime, time
 import decimal
 from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
 from typing import Dict, Any, Optional, List
+from botocore.config import Config
 
 logger = logging.getLogger('tokugawa_bot')
+
+# DynamoDB configuration
+DYNAMODB_CONFIG = Config(
+    retries = dict(
+        max_attempts = 3,  # Maximum number of retry attempts
+        mode = 'adaptive'  # Use adaptive retry mode
+    ),
+    connect_timeout = 5,  # Connection timeout in seconds
+    read_timeout = 10,    # Read timeout in seconds
+    max_pool_connections = 50  # Maximum number of connections in the connection pool
+)
+
+# Initialize DynamoDB client with configuration
+dynamodb = boto3.resource('dynamodb', 
+    region_name=os.getenv('AWS_REGION', 'us-east-1'),
+    config=DYNAMODB_CONFIG
+)
 
 # DynamoDB table names
 TABLES = {
@@ -30,7 +48,9 @@ TABLES = {
     'grades': os.environ.get('DYNAMODB_GRADES_TABLE', 'Notas'),
     'votes': os.environ.get('DYNAMODB_VOTES_TABLE', 'Votos'),
     'quiz_questions': os.environ.get('DYNAMODB_QUIZ_QUESTIONS_TABLE', 'QuizQuestions'),
-    'quiz_answers': os.environ.get('DYNAMODB_QUIZ_ANSWERS_TABLE', 'QuizAnswers')
+    'quiz_answers': os.environ.get('DYNAMODB_QUIZ_ANSWERS_TABLE', 'QuizAnswers'),
+    'cooldowns': os.environ.get('DYNAMODB_COOLDOWNS_TABLE', 'Cooldowns'),
+    'system_flags': os.environ.get('DYNAMODB_SYSTEM_FLAGS_TABLE', 'SystemFlags')
 }
 
 # AWS region

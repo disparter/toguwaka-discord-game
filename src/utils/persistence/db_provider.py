@@ -371,7 +371,6 @@ async def get_player_async(user_id: str) -> Optional[Dict[str, Any]]:
 
 def get_player(user_id: str) -> Optional[Dict[str, Any]]:
     """Get player data from database (sync version)."""
-    # Create an event loop if one doesn't exist
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -383,17 +382,23 @@ def get_player(user_id: str) -> Optional[Dict[str, Any]]:
         # If we're already in an event loop, use run_coroutine_threadsafe
         future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
         try:
-            # Increased timeout to 30 seconds to prevent timeout errors
-            return future.result(timeout=30)
+            # First attempt with 10 second timeout
+            return future.result(timeout=10)
         except concurrent.futures.TimeoutError:
-            logger.error(f"Timeout waiting for get_player({user_id})")
-            # Try one more time with a longer timeout
+            logger.warning(f"First timeout waiting for get_player({user_id}), retrying...")
+            # Second attempt with 20 second timeout
             try:
                 future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
-                return future.result(timeout=60)
+                return future.result(timeout=20)
             except concurrent.futures.TimeoutError:
-                logger.error(f"Second timeout waiting for get_player({user_id})")
-                return None
+                logger.error(f"Second timeout waiting for get_player({user_id}), final attempt...")
+                # Final attempt with 30 second timeout
+                try:
+                    future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
+                    return future.result(timeout=30)
+                except concurrent.futures.TimeoutError:
+                    logger.error(f"Final timeout waiting for get_player({user_id})")
+                    return None
     else:
         # Otherwise, use run_until_complete
         return loop.run_until_complete(db_provider.get_player(user_id))
