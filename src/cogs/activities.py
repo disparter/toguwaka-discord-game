@@ -560,14 +560,31 @@ class Activities(commands.Cog):
 
             # Set timeout handler
             async def on_timeout():
-                # Disable buttons
-                for child in view.children:
-                    child.disabled = True
                 try:
-                    await message.edit(view=view)
-                    await channel.send(f"{opponent.mention} não respondeu ao desafio a tempo.")
-                except:
-                    pass
+                    # Disable buttons
+                    for child in view.children:
+                        child.disabled = True
+                    
+                    # Try to edit the message first
+                    try:
+                        await message.edit(view=view)
+                    except discord.NotFound:
+                        logger.warning(f"Message not found when handling duel timeout for user {interaction.user.id}")
+                    except discord.HTTPException as e:
+                        logger.error(f"Failed to edit message during duel timeout: {e}")
+                    
+                    # Try to send timeout message
+                    try:
+                        await channel.send(f"{opponent.mention} não respondeu ao desafio a tempo.")
+                    except discord.HTTPException as e:
+                        logger.error(f"Failed to send timeout message: {e}")
+                    
+                    # Clean up active duel if it exists
+                    if interaction.user.id in self.active_duels:
+                        del self.active_duels[interaction.user.id]
+                        
+                except Exception as e:
+                    logger.error(f"Error in duel timeout handler: {e}")
 
             view.on_timeout = on_timeout
             return True

@@ -31,6 +31,7 @@ class BaseChapter(Chapter):
         self.dialogues = chapter_data.get("dialogues", [])
         self.choices = chapter_data.get("choices", [])
         self.next_chapter = chapter_data.get("next_chapter")
+        self.data = chapter_data  # Store the full chapter data
         self._parse_chapter_id()
 
     def to_dict(self) -> Dict[str, Any]:
@@ -109,7 +110,7 @@ class BaseChapter(Chapter):
         else:
             # If we're past the dialogues, check if there are indexed choices for this index
             choice_key = f"choices_{current_dialogue_index}"
-            if hasattr(self, 'data') and choice_key in self.data:
+            if choice_key in self.data:
                 current_dialogue = {"choices": self.data[choice_key]}
             else:
                 # If no indexed choices, use chapter-level choices
@@ -177,7 +178,7 @@ class BaseChapter(Chapter):
         if not story_progress:
             story_progress = {
                 "current_year": 1,
-                "current_chapter": "1_1",  # Enforce string chapter ID
+                "current_chapter": self.chapter_id,  # Use the full chapter ID
                 "current_challenge_chapter": None,
                 "completed_chapters": [],
                 "completed_challenge_chapters": [],
@@ -189,82 +190,20 @@ class BaseChapter(Chapter):
                 "discovered_secrets": [],
                 "special_items": [],
                 "character_relationships": {},
-                "story_choices": {}
+                "story_choices": {},
+                "current_dialogue_index": 0  # Initialize dialogue index
             }
 
-        # Set current chapter as string
-        story_progress["current_chapter"] = str(self.chapter_id)
+        # Set current chapter
+        story_progress["current_chapter"] = self.chapter_id
         logger.debug(f"[DEBUG_LOG] Setting current_chapter to {story_progress['current_chapter']} (type: {type(story_progress['current_chapter'])})")
-
-        # Handle chapter IDs with multiple underscores (e.g., 1_1_2)
-        parts = self.chapter_id.split("_")
-        if len(parts) >= 2:
-            try:
-                story_progress["current_year"] = int(parts[0])
-                story_progress["current_chapter_number"] = int(parts[1])
-            except Exception as e:
-                logger.warning(f"[DEBUG_LOG] Could not parse year/chapter_number from chapter_id {self.chapter_id}: {e}")
-        else:
-            story_progress["current_year"] = 1
-            story_progress["current_chapter_number"] = 1
-
-        # Set current dialogue index to 0
-        story_progress["current_dialogue_index"] = 0
 
         # Update player data
         player_data["story_progress"] = story_progress
 
-        # Debug log for choices
-        logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - choices: {self.choices}")
-        logger.debug(f"[DEBUG_LOG] story_progress after start: {story_progress}")
-
-        # Get current dialogue choices if available
-        current_dialogue_choices = []
-        if self.dialogues and len(self.dialogues) > 0:
-            current_dialogue = self.dialogues[0]
-            if isinstance(current_dialogue, dict) and "choices" in current_dialogue:
-                current_dialogue_choices = current_dialogue.get("choices", [])
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - found dialogue-specific choices: {current_dialogue_choices}")
-
-        # Check if we need to use choices from additional_dialogues for the first dialogue
-        elif hasattr(self, 'data') and 'additional_dialogues' in self.data:
-            # First dialogue is at index 0
-            if '0' in self.data['additional_dialogues']:
-                additional_dialogue = self.data['additional_dialogues']['0']
-                # Check if the last item in additional_dialogue contains choices
-                if isinstance(additional_dialogue[-1], dict) and "choices" in additional_dialogue[-1]:
-                    current_dialogue_choices = additional_dialogue[-1].get("choices", [])
-                    logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - found choices in additional_dialogues: {current_dialogue_choices}")
-
-        # Use dialogue-specific choices if available, otherwise use chapter-level choices
-        if current_dialogue_choices:
-            choices_to_display = current_dialogue_choices
-            logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - using dialogue-specific choices")
-        else:
-            # Check if there are choices_1, choices_2, etc. for the first dialogue
-            choice_key = "choices_1"  # For the first set of choices
-            if hasattr(self, 'data') and choice_key in self.data:
-                choices_to_display = self.data[choice_key]
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - found indexed choices: {choices_to_display}")
-            else:
-                # If no specific choices found, use chapter-level choices
-                choices_to_display = self.choices
-                logger.debug(f"[DEBUG_LOG] Chapter {self.chapter_id} start() - using chapter-level choices")
-
-        # Fallback message if no choices are available
-        if not choices_to_display:
-            logger.warning(f"No choices available for chapter {self.chapter_id}")
-            choices_to_display = [{"text": "Nenhuma escolha está disponível neste momento. Continue...", "fallback": True}]
-
         return {
             "player_data": player_data,
-            "chapter_data": {
-                "id": self.chapter_id,
-                "title": self.title,
-                "description": self.description,
-                "current_dialogue": self.dialogues[0] if self.dialogues else None,
-                "choices": choices_to_display
-            }
+            "chapter_data": self
         }
 
     def get_next_chapter(self, player_data: Dict[str, Any]) -> Optional[str]:

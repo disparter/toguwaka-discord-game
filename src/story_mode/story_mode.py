@@ -72,6 +72,8 @@ class StoryMode:
             # If no current chapter, start from the beginning
             if not current_chapter_id:
                 current_chapter_id = "1_1_arrival"
+                story_progress["current_chapter"] = current_chapter_id
+                player_data["story_progress"] = story_progress
 
             # Load the chapter
             chapter = self._load_chapter(current_chapter_id)
