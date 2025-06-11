@@ -35,7 +35,7 @@ class StoryMode:
         """
         self.data_dir = data_dir
         self.progress_manager = DefaultStoryProgressManager()
-        self.validator = StoryValidator(self.progress_manager)
+        self.validator = StoryValidator(data_dir, self.progress_manager)
         self.story_data = self._load_story_data()
         self.image_manager = ImageManager()
         logger.info("StoryMode initialized")
