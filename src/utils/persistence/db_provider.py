@@ -375,15 +375,49 @@ class DBProvider:
         """Get all cooldowns for a user from database."""
         try:
             response = self.MAIN_TABLE.scan(
-                FilterExpression='PK = :pk AND begins_with(SK, :sk)',
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk',
                 ExpressionAttributeValues={
                     ':pk': f'COOLDOWN#{user_id}',
-                    ':sk': 'COMMAND#'
+                    ':sk': 'COOLDOWN'
                 }
             )
             return response.get('Items', [])
         except Exception as e:
-            logger.error(f"Error getting all cooldowns for user {user_id}: {str(e)}")
+            logger.error(f"Error getting cooldowns for user {user_id}: {str(e)}")
+            return []
+
+    async def get_cooldowns(self, user_id: str = None) -> List[Dict[str, Any]]:
+        """Get cooldowns from database.
+        
+        Args:
+            user_id (str, optional): If provided, get cooldowns for specific user.
+                                   If None, get all cooldowns.
+        
+        Returns:
+            List[Dict[str, Any]]: List of cooldown records
+        """
+        try:
+            if user_id:
+                # Get cooldowns for specific user
+                response = self.MAIN_TABLE.scan(
+                    FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+                    ExpressionAttributeValues={
+                        ':pk': f'COOLDOWN#{user_id}',
+                        ':sk': 'COOLDOWN'
+                    }
+                )
+            else:
+                # Get all cooldowns
+                response = self.MAIN_TABLE.scan(
+                    FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+                    ExpressionAttributeValues={
+                        ':pk': 'COOLDOWN#',
+                        ':sk': 'COOLDOWN'
+                    }
+                )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting cooldowns: {str(e)}")
             return []
 
     # --- System flag operations ---
