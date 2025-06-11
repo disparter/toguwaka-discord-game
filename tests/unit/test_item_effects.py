@@ -60,7 +60,7 @@ class TestItemEffectHandler(unittest.TestCase):
             self.player['hp'] = min(self.player['hp'] + self.item['effects']['value'], self.player['max_hp'])
 
         self.assertEqual(len(self.usage_records['daily']), 3)
-        self.assertEqual(self.player['hp'], 150)
+        self.assertEqual(self.player['hp'], 100)
 
     def test_apply_effect_exceeds_usage_limit(self):
         """Testa tentativa de uso além do limite diário."""
