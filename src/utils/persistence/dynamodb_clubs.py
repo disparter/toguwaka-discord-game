@@ -2,21 +2,30 @@
 Club operations for DynamoDB.
 """
 
+import os
 import logging
+import boto3
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from decimal import Decimal
 from utils.logging_config import get_logger
 from utils.persistence.dynamodb import handle_dynamo_error, get_table
 
-logger = get_logger('tokugawa_bot.clubs')
+logger = logging.getLogger('tokugawa_bot.clubs')
+
+# Initialize DynamoDB client
+AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
+dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+
+def get_table(table_name: str):
+    """Get DynamoDB table."""
+    return dynamodb.Table(table_name)
 
 @handle_dynamo_error
 async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
     """Get club data from database."""
     try:
-        response = await dynamodb.get_item(
-            TableName='Clubes',
+        response = await get_table('Clubes').get_item(
             Key={
                 'PK': f'CLUB#{club_id}',
                 'SK': 'PROFILE'
@@ -31,8 +40,7 @@ async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
 async def get_all_clubs() -> List[Dict[str, Any]]:
     """Get all clubs from database."""
     try:
-        response = await dynamodb.scan(
-            TableName='Clubes',
+        response = await get_table('Clubes').scan(
             FilterExpression='begins_with(PK, :prefix)',
             ExpressionAttributeValues={
                 ':prefix': 'CLUB#'
@@ -47,8 +55,7 @@ async def get_all_clubs() -> List[Dict[str, Any]]:
 async def get_club_members(club_id: str) -> List[Dict[str, Any]]:
     """Get club members from database."""
     try:
-        response = await dynamodb.query(
-            TableName='Clubes',
+        response = await get_table('Clubes').query(
             KeyConditionExpression='PK = :pk AND begins_with(SK, :prefix)',
             ExpressionAttributeValues={
                 ':pk': f'CLUB#{club_id}',

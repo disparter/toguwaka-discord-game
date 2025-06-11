@@ -28,33 +28,19 @@ async def get_system_flag(flag_name: str) -> Optional[str]:
 
 @handle_dynamo_error
 async def set_system_flag(flag_name: str, value: str, flag_type: str = 'system') -> bool:
-    """Set a system flag value."""
+    """Set a system flag."""
     try:
         table = get_table('SystemFlags')
         item = {
-            'PK': 'SYSTEM',
-            'SK': f'FLAG#{flag_name}',
+            'PK': f'FLAG#{flag_name}',
+            'SK': flag_type,
             'value': value,
-            'flag_type': flag_type,
             'last_updated': datetime.now().isoformat()
         }
-        
-        # For daily events flags, add the date field
-        if flag_name.startswith('daily_events_triggered_'):
-            date_str = flag_name.replace('daily_events_triggered_', '')
-            try:
-                # Validate date format
-                datetime.strptime(date_str, '%Y%m%d')
-                item['date'] = date_str
-                item['flag_type'] = 'daily_events'
-            except ValueError:
-                logger.warning(f"Invalid date format in flag {flag_name}")
-                return False
-        
-        table.put_item(Item=item)
+        await table.put_item(Item=item)
         return True
     except Exception as e:
-        logger.error(f"Error setting system flag {flag_name}: {str(e)}")
+        logger.error(f"Error setting system flag {flag_name}: {e}")
         return False
 
 @handle_dynamo_error

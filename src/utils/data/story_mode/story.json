@@ -1,0 +1,86 @@
+{
+    "chapters": [
+        {
+            "id": "chapter_1",
+            "title": "Bem-vindo à Academia Tokugawa",
+            "description": "Sua jornada na Academia Tokugawa está prestes a começar.",
+            "scenes": [
+                {
+                    "id": "scene_1_1",
+                    "title": "Chegada à Academia",
+                    "description": "Você chega à Academia Tokugawa, uma escola prestigiada conhecida por formar os melhores estudantes do país.",
+                    "choices": [
+                        {
+                            "text": "Explorar o campus",
+                            "next_scene": "scene_1_2"
+                        },
+                        {
+                            "text": "Ir direto para a sala de aula",
+                            "next_scene": "scene_1_3"
+                        }
+                    ]
+                },
+                {
+                    "id": "scene_1_2",
+                    "title": "Explorando o Campus",
+                    "description": "Você decide explorar o campus antes de ir para a sala de aula. O campus é impressionante, com jardins bem cuidados e prédios históricos.",
+                    "choices": [
+                        {
+                            "text": "Continuar explorando",
+                            "next_scene": "scene_1_4"
+                        },
+                        {
+                            "text": "Ir para a sala de aula",
+                            "next_scene": "scene_1_3"
+                        }
+                    ]
+                },
+                {
+                    "id": "scene_1_3",
+                    "title": "Primeira Aula",
+                    "description": "Você chega à sala de aula e encontra outros estudantes. O professor entra e começa a apresentar a Academia Tokugawa.",
+                    "choices": [
+                        {
+                            "text": "Prestar atenção na aula",
+                            "next_scene": "scene_1_5"
+                        },
+                        {
+                            "text": "Conversar com os colegas",
+                            "next_scene": "scene_1_6"
+                        }
+                    ]
+                },
+                {
+                    "id": "scene_1_4",
+                    "title": "Descobertas no Campus",
+                    "description": "Enquanto explora, você encontra um jardim secreto e um clube de estudantes.",
+                    "choices": [
+                        {
+                            "text": "Investigar o jardim",
+                            "next_scene": "scene_1_7"
+                        },
+                        {
+                            "text": "Conhecer o clube",
+                            "next_scene": "scene_1_8"
+                        }
+                    ]
+                },
+                {
+                    "id": "scene_1_5",
+                    "title": "Aprendendo sobre a Academia",
+                    "description": "O professor explica sobre o sistema de notas, clubes e eventos da Academia.",
+                    "choices": [
+                        {
+                            "text": "Fazer perguntas",
+                            "next_scene": "scene_1_9"
+                        },
+                        {
+                            "text": "Anotar tudo",
+                            "next_scene": "scene_1_10"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+} 
