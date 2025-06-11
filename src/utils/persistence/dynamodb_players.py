@@ -1,7 +1,14 @@
+"""
+Player operations for DynamoDB.
+"""
+
 import decimal
 import json
 import logging
 from datetime import datetime
+from typing import Dict, Any, List, Optional
+from decimal import Decimal
+from utils.logging_config import get_logger
 from utils.persistence.dynamodb import (
     get_table,
     put_item,
@@ -15,10 +22,10 @@ from utils.persistence.dynamodb import (
     DynamoDBOperationError
 )
 
-logger = logging.getLogger('tokugawa_bot')
+logger = get_logger('tokugawa_bot.players')
 
 @handle_dynamo_error
-async def get_player(user_id):
+async def get_player(user_id: str) -> Optional[Dict[str, Any]]:
     """Get player data from DynamoDB."""
     try:
         table = get_table(TABLES['players'])
@@ -86,7 +93,7 @@ async def get_player(user_id):
         raise DynamoDBOperationError(f"Failed to get player: {e}") from e
 
 @handle_dynamo_error
-async def create_player(user_id, name, **kwargs):
+async def create_player(user_id: str, name: str, **kwargs) -> bool:
     """Create a new player in DynamoDB."""
     if not user_id or not name:
         return False
@@ -103,7 +110,10 @@ async def create_player(user_id, name, **kwargs):
             'hp': 100,
             'tusd': 1000,
             'inventory': {},
-            'level': 1
+            'level': 1,
+            'reputation': 0,
+            'created_at': datetime.now().isoformat(),
+            'last_updated': datetime.now().isoformat()
         }
         # Create player item with proper key structure and default values
         item = {
@@ -127,7 +137,7 @@ async def create_player(user_id, name, **kwargs):
         return False
 
 @handle_dynamo_error
-async def update_player(user_id, **kwargs):
+async def update_player(user_id: str, **kwargs) -> bool:
     """Update a player in DynamoDB."""
     if not user_id:
         return False
@@ -142,8 +152,12 @@ async def update_player(user_id, **kwargs):
             update_expr += f"#{key} = :{key}, "
             expr_attr_values[f":{key}"] = value
         update_expr = update_expr[:-2]  # Remove trailing comma and space
+        update_expr += ", last_updated = :last_updated"
+        expr_attr_values[':last_updated'] = datetime.now().isoformat()
+        
         # Add expression attribute names
         expr_attr_names = {f"#{key}": key for key in kwargs.keys()}
+        
         # Update player
         await table.update_item(
             Key={
@@ -160,16 +174,86 @@ async def update_player(user_id, **kwargs):
         return False
 
 @handle_dynamo_error
-async def update_player_reputation(user_id, reputation):
-    """Update a player's reputation in DynamoDB."""
+async def get_all_players() -> List[Dict[str, Any]]:
+    """Get all players from DynamoDB."""
     try:
         table = get_table(TABLES['players'])
-        await table.update_item(
-            Key={'user_id': user_id},
-            UpdateExpression='SET reputation = :rep',
-            ExpressionAttributeValues={':rep': int(reputation)}
+        response = await table.scan(
+            FilterExpression='SK = :sk',
+            ExpressionAttributeValues={
+                ':sk': 'PROFILE'
+            }
+        )
+        return response.get('Items', [])
+    except Exception as e:
+        logger.error(f"Error getting all players: {e}")
+        return []
+
+@handle_dynamo_error
+async def get_top_players(limit: int = 10) -> List[Dict[str, Any]]:
+    """Get top players by level and experience."""
+    try:
+        players = await get_all_players()
+        sorted_players = sorted(
+            players,
+            key=lambda x: (x.get('level', 0), x.get('exp', 0)),
+            reverse=True
+        )
+        return sorted_players[:limit]
+    except Exception as e:
+        logger.error(f"Error getting top players: {e}")
+        return []
+
+@handle_dynamo_error
+async def get_club_members(club_id: str) -> List[Dict[str, Any]]:
+    """Get all players in a club."""
+    try:
+        table = get_table(TABLES['players'])
+        response = await table.scan(
+            FilterExpression='club_id = :club_id',
+            ExpressionAttributeValues={
+                ':club_id': club_id
+            }
+        )
+        return response.get('Items', [])
+    except Exception as e:
+        logger.error(f"Error getting club members: {e}")
+        return []
+
+@handle_dynamo_error
+async def update_player_stats(user_id: str, stats: Dict[str, int]) -> bool:
+    """Update a player's stats."""
+    try:
+        # Convert stats to Decimal
+        decimal_stats = {
+            k: decimal.Decimal(str(v)) for k, v in stats.items()
+        }
+        return await update_player(user_id, **decimal_stats)
+    except Exception as e:
+        logger.error(f"Error updating player stats: {e}")
+        return False
+
+@handle_dynamo_error
+async def update_player_inventory(user_id: str, inventory: Dict[str, Any]) -> bool:
+    """Update a player's inventory."""
+    try:
+        return await update_player(user_id, inventory=json.dumps(inventory))
+    except Exception as e:
+        logger.error(f"Error updating player inventory: {e}")
+        return False
+
+@handle_dynamo_error
+async def delete_player(user_id: str) -> bool:
+    """Delete a player from DynamoDB."""
+    try:
+        table = get_table(TABLES['players'])
+        await table.delete_item(
+            Key={
+                'PK': f"PLAYER#{user_id}",
+                'SK': 'PROFILE'
+            }
         )
         return True
     except Exception as e:
-        logger.error(f"Error updating reputation for user {user_id}: {e}")
+        logger.error(f"Error deleting player: {e}")
         return False 

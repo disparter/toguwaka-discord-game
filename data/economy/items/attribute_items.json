@@ -41,5 +41,156 @@
             "permanent_attribute": 1,
             "rare_attribute_chance": {"base": 0.1, "level_multiplier": 0.01}
         }
+    },
+    {
+        "id": 106,
+        "name": "Essência de Vitalidade",
+        "description": "Aumenta temporariamente a Vitalidade e a regeneração de HP durante treinamentos.",
+        "price": 120,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "uncommon",
+        "effects": {
+            "temp_attribute_boost": {"vitality": 2},
+            "hp_regen_boost": 1.5,
+            "duration": 3600,
+            "daily_usage_limit": 2
+        }
+    },
+    {
+        "id": 107,
+        "name": "Cristal de Harmonia",
+        "description": "Aumenta temporariamente todos os atributos em +1 e reduz o custo de energia das técnicas.",
+        "price": 300,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "rare",
+        "effects": {
+            "temp_attribute_boost": {
+                "strength": 1,
+                "dexterity": 1,
+                "intellect": 1,
+                "charisma": 1,
+                "vitality": 1
+            },
+            "energy_cost_reduction": 0.2,
+            "duration": 1800,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 108,
+        "name": "Elixir da Maestria",
+        "description": "Aumenta permanentemente o atributo mais alto do personagem em +2. Chance de bônus adicional em níveis altos.",
+        "price": 2000,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "effects": {
+            "permanent_attribute": 2,
+            "bonus_attribute_chance": {"base": 0.05, "level_multiplier": 0.005},
+            "targets_highest_attribute": true
+        }
+    },
+    {
+        "id": 109,
+        "name": "Essência do Destino",
+        "description": "Permite redistribuir 3 pontos de atributos permanentemente. Chance de bônus adicional em níveis altos.",
+        "price": 1500,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "effects": {
+            "attribute_redistribution": 3,
+            "bonus_point_chance": {"base": 0.1, "level_multiplier": 0.01},
+            "monthly_usage_limit": 1
+        }
+    },
+    {
+        "id": 110,
+        "name": "Cristal de Sincronização",
+        "description": "Sincroniza temporariamente dois atributos, fazendo com que o menor receba um boost até igualar o maior.",
+        "price": 400,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "epic",
+        "effects": {
+            "attribute_sync": true,
+            "sync_duration": 3600,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 111,
+        "name": "Pílula da Evolução",
+        "description": "Aumenta todos os atributos em +1 permanentemente, mas requer um nível mínimo de 30.",
+        "price": 3000,
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "effects": {
+            "permanent_all_attributes": 1,
+            "level_requirement": 30,
+            "monthly_usage_limit": 1
+        }
+    },
+    {
+        "id": 112,
+        "name": "Elixir da Primavera Supremo",
+        "description": "Um elixir feito com as mais raras flores da primavera. Aumenta permanentemente o Carisma em +2.",
+        "price": 25,
+        "currency": "spring_token",
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "season": "spring",
+        "effects": {"permanent_attribute": {"charisma": 2}}
+    },
+    {
+        "id": 113,
+        "name": "Elixir do Verão Supremo",
+        "description": "Um elixir feito com a essência pura do sol. Aumenta permanentemente a Destreza em +2.",
+        "price": 25,
+        "currency": "summer_token",
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "season": "summer",
+        "effects": {"permanent_attribute": {"dexterity": 2}}
+    },
+    {
+        "id": 114,
+        "name": "Elixir do Outono Supremo",
+        "description": "Um elixir feito com a essência pura da sabedoria outonal. Aumenta permanentemente o Intelecto em +2.",
+        "price": 25,
+        "currency": "autumn_token",
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "season": "autumn",
+        "effects": {"permanent_attribute": {"intellect": 2}}
+    },
+    {
+        "id": 115,
+        "name": "Elixir do Inverno Supremo",
+        "description": "Um elixir feito com a essência pura do gelo eterno. Aumenta permanentemente o Poder em +2.",
+        "price": 25,
+        "currency": "winter_token",
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "season": "winter",
+        "effects": {"permanent_attribute": {"power_stat": 2}}
+    },
+    {
+        "id": 116,
+        "name": "Elixir do Campeão",
+        "description": "Um elixir concedido aos campeões de eventos. Aumenta permanentemente um atributo à escolha em +2.",
+        "price": 30,
+        "currency": "event_token",
+        "type": "consumable",
+        "category": "attribute",
+        "rarity": "legendary",
+        "effects": {"permanent_attribute_choice": 2}
     }
 ] 

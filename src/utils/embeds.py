@@ -104,27 +104,30 @@ async def create_club_embed(club):
     """Create an embed displaying club information."""
     # Determine color based on club
     club_colors = {
-        1: 0xFF0000,  # Clube das Chamas - Red
-        2: 0x800080,  # Ilusionistas Mentais - Purple
-        3: 0xFFD700,  # Conselho Político - Gold
-        4: 0x00FF00,  # Elementalistas - Green
-        5: 0x808080   # Clube de Combate - Gray
+        "1": 0xFF0000,  # Clube das Chamas - Red
+        "2": 0x800080,  # Ilusionistas Mentais - Purple
+        "3": 0xFFD700,  # Conselho Político - Gold
+        "4": 0x00FF00,  # Elementalistas - Green
+        "5": 0x808080   # Clube de Combate - Gray
     }
-    color = club_colors.get(club['club_id'], 0x1E90FF)
+    
+    # Get club ID from lider_id field
+    club_id = club.get('lider_id')
+    color = club_colors.get(str(club_id), 0x1E90FF)
 
     # Create embed
     embed = discord.Embed(
-        title=club['name'],
-        description=club['description'],
+        title=club.get('NomeClube', 'Unknown Club'),
+        description=club.get('descricao', 'No description available'),
         color=color,
         timestamp=datetime.utcnow()
     )
 
     # Get club leader from NPCs
-    club_leader_name = club.get('leader_name', 'Nenhum')
-    if club.get('club_id'):
+    club_leader_name = club.get('lider_id', 'Nenhum')
+    if club.get('lider_id'):
         # Get NPCs for this club
-        npcs = await db_provider.get_relevant_npcs(club['club_id'])
+        npcs = await db_provider.get_relevant_npcs(club['lider_id'])
         # Find the leader
         for npc in npcs:
             if npc.get('role') == 'Líder':
@@ -134,14 +137,13 @@ async def create_club_embed(club):
     # Add club stats
     embed.add_field(
         name="Estatísticas",
-        value=f"**Membros:** {club['members_count']} 👥\n"
-              f"**Reputação:** {club['reputation']} 🏆\n"
+        value=f"**Membros:** {club.get('membros_count', 0)} 👥\n"
+              f"**Reputação:** {club.get('reputacao', 0)} 🏆\n"
               f"**Líder:** {club_leader_name}",
         inline=True
     )
 
     # Add club perks
-    club_id = club.get('club_id')
     if club_id:
         perk_description = get_club_perk_description(club_id)
         embed.add_field(

@@ -1,0 +1,29 @@
+{
+    "rarities": {
+        "common": {
+            "color": "0x808080",
+            "emoji": "🔘",
+            "exp_reward": 5
+        },
+        "uncommon": {
+            "color": "0x00FF00",
+            "emoji": "🟢",
+            "exp_reward": 10
+        },
+        "rare": {
+            "color": "0x0000FF",
+            "emoji": "🔵",
+            "exp_reward": 20
+        },
+        "epic": {
+            "color": "0x800080",
+            "emoji": "🟣",
+            "exp_reward": 35
+        },
+        "legendary": {
+            "color": "0xFFA500",
+            "emoji": "🟠",
+            "exp_reward": 50
+        }
+    }
+} 

@@ -10,6 +10,7 @@ import sys
 from unittest.mock import MagicMock, patch, AsyncMock
 from datetime import datetime
 from pathlib import Path
+import discord
 
 # Adiciona o diretório raiz ao PYTHONPATH
 root_dir = Path(__file__).parent.parent
@@ -62,10 +63,10 @@ def mock_ctx():
 
 @pytest.fixture
 def mock_bot():
-    """Mock básico do bot"""
+    """Create a mock bot for testing."""
     bot = MagicMock()
-    bot.user.id = 111111111
-    bot.user.name = "TestBot"
+    bot.user = MagicMock()
+    bot.user.display_name = "Test Bot"
     return bot
 
 @pytest.fixture
@@ -171,4 +172,25 @@ def mock_story_data():
                 {"description": "Look around", "result": "explore"}
             ]
         }
-    } 
+    }
+
+@pytest.fixture
+def mock_interaction():
+    """Create a mock interaction for testing."""
+    interaction = MagicMock()
+    interaction.user = MagicMock()
+    interaction.user.id = 123456789
+    interaction.user.mention = "<@123456789>"
+    interaction.response = MagicMock()
+    interaction.followup = MagicMock()
+    return interaction
+
+@pytest.fixture(autouse=True)
+def mock_db_functions():
+    """Mock database functions to avoid circular imports."""
+    with patch('cogs.registration.get_player') as mock_get_player, \
+         patch('cogs.registration.update_player') as mock_update_player:
+        yield {
+            'get_player': mock_get_player,
+            'update_player': mock_update_player
+        } 

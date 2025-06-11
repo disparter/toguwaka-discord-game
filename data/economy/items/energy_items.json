@@ -41,5 +41,121 @@
             "duration": 3600,
             "daily_usage_limit": 2
         }
+    },
+    {
+        "id": 104,
+        "name": "Cristal de Energia Pura",
+        "description": "Recupera toda a energia e aumenta o limite máximo temporariamente. Efeito aumenta com seu nível.",
+        "price": 300,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "rare",
+        "effects": {
+            "energy_restore": "full",
+            "max_energy_boost": {"base": 20, "level_multiplier": 1},
+            "duration": 7200,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 105,
+        "name": "Medalhão de Vitalidade",
+        "description": "Aumenta permanentemente a regeneração de energia em 10%. Equipamento permanente.",
+        "price": 800,
+        "type": "accessory",
+        "category": "energy",
+        "rarity": "epic",
+        "effects": {
+            "energy_regen_boost": 0.1,
+            "permanent": true
+        }
+    },
+    {
+        "id": 106,
+        "name": "Elixir de Energia Infinita",
+        "description": "Remove o limite de energia por 1 hora. Efeito especial em eventos especiais.",
+        "price": 1000,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "legendary",
+        "effects": {
+            "remove_energy_limit": true,
+            "duration": 3600,
+            "event_boost": 2.0,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 107,
+        "name": "Cristal de Energia Infinita",
+        "description": "Converte temporariamente energia gasta em experiência. Quanto mais energia gasta, mais experiência ganha.",
+        "price": 1500,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "legendary",
+        "effects": {
+            "energy_to_exp_conversion": true,
+            "conversion_rate": 0.5,
+            "duration": 3600,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 108,
+        "name": "Bateria Portátil",
+        "description": "Armazena energia excedente para uso posterior. Capacidade aumenta com o nível.",
+        "price": 600,
+        "type": "equipment",
+        "category": "energy",
+        "rarity": "epic",
+        "effects": {
+            "energy_storage": {"base": 100, "level_multiplier": 10},
+            "storage_recovery": 0.1,
+            "permanent": true
+        }
+    },
+    {
+        "id": 109,
+        "name": "Gerador de Energia",
+        "description": "Gera energia passivamente ao longo do tempo. Eficiência aumenta com o nível de Intelecto.",
+        "price": 1000,
+        "type": "equipment",
+        "category": "energy",
+        "rarity": "epic",
+        "effects": {
+            "passive_energy_generation": {"base": 1, "intellect_multiplier": 0.1},
+            "generation_interval": 300,
+            "permanent": true
+        }
+    },
+    {
+        "id": 110,
+        "name": "Pílula de Concentração",
+        "description": "Aumenta temporariamente o Intelecto e a chance de eventos raros durante treinamento.",
+        "price": 90,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "uncommon",
+        "effects": {
+            "temp_attribute_boost": {"intellect": 2},
+            "rare_event_chance": 0.15,
+            "duration": 3600,
+            "daily_usage_limit": 2
+        }
+    },
+    {
+        "id": 111,
+        "name": "Bebida Energética",
+        "description": "Aumenta temporariamente a Destreza e a experiência ganha em treinamentos.",
+        "price": 90,
+        "type": "consumable",
+        "category": "energy",
+        "rarity": "uncommon",
+        "effects": {
+            "temp_attribute_boost": {"dexterity": 2},
+            "exp_boost": 1.25,
+            "duration": 3600,
+            "daily_usage_limit": 2
+        }
     }
 ] 

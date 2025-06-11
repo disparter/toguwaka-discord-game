@@ -1,0 +1,52 @@
+{
+    "categories": {
+        "most_beautiful": {
+            "name": "Aluno Mais Bonito",
+            "description": "Vote no aluno que você considera o mais bonito da Academia!",
+            "attribute": "charisma",
+            "emoji": "✨",
+            "reward_reputation": 50,
+            "reward_buff": {
+                "type": "charisma",
+                "value": 10,
+                "duration": 7
+            }
+        },
+        "most_funny": {
+            "name": "Aluno Mais Engraçado",
+            "description": "Vote no aluno que você considera o mais engraçado da Academia!",
+            "attribute": "charisma",
+            "emoji": "😂",
+            "reward_reputation": 50,
+            "reward_buff": {
+                "type": "charisma",
+                "value": 10,
+                "duration": 7
+            }
+        },
+        "most_intelligent": {
+            "name": "Aluno Mais Inteligente",
+            "description": "Vote no aluno que você considera o mais inteligente da Academia!",
+            "attribute": "intellect",
+            "emoji": "🧠",
+            "reward_reputation": 50,
+            "reward_buff": {
+                "type": "intellect",
+                "value": 10,
+                "duration": 7
+            }
+        },
+        "most_powerful": {
+            "name": "Aluno Mais Poderoso",
+            "description": "Vote no aluno que você considera o mais poderoso da Academia!",
+            "attribute": "power_stat",
+            "emoji": "💪",
+            "reward_reputation": 50,
+            "reward_buff": {
+                "type": "power_stat",
+                "value": 10,
+                "duration": 7
+            }
+        }
+    }
+} 

@@ -52,7 +52,7 @@ class Activities(commands.Cog):
     async def clear_cooldowns(self):
         """Clear expired cooldowns."""
         try:
-            await db_provider.clear_expired_cooldowns()
+            await self.clear_expired_cooldowns()
         except Exception as e:
             logger.error(f"Error clearing cooldowns: {e}")
 
@@ -1192,6 +1192,13 @@ class Activities(commands.Cog):
         """Participar do evento atual da academia."""
         # This is a placeholder for future weekly events
         await ctx.send("Não há eventos ativos no momento. Fique atento para futuros eventos na Academia Tokugawa!")
+
+    async def clear_expired_cooldowns(self):
+        """Clear all expired cooldowns from the database."""
+        try:
+            await db_provider.clear_expired_cooldowns()
+        except Exception as e:
+            logger.error(f"Error clearing cooldowns: {e}")
 
 
 async def setup(bot):

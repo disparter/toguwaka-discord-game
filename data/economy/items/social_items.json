@@ -26,5 +26,176 @@
             "tusd_reward_boost": 0.2,
             "weekly_usage_limit": 1
         }
+    },
+    {
+        "id": 202,
+        "name": "Diploma de Honra",
+        "description": "Aumenta significativamente sua reputação em todos os clubes e desbloqueia eventos exclusivos.",
+        "price": 800,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "epic",
+        "effects": {
+            "global_club_reputation": 100,
+            "unlock_exclusive_events": true,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 203,
+        "name": "Anel da Liderança",
+        "description": "Aumenta o Carisma em +3 e a chance de sucesso em negociações com outros jogadores.",
+        "price": 600,
+        "type": "accessory",
+        "category": "social",
+        "rarity": "rare",
+        "effects": {
+            "attribute_boost": {"charisma": 3},
+            "negotiation_success": 0.25,
+            "permanent": true
+        }
+    },
+    {
+        "id": 204,
+        "name": "Convite VIP",
+        "description": "Garante acesso a eventos exclusivos e aumenta as recompensas de interações sociais.",
+        "price": 400,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "rare",
+        "effects": {
+            "vip_event_access": true,
+            "social_reward_boost": 0.5,
+            "duration": 86400,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 205,
+        "name": "Diploma de Mestre",
+        "description": "Permite criar um clube próprio com benefícios exclusivos. Requer nível 40 e reputação alta.",
+        "price": 2000,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "legendary",
+        "effects": {
+            "create_club": true,
+            "club_benefits": {
+                "exp_boost": 0.2,
+                "resource_boost": 0.15,
+                "member_limit": 50
+            },
+            "level_requirement": 40,
+            "reputation_requirement": 1000,
+            "one_time_use": true
+        }
+    },
+    {
+        "id": 206,
+        "name": "Medalhão da Influência",
+        "description": "Aumenta a influência em negociações e permite criar alianças entre clubes.",
+        "price": 1000,
+        "type": "accessory",
+        "category": "social",
+        "rarity": "epic",
+        "effects": {
+            "negotiation_power": 0.5,
+            "alliance_creation": true,
+            "alliance_benefits": 0.2,
+            "permanent": true
+        }
+    },
+    {
+        "id": 207,
+        "name": "Convite para Evento Especial",
+        "description": "Organiza um evento especial que pode ser compartilhado com outros jogadores. Recompensas aumentam com o número de participantes.",
+        "price": 800,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "epic",
+        "effects": {
+            "create_special_event": true,
+            "participant_reward_boost": 0.1,
+            "max_participants": 20,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 208,
+        "name": "Amuleto de Fogo",
+        "description": "Um amuleto que canaliza o poder das chamas. Aumenta o dano em duelos físicos em 15%.",
+        "price": 300,
+        "type": "accessory",
+        "category": "social",
+        "rarity": "rare",
+        "club_required": "clube_das_chamas",
+        "effects": {"damage_boost": 0.15, "club_specific": true}
+    },
+    {
+        "id": 209,
+        "name": "Elixir das Chamas",
+        "description": "Um elixir que fortalece o espírito de fogo. Aumenta permanentemente o Poder em +1.",
+        "price": 1000,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "epic",
+        "club_required": "clube_das_chamas",
+        "effects": {"permanent_attribute": {"power_stat": 1}}
+    },
+    {
+        "id": 210,
+        "name": "Máscara do Enigma",
+        "description": "Uma máscara que aumenta o poder mental. Aumenta o Intelecto em +2 e protege contra debuffs mentais.",
+        "price": 300,
+        "type": "accessory",
+        "category": "social",
+        "rarity": "rare",
+        "club_required": "ilusionistas_mentais",
+        "effects": {"attribute_boost": {"intellect": 2}, "mental_debuff_resistance": 0.3, "club_specific": true}
+    },
+    {
+        "id": 211,
+        "name": "Poção da Clareza",
+        "description": "Uma poção que expande a mente. Aumenta permanentemente o Intelecto em +1.",
+        "price": 1000,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "epic",
+        "club_required": "ilusionistas_mentais",
+        "effects": {"permanent_attribute": {"intellect": 1}}
+    },
+    {
+        "id": 212,
+        "name": "Cajado da Persuasão",
+        "description": "Um cajado que amplifica o carisma. Adiciona bônus de Carisma em interações sociais.",
+        "price": 300,
+        "type": "accessory",
+        "category": "social",
+        "rarity": "rare",
+        "club_required": "conselho_politico",
+        "effects": {"attribute_boost": {"charisma": 2}, "club_specific": true}
+    },
+    {
+        "id": 213,
+        "name": "Elixir da Eloquência",
+        "description": "Um elixir que aprimora a capacidade de persuasão. Aumenta permanentemente o Carisma em +1.",
+        "price": 1000,
+        "type": "consumable",
+        "category": "social",
+        "rarity": "epic",
+        "club_required": "conselho_politico",
+        "effects": {"permanent_attribute": {"charisma": 1}}
+    },
+    {
+        "id": 214,
+        "name": "Coroa de Flores Raras",
+        "description": "Uma coroa feita com flores raras do Festival da Primavera. Aumenta carisma em 30%.",
+        "price": 10,
+        "currency": "spring_token",
+        "type": "accessory",
+        "category": "social",
+        "rarity": "epic",
+        "season": "spring",
+        "effects": {"attribute_boost": {"charisma": 0.3}, "season_limited": true}
     }
 ] 

@@ -30,25 +30,36 @@ class RegistrationCog(commands.Cog):
 
     @registration_group.command(name="ingressar", description="Iniciar o processo de registro na Academia Tokugawa")
     async def slash_register(self, interaction: discord.Interaction):
-        """Slash command version of the register command."""
+        """Slash command for registration."""
         try:
             # Check if player already exists
             player = await db_provider.get_player(interaction.user.id)
             if player:
                 await interaction.response.send_message(
-                    f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!")
+                    f"{interaction.user.mention}, você já está registrado na Academia Tokugawa!",
+                    ephemeral=True
+                )
                 return
 
-            # For slash commands, we'll use a simplified registration process
+            # For new players, guide them to use the text command
             await interaction.response.send_message(
                 "Para iniciar o processo de registro completo, use o comando de texto `!ingressar`.\n"
-                "O processo de registro interativo requer múltiplas etapas que funcionam melhor com comandos de texto."
+                "O processo de registro interativo requer múltiplas etapas que funcionam melhor com comandos de texto.",
+                ephemeral=True
             )
+
         except discord.errors.NotFound:
-            # If the interaction has expired, log it but don't try to respond
-            logger.warning(f"Interaction expired for user {interaction.user.id} when using /registro ingressar")
+            # Handle expired interaction
+            pass
         except Exception as e:
-            logger.error(f"Error in slash_register: {e}")
+            logger.error(f"Error in slash_register: {str(e)}")
+            try:
+                await interaction.response.send_message(
+                    "Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.",
+                    ephemeral=True
+                )
+            except discord.errors.NotFound:
+                pass
 
     @commands.command(name="ingressar")
     async def register(self, ctx):
@@ -241,110 +252,163 @@ class RegistrationCog(commands.Cog):
 
         await ctx.send(embed=help_embed)
 
-    @app_commands.command(name="alterar_registro", description="Comandos para alterar informações do seu personagem")
-    @app_commands.describe(
-        comando="Comando a ser executado (alterar_nome, alterar_poder, alterar_descricao_poder)",
-        valor="Novo valor para o campo"
-    )
-    async def registration_command(
-        self,
-        interaction: discord.Interaction,
-        comando: str,
-        valor: str
-    ):
-        """
-        Command to edit character information.
-        """
+    @app_commands.command(name="alterar_registro", description="Altere informações do seu personagem")
+    async def alterar_registro(self, interaction: discord.Interaction):
+        """Comando para alterar informações do personagem."""
         try:
             await interaction.response.defer(ephemeral=True)
+            
+            # Get player data
+            player = await db_provider.get_player(interaction.user.id)
+            if not player:
+                await interaction.followup.send(
+                    "Você precisa estar registrado para usar este comando. Use /registrar primeiro.",
+                    ephemeral=True
+                )
+                return
+            
+            # Create view with buttons for each option
+            view = discord.ui.View()
+            
+            # Add buttons for each option
+            view.add_item(discord.ui.Button(
+                style=discord.ButtonStyle.primary,
+                label="Alterar Nome",
+                custom_id="alterar_nome"
+            ))
+            view.add_item(discord.ui.Button(
+                style=discord.ButtonStyle.primary,
+                label="Alterar Poder",
+                custom_id="alterar_poder"
+            ))
+            
+            # Send message with buttons
+            await interaction.followup.send(
+                "Selecione o que você deseja alterar:",
+                view=view,
+                ephemeral=True
+            )
+            
         except discord.errors.NotFound:
-            logger.warning(f"Interaction expired for user {interaction.user.id} when using /alterar_registro")
-            return
-
-        # Get player data
-        player_data = await db_provider.get_player(interaction.user.id)
-        if not player_data:
-            await interaction.followup.send(
-                "Você precisa estar registrado para usar este comando. Use /registrar primeiro.",
-                ephemeral=True
-            )
-            return
-
-        # Validate input
-        if not valor or len(valor.strip()) == 0:
-            await interaction.followup.send(
-                "O valor não pode estar vazio.",
-                ephemeral=True
-            )
-            return
-
-        if len(valor) > 100:  # Maximum length for any field
-            await interaction.followup.send(
-                "O valor é muito longo. Máximo de 100 caracteres.",
-                ephemeral=True
-            )
-            return
-
-        # Process command
-        if comando == "alterar_nome":
-            if len(valor) < 3:
+            # Handle expired interaction
+            pass
+        except Exception as e:
+            logger.error(f"Error in alterar_registro: {str(e)}")
+            try:
                 await interaction.followup.send(
-                    "O nome deve ter pelo menos 3 caracteres.",
+                    "Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.",
                     ephemeral=True
                 )
-                return
+            except discord.errors.NotFound:
+                pass
 
-            # Update name
-            await db_provider.update_player(
-                interaction.user.id,
-                name=valor
-            )
-            await interaction.followup.send(
-                f"Nome alterado com sucesso para: {valor}",
-                ephemeral=True
-            )
-
-        elif comando == "alterar_poder":
-            if len(valor) < 3:
-                await interaction.followup.send(
-                    "O nome do poder deve ter pelo menos 3 caracteres.",
-                    ephemeral=True
-                )
-                return
-
-            # Update power name
-            await db_provider.update_player(
-                interaction.user.id,
-                power_name=valor
-            )
-            await interaction.followup.send(
-                f"Nome do poder alterado com sucesso para: {valor}",
-                ephemeral=True
-            )
-
-        elif comando == "alterar_descricao_poder":
-            if len(valor) < 10:
-                await interaction.followup.send(
-                    "A descrição do poder deve ter pelo menos 10 caracteres.",
-                    ephemeral=True
-                )
-                return
-
-            # Update power description
-            await db_provider.update_player(
-                interaction.user.id,
-                power_description=valor
-            )
-            await interaction.followup.send(
-                f"Descrição do poder alterada com sucesso para: {valor}",
-                ephemeral=True
-            )
-
-        else:
-            await interaction.followup.send(
-                "Comando inválido. Use: alterar_nome, alterar_poder ou alterar_descricao_poder",
-                ephemeral=True
-            )
+    @commands.Cog.listener()
+    async def on_interaction(self, interaction: discord.Interaction):
+        """Handle button interactions."""
+        if not interaction.type == discord.InteractionType.component:
+            return
+            
+        if interaction.data["custom_id"] == "alterar_nome":
+            # Create modal for name input
+            modal = discord.ui.Modal(title="Alterar Nome")
+            modal.add_item(discord.ui.TextInput(
+                label="Novo Nome",
+                placeholder="Digite o novo nome do personagem",
+                min_length=3,
+                max_length=100,
+                required=True
+            ))
+            
+            async def modal_callback(interaction: discord.Interaction):
+                try:
+                    nome = interaction.data["components"][0]["components"][0]["value"]
+                    
+                    # Validate input
+                    if not nome:
+                        await interaction.response.send_message("O nome não pode estar vazio.", ephemeral=True)
+                        return
+                        
+                    if len(nome) < 3:
+                        await interaction.response.send_message("O nome deve ter pelo menos 3 caracteres.", ephemeral=True)
+                        return
+                        
+                    if len(nome) > 100:
+                        await interaction.response.send_message("O nome é muito longo. Máximo de 100 caracteres.", ephemeral=True)
+                        return
+                    
+                    # Update player name
+                    await db_provider.update_player(interaction.user.id, name=nome)
+                    
+                    await interaction.response.send_message(
+                        f"Nome alterado com sucesso para: {nome}",
+                        ephemeral=True
+                    )
+                    
+                except Exception as e:
+                    logger.error(f"Error in alterar_nome modal: {str(e)}")
+                    try:
+                        await interaction.response.send_message(
+                            "Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.",
+                            ephemeral=True
+                        )
+                    except discord.errors.NotFound:
+                        pass
+            
+            modal.callback = modal_callback
+            await interaction.response.send_modal(modal)
+            
+        elif interaction.data["custom_id"] == "alterar_poder":
+            # Create modal for power input
+            modal = discord.ui.Modal(title="Alterar Poder")
+            modal.add_item(discord.ui.TextInput(
+                label="Novo Poder",
+                placeholder="Digite o novo nome do poder",
+                min_length=3,
+                max_length=100,
+                required=True
+            ))
+            
+            async def modal_callback(interaction: discord.Interaction):
+                try:
+                    poder = interaction.data["components"][0]["components"][0]["value"]
+                    
+                    # Validate input
+                    if not poder:
+                        await interaction.response.send_message("O nome do poder não pode estar vazio.", ephemeral=True)
+                        return
+                        
+                    if len(poder) < 3:
+                        await interaction.response.send_message("O nome do poder deve ter pelo menos 3 caracteres.", ephemeral=True)
+                        return
+                        
+                    if len(poder) > 100:
+                        await interaction.response.send_message("O nome do poder é muito longo. Máximo de 100 caracteres.", ephemeral=True)
+                        return
+                        
+                    if any(char.isdigit() for char in poder):
+                        await interaction.response.send_message("O nome do poder não pode conter números.", ephemeral=True)
+                        return
+                    
+                    # Update player power
+                    await db_provider.update_player(interaction.user.id, power=poder)
+                    
+                    await interaction.response.send_message(
+                        f"Nome do poder alterado com sucesso para: {poder}",
+                        ephemeral=True
+                    )
+                    
+                except Exception as e:
+                    logger.error(f"Error in alterar_poder modal: {str(e)}")
+                    try:
+                        await interaction.response.send_message(
+                            "Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.",
+                            ephemeral=True
+                        )
+                    except discord.errors.NotFound:
+                        pass
+            
+            modal.callback = modal_callback
+            await interaction.response.send_modal(modal)
 
 
 async def setup(bot):

@@ -1,17 +1,19 @@
+"""
+Main bot module for Academia Tokugawa.
+
+This module initializes and runs the Discord bot with all its features.
+"""
+
 import os
 import asyncio
 import discord
 from discord.ext import commands
 import logging
 from utils.persistence.db_provider import db_provider
-from utils.persistence.data_migration import data_migration
+from utils.logging_config import get_logger
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('tokugawa_bot')
+logger = get_logger('tokugawa_bot')
 
 # Configure CloudWatch logging if running in AWS
 if (
@@ -90,15 +92,16 @@ class TokugawaBot(commands.Bot):
     async def setup_hook(self):
         """Setup hook that is called when the bot is starting up."""
         # Load all extensions
-        for extension in initial_extensions:
-            try:
-                await self.load_extension(extension)
-                logger.info(f'Loaded extension: {extension}')
-            except Exception as e:
-                logger.error(f'Failed to load extension {extension}: {e}')
+        for filename in os.listdir('./src/cogs'):
+            if filename.endswith('.py') and filename != '__init__.py':
+                try:
+                    await self.load_extension(f'cogs.{filename[:-3]}')
+                    logger.info(f'Loaded extension: cogs.{filename[:-3]}')
+                except Exception as e:
+                    logger.error(f'Failed to load extension cogs.{filename[:-3]}: {e}')
 
 # Create bot instance with command prefix and command tree for slash commands
-bot = TokugawaBot(command_prefix='!', intents=intents)
+bot = TokugawaBot(command_prefix="!", intents=intents)
 
 # Make sure the bot is syncing application commands
 async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
@@ -137,23 +140,6 @@ async def slash_test(interaction: discord.Interaction):
     except Exception as e:
         logger.error(f"Error in slash_test: {e}")
 
-# Initial cogs to load
-initial_extensions = [
-    'cogs.registration',
-    'cogs.player_status',
-    'cogs.activities',
-    'cogs.economy',
-    'cogs.clubs',
-    'cogs.scheduled_events',
-    'cogs.junie_interaction',
-    'cogs.story_mode',
-    'cogs.betting',  # New betting cog for risk mechanics
-    'cogs.moral_choices',  # New moral choices cog for dilemas and collective events
-    'cogs.npc_interaction'  # New cog for NPC interactions and image registry
-]
-
-# This function is no longer needed as extensions are loaded in setup_hook
-
 # Flag to track whether commands have been synced
 commands_synced = False
 
@@ -165,53 +151,19 @@ async def on_ready():
     logger.info(f'Bot is ready! Logged in as {bot.user.name}')
 
     # Initialize database
-    db_initialized = False
     try:
-        # Use init_db directly from db_provider to avoid circular dependencies
         logger.info("Initializing database...")
-        db_initialized = await db_provider.init_db()
-        if db_initialized:
-            logger.info("Database initialized successfully")
-        else:
+        if not await db_provider.init_db():
             logger.error("Failed to initialize database")
             logger.warning("Continuing bot execution despite database initialization failure")
+            return
+        logger.info("Database initialized successfully")
+
     except Exception as e:
-        logger.error(f"Error initializing database: {e}")
+        logger.error(f"Error during database initialization: {e}")
         logger.error(f"Exception type: {type(e).__name__}")
         logger.error(f"Exception args: {e.args}")
-        logger.warning("Continuing bot execution despite database initialization error")
-
-    # Check if migration has been completed
-    migration_completed = await db_provider.get_system_flag('migration_completed')
-    if not migration_completed:
-        try:
-            logger.info("Starting data migration process...")
-            migration_success = await data_migration.migrate_data()
-            if migration_success:
-                logger.info("Data migration completed successfully")
-                # Set migration flag
-                await db_provider.set_system_flag('migration_completed', 'true')
-            else:
-                logger.error("Data migration failed")
-        except Exception as e:
-            logger.error(f"Error during data migration: {e}")
-            logger.error(f"Exception type: {type(e).__name__}")
-            logger.error(f"Exception args: {e.args}")
-    else:
-        logger.info("Data migration already completed, skipping")
-
-    # Try to sync data if needed (only if database initialization failed)
-    if not db_initialized:
-        try:
-            logger.info("Attempting to sync data to DynamoDB...")
-            if not await db_provider.sync_to_dynamo_if_empty():
-                logger.error("Failed to sync data to DynamoDB")
-                # Don't close the bot, just log the error and continue
-                logger.warning("Continuing bot execution despite DynamoDB sync failure")
-        except Exception as e:
-            logger.error(f"Error syncing data to DynamoDB: {e}")
-            logger.error(f"Exception type: {type(e).__name__}")
-            logger.warning("Continuing bot execution despite DynamoDB sync error")
+        logger.warning("Continuing bot execution despite database errors")
 
     # Sync commands with guild only if they haven't been synced already
     if not commands_synced:

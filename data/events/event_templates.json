@@ -1,0 +1,86 @@
+{
+    "minions": [
+        {
+            "name": "Ninja das Sombras",
+            "description": "Um ninja treinado nas artes das sombras está causando problemas!",
+            "strength": 50,
+            "exp_reward": 20,
+            "tusd_reward": 10,
+            "emoji": "👤"
+        },
+        {
+            "name": "Mestre das Ilusões",
+            "description": "Um ilusionista está confundindo os estudantes com truques de mágica!",
+            "strength": 75,
+            "exp_reward": 30,
+            "tusd_reward": 15,
+            "emoji": "🎭"
+        },
+        {
+            "name": "Guerreiro do Caos",
+            "description": "Um guerreiro caótico está causando confusão na Academia!",
+            "strength": 100,
+            "exp_reward": 40,
+            "tusd_reward": 20,
+            "emoji": "⚔️"
+        }
+    ],
+    "villains": [
+        {
+            "name": "Lorde das Trevas",
+            "description": "Um poderoso lorde das trevas está ameaçando a Academia!",
+            "strength": 500,
+            "exp_reward": 100,
+            "tusd_reward": 50,
+            "emoji": "👑"
+        },
+        {
+            "name": "Mestre do Tempo",
+            "description": "Um manipulador do tempo está causando distorções temporais!",
+            "strength": 750,
+            "exp_reward": 150,
+            "tusd_reward": 75,
+            "emoji": "⏰"
+        },
+        {
+            "name": "Imperador do Caos",
+            "description": "Um imperador do caos está tentando destruir a ordem da Academia!",
+            "strength": 1000,
+            "exp_reward": 200,
+            "tusd_reward": 100,
+            "emoji": "👹"
+        }
+    ],
+    "collectibles": [
+        {
+            "name": "Pergaminho Antigo",
+            "description": "Um pergaminho contendo conhecimentos secretos da Academia.",
+            "rarity": "common",
+            "emoji": "📜"
+        },
+        {
+            "name": "Cristal de Poder",
+            "description": "Um cristal que emana energia mágica.",
+            "rarity": "uncommon",
+            "emoji": "💎"
+        },
+        {
+            "name": "Livro Proibido",
+            "description": "Um livro contendo feitiços e conhecimentos proibidos.",
+            "rarity": "rare",
+            "emoji": "📚"
+        },
+        {
+            "name": "Artefato Ancestral",
+            "description": "Um artefato de grande poder usado pelos fundadores da Academia.",
+            "rarity": "epic",
+            "emoji": "🏺"
+        },
+        {
+            "name": "Relíquia Divina",
+            "description": "Uma relíquia de poder divino, capaz de grandes feitos.",
+            "rarity": "legendary",
+            "emoji": "✨"
+        }
+    ]
+} 

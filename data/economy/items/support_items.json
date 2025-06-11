@@ -75,5 +75,104 @@
             "healing_boost": 0.25,
             "permanent": true
         }
+    },
+    {
+        "id": 406,
+        "name": "Escudo Místico",
+        "description": "Cria um escudo que absorve 30% do dano recebido por toda a equipe por 3 minutos. Usável em Turf Wars.",
+        "price": 800,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "epic",
+        "effects": {
+            "team_damage_reduction": 0.3,
+            "duration": 180,
+            "target": "team",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 407,
+        "name": "Totem de Revitalização",
+        "description": "Regenera 3% do HP máximo de toda a equipe a cada 30 segundos por 5 minutos. Usável em Turf Wars.",
+        "price": 700,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "epic",
+        "effects": {
+            "team_regen_amount": 0.03,
+            "regen_interval": 30,
+            "duration": 300,
+            "target": "team",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 408,
+        "name": "Orbe de Ressurreição",
+        "description": "Revive um aliado caído com 50% do HP máximo. Usável apenas uma vez por Turf War.",
+        "price": 1500,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "legendary",
+        "effects": {
+            "revive_ally": true,
+            "revive_hp_percentage": 0.5,
+            "turf_wars_usable": true,
+            "turf_wars_usage_limit": 1
+        }
+    },
+    {
+        "id": 409,
+        "name": "Totem de Proteção Ancestral",
+        "description": "Cria um campo de força que reduz o dano recebido por toda a equipe em 40% e regenera 2% do HP a cada 10 segundos.",
+        "price": 1200,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "legendary",
+        "effects": {
+            "team_damage_reduction": 0.4,
+            "team_hp_regen": {
+                "amount": 0.02,
+                "interval": 10
+            },
+            "duration": 300,
+            "target": "team",
+            "turf_wars_usable": true,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 410,
+        "name": "Cajado do Guardião",
+        "description": "Equipamento permanente que aumenta a eficácia de todas as habilidades de suporte em 30% e permite curar dois aliados simultaneamente.",
+        "price": 2000,
+        "type": "equipment",
+        "category": "support",
+        "rarity": "legendary",
+        "effects": {
+            "support_effectiveness": 0.3,
+            "multi_target_heal": 2,
+            "permanent": true
+        }
+    },
+    {
+        "id": 411,
+        "name": "Orbe de Transferência",
+        "description": "Permite transferir temporariamente seus atributos para um aliado, aumentando suas capacidades em combate.",
+        "price": 800,
+        "type": "consumable",
+        "category": "support",
+        "rarity": "epic",
+        "effects": {
+            "attribute_transfer": true,
+            "transfer_percentage": 0.5,
+            "duration": 180,
+            "target": "ally",
+            "turf_wars_usable": true,
+            "daily_usage_limit": 1
+        }
     }
 ] 

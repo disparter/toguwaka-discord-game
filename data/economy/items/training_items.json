@@ -37,5 +37,149 @@
             "learn_technique": true,
             "rare_technique_chance": {"base": 0.1, "level_multiplier": 0.01}
         }
+    },
+    {
+        "id": 4,
+        "name": "Livro de Técnicas Avançadas",
+        "description": "Aumenta a qualidade do treinamento em 50% e a chance de aprender técnicas raras. Efeito aumenta com seu nível.",
+        "price": 800,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "epic",
+        "effects": {
+            "training_quality_boost": {"base": 0.5, "level_multiplier": 0.05},
+            "rare_technique_chance": {"base": 0.2, "level_multiplier": 0.02},
+            "duration": 7200,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 5,
+        "name": "Medalhão do Mestre",
+        "description": "Aumenta permanentemente a experiência ganha em treinamentos e reduz o cooldown em 15%.",
+        "price": 1200,
+        "type": "accessory",
+        "category": "training",
+        "rarity": "legendary",
+        "effects": {
+            "exp_boost": {"base": 2.0, "level_multiplier": 0.1},
+            "cooldown_reduction": 0.15,
+            "permanent": true
+        }
+    },
+    {
+        "id": 6,
+        "name": "Cristal de Sabedoria",
+        "description": "Garante um evento raro no próximo treinamento e aumenta a qualidade do treinamento em 100%.",
+        "price": 600,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "epic",
+        "effects": {
+            "guaranteed_rare_event": true,
+            "training_quality_boost": 1.0,
+            "next_training_only": true,
+            "daily_usage_limit": 1
+        }
+    },
+    {
+        "id": 7,
+        "name": "Livro dos Segredos",
+        "description": "Revela técnicas secretas específicas para seu estilo de combate. Chance de desbloquear técnicas únicas aumenta com o nível.",
+        "price": 1500,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "legendary",
+        "effects": {
+            "reveal_secret_techniques": true,
+            "unique_technique_chance": {"base": 0.2, "level_multiplier": 0.02},
+            "style_specific": true,
+            "monthly_usage_limit": 1
+        }
+    },
+    {
+        "id": 8,
+        "name": "Cristal de Maestria",
+        "description": "Permite treinar uma técnica específica até o nível máximo instantaneamente. Requer nível 50.",
+        "price": 3000,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "legendary",
+        "effects": {
+            "instant_technique_mastery": true,
+            "level_requirement": 50,
+            "monthly_usage_limit": 1
+        }
+    },
+    {
+        "id": 9,
+        "name": "Amuleto do Aprendiz",
+        "description": "Equipamento permanente que reduz o tempo de cooldown entre treinamentos e aumenta a chance de eventos raros.",
+        "price": 2000,
+        "type": "accessory",
+        "category": "training",
+        "rarity": "epic",
+        "effects": {
+            "training_cooldown_reduction": 0.3,
+            "rare_event_chance": 0.25,
+            "permanent": true
+        }
+    },
+    {
+        "id": 10,
+        "name": "Colar de Proteção",
+        "description": "Reduz o dano recebido em duelos em 15% e aumenta a chance de contra-ataques.",
+        "price": 450,
+        "type": "accessory",
+        "category": "training",
+        "rarity": "rare",
+        "effects": {
+            "damage_reduction": 0.15,
+            "counter_attack_chance": 0.1,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 11,
+        "name": "Anel de Poder",
+        "description": "Aumenta o dano causado em duelos em 15% e a chance de críticos.",
+        "price": 450,
+        "type": "accessory",
+        "category": "training",
+        "rarity": "rare",
+        "effects": {
+            "damage_boost": 0.15,
+            "critical_chance": 0.1,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 12,
+        "name": "Pergaminho de Técnica Avançada",
+        "description": "Ensina uma técnica avançada aleatória ao seu personagem. Maior chance de técnicas raras.",
+        "price": 1000,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "epic",
+        "effects": {
+            "learn_advanced_technique": true,
+            "rare_technique_chance": 0.3,
+            "weekly_usage_limit": 1
+        }
+    },
+    {
+        "id": 13,
+        "name": "Poção de Maestria",
+        "description": "Aumenta temporariamente o nível de uma técnica aleatória em +2 e reduz seu custo de energia.",
+        "price": 750,
+        "type": "consumable",
+        "category": "training",
+        "rarity": "epic",
+        "effects": {
+            "technique_level_boost": 2,
+            "energy_cost_reduction": 0.2,
+            "duration": 86400,
+            "weekly_usage_limit": 1
+        }
     }
 ] 

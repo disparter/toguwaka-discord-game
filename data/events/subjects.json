@@ -1,0 +1,160 @@
+{
+    "subjects": [
+        {
+            "subject": "Matemática",
+            "emoji": "🧮",
+            "description": "Hoje é dia de Matemática! Participe do quiz para ganhar notas e XP!",
+            "difficulty": 2,
+            "questions": [
+                {
+                    "question": "Quanto é 15 × 7?",
+                    "options": ["95", "105", "115", "125"],
+                    "correct": 1,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Se 3x + 7 = 22, qual é o valor de x?",
+                    "options": ["3", "5", "7", "9"],
+                    "correct": 1,
+                    "difficulty": 2
+                },
+                {
+                    "question": "Qual é a área de um círculo com raio 4?",
+                    "options": ["16π", "8π", "4π", "12π"],
+                    "correct": 0,
+                    "difficulty": 3
+                }
+            ]
+        },
+        {
+            "subject": "Física",
+            "emoji": "⚛️",
+            "description": "Hoje é dia de Física! Participe do quiz para ganhar notas e XP!",
+            "difficulty": 3,
+            "questions": [
+                {
+                    "question": "Qual é a unidade de medida de força no Sistema Internacional?",
+                    "options": ["Watt", "Newton", "Joule", "Pascal"],
+                    "correct": 1,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Qual é a fórmula da Segunda Lei de Newton?",
+                    "options": ["F = ma", "E = mc²", "v = d/t", "P = mg"],
+                    "correct": 0,
+                    "difficulty": 2
+                },
+                {
+                    "question": "O que é um quantum?",
+                    "options": ["Uma partícula subatômica", "Uma quantidade discreta de energia", "Um tipo de onda", "Um campo magnético"],
+                    "correct": 1,
+                    "difficulty": 3
+                }
+            ]
+        },
+        {
+            "subject": "Biologia",
+            "emoji": "🧬",
+            "description": "Hoje é dia de Biologia! Participe do quiz para ganhar notas e XP!",
+            "difficulty": 2,
+            "questions": [
+                {
+                    "question": "Qual é a organela responsável pela respiração celular?",
+                    "options": ["Mitocôndria", "Ribossomo", "Complexo de Golgi", "Lisossomo"],
+                    "correct": 0,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Qual é o processo pelo qual as plantas produzem seu próprio alimento?",
+                    "options": ["Respiração", "Fotossíntese", "Digestão", "Fermentação"],
+                    "correct": 1,
+                    "difficulty": 1
+                },
+                {
+                    "question": "O que é um alelo?",
+                    "options": ["Um tipo de célula", "Uma forma alternativa de um gene", "Um tipo de proteína", "Um organismo unicelular"],
+                    "correct": 1,
+                    "difficulty": 2
+                }
+            ]
+        },
+        {
+            "subject": "Artes Marciais",
+            "emoji": "🥋",
+            "description": "Hoje é dia de Artes Marciais! Participe do quiz para ganhar notas e XP!",
+            "difficulty": 1,
+            "questions": [
+                {
+                    "question": "Qual arte marcial se originou no Japão e significa 'caminho suave'?",
+                    "options": ["Karatê", "Judô", "Taekwondo", "Kung Fu"],
+                    "correct": 1,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Qual é a cor do cinturão mais alto no Karatê tradicional?",
+                    "options": ["Preto", "Vermelho", "Branco", "Marrom"],
+                    "correct": 0,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Qual arte marcial utiliza principalmente movimentos circulares e é conhecida por sua fluidez?",
+                    "options": ["Muay Thai", "Capoeira", "Aikido", "Boxe"],
+                    "correct": 2,
+                    "difficulty": 2
+                }
+            ]
+        },
+        {
+            "subject": "Habilidades Especiais",
+            "emoji": "✨",
+            "description": "Hoje é dia de Habilidades Especiais! Participe do quiz para ganhar notas e XP!",
+            "difficulty": 3,
+            "questions": [
+                {
+                    "question": "Qual é o nome da habilidade de mover objetos com a mente?",
+                    "options": ["Telepatia", "Telecinese", "Clarividência", "Precognição"],
+                    "correct": 1,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Qual habilidade permite ver o futuro?",
+                    "options": ["Telepatia", "Empatia", "Precognição", "Clarividência"],
+                    "correct": 2,
+                    "difficulty": 2
+                },
+                {
+                    "question": "Qual é o nome da habilidade de se curar rapidamente?",
+                    "options": ["Regeneração", "Cura", "Imortalidade", "Vitalidade"],
+                    "correct": 0,
+                    "difficulty": 1
+                }
+            ]
+        },
+        {
+            "subject": "Atletismo",
+            "emoji": "🏃",
+            "description": "Hoje é dia de Atletismo! Participe do quiz para ganhar notas e XP!",
+            "difficulty": 1,
+            "questions": [
+                {
+                    "question": "Qual é a distância de uma maratona em quilômetros?",
+                    "options": ["21,0975 km", "42,195 km", "10 km", "100 km"],
+                    "correct": 1,
+                    "difficulty": 1
+                },
+                {
+                    "question": "Qual é o recorde mundial dos 100 metros rasos masculino?",
+                    "options": ["9,58s", "9,69s", "9,82s", "9,95s"],
+                    "correct": 0,
+                    "difficulty": 2
+                },
+                {
+                    "question": "Qual destes não é um evento de atletismo nas Olimpíadas?",
+                    "options": ["Lançamento de dardo", "Salto com vara", "Corrida de obstáculos", "Levantamento de peso"],
+                    "correct": 3,
+                    "difficulty": 2
+                }
+            ]
+        }
+    ]
+} 
