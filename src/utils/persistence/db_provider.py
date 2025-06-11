@@ -189,158 +189,139 @@ class DBProvider:
             return []
 
     # --- Event operations ---
-    async def store_event(self, event_id: str, name: str, description: str, event_type: str, 
-                      channel_id: str, message_id: str, start_time: datetime, 
-                      end_time: datetime, participants: List[str], data: Dict[str, Any], 
-                      completed: bool = False) -> bool:
-        """Store event data in database."""
+    async def get_event(self, event_id: str) -> Optional[Dict[str, Any]]:
+        """Get event data from database."""
         try:
-            from utils.persistence.dynamodb import put_item
-            from utils.config import DYNAMODB_TABLE
-
-            item = {
-                'PK': f'EVENT#{event_id}',
-                'SK': 'INFO',
-                'name': name,
-                'description': description,
-                'event_type': event_type,
-                'channel_id': channel_id,
-                'message_id': message_id,
-                'start_time': start_time.isoformat(),
-                'end_time': end_time.isoformat(),
-                'participants': participants,
-                'data': data,
-                'completed': completed,
-                'created_at': datetime.now().isoformat(),
-                'last_updated': datetime.now().isoformat()
-            }
-
-            # Use the async put_item function instead of direct table access
-            await put_item(DYNAMODB_TABLE, item)
-            return True
+            response = self.MAIN_TABLE.get_item(
+                Key={
+                    'PK': f'EVENTOS#{event_id}',
+                    'SK': 'EVENTOS'
+                }
+            )
+            return response.get('Item')
         except Exception as e:
-            logger.error(f"Error storing event {event_id}: {str(e)}")
-            return False
+            logger.error(f"Error getting event {event_id}: {str(e)}")
+            return None
 
-    async def get_event(self, *args, **kwargs) -> Optional[Dict[str, Any]]:
-        return None
+    async def get_all_events(self) -> List[Dict[str, Any]]:
+        """Get all events from database."""
+        try:
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+                ExpressionAttributeValues={
+                    ':pk': 'EVENTOS#',
+                    ':sk': 'EVENTOS'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all events: {str(e)}")
+            return []
 
-    async def get_events_by_date(self, *args, **kwargs) -> List[Dict[str, Any]]:
-        return []
+    # --- Item operations ---
+    async def get_item(self, item_id: str) -> Optional[Dict[str, Any]]:
+        """Get item data from database."""
+        try:
+            response = self.MAIN_TABLE.get_item(
+                Key={
+                    'PK': f'ITENS#{item_id}',
+                    'SK': 'ITENS'
+                }
+            )
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting item {item_id}: {str(e)}")
+            return None
 
-    async def update_event_status(self, *args, **kwargs) -> bool:
-        return True
+    async def get_all_items(self) -> List[Dict[str, Any]]:
+        """Get all items from database."""
+        try:
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+                ExpressionAttributeValues={
+                    ':pk': 'ITENS#',
+                    ':sk': 'ITENS'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all items: {str(e)}")
+            return []
 
-    async def get_active_events(self, *args, **kwargs) -> List[Dict[str, Any]]:
-        return []
+    # --- Quiz operations ---
+    async def get_quiz_question(self, question_id: str) -> Optional[Dict[str, Any]]:
+        """Get quiz question data from database."""
+        try:
+            response = self.MAIN_TABLE.get_item(
+                Key={
+                    'PK': f'QUIZQUESTION#{question_id}',
+                    'SK': 'QUIZQUESTION'
+                }
+            )
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting quiz question {question_id}: {str(e)}")
+            return None
+
+    async def get_all_quiz_questions(self) -> List[Dict[str, Any]]:
+        """Get all quiz questions from database."""
+        try:
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND SK = :sk',
+                ExpressionAttributeValues={
+                    ':pk': 'QUIZQUESTION#',
+                    ':sk': 'QUIZQUESTION'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all quiz questions: {str(e)}")
+            return []
+
+    async def get_quiz_answers(self, question_id: str) -> List[Dict[str, Any]]:
+        """Get all answers for a quiz question from database."""
+        try:
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk) AND begins_with(SK, :sk)',
+                ExpressionAttributeValues={
+                    ':pk': 'QUIZANSWER#',
+                    ':sk': f'QUESTION#{question_id}'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting quiz answers for question {question_id}: {str(e)}")
+            return []
 
     # --- Cooldown operations ---
-    async def store_cooldown(self, user_id: str, command: str, expiry_time: datetime) -> bool:
-        """Store command cooldown in database."""
+    async def get_cooldown(self, user_id: str, command: str) -> Optional[Dict[str, Any]]:
+        """Get cooldown data from database."""
         try:
-            # First check if the player has a cooldowns field
-            response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
-            player = response.get('Item', {})
-
-            if 'cooldowns' not in player:
-                # If cooldowns doesn't exist, create it with the new command
-                self.PLAYERS_TABLE.update_item(
-                    Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
-                    UpdateExpression='SET cooldowns = :cooldowns',
-                    ExpressionAttributeValues={':cooldowns': {command: expiry_time.isoformat()}}
-                )
-            else:
-                # If cooldowns exists, update the specific command
-                self.PLAYERS_TABLE.update_item(
-                    Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'},
-                    UpdateExpression='SET cooldowns.#command = :expiry',
-                    ExpressionAttributeValues={':expiry': expiry_time.isoformat()},
-                    ExpressionAttributeNames={'#command': command}
-                )
-            return True
+            response = self.MAIN_TABLE.get_item(
+                Key={
+                    'PK': f'COOLDOWN#{user_id}',
+                    'SK': f'COMMAND#{command}'
+                }
+            )
+            return response.get('Item')
         except Exception as e:
-            logger.error(f"Error storing cooldown for command {command} for player {user_id}: {str(e)}")
-            return False
-
-    async def get_cooldown(self, user_id: str, command: str) -> Optional[datetime]:
-        """Get command cooldown from database."""
-        try:
-            response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
-            player = response.get('Item')
-            if player and 'cooldowns' in player and command in player['cooldowns']:
-                return datetime.fromisoformat(player['cooldowns'][command])
-            return None
-        except Exception as e:
-            logger.error(f"Error getting cooldown for command {command} for player {user_id}: {str(e)}")
+            logger.error(f"Error getting cooldown for user {user_id} and command {command}: {str(e)}")
             return None
 
-    async def get_cooldowns(self, user_id: str = None) -> Dict[str, Dict[str, str]]:
-        """Get cooldowns for a user or all cooldowns if user_id is None."""
+    async def get_all_cooldowns(self, user_id: str) -> List[Dict[str, Any]]:
+        """Get all cooldowns for a user from database."""
         try:
-            if user_id:
-                # Get cooldowns for a specific user
-                response = self.PLAYERS_TABLE.get_item(Key={'PK': f'PLAYER#{user_id}', 'SK': 'PROFILE'})
-                player = response.get('Item', {})
-                if player and 'cooldowns' in player:
-                    return {user_id: player['cooldowns']}
-                return {}
-            else:
-                # Get cooldowns for all users
-                response = self.PLAYERS_TABLE.scan(
-                    FilterExpression='attribute_exists(cooldowns)',
-                    ProjectionExpression='PK, cooldowns'
-                )
-
-                cooldowns = {}
-                for player in response.get('Items', []):
-                    if 'cooldowns' in player:
-                        user_id = player['PK'].split('#')[1]
-                        cooldowns[user_id] = player['cooldowns']
-
-                return cooldowns
+            response = self.MAIN_TABLE.scan(
+                FilterExpression='PK = :pk AND begins_with(SK, :sk)',
+                ExpressionAttributeValues={
+                    ':pk': f'COOLDOWN#{user_id}',
+                    ':sk': 'COMMAND#'
+                }
+            )
+            return response.get('Items', [])
         except Exception as e:
-            logger.error(f"Error getting cooldowns: {str(e)}")
-            return {}
-
-    async def clear_expired_cooldowns(self) -> int:
-        """Clear expired cooldowns from database."""
-        try:
-            # Scan all players
-            response = self.PLAYERS_TABLE.scan()
-            cleared = 0
-            now = datetime.now()
-
-            for player in response.get('Items', []):
-                if 'cooldowns' not in player:
-                    continue
-
-                # Check each cooldown
-                expired_commands = []
-                for command, expiry_str in player['cooldowns'].items():
-                    expiry = datetime.fromisoformat(expiry_str)
-                    if expiry < now:
-                        expired_commands.append(command)
-                        cleared += 1
-
-                # Remove expired cooldowns
-                if expired_commands:
-                    update_expr = "REMOVE "
-                    for command in expired_commands:
-                        update_expr += f"cooldowns.#{command}, "
-                    update_expr = update_expr.rstrip(", ")
-
-                    expr_attr_names = {f"#{cmd}": cmd for cmd in expired_commands}
-
-                    self.PLAYERS_TABLE.update_item(
-                        Key={'PK': player['PK'], 'SK': player['SK']},
-                        UpdateExpression=update_expr,
-                        ExpressionAttributeNames=expr_attr_names
-                    )
-
-            return cleared
-        except Exception as e:
-            logger.error(f"Error clearing expired cooldowns: {str(e)}")
-            return 0
+            logger.error(f"Error getting all cooldowns for user {user_id}: {str(e)}")
+            return []
 
     # --- System flag operations ---
     async def get_system_flag(self, flag_name: str) -> Optional[str]:
@@ -463,30 +444,6 @@ class DBProvider:
             return True
         except Exception as e:
             logger.error(f"Error updating reputation for player {user_id}: {str(e)}")
-            return False
-
-    # --- Quiz operations ---
-    async def get_quiz_questions(self, subject: str) -> List[Dict[str, Any]]:
-        """Get quiz questions for a subject."""
-        try:
-            response = self.PLAYERS_TABLE.get_item(Key={'PK': 'QUIZ', 'SK': f'SUBJECT#{subject}'})
-            return response.get('Item', {}).get('questions', [])
-        except Exception as e:
-            logger.error(f"Error getting quiz questions for subject {subject}: {str(e)}")
-            return []
-
-    async def record_quiz_answer(self, user_id: str, question_id: str, is_correct: bool) -> bool:
-        """Record a player's answer to a quiz question."""
-        try:
-            self.PLAYERS_TABLE.put_item(Item={
-                'PK': f'PLAYER#{user_id}',
-                'SK': f'QUIZ#{question_id}',
-                'is_correct': is_correct,
-                'timestamp': datetime.now().isoformat()
-            })
-            return True
-        except Exception as e:
-            logger.error(f"Error recording quiz answer for player {user_id}: {str(e)}")
             return False
 
     # --- Database initialization ---

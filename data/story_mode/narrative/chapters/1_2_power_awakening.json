@@ -1,0 +1,249 @@
+{
+  "chapter_id": "1_2_power_awakening",
+  "type": "story",
+  "title": "Despertar dos Poderes",
+  "description": "O momento do despertar inicial dos poderes do jogador",
+  "phase": "year_1_intro",
+  "requirements": {
+    "previous_chapter": "1_1_arrival",
+    "flags": {
+      "club_selected": true
+    }
+  },
+  "scenes": [
+    {
+      "scene_id": "ritual_chamber",
+      "title": "Câmara do Ritual",
+      "description": "Uma sala especial preparada para o ritual de despertar dos poderes",
+      "background": "ritual_chamber.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "nervous",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "serious",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "Bem-vindo à Câmara do Ritual. Aqui, você passará pelo ritual de despertar dos poderes. Este é um momento crucial em sua jornada.",
+          "expression": "serious"
+        },
+        {
+          "speaker": "player",
+          "text": "O que devo esperar do ritual?",
+          "expression": "nervous"
+        },
+        {
+          "speaker": "professor_elementus",
+          "text": "O ritual conectará você com sua essência interior. Deixe suas emoções fluírem naturalmente e confie em seus instintos.",
+          "expression": "calm"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Preparar-se para o ritual",
+          "next_scene": "ritual_preparation",
+          "effects": {
+            "reputation": {
+              "professor_elementus": 3
+            },
+            "focus": 5
+          }
+        },
+        {
+          "text": "Perguntar mais sobre o processo",
+          "next_scene": "ritual_explanation",
+          "effects": {
+            "knowledge": 5,
+            "reputation": {
+              "professor_elementus": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "ritual_preparation",
+      "title": "Preparação do Ritual",
+      "description": "Os momentos finais antes do início do ritual",
+      "background": "ritual_chamber_preparation.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "focused",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "focused",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "O círculo está pronto. Entre nele e deixe sua mente se acalmar. Sinta a energia ao seu redor.",
+          "expression": "focused"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Entrar no círculo",
+          "next_scene": "power_awakening",
+          "effects": {
+            "focus": 8,
+            "power": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "power_awakening",
+      "title": "O Despertar",
+      "description": "O momento do despertar dos poderes",
+      "background": "power_awakening.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "transcendent",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "impressed",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "Sinta a energia fluindo através de você. Deixe-a guiá-lo para seu verdadeiro potencial.",
+          "expression": "impressed"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Aceitar o poder",
+          "next_scene": "power_manifestation",
+          "effects": {
+            "power": 15,
+            "reputation": {
+              "professor_elementus": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "power_manifestation",
+      "title": "Manifestação do Poder",
+      "description": "A primeira manifestação dos poderes do jogador",
+      "background": "power_manifestation.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "center",
+          "expression": "awakened",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "proud",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "Impressionante! Seus poderes se manifestaram de forma única. Agora começa sua verdadeira jornada.",
+          "expression": "proud"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Expressar gratidão",
+          "next_scene": "ritual_completion",
+          "effects": {
+            "reputation": {
+              "professor_elementus": 5
+            },
+            "wisdom": 5
+          }
+        }
+      ]
+    },
+    {
+      "scene_id": "ritual_completion",
+      "title": "Conclusão do Ritual",
+      "description": "O final do ritual de despertar",
+      "background": "ritual_chamber_completion.png",
+      "characters": [
+        {
+          "id": "player",
+          "position": "left",
+          "expression": "determined",
+          "image": "student_room_reflection_night.png"
+        },
+        {
+          "id": "professor_elementus",
+          "position": "right",
+          "expression": "satisfied",
+          "image": "professor_elementus_intro.png"
+        }
+      ],
+      "dialogue": [
+        {
+          "speaker": "professor_elementus",
+          "text": "O ritual foi um sucesso. Agora você deve treinar e desenvolver seus poderes. Seu clube será fundamental nesse processo.",
+          "expression": "satisfied"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Ir para o treinamento do clube",
+          "next_chapter": "club_1_1_intro",
+          "effects": {
+            "experience": 100,
+            "power": 10,
+            "reputation": {
+              "professor_elementus": 5
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "experience": 200,
+    "skills": [
+      "power_awakening",
+      "energy_control"
+    ],
+    "items": ["power_crystal"],
+    "unlocks": ["power_training", "club_activities"]
+  },
+  "next_chapter": "club_1_1_intro",
+  "flags": {
+    "powers_awakened": true,
+    "initial_training_available": true
+  },
+  "metadata": {
+    "location": "ritual_chamber",
+    "time_of_day": "night",
+    "weather": "mysterious",
+    "season": "spring"
+  }
+} 

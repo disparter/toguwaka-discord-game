@@ -5,7 +5,11 @@
     "description": "O primeiro encontro com o Clube de Combate e seu líder",
     "phase": "year_1_clubs",
     "requirements": {
-        "previous_chapter": "1_1_arrival",
+        "previous_chapter": "1_2_power_awakening",
+        "flags": {
+            "powers_awakened": true,
+            "club_selected": true
+        },
         "reputation": {
             "ryuji": 0
         }

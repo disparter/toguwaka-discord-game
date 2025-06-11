@@ -99,6 +99,10 @@ class DuelCalculator(IDuelCalculator):
             'magical': {
                 'exp': 45,
                 'tusd': 90
+            },
+            'mental': {
+                'exp': 45,
+                'tusd': 90
             }
         }
         
