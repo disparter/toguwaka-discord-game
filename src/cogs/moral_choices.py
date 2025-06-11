@@ -31,8 +31,8 @@ class MoralChoices(commands.Cog):
         user_id = interaction.user.id
 
         # Verificar cooldown
-        if self._check_cooldown(user_id, "dilema"):
-            remaining = self._get_remaining_cooldown(user_id, "dilema")
+        if await self._check_cooldown(user_id, "dilema"):
+            remaining = await self._get_remaining_cooldown(user_id, "dilema")
             await interaction.response.send_message(
                 f"Você ainda está refletindo sobre seu último dilema. Tente novamente em {remaining} minutos.",
                 ephemeral=True
@@ -78,7 +78,7 @@ class MoralChoices(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
 
         # Definir cooldown
-        self._set_cooldown(user_id, "dilema")
+        await self._set_cooldown(user_id, "dilema")
 
     def _create_dilema_choice_callback(self, user_id: int, choice_index: int):
         """Cria um callback para os botões de escolha do dilema."""
@@ -219,8 +219,8 @@ class MoralChoices(commands.Cog):
             return
 
         # Verificar cooldown
-        if self._check_cooldown(user_id, f"atividade_{tipo}"):
-            remaining = self._get_remaining_cooldown(user_id, f"atividade_{tipo}")
+        if await self._check_cooldown(user_id, f"atividade_{tipo}"):
+            remaining = await self._get_remaining_cooldown(user_id, f"atividade_{tipo}")
             await interaction.response.send_message(
                 f"Você precisa esperar {remaining} minutos antes de participar de outra atividade deste tipo.",
                 ephemeral=True
@@ -243,7 +243,7 @@ class MoralChoices(commands.Cog):
 
         # Definir cooldown (exceto para ações de info)
         if acao != "info":
-            self._set_cooldown(user_id, f"atividade_{tipo}")
+            await self._set_cooldown(user_id, f"atividade_{tipo}")
 
     async def _handle_motim(self, interaction, acao, alvo, player_data):
         """Gerencia a participação em motins."""
@@ -619,42 +619,37 @@ class MoralChoices(commands.Cog):
 
         return embed
 
-    def _check_cooldown(self, user_id, command):
-        """Verifica se um comando está em cooldown para um usuário."""
-        if user_id not in self.cooldowns:
+    async def _check_cooldown(self, user_id, command):
+        """Check if a command is on cooldown for a user."""
+        try:
+            cooldown = await db_provider.get_cooldown(str(user_id), command)
+            if cooldown and datetime.now() < cooldown:
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error checking cooldown: {e}")
             return False
 
-        if command not in self.cooldowns[user_id]:
-            return False
-
-        cooldown_time = self.cooldowns[user_id][command]
-        current_time = datetime.now()
-
-        # Cooldown padrão de 30 minutos
-        if current_time < cooldown_time + timedelta(minutes=30):
-            return True
-
-        return False
-
-    def _get_remaining_cooldown(self, user_id, command):
-        """Retorna o tempo restante de cooldown em minutos."""
-        if not self._check_cooldown(user_id, command):
+    async def _get_remaining_cooldown(self, user_id, command):
+        """Get remaining cooldown time in minutes."""
+        try:
+            cooldown = await db_provider.get_cooldown(str(user_id), command)
+            if cooldown and datetime.now() < cooldown:
+                remaining = cooldown - datetime.now()
+                return max(1, int(remaining.total_seconds() / 60))
+            return 0
+        except Exception as e:
+            logger.error(f"Error getting remaining cooldown: {e}")
             return 0
 
-        cooldown_time = self.cooldowns[user_id][command]
-        current_time = datetime.now()
-
-        remaining_seconds = (cooldown_time + timedelta(minutes=30) - current_time).total_seconds()
-        remaining_minutes = max(1, int(remaining_seconds / 60))
-
-        return remaining_minutes
-
-    def _set_cooldown(self, user_id, command, custom_duration=None):
-        """Define um cooldown para um comando."""
-        if user_id not in self.cooldowns:
-            self.cooldowns[user_id] = {}
-
-        self.cooldowns[user_id][command] = datetime.now()
+    async def _set_cooldown(self, user_id, command, custom_duration=None):
+        """Set a cooldown for a command."""
+        try:
+            duration = custom_duration or 1800  # Default 30 minutes
+            expiry = datetime.now() + timedelta(seconds=duration)
+            await db_provider.store_cooldown(str(user_id), command, expiry)
+        except Exception as e:
+            logger.error(f"Error setting cooldown: {e}")
 
     # Command alianca moved to story_mode.py to avoid duplicate command registration
     # Command rivalidade moved to story_mode.py to avoid duplicate command registration

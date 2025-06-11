@@ -1193,10 +1193,12 @@ class Activities(commands.Cog):
         # This is a placeholder for future weekly events
         await ctx.send("Não há eventos ativos no momento. Fique atento para futuros eventos na Academia Tokugawa!")
 
-    async def clear_expired_cooldowns(self, task=None):
+    async def clear_expired_cooldowns(self):
         """Clear all expired cooldowns from the database."""
         try:
-            await db_provider.clear_expired_cooldowns()
+            cleared = await db_provider.clear_expired_cooldowns()
+            if cleared > 0:
+                logger.info(f"Cleared {cleared} expired cooldowns")
         except Exception as e:
             logger.error(f"Error clearing cooldowns: {e}")
 
