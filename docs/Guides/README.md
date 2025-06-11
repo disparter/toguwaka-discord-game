@@ -30,6 +30,11 @@ Welcome to Tokugawa Academy, a prestigious school for students with extraordinar
 - `/inventory` - Check your items and techniques
 - `/stats` - View your character stats
 - `/top` - View top players ranking
+- `/registro` - Edit your character information
+  - `comando:alterar_nome valor:<novo_nome>` - Change your character's name
+  - `comando:alterar_poder valor:<novo_poder>` - Change your power's name
+  - `comando:alterar_descricao_poder valor:<nova_descricao>` - Change your power's description
+  - Note: You must be registered to use these commands. Club cannot be changed.
 
 ### Activities
 - `/activity train` - Train to gain experience (1h cooldown)

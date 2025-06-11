@@ -3,21 +3,27 @@ import discord
 import logging
 from discord import app_commands
 from discord.ext import commands
+from typing import Optional
 
 from story_mode.club_rivalry_system import ClubSystem
 from utils.embeds import create_basic_embed, create_player_embed
 from utils.game_mechanics import STRENGTH_LEVELS
-from utils.persistence.db_provider import db_provider
+from utils.persistence import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
 
 
-class Registration(commands.Cog):
-    """Cog for player registration and character creation."""
+class RegistrationCog(commands.Cog):
+    """Cog for handling player registration and character information editing."""
 
     def __init__(self, bot):
         self.bot = bot
         self.club_system = ClubSystem()
+        logger.info("RegistrationCog initialized")
+
+    def cog_load(self):
+        """Called when the cog is loaded."""
+        logger.info("RegistrationCog loaded")
 
     # Group for registration commands
     registration_group = app_commands.Group(name="registro", description="Comandos de registro da Academia Tokugawa")
@@ -235,13 +241,118 @@ class Registration(commands.Cog):
 
         await ctx.send(embed=help_embed)
 
+    @app_commands.command(name="registro", description="Comandos para gerenciar seu registro")
+    @app_commands.describe(
+        comando="Comando a ser executado (alterar_nome, alterar_poder, alterar_descricao_poder)",
+        valor="Novo valor para o campo"
+    )
+    async def registration_command(
+        self,
+        interaction: discord.Interaction,
+        comando: str,
+        valor: str
+    ):
+        """
+        Command to edit character information.
+        """
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except discord.errors.NotFound:
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /registro")
+            return
+
+        # Get player data
+        player_data = await db_provider.get_player(interaction.user.id)
+        if not player_data:
+            await interaction.followup.send(
+                "Você precisa estar registrado para usar este comando. Use /registrar primeiro.",
+                ephemeral=True
+            )
+            return
+
+        # Validate input
+        if not valor or len(valor.strip()) == 0:
+            await interaction.followup.send(
+                "O valor não pode estar vazio.",
+                ephemeral=True
+            )
+            return
+
+        if len(valor) > 100:  # Maximum length for any field
+            await interaction.followup.send(
+                "O valor é muito longo. Máximo de 100 caracteres.",
+                ephemeral=True
+            )
+            return
+
+        # Process command
+        if comando == "alterar_nome":
+            if len(valor) < 3:
+                await interaction.followup.send(
+                    "O nome deve ter pelo menos 3 caracteres.",
+                    ephemeral=True
+                )
+                return
+
+            # Update name
+            await db_provider.update_player(
+                interaction.user.id,
+                name=valor
+            )
+            await interaction.followup.send(
+                f"Nome alterado com sucesso para: {valor}",
+                ephemeral=True
+            )
+
+        elif comando == "alterar_poder":
+            if len(valor) < 3:
+                await interaction.followup.send(
+                    "O nome do poder deve ter pelo menos 3 caracteres.",
+                    ephemeral=True
+                )
+                return
+
+            # Update power name
+            await db_provider.update_player(
+                interaction.user.id,
+                power_name=valor
+            )
+            await interaction.followup.send(
+                f"Nome do poder alterado com sucesso para: {valor}",
+                ephemeral=True
+            )
+
+        elif comando == "alterar_descricao_poder":
+            if len(valor) < 10:
+                await interaction.followup.send(
+                    "A descrição do poder deve ter pelo menos 10 caracteres.",
+                    ephemeral=True
+                )
+                return
+
+            # Update power description
+            await db_provider.update_player(
+                interaction.user.id,
+                power_description=valor
+            )
+            await interaction.followup.send(
+                f"Descrição do poder alterada com sucesso para: {valor}",
+                ephemeral=True
+            )
+
+        else:
+            await interaction.followup.send(
+                "Comando inválido. Use: alterar_nome, alterar_poder ou alterar_descricao_poder",
+                ephemeral=True
+            )
+
 
 async def setup(bot):
     """Add the cog to the bot."""
     from utils.command_registrar import CommandRegistrar
 
     # Create and add the cog
-    cog = Registration(bot)
+    cog = RegistrationCog(bot)
     await bot.add_cog(cog)
     logger.info("Registration cog loaded")
 

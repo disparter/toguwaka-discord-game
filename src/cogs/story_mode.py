@@ -104,7 +104,7 @@ class StoryModeCog(commands.Cog):
         await ctx.send(embed=embed)
 
         # Send first dialogue or choices
-        await self._send_dialogue_or_choices(ctx.channel, user_id, result)
+        await self._send_dialogue_or_choices(ctx, chapter_data, player_data)
 
         # Check for available events
         if "available_events" in result and result["available_events"]:
@@ -183,7 +183,7 @@ class StoryModeCog(commands.Cog):
         await interaction.followup.send(embed=embed, ephemeral=True)
 
         # Send first dialogue or choices
-        await self._send_dialogue_or_choices(interaction.channel, user_id, result)
+        await self._send_dialogue_or_choices(interaction, chapter_data, player_data)
 
         # Check for available events
         if "available_events" in result and result["available_events"]:
@@ -504,190 +504,63 @@ class StoryModeCog(commands.Cog):
         except Exception as e:
             logger.error(f"Erro ao enviar resposta: {e}")
 
-    async def _send_dialogue_or_choices(self, channel, user_id: int, result):
-        """
-        Sends the current dialogue or choices to the channel.
-        """
-        chapter_data = result["chapter_data"]
-
-        # Convert StoryChapter object to dictionary if needed
-        if not isinstance(chapter_data, dict):
-            # Create a dictionary with the same structure as expected
-            chapter_dict = {
-                'title': chapter_data.get_title() if hasattr(chapter_data, 'get_title') else "Unknown Title",
-                'description': chapter_data.get_description() if hasattr(chapter_data, 'get_description') else "No description available.",
-                'current_dialogue': None,
-                'choices': []
-            }
-
-            # Safely handle dialogues
-            if hasattr(chapter_data, 'dialogues'):
-                if isinstance(chapter_data.dialogues, list) and len(chapter_data.dialogues) > 0:
-                    chapter_dict['current_dialogue'] = chapter_data.dialogues[0]
-                elif hasattr(chapter_data.dialogues, 'get') and chapter_data.dialogues.get(0):
-                    chapter_dict['current_dialogue'] = chapter_data.dialogues.get(0)
-
-            # Safely handle choices
-            if hasattr(chapter_data, 'choices'):
-                if isinstance(chapter_data.choices, list):
-                    chapter_dict['choices'] = chapter_data.choices
-                elif hasattr(chapter_data.choices, 'get_available_choices'):
-                    chapter_dict['choices'] = chapter_data.choices.get_available_choices(result.get('player_data', {}))
-
-            # Add any other attributes that might be accessed
-            if hasattr(chapter_data, 'chapter_id'):
-                chapter_dict['id'] = chapter_data.chapter_id
-
-            # Replace the StoryChapter object with our dictionary
-            chapter_data = chapter_dict
-
-        # Check if this is a challenge that has already been completed or failed
-        if "already_completed" in chapter_data and chapter_data["already_completed"]:
-            embed = create_basic_embed(
-                title="Desafio Já Completado",
-                description="Você já completou este desafio com sucesso. Não é possível refazê-lo.",
-                color=discord.Color.gold()
-            )
-            await channel.send(embed=embed)
-            return
-
-        if "already_failed" in chapter_data and chapter_data["already_failed"]:
-            embed = create_basic_embed(
-                title="Desafio Já Tentado",
-                description="Você já falhou neste desafio. Não é possível tentá-lo novamente.",
-                color=discord.Color.red()
-            )
-            await channel.send(embed=embed)
-            return
-
-        # Check if a path is blocked due to previous failures
-        if "path_blocked" in result and result["path_blocked"]:
-            embed = create_basic_embed(
-                title="Caminho Bloqueado",
-                description="Devido a falhas anteriores, este caminho da história está bloqueado para você.",
-                color=discord.Color.red()
-            )
-            await channel.send(embed=embed)
-            return
-
-        # Check if a challenge was just completed successfully
-        if "challenge_success" in result and result["challenge_success"]:
-            embed = create_basic_embed(
-                title="Desafio Completado",
-                description="Parabéns! Você completou o desafio com sucesso e recebeu recompensas.",
-                color=discord.Color.green()
-            )
-            await channel.send(embed=embed)
-
-        # Process dialogues
-        if "current_dialogue" in chapter_data and chapter_data["current_dialogue"]:
-            dialogue = chapter_data["current_dialogue"]
-            embed = create_basic_embed(
-                title=dialogue.get("title", "Diálogo"),
-                description=dialogue["text"],
-                color=discord.Color.blue()
-            )
-
-            # Add character intro images for first interactions
-            if "image" in dialogue and dialogue["image"]:
-                image_path = self.image_manager.get_image_path(dialogue["image"])
-                if self.image_manager.validate_image(image_path):
-                    try:
-                        embed.set_image(url=f"attachment://{os.path.basename(image_path)}")
-                        file = discord.File(image_path, filename=os.path.basename(image_path))
-                        await channel.send(embed=embed, file=file)
-                    except Exception as e:
-                        logger.error(f"Error sending image {image_path}: {str(e)}")
-                        await channel.send(embed=embed)
-                else:
-                    logger.warning(f"Image file {image_path} not found or too large")
-                    await channel.send(embed=embed)
-            else:
-                await channel.send(embed=embed)
-
-        # Process choices
-        if "choices" in chapter_data and chapter_data["choices"]:
-            choices = chapter_data["choices"]
-            embed = create_basic_embed(
-                title="Escolhas Disponíveis",
-                description="Escolha uma opção:",
-                color=discord.Color.blue()
-            )
-
-            for i, choice in enumerate(choices):
-                embed.add_field(
-                    name=f"Opção {i+1}",
-                    value=choice["text"],
-                    inline=False
-                )
-
-            await channel.send(embed=embed)
-
-            # Create view with choice buttons
-            view = discord.ui.View()
-            for i, choice in enumerate(choices):
-                button = discord.ui.Button(
-                    label=f"Opção {i+1}",
-                    custom_id=f"choice_{i}",
-                    style=discord.ButtonStyle.primary
-                )
-                button.callback = self._create_choice_callback(user_id, i)
-                view.add_item(button)
-
-            await channel.send("Escolha uma opção:", view=view)
-
-        # Check if we have any content to display
-        has_content = (
-            ("current_dialogue" in chapter_data and chapter_data["current_dialogue"]) or
-            ("choices" in chapter_data and chapter_data["choices"])
-        )
-
-        # If we have content but it's not being displayed, there's an issue
-        if has_content:
-            logger.error(f"Chapter has content but it's not being displayed: {chapter_data}")
-            return
-
-        # If no content and chapter_complete is explicitly set, the chapter is complete
-        if "chapter_complete" in result and result["chapter_complete"]:
-            if "story_complete" in result and result["story_complete"]:
-                title = "História Concluída"
-                description = "Parabéns! Você concluiu a história principal do jogo."
-                color = discord.Color.gold()
-            else:
-                title = "Capítulo Concluído"
-                description = "Você concluiu este capítulo da história."
-                color = discord.Color.green()
-        else:
-            # If no content and not marked as complete, this is likely the first chapter
-            # Let's check if this is the first chapter (1_1_arrival)
-            # Get player data from result
-            player_data = result.get("player_data", {})
+    async def _send_dialogue_or_choices(self, ctx, chapter_data, player_data):
+        """Send current dialogue or choices to the channel."""
+        try:
+            # Get current dialogue index
             story_progress = player_data.get("story_progress", {})
-            current_chapter = story_progress.get("current_chapter")
-
-            if current_chapter == "1_1_arrival":
-                # This is the first chapter, so we need to load the dialogues
-                # Let's log this for debugging
-                logger.warning(f"First chapter has no content: {chapter_data}")
-
-                # For now, just show a message to continue
-                title = "Bem-vindo à Academia Tokugawa"
-                description = "Sua jornada está apenas começando. Use o comando /historia novamente para continuar."
-                color = discord.Color.blue()
+            current_dialogue_index = story_progress.get("current_dialogue_index", 0)
+            
+            # Handle StoryChapter object
+            if hasattr(chapter_data, 'get_available_choices'):
+                # Get available choices from the StoryChapter object
+                available_choices = chapter_data.get_available_choices(player_data)
+                
+                if available_choices:
+                    # Create choice buttons
+                    view = discord.ui.View()
+                    for i, choice in enumerate(available_choices):
+                        button = discord.ui.Button(
+                            label=choice.get("text", f"Opção {i+1}"),
+                            custom_id=f"choice_{i}",
+                            style=discord.ButtonStyle.primary
+                        )
+                        button.callback = self._create_choice_callback(ctx.author.id, i)
+                        view.add_item(button)
+                    
+                    await ctx.send("Escolha uma opção:", view=view)
+                else:
+                    # If no choices available, show continue button
+                    view = discord.ui.View()
+                    continue_button = discord.ui.Button(
+                        label="Continuar",
+                        custom_id="continue",
+                        style=discord.ButtonStyle.primary
+                    )
+                    continue_button.callback = self._create_continue_callback(ctx.author.id)
+                    view.add_item(continue_button)
+                    await ctx.send("Pressione continuar para seguir:", view=view)
             else:
-                # Otherwise, just mark it as completed
-                title = "Capítulo Concluído"
-                description = "Você concluiu este capítulo da história."
-                color = discord.Color.green()
-
-        embed = create_basic_embed(
-            title=title,
-            description=description,
-            color=color
-        )
-
-        # Send chapter completion message
-        await channel.send(embed=embed)
+                # Handle dictionary format
+                dialogues = chapter_data.get("dialogues", [])
+                
+                if current_dialogue_index < len(dialogues):
+                    current_dialogue = dialogues[current_dialogue_index]
+                    await ctx.send(current_dialogue.get("text", ""))
+                    
+                    story_progress["current_dialogue_index"] = current_dialogue_index + 1
+                    await db_provider.update_player(ctx.author.id, {"story_progress": story_progress})
+                    
+                    if current_dialogue_index + 1 < len(dialogues):
+                        await self._send_dialogue_or_choices(ctx, chapter_data, player_data)
+                    else:
+                        await self._show_choices(ctx, chapter_data, player_data)
+                else:
+                    await self._show_choices(ctx, chapter_data, player_data)
+                    
+        except Exception as e:
+            logger.error(f"Error in _send_dialogue_or_choices: {str(e)}")
+            await ctx.send("Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.")
 
     def _create_choice_callback(self, user_id: int, choice_index: int):
         """
@@ -730,7 +603,7 @@ class StoryModeCog(commands.Cog):
             await db_provider.update_player(user_id, **update_data)
 
             # Send next dialogue or choices
-            await self._send_dialogue_or_choices(interaction.channel, user_id, result)
+            await self._send_dialogue_or_choices(interaction.channel, result["chapter_data"], result["player_data"])
 
             # Check for available events
             if "available_events" in result and result["available_events"]:
@@ -796,7 +669,7 @@ class StoryModeCog(commands.Cog):
             await db_provider.update_player(user_id, **update_data)
 
             # Send next dialogue or choices
-            await self._send_dialogue_or_choices(interaction.channel, user_id, result)
+            await self._send_dialogue_or_choices(interaction.channel, result["chapter_data"], result["player_data"])
 
             # Check for available events
             if "available_events" in result and result["available_events"]:

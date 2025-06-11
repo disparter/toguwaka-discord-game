@@ -143,14 +143,17 @@ class DBProvider:
     async def get_club(self, club_id) -> Optional[Dict[str, Any]]:
         """Get club data from database."""
         try:
-            # Ensure club_id is a string to match DynamoDB schema
+            # Ensure club_id is a string and properly formatted
             club_id_str = str(club_id)
-            response = self.CLUBS_TABLE.get_item(Key={'PK': f'CLUB#{club_id_str}', 'SK': 'INFO'})
+            if not club_id_str.startswith('CLUB#'):
+                club_id_str = f'CLUB#{club_id_str}'
+            
+            response = self.CLUBS_TABLE.get_item(Key={'PK': club_id_str, 'SK': 'INFO'})
             club_data = response.get('Item')
             if club_data:
                 # Ensure required fields exist
                 if 'name' not in club_data:
-                    club_data['name'] = f"Club {club_id_str}"
+                    club_data['name'] = f"Club {club_id_str.replace('CLUB#', '')}"
                 if 'description' not in club_data:
                     club_data['description'] = "No description available"
                 if 'members' not in club_data:
@@ -162,9 +165,9 @@ class DBProvider:
             logger.error(f"Error getting club {club_id}: {str(e)}")
             # Return a default club object with minimal required fields
             return {
-                'PK': f'CLUB#{club_id_str}',
+                'PK': club_id_str,
                 'SK': 'INFO',
-                'name': f"Club {club_id_str}",
+                'name': f"Club {club_id_str.replace('CLUB#', '')}",
                 'description': "No description available",
                 'members': [],
                 'reputation': 0
