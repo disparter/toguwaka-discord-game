@@ -163,4 +163,90 @@ async def test_value_too_long(registration_cog, mock_interaction):
         mock_interaction.followup.send.assert_called_once_with(
             "O valor é muito longo. Máximo de 100 caracteres.",
             ephemeral=True
+        )
+
+@pytest.mark.asyncio
+async def test_name_too_short(registration_cog, mock_interaction):
+    """Test minimum name length validation."""
+    with patch('utils.persistence.db_provider.get_player') as mock_get_player:
+        mock_get_player.return_value = {"name": "Test Player"}
+        
+        await registration_cog.registration_command(
+            mock_interaction,
+            "alterar_nome",
+            "Ab"  # 2 characters
+        )
+        
+        mock_interaction.followup.send.assert_called_once_with(
+            "O nome deve ter pelo menos 3 caracteres.",
+            ephemeral=True
+        )
+
+@pytest.mark.asyncio
+async def test_power_name_too_short(registration_cog, mock_interaction):
+    """Test minimum power name length validation."""
+    with patch('utils.persistence.db_provider.get_player') as mock_get_player:
+        mock_get_player.return_value = {"power_name": "Test Power"}
+        
+        await registration_cog.registration_command(
+            mock_interaction,
+            "alterar_poder",
+            "Ab"  # 2 characters
+        )
+        
+        mock_interaction.followup.send.assert_called_once_with(
+            "O nome do poder deve ter pelo menos 3 caracteres.",
+            ephemeral=True
+        )
+
+@pytest.mark.asyncio
+async def test_power_description_too_short(registration_cog, mock_interaction):
+    """Test minimum power description length validation."""
+    with patch('utils.persistence.db_provider.get_player') as mock_get_player:
+        mock_get_player.return_value = {"power_description": "Test Description"}
+        
+        await registration_cog.registration_command(
+            mock_interaction,
+            "alterar_descricao_poder",
+            "Short"  # 5 characters
+        )
+        
+        mock_interaction.followup.send.assert_called_once_with(
+            "A descrição do poder deve ter pelo menos 10 caracteres.",
+            ephemeral=True
+        )
+
+@pytest.mark.asyncio
+async def test_interaction_expired(registration_cog, mock_interaction):
+    """Test handling of expired interaction."""
+    mock_interaction.response.defer.side_effect = discord.errors.NotFound("Interaction expired")
+    
+    await registration_cog.registration_command(
+        mock_interaction,
+        "alterar_nome",
+        "New Name"
+    )
+    
+    # Verify no followup message was sent
+    mock_interaction.followup.send.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_database_error(registration_cog, mock_interaction):
+    """Test handling of database errors."""
+    with patch('utils.persistence.db_provider.get_player') as mock_get_player, \
+         patch('utils.persistence.db_provider.update_player') as mock_update_player:
+        
+        mock_get_player.return_value = {"name": "Test Player"}
+        mock_update_player.side_effect = Exception("Database error")
+        
+        await registration_cog.registration_command(
+            mock_interaction,
+            "alterar_nome",
+            "New Name"
+        )
+        
+        # Verify error message was sent
+        mock_interaction.followup.send.assert_called_once_with(
+            "Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.",
+            ephemeral=True
         ) 

@@ -241,7 +241,7 @@ class RegistrationCog(commands.Cog):
 
         await ctx.send(embed=help_embed)
 
-    @app_commands.command(name="registro", description="Comandos para gerenciar seu registro")
+    @app_commands.command(name="alterar_registro", description="Comandos para alterar informações do seu personagem")
     @app_commands.describe(
         comando="Comando a ser executado (alterar_nome, alterar_poder, alterar_descricao_poder)",
         valor="Novo valor para o campo"
@@ -258,7 +258,7 @@ class RegistrationCog(commands.Cog):
         try:
             await interaction.response.defer(ephemeral=True)
         except discord.errors.NotFound:
-            logger.warning(f"Interaction expired for user {interaction.user.id} when using /registro")
+            logger.warning(f"Interaction expired for user {interaction.user.id} when using /alterar_registro")
             return
 
         # Get player data
