@@ -1,9 +1,10 @@
 import unittest
 import sys
 import os
+from decimal import Decimal
+from unittest.mock import patch, MagicMock
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 from utils.game_mechanics.duel import DuelCalculator, DuelNarrator
-from unittest.mock import patch
 
 class TestDuelCalculator(unittest.TestCase):
     def setUp(self):
@@ -11,33 +12,54 @@ class TestDuelCalculator(unittest.TestCase):
         self.challenger = {
             "user_id": 1,
             "name": "Challenger",
-            "level": 10,
-            "exp": 1000,
-            "tusd": 500,
-            "dexterity": 20,
-            "intellect": 15,
-            "charisma": 10,
-            "power_stat": 30,
-            "hp": 100,
-            "max_hp": 100
+            "level": Decimal('10'),
+            "exp": Decimal('1000'),
+            "tusd": Decimal('500'),
+            "dexterity": Decimal('20'),
+            "intellect": Decimal('15'),
+            "charisma": Decimal('10'),
+            "power_stat": Decimal('30'),
+            "hp": Decimal('100'),
+            "max_hp": Decimal('100')
         }
         
         self.opponent = {
             "user_id": 2,
             "name": "Opponent",
-            "level": 8,
-            "exp": 800,
-            "tusd": 400,
-            "dexterity": 18,
-            "intellect": 12,
-            "charisma": 8,
-            "power_stat": 25,
-            "hp": 90,
-            "max_hp": 90
+            "level": Decimal('8'),
+            "exp": Decimal('800'),
+            "tusd": Decimal('400'),
+            "dexterity": Decimal('18'),
+            "intellect": Decimal('12'),
+            "charisma": Decimal('8'),
+            "power_stat": Decimal('25'),
+            "hp": Decimal('90'),
+            "max_hp": Decimal('90')
         }
+
+        # Mock the weights to use Decimal
+        self.weights_patch = patch.object(DuelCalculator, 'ATTRIBUTE_WEIGHTS', {
+            "physical": {
+                "dexterity": Decimal('0.6'),
+                "power_stat": Decimal('0.3'),
+                "intellect": Decimal('0.05'),
+                "charisma": Decimal('0.05')
+            },
+            "magical": {
+                "power_stat": Decimal('0.5'),
+                "intellect": Decimal('0.3'),
+                "dexterity": Decimal('0.1'),
+                "charisma": Decimal('0.1')
+            }
+        })
+        self.weights_patch.start()
     
-    @patch('random.random', return_value=0.8)
-    def test_calculate_outcome_physical(self, mock_random):
+    def tearDown(self):
+        """Cleanup after tests"""
+        self.weights_patch.stop()
+    
+    @patch('random.uniform', return_value=Decimal('1.0'))
+    def test_calculate_outcome_physical(self, mock_uniform):
         """Testa o cálculo de resultado de um duelo físico"""
         calculator = DuelCalculator()
         result = calculator.calculate_outcome(self.challenger, self.opponent, duel_type="physical")
@@ -51,8 +73,8 @@ class TestDuelCalculator(unittest.TestCase):
         self.assertGreater(result["tusd_reward"], 0)
         self.assertGreater(result["hp_loss"], 0)
     
-    @patch('random.random', return_value=0.8)
-    def test_calculate_outcome_magical(self, mock_random):
+    @patch('random.uniform', return_value=Decimal('1.0'))
+    def test_calculate_outcome_magical(self, mock_uniform):
         """Testa o cálculo de resultado de um duelo mágico"""
         calculator = DuelCalculator()
         result = calculator.calculate_outcome(self.challenger, self.opponent, duel_type="magical")
@@ -73,9 +95,9 @@ class TestDuelNarrator(unittest.TestCase):
             "winner": "Challenger",
             "loser": "Opponent",
             "duel_type": "physical",
-            "win_margin": 10,
-            "exp_reward": 100,
-            "tusd_reward": 50
+            "win_margin": Decimal('10'),
+            "exp_reward": Decimal('100'),
+            "tusd_reward": Decimal('50')
         }
     
     def test_narrate_duel(self):
