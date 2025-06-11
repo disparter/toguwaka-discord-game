@@ -330,6 +330,106 @@ class ItemsAndQuizMigration(MigrationStrategy):
             logger.error(f"Error validating items and quiz migration: {e}")
             return False
 
+class SystemFlagsMigration(MigrationStrategy):
+    """Handles migration of system flags from main table to system flags table."""
+    
+    async def migrate(self) -> bool:
+        try:
+            # Get all system flags from main table
+            response = await db_provider.MAIN_TABLE.scan(
+                FilterExpression='PK = :pk',
+                ExpressionAttributeValues={
+                    ':pk': 'SYSTEM'
+                }
+            )
+            
+            flags = response.get('Items', [])
+            
+            # Migrate each flag to the system flags table
+            for flag in flags:
+                flag_name = flag['SK'].replace('FLAG#', '')
+                
+                # Special handling for daily events flags
+                if flag_name.startswith('daily_events_triggered_'):
+                    date_str = flag_name.replace('daily_events_triggered_', '')
+                    try:
+                        # Parse the date to ensure it's valid
+                        datetime.strptime(date_str, '%Y%m%d')
+                        
+                        await db_provider.SYSTEM_FLAGS_TABLE.put_item(
+                            Item={
+                                'PK': 'SYSTEM',
+                                'SK': f'FLAG#{flag_name}',
+                                'value': flag.get('value', 'true'),
+                                'flag_type': 'daily_events',
+                                'date': date_str,
+                                'created_at': flag.get('created_at', datetime.now().isoformat()),
+                                'last_updated': flag.get('last_updated', datetime.now().isoformat())
+                            }
+                        )
+                    except ValueError:
+                        logger.warning(f"Invalid date format in flag {flag_name}, skipping")
+                        continue
+                else:
+                    # Handle other system flags
+                    await db_provider.SYSTEM_FLAGS_TABLE.put_item(
+                        Item={
+                            'PK': 'SYSTEM',
+                            'SK': f'FLAG#{flag_name}',
+                            'value': flag.get('value', ''),
+                            'flag_type': 'system',
+                            'created_at': flag.get('created_at', datetime.now().isoformat()),
+                            'last_updated': flag.get('last_updated', datetime.now().isoformat())
+                        }
+                    )
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error migrating system flags: {e}")
+            return False
+
+    async def validate(self) -> bool:
+        try:
+            # Check if system flags were migrated correctly
+            response = await db_provider.SYSTEM_FLAGS_TABLE.scan(
+                FilterExpression='PK = :pk',
+                ExpressionAttributeValues={
+                    ':pk': 'SYSTEM'
+                }
+            )
+            
+            flags = response.get('Items', [])
+            
+            # Verify that we have at least the daily events flags
+            daily_events_flags = [f for f in flags if f['SK'].startswith('FLAG#daily_events_triggered_')]
+            
+            if not daily_events_flags:
+                logger.warning("No daily events flags found after migration")
+                return False
+                
+            # Verify that each flag has the required fields
+            for flag in flags:
+                if not all(k in flag for k in ['PK', 'SK', 'value', 'flag_type', 'last_updated']):
+                    logger.warning(f"Flag {flag.get('SK')} is missing required fields")
+                    return False
+                    
+                # For daily events flags, verify the date field
+                if flag['flag_type'] == 'daily_events':
+                    if 'date' not in flag:
+                        logger.warning(f"Daily events flag {flag.get('SK')} is missing date field")
+                        return False
+                        
+                    try:
+                        datetime.strptime(flag['date'], '%Y%m%d')
+                    except ValueError:
+                        logger.warning(f"Invalid date format in flag {flag.get('SK')}")
+                        return False
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error validating system flags migration: {e}")
+            return False
+
 class DataMigration:
     """Main class for handling data migrations."""
     
@@ -340,7 +440,8 @@ class DataMigration:
             'events': EventsMigration(),
             'story': StoryProgressMigration(),
             'inventory': InventoryMigration(),
-            'items_and_quiz': ItemsAndQuizMigration()
+            'items_and_quiz': ItemsAndQuizMigration(),
+            'system_flags': SystemFlagsMigration()
         }
     
     async def run_migration(self, migration_name: str) -> bool:

@@ -75,10 +75,10 @@ class DBProvider:
             raise
 
     def ensure_dynamo_available(self) -> bool:
-        """Check if DynamoDB is available."""
+        """Check if DynamoDB is available and all required tables exist."""
         try:
-            # Try to describe the tables
-            for table in [
+            # List of required tables
+            required_tables = [
                 self.PLAYERS_TABLE,
                 self.INVENTORY_TABLE,
                 self.CLUBS_TABLE,
@@ -93,8 +93,19 @@ class DBProvider:
                 self.SYSTEM_FLAGS_TABLE,
                 self.VOTES_TABLE,
                 self.MAIN_TABLE
-            ]:
-                table.table_status
+            ]
+            
+            # Check each table
+            for table in required_tables:
+                try:
+                    # Try to describe the table
+                    table.table_status
+                    logger.info(f"Table {table.name} is available")
+                except Exception as e:
+                    logger.error(f"Table {table.name} is not available: {e}")
+                    return False
+            
+            logger.info("All required DynamoDB tables are available")
             return True
         except Exception as e:
             logger.error(f"Error checking DynamoDB availability: {e}")
@@ -689,19 +700,39 @@ class DBProvider:
 
     # --- Database initialization ---
     async def init_db(self) -> bool:
-        """Initialize the database."""
+        """Initialize database connection and perform necessary migrations."""
         try:
-            # Check if tables exist
+            # Check if DynamoDB is available
             if not self.ensure_dynamo_available():
+                logger.error("DynamoDB is not available")
                 return False
 
-            # Sync data if needed
-            if not await self.sync_to_dynamo_if_empty():
-                return False
+            # Initialize migration
+            migration = DataMigration()
+            
+            # Perform migrations in order
+            migrations = [
+                'cooldowns',
+                'grades',
+                'events',
+                'system_flags'  # Add system flags migration
+            ]
+            
+            for migration_type in migrations:
+                try:
+                    logger.info(f"Starting {migration_type} migration...")
+                    success = await migration.migrate(migration_type)
+                    if success:
+                        logger.info(f"{migration_type} migration completed successfully")
+                    else:
+                        logger.error(f"{migration_type} migration failed")
+                except Exception as e:
+                    logger.error(f"Error during {migration_type} migration: {e}")
+                    continue
 
             return True
         except Exception as e:
-            logger.error(f"Error initializing database: {str(e)}")
+            logger.error(f"Error initializing database: {e}")
             return False
 
     # --- NPC operations ---
@@ -898,6 +929,66 @@ class DBProvider:
             return items
         except Exception as e:
             logger.error(f"Error getting items: {e}")
+            return []
+
+    # --- System flag operations ---
+    async def get_system_flag(self, flag_name: str) -> Optional[str]:
+        """Get a system flag value."""
+        try:
+            response = self.SYSTEM_FLAGS_TABLE.get_item(
+                Key={
+                    'PK': 'SYSTEM',
+                    'SK': f'FLAG#{flag_name}'
+                }
+            )
+            return response.get('Item', {}).get('value')
+        except Exception as e:
+            logger.error(f"Error getting system flag {flag_name}: {str(e)}")
+            return None
+
+    async def set_system_flag(self, flag_name: str, value: str, flag_type: str = 'system') -> bool:
+        """Set a system flag value."""
+        try:
+            item = {
+                'PK': 'SYSTEM',
+                'SK': f'FLAG#{flag_name}',
+                'value': value,
+                'flag_type': flag_type,
+                'last_updated': datetime.now().isoformat()
+            }
+            
+            # For daily events flags, add the date field
+            if flag_name.startswith('daily_events_triggered_'):
+                date_str = flag_name.replace('daily_events_triggered_', '')
+                try:
+                    # Validate date format
+                    datetime.strptime(date_str, '%Y%m%d')
+                    item['date'] = date_str
+                    item['flag_type'] = 'daily_events'
+                except ValueError:
+                    logger.warning(f"Invalid date format in flag {flag_name}")
+                    return False
+            
+            self.SYSTEM_FLAGS_TABLE.put_item(Item=item)
+            return True
+        except Exception as e:
+            logger.error(f"Error setting system flag {flag_name}: {str(e)}")
+            return False
+
+    async def get_daily_events_flags(self) -> List[Dict[str, Any]]:
+        """Get all daily events flags."""
+        try:
+            response = self.SYSTEM_FLAGS_TABLE.scan(
+                FilterExpression='PK = :pk AND begins_with(SK, :sk) AND flag_type = :type',
+                ExpressionAttributeValues={
+                    ':pk': 'SYSTEM',
+                    ':sk': 'FLAG#daily_events_triggered_',
+                    ':type': 'daily_events'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting daily events flags: {str(e)}")
             return []
 
 # Create a singleton instance of DBProvider
