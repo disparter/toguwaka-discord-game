@@ -21,7 +21,7 @@ fi
 echo "Starting Tokugawa Discord Bot for 10 seconds..."
 python src/bot.py &
 BOT_PID=$!
-sleep 100
+sleep 10
 echo "Stopping Tokugawa Discord Bot (PID $BOT_PID) after 10 seconds."
 kill $BOT_PID
 
