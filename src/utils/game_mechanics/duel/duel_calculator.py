@@ -145,7 +145,7 @@ class DuelCalculator(IDuelCalculator):
         """
         try:
             # Default to physical if invalid type
-            weights = self.weights.get(duel_type, self.weights['formal'])
+            weights = self.ATTRIBUTE_WEIGHTS.get(duel_type, self.ATTRIBUTE_WEIGHTS['physical'])
 
             # Apply HP factor to attributes if available
             challenger_attributes = challenger.copy()
@@ -157,18 +157,18 @@ class DuelCalculator(IDuelCalculator):
             
             # Calcula a pontuação base do desafiante usando os pesos do tipo de duelo
             challenger_score = (
-                Decimal(str(challenger['power_stat'])) * weights['power_stat'] * challenger_hp_factor +
-                Decimal(str(challenger['dexterity'])) * weights['dexterity'] * challenger_hp_factor +
-                Decimal(str(challenger['intellect'])) * weights['intellect'] * challenger_hp_factor +
-                Decimal(str(challenger['charisma'])) * weights['charisma'] * challenger_hp_factor
+                Decimal(str(challenger['power_stat'])) * Decimal(str(weights['power_stat'])) * challenger_hp_factor +
+                Decimal(str(challenger['dexterity'])) * Decimal(str(weights['dexterity'])) * challenger_hp_factor +
+                Decimal(str(challenger['intellect'])) * Decimal(str(weights['intellect'])) * challenger_hp_factor +
+                Decimal(str(challenger['charisma'])) * Decimal(str(weights['charisma'])) * challenger_hp_factor
             ) * self._get_random_factor()
             
             # Calcula a pontuação base do oponente usando os pesos do tipo de duelo
             opponent_score = (
-                Decimal(str(opponent['power_stat'])) * weights['power_stat'] * opponent_hp_factor +
-                Decimal(str(opponent['dexterity'])) * weights['dexterity'] * opponent_hp_factor +
-                Decimal(str(opponent['intellect'])) * weights['intellect'] * opponent_hp_factor +
-                Decimal(str(opponent['charisma'])) * weights['charisma'] * opponent_hp_factor
+                Decimal(str(opponent['power_stat'])) * Decimal(str(weights['power_stat'])) * opponent_hp_factor +
+                Decimal(str(opponent['dexterity'])) * Decimal(str(weights['dexterity'])) * opponent_hp_factor +
+                Decimal(str(opponent['intellect'])) * Decimal(str(weights['intellect'])) * opponent_hp_factor +
+                Decimal(str(opponent['charisma'])) * Decimal(str(weights['charisma'])) * opponent_hp_factor
             ) * self._get_random_factor()
             
             # Calculate score difference
