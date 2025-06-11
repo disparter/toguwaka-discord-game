@@ -610,6 +610,16 @@ class DBProvider:
             logger.error(f"Error initializing database: {e}")
             return False
 
+    async def close(self):
+        """Close database connections and cleanup resources."""
+        try:
+            # For DynamoDB, we don't need to explicitly close connections
+            # as boto3 handles connection pooling automatically
+            logger.info("Database connections closed")
+        except Exception as e:
+            logger.error(f"Error closing database connections: {e}")
+            raise
+
 # Create a singleton instance of DBProvider
 db_provider = DBProvider()
 

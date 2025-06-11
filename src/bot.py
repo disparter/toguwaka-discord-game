@@ -12,8 +12,10 @@ import logging
 from utils.persistence.db_provider import db_provider
 from utils.logging_config import get_logger
 from dotenv import load_dotenv
+from typing import Optional
+from datetime import datetime, timedelta
 
-from events import EventsManager
+from events.events_manager import EventsManager
 
 # Set up logging
 logger = get_logger('tokugawa_bot')
@@ -99,26 +101,33 @@ class TokugawaBot(commands.Bot):
             help_command=None
         )
         
-        # Initialize components
         self.db = db_provider
-        self.events_manager = EventsManager(self)
+        self.events_manager = None
+        self.start_time = None
     
     async def setup_hook(self):
         """Set up the bot when it starts."""
         try:
             # Initialize database
-            await self.db.init_db()
-            
-            # Start events manager
-            await self.events_manager.start()
+            if not await self.db.init_db():
+                raise Exception("Failed to initialize database")
             
             # Load extensions
-            for filename in os.listdir('./src/cogs'):
-                if filename.endswith('.py'):
-                    await self.load_extension(f'src.cogs.{filename[:-3]}')
+            for filename in os.listdir('src/cogs'):
+                if filename.endswith('.py') and not filename.startswith('__'):
+                    try:
+                        await self.load_extension(f'cogs.{filename[:-3]}')
+                        logger.info(f"Loaded extension: {filename}")
+                    except Exception as e:
+                        logger.error(f"Failed to load extension {filename}: {e}")
+            
+            # Initialize events manager
+            self.events_manager = EventsManager(self)
+            
+            # Set start time
+            self.start_time = datetime.now()
             
             logger.info("Bot setup completed successfully")
-            
         except Exception as e:
             logger.error(f"Error during bot setup: {e}")
             raise
@@ -126,15 +135,15 @@ class TokugawaBot(commands.Bot):
     async def close(self):
         """Clean up resources when the bot shuts down."""
         try:
-            # Stop events manager
-            await self.events_manager.stop()
-            
             # Close database connections
             await self.db.close()
             
+            # Clean up events
+            if self.events_manager:
+                await self.events_manager.cleanup()
+            
             await super().close()
             logger.info("Bot shutdown completed successfully")
-            
         except Exception as e:
             logger.error(f"Error during bot shutdown: {e}")
             raise
