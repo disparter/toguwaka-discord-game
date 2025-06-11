@@ -504,9 +504,14 @@ class StoryModeCog(commands.Cog):
         except Exception as e:
             logger.error(f"Erro ao enviar resposta: {e}")
 
-    async def _send_dialogue_or_choices(self, ctx, chapter_data, player_data):
+    async def _send_dialogue_or_choices(self, ctx_or_interaction, chapter_data, player_data):
         """Send current dialogue or choices to the channel."""
         try:
+            # Handle both Context and Interaction objects
+            is_interaction = isinstance(ctx_or_interaction, discord.Interaction)
+            user_id = ctx_or_interaction.user.id if is_interaction else ctx_or_interaction.author.id
+            send_message = ctx_or_interaction.followup.send if is_interaction else ctx_or_interaction.send
+            
             # Get current dialogue index
             story_progress = player_data.get("story_progress", {})
             current_dialogue_index = story_progress.get("current_dialogue_index", 0)
@@ -525,10 +530,10 @@ class StoryModeCog(commands.Cog):
                             custom_id=f"choice_{i}",
                             style=discord.ButtonStyle.primary
                         )
-                        button.callback = self._create_choice_callback(ctx.author.id, i)
+                        button.callback = self._create_choice_callback(user_id, i)
                         view.add_item(button)
                     
-                    await ctx.send("Escolha uma opção:", view=view)
+                    await send_message("Escolha uma opção:", view=view)
                 else:
                     # If no choices available, show continue button
                     view = discord.ui.View()
@@ -537,30 +542,30 @@ class StoryModeCog(commands.Cog):
                         custom_id="continue",
                         style=discord.ButtonStyle.primary
                     )
-                    continue_button.callback = self._create_continue_callback(ctx.author.id)
+                    continue_button.callback = self._create_continue_callback(user_id)
                     view.add_item(continue_button)
-                    await ctx.send("Pressione continuar para seguir:", view=view)
+                    await send_message("Pressione continuar para seguir:", view=view)
             else:
                 # Handle dictionary format
                 dialogues = chapter_data.get("dialogues", [])
                 
                 if current_dialogue_index < len(dialogues):
                     current_dialogue = dialogues[current_dialogue_index]
-                    await ctx.send(current_dialogue.get("text", ""))
+                    await send_message(current_dialogue.get("text", ""))
                     
                     story_progress["current_dialogue_index"] = current_dialogue_index + 1
-                    await db_provider.update_player(ctx.author.id, {"story_progress": story_progress})
+                    await db_provider.update_player(user_id, {"story_progress": story_progress})
                     
                     if current_dialogue_index + 1 < len(dialogues):
-                        await self._send_dialogue_or_choices(ctx, chapter_data, player_data)
+                        await self._send_dialogue_or_choices(ctx_or_interaction, chapter_data, player_data)
                     else:
-                        await self._show_choices(ctx, chapter_data, player_data)
+                        await self._show_choices(ctx_or_interaction, chapter_data, player_data)
                 else:
-                    await self._show_choices(ctx, chapter_data, player_data)
+                    await self._show_choices(ctx_or_interaction, chapter_data, player_data)
                     
         except Exception as e:
             logger.error(f"Error in _send_dialogue_or_choices: {str(e)}")
-            await ctx.send("Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.")
+            await send_message("Ocorreu um erro ao processar o diálogo. Por favor, tente novamente.")
 
     def _create_choice_callback(self, user_id: int, choice_index: int):
         """
@@ -876,6 +881,49 @@ class StoryModeCog(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+    async def _show_choices(self, ctx_or_interaction, chapter_data, player_data):
+        """Show available choices to the player."""
+        try:
+            # Handle both Context and Interaction objects
+            is_interaction = isinstance(ctx_or_interaction, discord.Interaction)
+            user_id = ctx_or_interaction.user.id if is_interaction else ctx_or_interaction.author.id
+            send_message = ctx_or_interaction.followup.send if is_interaction else ctx_or_interaction.send
+
+            # Get available choices
+            if hasattr(chapter_data, 'get_available_choices'):
+                choices = chapter_data.get_available_choices(player_data)
+            else:
+                choices = chapter_data.get("choices", [])
+
+            if choices:
+                # Create choice buttons
+                view = discord.ui.View()
+                for i, choice in enumerate(choices):
+                    button = discord.ui.Button(
+                        label=choice.get("text", f"Opção {i+1}"),
+                        custom_id=f"choice_{i}",
+                        style=discord.ButtonStyle.primary
+                    )
+                    button.callback = self._create_choice_callback(user_id, i)
+                    view.add_item(button)
+                
+                await send_message("Escolha uma opção:", view=view)
+            else:
+                # If no choices available, show continue button
+                view = discord.ui.View()
+                continue_button = discord.ui.Button(
+                    label="Continuar",
+                    custom_id="continue",
+                    style=discord.ButtonStyle.primary
+                )
+                continue_button.callback = self._create_continue_callback(user_id)
+                view.add_item(continue_button)
+                await send_message("Pressione continuar para seguir:", view=view)
+
+        except Exception as e:
+            logger.error(f"Error in _show_choices: {str(e)}")
+            await send_message("Ocorreu um erro ao mostrar as opções. Por favor, tente novamente.")
 
 
 async def setup(bot):

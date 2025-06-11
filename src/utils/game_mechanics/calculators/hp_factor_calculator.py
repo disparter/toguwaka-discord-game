@@ -22,14 +22,18 @@ class HPFactorCalculator(IHPFactorCalculator):
             Decimal: Fator de HP (entre 0.0 e 1.0)
         """
         if max_hp <= 0:
-            return Decimal('0.0')
+            return Decimal('1.0')
             
         hp_percentage = current_hp / max_hp
         
+        # Se HP está em 100%, não há penalidade
+        if hp_percentage >= Decimal('1.0'):
+            return Decimal('1.0')
+            
         # Se HP está acima do threshold, aplica uma pequena redução
         if hp_percentage > threshold:
-            return Decimal('0.8')
+            return Decimal('0.9')
             
         # Se HP está abaixo do threshold, calcula o fator proporcionalmente
-        # Garante que o fator seja menor que 0.5 quando HP está abaixo do threshold
-        return hp_percentage * Decimal('0.4')
+        # Garante que o fator seja menor que 0.7 quando HP está abaixo do threshold
+        return Decimal('0.7') + (hp_percentage * Decimal('0.3'))
