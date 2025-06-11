@@ -7,7 +7,7 @@ import random
 import sqlite3
 from datetime import datetime, timedelta, time
 from decimal import Decimal
-from typing import Any
+from typing import Any, Dict
 from discord import app_commands
 from discord.ext import commands, tasks
 
@@ -3026,61 +3026,21 @@ class ScheduledEvents(commands.Cog):
         except Exception as e:
             logger.error(f"Error announcing daily subject: {e}")
 
-    async def evaluate_quiz_answer(self, interaction, question_index, answer_index):
-        """Evaluate a quiz answer and update player's grade."""
+    async def evaluate_quiz_answer(self, interaction: discord.Interaction, question: Dict[str, Any], answer_index: int):
         try:
-            # Get the active quiz event
-            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
-            quiz_event = ACTIVE_EVENTS.get(event_id)
-
-            if not quiz_event:
-                try:
-                    await interaction.response.send_message("Não há nenhum quiz ativo hoje.", ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(
-                        f"Interaction expired for user {interaction.user.id} when checking quiz availability in evaluate_quiz_answer")
-                return
-
-            # Get player
-            player = await get_player(interaction.user.id)
+            # Get player data
+            player = await get_player_async(interaction.user.id)
             if not player:
-                try:
-                    await interaction.response.send_message("Você precisa estar registrado para participar do quiz.",
-                                                            ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(
-                        f"Interaction expired for user {interaction.user.id} when checking player registration in evaluate_quiz_answer")
+                await interaction.response.send_message("Você precisa criar um personagem primeiro!", ephemeral=True)
                 return
-
-            # Check if player already participated
-            if interaction.user.id in quiz_event['participants']:
-                try:
-                    await interaction.response.send_message("Você já participou do quiz de hoje.", ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(
-                        f"Interaction expired for user {interaction.user.id} when checking participation in evaluate_quiz_answer")
-                return
-
-            # Get question and correct answer
-            questions = quiz_event['data']['questions']
-            if question_index >= len(questions):
-                try:
-                    await interaction.response.send_message("Pergunta inválida.", ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(
-                        f"Interaction expired for user {interaction.user.id} when checking question validity in evaluate_quiz_answer")
-                return
-
-            question = questions[question_index]
-            correct_answer_index = question['correct']
 
             # Check if answer is correct
-            is_correct = answer_index == correct_answer_index
+            is_correct = answer_index == question['correct_answer']
 
             # Calculate grade based on difficulty and correctness
             max_grade = 10.0
-            question_difficulty = float(question['difficulty'])  # Convert to float
-            subject_difficulty = float(quiz_event['data']['difficulty'])  # Convert to float
+            question_difficulty = float(question.get('difficulty', 1))  # Default to 1 if not specified
+            subject_difficulty = float(question.get('subject_difficulty', 1))  # Default to 1 if not specified
 
             # Base grade for participation
             base_grade = 5.0
@@ -3090,7 +3050,7 @@ class ScheduledEvents(commands.Cog):
             correct_bonus = (max_grade - base_grade) * (difficulty_multiplier / 3)
 
             # Get player's intellect value and calculate intellect bonus
-            player_intellect = float(player.get('intellect', 5))  # Default to 5 if not found, convert to float
+            player_intellect = float(player.get('intellect', 5))  # Default to 5 if not found
             intellect_bonus = (player_intellect - 5) * 0.2  # Each point above 5 gives 0.2 bonus
 
             final_grade = base_grade
@@ -3106,145 +3066,33 @@ class ScheduledEvents(commands.Cog):
             # Round to one decimal place
             final_grade = round(final_grade, 1)
 
-            # Get current month and year
-            now = datetime.now()
-            current_month = now.month
-            current_year = now.year
-
-            # Update player's grade in the database
-            subject = quiz_event['data']['subject']
-            await db_provider.update_player_grade(interaction.user.id, subject, final_grade)
-
-            # Add player to participants
-            quiz_event['participants'].append(interaction.user.id)
-
-            # Calculate XP reward based on grade and difficulty
-            xp_reward = int(final_grade * (subject_difficulty + 1))
-
-            # Apply club buffs if any
-            if player.get('club_id') and player['club_id'] in CLUB_BUFFS:
-                buff = CLUB_BUFFS[player['club_id']]
-                if buff['type'] == 'exp':
-                    xp_reward = int(xp_reward * (1 + buff['value'] / 100))
-
-            # Apply weekly theme buff if applicable
-            if WEEKLY_THEME and 'subjects' in WEEKLY_THEME.get('buffs', {}) and subject in WEEKLY_THEME['buffs'][
-                'subjects']:
-                xp_multiplier = WEEKLY_THEME['buffs'].get('exp_multiplier', 1.0)
-                xp_reward = int(xp_reward * xp_multiplier)
-
-            # Update player XP
-            await update_player(
+            # Update player's grade
+            await update_player_async(
                 interaction.user.id,
-                exp=player['exp'] + xp_reward
+                grade=final_grade
             )
 
-            # Track progress for rankings
-            if interaction.user.id not in PLAYER_PROGRESS['daily']:
-                PLAYER_PROGRESS['daily'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0, 'events_completed': 0}
-            if interaction.user.id not in PLAYER_PROGRESS['weekly']:
-                PLAYER_PROGRESS['weekly'][interaction.user.id] = {'exp_gained': 0, 'duels_won': 0,
-                                                                  'events_completed': 0}
-
-            PLAYER_PROGRESS['daily'][interaction.user.id]['exp_gained'] += xp_reward
-            PLAYER_PROGRESS['daily'][interaction.user.id]['events_completed'] += 1
-            PLAYER_PROGRESS['weekly'][interaction.user.id]['exp_gained'] += xp_reward
-            PLAYER_PROGRESS['weekly'][interaction.user.id]['events_completed'] += 1
-
-            # Check if player learns a technique (only if answer is correct)
-            technique_learned = None
-            if is_correct:
-                # 30% chance to learn a technique if answer is correct
-                if random.random() < 0.3:
-                    try:
-                        # Import TECHNIQUES from economy.py
-                        from cogs.economy import TECHNIQUES
-
-                        # Get player's techniques
-                        techniques = player.get('techniques', {})
-
-                        # Ensure techniques is a dictionary
-                        if not isinstance(techniques, dict):
-                            try:
-                                # Try to parse it if it's a JSON string
-                                if isinstance(techniques, str):
-                                    techniques = json.loads(techniques)
-                                else:
-                                    # If it's not a dictionary or string, initialize as empty dict
-                                    techniques = {}
-                            except Exception:
-                                # If parsing fails, initialize as empty dict
-                                techniques = {}
-
-                        # Filter techniques the player doesn't have yet
-                        available_techniques = [t for t in TECHNIQUES if str(t["id"]) not in techniques]
-
-                        if available_techniques:
-                            # Select a random technique to learn
-                            technique = random.choice(available_techniques)
-
-                            # Add technique to player's techniques
-                            techniques[str(technique["id"])] = technique
-
-                            # Update player in database
-                            await update_player(
-                                interaction.user.id,
-                                techniques=json.dumps(techniques)
-                            )
-
-                            technique_learned = technique
-                    except Exception as e:
-                        logger.error(f"Error learning technique: {e}")
-
-            # Send result message
-            if is_correct:
-                result_message = f"✅ Resposta correta! Sua nota foi {final_grade}/10.0"
-            else:
-                correct_option = question['options'][correct_answer_index]
-                result_message = f"❌ Resposta incorreta. A resposta correta era: {correct_option}\nSua nota foi {final_grade}/10.0"
-
-            # Build rewards description
-            rewards_description = (
-                f"**Recompensas:**\n"
-                f"- +{xp_reward} EXP\n"
-                f"- Nota registrada para o mês de {now.strftime('%B/%Y')}"
+            # Record the answer in the database
+            await db_provider.record_quiz_answer(
+                user_id=interaction.user.id,
+                question_id=question['id'],
+                is_correct=is_correct
             )
 
-            # Add technique learned if any
-            if technique_learned:
-                rewards_description += f"\n- Técnica aprendida: **{technique_learned['name']}**"
-
-            try:
-                await interaction.response.send_message(
-                    embed=create_basic_embed(
-                        title=f"Resultado do Quiz de {subject}",
-                        description=(
-                            f"{result_message}\n\n"
-                            f"{rewards_description}"
-                        ),
-                        color=0x00FF00 if is_correct else 0xFF0000
-                    ),
-                    ephemeral=True
-                )
-            except discord.errors.NotFound:
-                logger.warning(f"Interaction expired for user {interaction.user.id} when sending quiz result")
-            except Exception as e2:
-                logger.error(f"Error sending quiz result: {e2}")
-
-            # Use player.get('name', 'Unknown') to avoid KeyError if name is missing
-            player_name = player.get('name', 'Unknown')
-            logger.info(f"Player {player_name} completed quiz with grade {final_grade}")
+            # Send feedback to player
+            feedback = "Correto! 🎉" if is_correct else "Incorreto! 😢"
+            await interaction.response.send_message(
+                embed=create_basic_embed(
+                    title="Resposta do Quiz",
+                    description=f"{feedback}\nSua nota: {final_grade}",
+                    color=0x00ff00 if is_correct else 0xff0000
+                ),
+                ephemeral=True
+            )
 
         except Exception as e:
             logger.error(f"Error evaluating quiz answer: {e}")
-            try:
-                # Use followup.send instead of response.send_message to avoid "already responded" error
-                await interaction.followup.send("Ocorreu um erro ao avaliar sua resposta.", ephemeral=True)
-            except discord.errors.NotFound:
-                logger.warning(
-                    f"Interaction expired for user {interaction.user.id} in evaluate_quiz_answer error handler")
-            except Exception as e2:
-                logger.error(f"Error sending error message in evaluate_quiz_answer: {e2}")
+            await interaction.response.send_message("Ocorreu um erro ao processar sua resposta.", ephemeral=True)
 
     async def check_monthly_grades(self):
         """Check if it's the end of the month and evaluate monthly grades."""
@@ -4272,54 +4120,37 @@ class ScheduledEvents(commands.Cog):
 
     @quiz_group.command(name="participar", description="Participar do quiz diário da matéria atual")
     async def slash_quiz_participate(self, interaction: discord.Interaction):
-        """Participate in the daily subject quiz."""
         try:
-            # Get the active quiz event
-            event_id = f"daily_subject_{datetime.now().strftime('%Y%m%d')}"
-            quiz_event = ACTIVE_EVENTS.get(event_id)
+            # Get current quiz event
+            quiz_event = None
+            for event in ACTIVE_EVENTS:
+                if event['type'] == 'quiz':
+                    quiz_event = event
+                    break
 
             if not quiz_event:
-                try:
-                    await interaction.response.send_message(
-                        "Não há nenhum quiz ativo hoje. Aguarde o anúncio da próxima aula!", ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(
-                        f"Interaction expired for user {interaction.user.id} when checking quiz availability")
+                await interaction.response.send_message("Não há nenhum quiz ativo no momento.", ephemeral=True)
                 return
 
-            # Get player
-            player = await get_player(interaction.user.id)
+            # Get player data
+            player = await get_player_async(interaction.user.id)
             if not player:
-                try:
-                    await interaction.response.send_message(
-                        "Você precisa estar registrado para participar do quiz. Use /registro ingressar para criar seu personagem.",
-                        ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(
-                        f"Interaction expired for user {interaction.user.id} when checking player registration")
+                await interaction.response.send_message("Você precisa criar um personagem primeiro!", ephemeral=True)
                 return
 
-            # Check if player already participated
+            # Check if player has already participated
             if interaction.user.id in quiz_event['participants']:
-                try:
-                    await interaction.response.send_message(
-                        "Você já participou do quiz de hoje. Volte amanhã para um novo quiz!", ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking participation")
+                await interaction.response.send_message("Você já participou deste quiz!", ephemeral=True)
                 return
 
-            # Get a random question from the quiz
-            questions = quiz_event['data']['questions']
+            # Get questions from database
+            questions = await self.load_quiz_questions()
             if not questions:
-                try:
-                    await interaction.response.send_message(
-                        "Este quiz não possui perguntas. Por favor, informe um administrador.", ephemeral=True)
-                except discord.errors.NotFound:
-                    logger.warning(f"Interaction expired for user {interaction.user.id} when checking quiz questions")
+                await interaction.response.send_message("Não há perguntas disponíveis para este quiz.", ephemeral=True)
                 return
 
-            question_index = random.randint(0, len(questions) - 1)
-            question = questions[question_index]
+            # Select a random question
+            question = random.choice(questions)
 
             # Create options for the select menu
             options = []
@@ -4342,57 +4173,16 @@ class ScheduledEvents(commands.Cog):
             view = discord.ui.View(timeout=60)  # 60 seconds timeout
             view.add_item(select)
 
-            # Handle select menu interaction
-            async def select_callback(select_interaction):
-                try:
-                    if select_interaction.user.id != interaction.user.id:
-                        await select_interaction.response.send_message("Este não é o seu quiz!", ephemeral=True)
-                        return
-
-                    # Get selected answer
-                    answer_index = int(select_interaction.data['values'][0])
-
-                    # Evaluate answer
-                    await self.evaluate_quiz_answer(select_interaction, question_index, answer_index)
-
-                    # Disable the select menu
-                    select.disabled = True
-                    try:
-                        await interaction.edit_original_response(view=view)
-                    except discord.errors.NotFound:
-                        logger.warning(f"Interaction expired for user {interaction.user.id} when updating quiz view")
-                except Exception as e:
-                    logger.error(f"Error in select_callback: {e}")
-                    try:
-                        await select_interaction.response.send_message("Ocorreu um erro ao processar sua resposta.",
-                                                                       ephemeral=True)
-                    except discord.errors.NotFound:
-                        logger.warning(
-                            f"Interaction expired for user {select_interaction.user.id} in select_callback error handler")
-
-            select.callback = select_callback
-
-            # Send the quiz question
-            subject = quiz_event['data']['subject']
-            try:
-                await interaction.response.send_message(
-                    embed=create_basic_embed(
-                        title=f"Quiz de {subject}",
-                        description=(
-                            f"**Pergunta:** {question['question']}\n\n"
-                            f"Escolha a resposta correta no menu abaixo."
-                        ),
-                        color=0x4169E1
-                    ),
-                    view=view,
-                    ephemeral=True
-                )
-                # Use player.get('name', 'Unknown') to avoid KeyError if name is missing
-                player_name = player.get('name', 'Unknown')
-                logger.info(f"Player {player_name} started quiz for subject {subject}")
-            except discord.errors.NotFound:
-                logger.warning(f"Interaction expired for user {interaction.user.id} when sending quiz question")
-                return
+            # Send question
+            await interaction.response.send_message(
+                embed=create_basic_embed(
+                    title=f"Quiz: {quiz_event['data']['subject']}",
+                    description=f"**Pergunta:** {question['question']}",
+                    color=0x00ff00
+                ),
+                view=view,
+                ephemeral=True
+            )
 
         except Exception as e:
             logger.error(f"Error in slash_quiz_participate: {e}")
@@ -4784,6 +4574,23 @@ class ScheduledEvents(commands.Cog):
                 logger.warning(f"Interaction expired for user {interaction.user.id} in slash_eventos error handler")
             except Exception as e2:
                 logger.error(f"Error sending error message in slash_eventos: {e2}")
+
+    # Load quiz questions and cooldowns from database
+    async def load_quiz_questions(self):
+        try:
+            questions = await db_provider.get_quiz_questions()
+            return questions
+        except Exception as e:
+            logger.error(f"Error loading quiz questions: {e}")
+            return []
+
+    async def load_cooldowns(self):
+        try:
+            cooldowns = await db_provider.get_cooldowns()
+            return cooldowns
+        except Exception as e:
+            logger.error(f"Error loading cooldowns: {e}")
+            return []
 
 
 async def setup(bot):

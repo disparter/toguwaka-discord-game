@@ -16,7 +16,16 @@ from utils.persistence.db_provider import (
     clear_expired_cooldowns,
     init_db,
     db_provider,
-    store_event
+    store_event,
+    get_event,
+    get_story_progress,
+    update_story_progress,
+    get_market_items,
+    add_market_item,
+    get_quiz_questions,
+    add_quiz_question,
+    get_player_grades,
+    update_player_grade
 )
 
 # Re-export all database functions
@@ -31,5 +40,14 @@ __all__ = [
     'clear_expired_cooldowns',
     'init_db',
     'db_provider',
-    'store_event'
+    'store_event',
+    'get_event',
+    'get_story_progress',
+    'update_story_progress',
+    'get_market_items',
+    'add_market_item',
+    'get_quiz_questions',
+    'add_quiz_question',
+    'get_player_grades',
+    'update_player_grade'
 ]

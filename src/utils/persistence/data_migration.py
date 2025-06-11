@@ -1,8 +1,8 @@
 """
 Data migration module for Academia Tokugawa.
 
-This module handles the one-time migration of static data from JSON files
-to DynamoDB tables with the new PK/SK pattern.
+This module handles the migration of data between tables following SOLID principles.
+Each migration is handled by a specific class to maintain Single Responsibility.
 """
 
 import os
@@ -10,272 +10,361 @@ import json
 import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from abc import ABC, abstractmethod
 
 from utils.persistence.db_provider import db_provider
 
 logger = logging.getLogger('tokugawa_bot')
 
-class DataMigration:
-    """Handles one-time migration of static data to DynamoDB."""
+class MigrationStrategy(ABC):
+    """Abstract base class for migration strategies."""
+    
+    @abstractmethod
+    async def migrate(self) -> bool:
+        """Execute the migration strategy."""
+        pass
 
-    def __init__(self):
-        self.data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '..', 'data')
-        self.table_prefixes = {
-            'eventos': 'EVENTOS#',
-            'cooldowns': 'COOLDOWN#',
-            'itens': 'ITENS#',
-            'quiz_questions': 'QUIZQUESTION#',
-            'quiz_answers': 'QUIZANSWER#'
-        }
+    @abstractmethod
+    async def validate(self) -> bool:
+        """Validate the migration results."""
+        pass
 
-    async def check_table_empty(self, prefix: str) -> bool:
-        """Check if a table is empty by scanning for items with the given prefix."""
+class GradesMigration(MigrationStrategy):
+    """Handles migration of grades from players table to grades table."""
+    
+    async def migrate(self) -> bool:
         try:
-            response = db_provider.MAIN_TABLE.scan(
-                FilterExpression='begins_with(PK, :pk)',
-                ExpressionAttributeValues={':pk': prefix},
-                Limit=1
+            # Get all players from players table
+            response = await db_provider.PLAYERS_TABLE.scan()
+            players = response.get('Items', [])
+            
+            # Migrate each player's grades
+            for player in players:
+                player_id = player.get('PK').replace('PLAYER#', '')
+                grades = player.get('grades', {})
+                
+                if grades:
+                    for subject, grade_data in grades.items():
+                        await db_provider.GRADES_TABLE.put_item(
+                            Item={
+                                'PK': f'PLAYER#{player_id}',
+                                'SK': f'SUBJECT#{subject}',
+                                'grade': grade_data.get('grade', 0),
+                                'last_updated': grade_data.get('last_updated', datetime.now().isoformat()),
+                                'subject': subject,
+                                'semester': grade_data.get('semester', 1)
+                            }
+                        )
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error migrating grades: {e}")
+            return False
+
+    async def validate(self) -> bool:
+        try:
+            # Check if grades were migrated correctly
+            response = await db_provider.GRADES_TABLE.scan(
+                FilterExpression='begins_with(SK, :sk)',
+                ExpressionAttributeValues={':sk': 'SUBJECT#'}
             )
-            return not response.get('Items')
+            return len(response.get('Items', [])) > 0
         except Exception as e:
-            logger.error(f"Error checking if table {prefix} is empty: {e}")
+            logger.error(f"Error validating grades migration: {e}")
             return False
 
-    def load_json_data(self, file_path: str) -> Optional[List[Dict[str, Any]]]:
-        """Load data from a JSON file."""
+class CooldownsMigration(MigrationStrategy):
+    """Handles migration of cooldowns from main table to cooldowns table."""
+    
+    async def migrate(self) -> bool:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            logger.error(f"Error loading JSON data from {file_path}: {e}")
-            return None
-
-    async def migrate_table(self, table_name: str, data: List[Dict[str, Any]]) -> bool:
-        """Migrate data from JSON to DynamoDB table."""
-        prefix = self.table_prefixes.get(table_name)
-        if not prefix:
-            logger.error(f"Unknown table name: {table_name}")
-            return False
-
-        try:
-            # Check if table is empty
-            if not await self.check_table_empty(prefix):
-                logger.info(f"Table {table_name} already has data, skipping migration")
-                return True
-
-            # Prepare items for batch write
-            items = []
-            for item in data:
-                item_id = str(item.get('id', len(items) + 1))
-                dynamo_item = {
-                    'PK': f"{prefix}{item_id}",
-                    'SK': prefix.rstrip('#'),
-                    **item
-                }
-                items.append(dynamo_item)
-
-            # Write items in batches of 25 (DynamoDB batch write limit)
-            batch_size = 25
-            for i in range(0, len(items), batch_size):
-                batch = items[i:i + batch_size]
-                with db_provider.MAIN_TABLE.batch_writer() as batch_writer:
-                    for item in batch:
-                        batch_writer.put_item(Item=item)
-
-            logger.info(f"Successfully migrated {len(items)} items to table {table_name}")
-            return True
-        except Exception as e:
-            logger.error(f"Error migrating table {table_name}: {e}")
-            return False
-
-    async def migrate_all_data(self) -> bool:
-        """Migrate all static data to DynamoDB tables."""
-        try:
-            # Migrate eventos
-            eventos_path = os.path.join(self.data_dir, 'events', 'random_events.json')
-            eventos_data = self.load_json_data(eventos_path)
-            if eventos_data:
-                await self.migrate_table('eventos', eventos_data)
-
-            # Migrate itens
-            itens_path = os.path.join(self.data_dir, 'economy', 'items.json')
-            itens_data = self.load_json_data(itens_path)
-            if itens_data:
-                await self.migrate_table('itens', itens_data)
-
-            # Migrate quiz questions
-            quiz_path = os.path.join(self.data_dir, 'story_mode', 'quiz_questions.json')
-            quiz_data = self.load_json_data(quiz_path)
-            if quiz_data:
-                await self.migrate_table('quiz_questions', quiz_data)
-
-            # Migrate quiz answers
-            answers_path = os.path.join(self.data_dir, 'story_mode', 'quiz_answers.json')
-            answers_data = self.load_json_data(answers_path)
-            if answers_data:
-                await self.migrate_table('quiz_answers', answers_data)
-
-            return True
-        except Exception as e:
-            logger.error(f"Error migrating data: {e}")
-            return False
-
-    async def migrate_data(self) -> bool:
-        """Migrate all static data from JSON files to DynamoDB."""
-        try:
-            # Migrate static data to AcademiaTokugawa table
-            await self.migrate_quiz_questions()
-            await self.migrate_items()
-
-            # Migrate dynamic data to main table
-            await self.migrate_events()
-            await self.migrate_cooldowns()
-
-            return True
-        except Exception as e:
-            logger.error(f"Error migrating data: {str(e)}")
-            return False
-
-    async def migrate_quiz_questions(self) -> bool:
-        """Migrate quiz questions to AcademiaTokugawa table."""
-        try:
-            if not await self.check_table_empty('QUIZQUESTION#'):
-                logger.info("Quiz questions table is not empty, skipping migration")
-                return True
-
-            questions = self.load_json_data(os.path.join(self.data_dir, 'story_mode', 'quiz_questions.json'))
-            if not questions:
-                logger.error("No quiz questions data found")
-                return False
-
-            for question in questions:
-                question_id = question.get('id')
-                if not question_id:
-                    continue
-
-                # Store question
-                await db_provider.ACADEMIA_TABLE.put_item(
+            # Get all cooldowns from main table
+            response = await db_provider.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': 'COOLDOWN#'}
+            )
+            
+            cooldowns = response.get('Items', [])
+            
+            # Migrate each cooldown to the cooldowns table
+            for cooldown in cooldowns:
+                user_id = cooldown.get('PK').replace('COOLDOWN#', '')
+                command = cooldown.get('SK').replace('COMMAND#', '')
+                
+                await db_provider.COOLDOWNS_TABLE.put_item(
                     Item={
-                        'PK': f'QUIZQUESTION#{question_id}',
-                        'SK': 'QUIZQUESTION',
-                        **question
+                        'PK': f'PLAYER#{user_id}',
+                        'SK': f'COMMAND#{command}',
+                        'expiry_time': cooldown.get('expiry_time'),
+                        'command': command,
+                        'created_at': cooldown.get('created_at', datetime.now().isoformat())
                     }
                 )
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error migrating cooldowns: {e}")
+            return False
 
-                # Store answers
-                answers = question.get('answers', [])
-                for answer in answers:
-                    answer_id = answer.get('id')
-                    if not answer_id:
-                        continue
+    async def validate(self) -> bool:
+        try:
+            # Check if cooldowns were migrated correctly
+            response = await db_provider.COOLDOWNS_TABLE.scan()
+            return len(response.get('Items', [])) > 0
+        except Exception as e:
+            logger.error(f"Error validating cooldowns migration: {e}")
+            return False
 
-                    await db_provider.ACADEMIA_TABLE.put_item(
+class EventsMigration(MigrationStrategy):
+    """Handles migration of events from AcademiaTokugawa to events table."""
+    
+    async def migrate(self) -> bool:
+        try:
+            # Get all events from AcademiaTokugawa
+            response = await db_provider.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': 'ACADEMIA#'}
+            )
+            
+            events = response.get('Items', [])
+            
+            # Migrate each event
+            for event in events:
+                event_id = event.get('PK').replace('ACADEMIA#', '')
+                event_type = event.get('type', 'random')
+                
+                await db_provider.EVENTS_TABLE.put_item(
+                    Item={
+                        'PK': f'EVENT#{event_id}',
+                        'SK': f'TYPE#{event_type}',
+                        'name': event.get('name', ''),
+                        'description': event.get('description', ''),
+                        'type': event_type,
+                        'data': event.get('data', {}),
+                        'created_at': event.get('created_at', datetime.now().isoformat()),
+                        'expires_at': event.get('expires_at'),
+                        'participants': event.get('participants', []),
+                        'is_active': event.get('is_active', True)
+                    }
+                )
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error migrating events: {e}")
+            return False
+
+    async def validate(self) -> bool:
+        try:
+            # Check if events were migrated correctly
+            response = await db_provider.EVENTS_TABLE.scan(
+                FilterExpression='begins_with(SK, :sk)',
+                ExpressionAttributeValues={':sk': 'TYPE#'}
+            )
+            return len(response.get('Items', [])) > 0
+        except Exception as e:
+            logger.error(f"Error validating events migration: {e}")
+            return False
+
+class StoryProgressMigration(MigrationStrategy):
+    """Handles migration of story progress from main table to story table."""
+    
+    async def migrate(self) -> bool:
+        try:
+            # Get all players from main table
+            response = await db_provider.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': 'PLAYER#'}
+            )
+            
+            players = response.get('Items', [])
+            
+            # Migrate each player's story progress
+            for player in players:
+                player_id = player.get('PK').replace('PLAYER#', '')
+                story_progress = player.get('story_progress', {})
+                
+                if story_progress:
+                    await db_provider.STORY_TABLE.put_item(
                         Item={
-                            'PK': f'QUIZANSWER#{answer_id}',
-                            'SK': f'QUESTION#{question_id}',
-                            **answer
+                            'PK': f'PLAYER#{player_id}',
+                            'SK': 'STORY_PROGRESS',
+                            'current_chapter': story_progress.get('current_chapter', 1),
+                            'completed_chapters': story_progress.get('completed_chapters', []),
+                            'choices': story_progress.get('choices', {}),
+                            'last_updated': datetime.now().isoformat()
                         }
                     )
-
-            logger.info("Successfully migrated quiz questions")
+            
             return True
         except Exception as e:
-            logger.error(f"Error migrating quiz questions: {str(e)}")
+            logger.error(f"Error migrating story progress: {e}")
             return False
 
-    async def migrate_items(self) -> bool:
-        """Migrate items to AcademiaTokugawa table."""
+    async def validate(self) -> bool:
         try:
-            if not await self.check_table_empty('ITENS#'):
-                logger.info("Items table is not empty, skipping migration")
-                return True
+            # Check if story progress was migrated correctly
+            response = await db_provider.STORY_TABLE.scan(
+                FilterExpression='SK = :sk',
+                ExpressionAttributeValues={':sk': 'STORY_PROGRESS'}
+            )
+            return len(response.get('Items', [])) > 0
+        except Exception as e:
+            logger.error(f"Error validating story progress migration: {e}")
+            return False
 
-            items = self.load_json_data(os.path.join(self.data_dir, 'economy', 'items.json'))
-            if not items:
-                logger.error("No items data found")
-                return False
+class InventoryMigration(MigrationStrategy):
+    """Handles migration of inventory data from main table to inventory table."""
+    
+    async def migrate(self) -> bool:
+        try:
+            # Get all players from main table
+            response = await db_provider.MAIN_TABLE.scan(
+                FilterExpression='begins_with(PK, :pk)',
+                ExpressionAttributeValues={':pk': 'PLAYER#'}
+            )
+            
+            players = response.get('Items', [])
+            
+            # Migrate each player's inventory
+            for player in players:
+                player_id = player.get('PK').replace('PLAYER#', '')
+                inventory = player.get('inventory', {})
+                
+                if inventory:
+                    # Migrate each item in the inventory
+                    for item_id, item_data in inventory.items():
+                        await db_provider.INVENTORY_TABLE.put_item(
+                            Item={
+                                'PK': f'PLAYER#{player_id}',
+                                'SK': f'ITEM#{item_id}',
+                                'quantity': item_data.get('quantity', 1),
+                                'equipped': item_data.get('equipped', False),
+                                'attributes': item_data.get('attributes', {}),
+                                'acquired_at': item_data.get('acquired_at', datetime.now().isoformat()),
+                                'last_used': item_data.get('last_used')
+                            }
+                        )
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error migrating inventory: {e}")
+            return False
 
-            for item in items:
-                item_id = item.get('id')
-                if not item_id:
-                    continue
+    async def validate(self) -> bool:
+        try:
+            # Check if inventory items were migrated correctly
+            response = await db_provider.INVENTORY_TABLE.scan(
+                FilterExpression='begins_with(SK, :sk)',
+                ExpressionAttributeValues={':sk': 'ITEM#'}
+            )
+            return len(response.get('Items', [])) > 0
+        except Exception as e:
+            logger.error(f"Error validating inventory migration: {e}")
+            return False
 
-                await db_provider.ACADEMIA_TABLE.put_item(
+class ItemsAndQuizMigration(MigrationStrategy):
+    """Handles migration of items and quiz questions from JSON files to their respective tables."""
+    
+    async def migrate(self) -> bool:
+        try:
+            # Load items from JSON
+            with open('data/economy/items.json', 'r') as f:
+                items = json.load(f)
+            
+            # Migrate items
+            for item_id, item_data in items.items():
+                await db_provider.ITEMS_TABLE.put_item(
                     Item={
-                        'PK': f'ITENS#{item_id}',
-                        'SK': 'ITENS',
-                        **item
+                        'PK': f'ITEM#{item_id}',
+                        'SK': 'ITEM',
+                        'name': item_data.get('name', ''),
+                        'description': item_data.get('description', ''),
+                        'type': item_data.get('type', ''),
+                        'rarity': item_data.get('rarity', 'common'),
+                        'effects': item_data.get('effects', {}),
+                        'price': item_data.get('price', 0),
+                        'is_available': item_data.get('is_available', True)
                     }
                 )
-
-            logger.info("Successfully migrated items")
-            return True
-        except Exception as e:
-            logger.error(f"Error migrating items: {str(e)}")
-            return False
-
-    async def migrate_events(self) -> bool:
-        """Migrate events to main table."""
-        try:
-            if not await self.check_table_empty('EVENTOS#'):
-                logger.info("Events table is not empty, skipping migration")
-                return True
-
-            events = self.load_json_data(os.path.join(self.data_dir, 'events', 'random_events.json'))
-            if not events:
-                logger.error("No events data found")
-                return False
-
-            for event in events:
-                event_id = event.get('id')
-                if not event_id:
-                    continue
-
-                await db_provider.MAIN_TABLE.put_item(
+            
+            # Load quiz questions from JSON
+            with open('data/economy/quiz_questions.json', 'r') as f:
+                quiz_questions = json.load(f)
+            
+            # Migrate quiz questions
+            for question_id, question_data in quiz_questions.items():
+                await db_provider.QUIZ_TABLE.put_item(
                     Item={
-                        'PK': f'EVENTOS#{event_id}',
-                        'SK': 'EVENTOS',
-                        **event
+                        'PK': f'QUESTION#{question_id}',
+                        'SK': 'QUIZ',
+                        'question': question_data.get('question', ''),
+                        'options': question_data.get('options', []),
+                        'correct_answer': question_data.get('correct_answer', ''),
+                        'difficulty': question_data.get('difficulty', 'medium'),
+                        'category': question_data.get('category', 'general'),
+                        'points': question_data.get('points', 10)
                     }
                 )
-
-            logger.info("Successfully migrated events")
+            
             return True
         except Exception as e:
-            logger.error(f"Error migrating events: {str(e)}")
+            logger.error(f"Error migrating items and quiz questions: {e}")
             return False
 
-    async def migrate_cooldowns(self) -> bool:
-        """Migrate cooldowns to main table."""
+    async def validate(self) -> bool:
         try:
-            if not await self.check_table_empty('COOLDOWN#'):
-                logger.info("Cooldowns table is not empty, skipping migration")
-                return True
-
-            cooldowns = self.load_json_data(os.path.join(self.data_dir, 'cooldowns.json'))
-            if not cooldowns:
-                logger.error("No cooldowns data found")
-                return False
-
-            for cooldown in cooldowns:
-                user_id = cooldown.get('user_id')
-                command = cooldown.get('command')
-                if not user_id or not command:
-                    continue
-
-                await db_provider.MAIN_TABLE.put_item(
-                    Item={
-                        'PK': f'COOLDOWN#{user_id}',
-                        'SK': f'COMMAND#{command}',
-                        **cooldown
-                    }
-                )
-
-            logger.info("Successfully migrated cooldowns")
-            return True
+            # Check if items were migrated
+            items_response = await db_provider.ITEMS_TABLE.scan(
+                FilterExpression='SK = :sk',
+                ExpressionAttributeValues={':sk': 'ITEM'}
+            )
+            
+            # Check if quiz questions were migrated
+            quiz_response = await db_provider.QUIZ_TABLE.scan(
+                FilterExpression='SK = :sk',
+                ExpressionAttributeValues={':sk': 'QUIZ'}
+            )
+            
+            return len(items_response.get('Items', [])) > 0 and len(quiz_response.get('Items', [])) > 0
         except Exception as e:
-            logger.error(f"Error migrating cooldowns: {str(e)}")
+            logger.error(f"Error validating items and quiz migration: {e}")
             return False
 
-# Create a singleton instance
+class DataMigration:
+    """Main class for handling data migrations."""
+    
+    def __init__(self):
+        self.migrations = {
+            'grades': GradesMigration(),
+            'cooldowns': CooldownsMigration(),
+            'events': EventsMigration(),
+            'story': StoryProgressMigration(),
+            'inventory': InventoryMigration(),
+            'items_and_quiz': ItemsAndQuizMigration()
+        }
+    
+    async def run_migration(self, migration_name: str) -> bool:
+        """Run a specific migration."""
+        if migration_name not in self.migrations:
+            logger.error(f"Migration {migration_name} not found")
+            return False
+            
+        migration = self.migrations[migration_name]
+        
+        # Run migration
+        success = await migration.migrate()
+        if not success:
+            logger.error(f"Migration {migration_name} failed")
+            return False
+            
+        # Validate migration
+        valid = await migration.validate()
+        if not valid:
+            logger.error(f"Migration {migration_name} validation failed")
+            return False
+            
+        logger.info(f"Migration {migration_name} completed successfully")
+        return True
+
+# Create singleton instance
 data_migration = DataMigration() 

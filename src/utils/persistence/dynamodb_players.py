@@ -19,57 +19,49 @@ logger = logging.getLogger('tokugawa_bot')
 
 @handle_dynamo_error
 async def get_player(user_id):
-    """Get a player from DynamoDB."""
-    if not user_id:
-        logger.warning("get_player called with no user_id")
-        return None
+    """Get player data from DynamoDB."""
     try:
-        logger.info(f"Attempting to get player with user_id: {user_id}")
         table = get_table(TABLES['players'])
-        key = {
-            'PK': f"PLAYER#{user_id}",
-            'SK': 'PROFILE'
-        }
-        logger.info(f"Searching with key: {key}")
-        response = await table.get_item(Key=key)
-        logger.info(f"Raw DynamoDB response: {response}")
-        item = response.get('Item')
-        if not item:
-            logger.warning(f"No player found for user_id: {user_id}")
+        response = await table.get_item(
+            Key={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'PROFILE'
+            }
+        )
+        
+        if 'Item' not in response:
             return None
-        logger.info(f"Found player data: {item}")
-        # Convert Decimal values to int/float
-        for k, value in item.items():
-            if isinstance(value, decimal.Decimal):
-                item[k] = int(value) if value % 1 == 0 else float(value)
-        # Default values for required attributes
-        defaults = {
-            'power_stat': 10,
-            'dexterity': 10,
-            'intellect': 10,
-            'charisma': 10,
-            'club_id': None,
-            'exp': 0,
-            'hp': 100,
-            'tusd': 1000,
-            'inventory': {},
-            'level': 1
-        }
-        # Check if any required attributes are missing
-        missing_attrs = False
-        for k, v in defaults.items():
-            if k not in item or item[k] is None:
-                item[k] = v
-                missing_attrs = True
+            
+        item = response['Item']
+        
         # Handle inventory serialization
-        if isinstance(item['inventory'], str):
+        if isinstance(item.get('inventory'), str):
             try:
                 item['inventory'] = json.loads(item['inventory'])
             except Exception as e:
                 logger.warning(f"Could not decode inventory for player {user_id}: {e}")
                 item['inventory'] = {}
-        if not isinstance(item['inventory'], dict):
+        
+        # Ensure inventory is a dictionary
+        if not isinstance(item.get('inventory'), dict):
             item['inventory'] = {}
+            
+        # Normalize inventory items
+        for item_id, item_data in item['inventory'].items():
+            if isinstance(item_data, str):
+                try:
+                    item['inventory'][item_id] = json.loads(item_data)
+                except:
+                    item['inventory'][item_id] = {
+                        'id': item_id,
+                        'quantity': 1
+                    }
+            elif not isinstance(item_data, dict):
+                item['inventory'][item_id] = {
+                    'id': item_id,
+                    'quantity': 1
+                }
+                
         # If any attributes were missing, update the player record
         if missing_attrs:
             logger.info(f"Updating player {user_id} with missing attributes")
@@ -86,6 +78,7 @@ async def get_player(user_id):
                     update_item[k] = json.dumps(v)
             await table.put_item(Item=update_item)
             logger.info(f"Successfully updated player {user_id} with missing attributes")
+            
         logger.info(f"Final player data after normalization: {item}")
         return item
     except Exception as e:

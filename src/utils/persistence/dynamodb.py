@@ -463,7 +463,22 @@ async def get_player_inventory(user_id):
 async def add_item_to_inventory(user_id, item_id, item_data):
     """Add item to player's inventory."""
     try:
-        # Convert float values to Decimal
+        # Ensure item_data has all required fields
+        item_data_with_id = {
+            'id': item_id,
+            'name': item_data.get('name', ''),
+            'description': item_data.get('description', ''),
+            'type': item_data.get('type', ''),
+            'rarity': item_data.get('rarity', 'common'),
+            'effects': item_data.get('effects', {}),
+            'quantity': item_data.get('quantity', 1),
+            'equipped': item_data.get('equipped', False),
+            'attributes': item_data.get('attributes', {}),
+            'acquired_at': datetime.now().isoformat(),
+            'last_used': None
+        }
+
+        # Convert numeric values to Decimal
         def convert_floats_to_decimal(obj):
             if isinstance(obj, float):
                 return decimal.Decimal(str(obj))
@@ -473,16 +488,18 @@ async def add_item_to_inventory(user_id, item_id, item_data):
                 return [convert_floats_to_decimal(v) for v in obj]
             return obj
 
-        item_data = convert_floats_to_decimal(item_data)
+        item_data_with_id = convert_floats_to_decimal(item_data_with_id)
 
         table = get_table(TABLES['inventory'])
         await table.put_item(
             Item={
                 'PK': f'PLAYER#{user_id}',
                 'SK': f'ITEM#{item_id}',
-                'JogadorID': f'PLAYER#{user_id}',  # Add the required primary key as a string with PLAYER# prefix
-                'ItemID': item_id,  # Add the required ItemID field
-                'item_data': item_data
+                'JogadorID': f'PLAYER#{user_id}',
+                'ItemID': item_id,
+                'item_data': item_data_with_id,
+                'created_at': datetime.now().isoformat(),
+                'last_updated': datetime.now().isoformat()
             }
         )
         return True
