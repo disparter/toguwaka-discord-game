@@ -1,13 +1,12 @@
 """
-Player operations for DynamoDB.
+DynamoDB implementation for player data persistence.
 """
 
-import decimal
-import json
+import boto3
 import logging
+from typing import Optional, Dict, Any, List
 from datetime import datetime
-from typing import Dict, Any, List, Optional
-from decimal import Decimal
+
 from utils.logging_config import get_logger
 from utils.persistence.dynamodb import (
     get_table,
@@ -22,25 +21,37 @@ from utils.persistence.dynamodb import (
     DynamoDBOperationError
 )
 from botocore.exceptions import ClientError
-import boto3
-from utils.persistence.db_provider import db_provider
 
 logger = get_logger('tokugawa_bot.players')
 
 class DynamoDBPlayers:
-    """Class for handling player data in DynamoDB."""
+    """DynamoDB implementation for player data persistence."""
     
     def __init__(self):
+        """Initialize DynamoDB connection."""
         self.dynamodb = boto3.resource('dynamodb')
-        self.table = db_provider.PLAYERS_TABLE
+        self.table = None
+    
+    def init_table(self):
+        """Initialize the table reference."""
+        if self.table is None:
+            from utils.persistence.db_provider import db_provider
+            self.table = db_provider.PLAYERS_TABLE
     
     async def get_player(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Get player data from DynamoDB."""
-        if not user_id:
-            logger.warning("Attempted to get player with empty user_id")
-            return None
-
         try:
+            if not user_id:
+                logger.warning("Empty user_id provided to get_player")
+                return None
+            
+            # Ensure user_id is a string
+            user_id = str(user_id)
+            
+            # Initialize table if needed
+            self.init_table()
+            
+            # Get player data
             response = self.table.get_item(
                 Key={
                     'PK': f'PLAYER#{user_id}',
@@ -160,6 +171,12 @@ class DynamoDBPlayers:
         if not user_id:
             return False
         try:
+            # Ensure user_id is a string
+            user_id = str(user_id)
+            
+            # Initialize table if needed
+            self.init_table()
+            
             # Get current player data
             current_data = await self.get_player(user_id)
             if not current_data:
@@ -168,6 +185,9 @@ class DynamoDBPlayers:
             # Update fields
             for key, value in kwargs.items():
                 current_data[key] = value
+            
+            # Update timestamp
+            current_data['updated_at'] = datetime.now().isoformat()
             
             # Update in DynamoDB
             await self.table.put_item(Item=current_data)
@@ -179,6 +199,9 @@ class DynamoDBPlayers:
     async def get_all_players(self) -> list:
         """Get all players from DynamoDB."""
         try:
+            # Initialize table if needed
+            self.init_table()
+            
             response = self.table.scan(
                 FilterExpression='begins_with(PK, :pk)',
                 ExpressionAttributeValues={
@@ -193,6 +216,9 @@ class DynamoDBPlayers:
     async def get_top_players(self, limit: int = 10) -> list:
         """Get top players by level."""
         try:
+            # Initialize table if needed
+            self.init_table()
+            
             response = self.table.scan(
                 FilterExpression='begins_with(PK, :pk)',
                 ExpressionAttributeValues={
@@ -208,14 +234,30 @@ class DynamoDBPlayers:
             return []
 
 # Create singleton instance
-dynamodb_players = DynamoDBPlayers()
+_players = None
+
+def get_players():
+    """Get or create the singleton instance."""
+    global _players
+    if _players is None:
+        _players = DynamoDBPlayers()
+    return _players
 
 # Export functions
-get_player = dynamodb_players.get_player
-create_player = dynamodb_players.create_player
-update_player = dynamodb_players.update_player
-get_all_players = dynamodb_players.get_all_players
-get_top_players = dynamodb_players.get_top_players
+def get_player(user_id: str) -> Optional[Dict[str, Any]]:
+    return get_players().get_player(user_id)
+
+def create_player(user_id: str, name: str, **kwargs) -> bool:
+    return get_players().create_player(user_id, name, **kwargs)
+
+def update_player(user_id: str, **kwargs) -> bool:
+    return get_players().update_player(user_id, **kwargs)
+
+def get_all_players() -> list:
+    return get_players().get_all_players()
+
+def get_top_players(limit: int = 10) -> list:
+    return get_players().get_top_players(limit)
 
 @handle_dynamo_error
 async def get_club_members(club_id: str) -> List[Dict[str, Any]]:
