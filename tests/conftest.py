@@ -12,13 +12,41 @@ from datetime import datetime
 from pathlib import Path
 import discord
 
-# Adiciona o diretório raiz ao PYTHONPATH
+# Adiciona o diretório src ao PYTHONPATH antes de qualquer importação dos módulos do projeto
 root_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(root_dir))
+src_dir = root_dir / "src"
+sys.path.insert(0, str(src_dir))
 
 # Configura variáveis de ambiente para testes
 os.environ["TESTING"] = "true"
 os.environ["ENVIRONMENT"] = "test"
+os.environ["AWS_ACCESS_KEY_ID"] = "test"
+os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
+os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
+# Patch boto3 e importe db_provider ANTES de qualquer teste
+@pytest.fixture(scope="session", autouse=True)
+def patch_boto3_and_import_db_provider():
+    mock_table = MagicMock()
+    mock_table.table_status = "ACTIVE"
+    mock_table.put_item.return_value = True
+    mock_table.get_item.return_value = {"Item": {}}
+    mock_table.query.return_value = {"Items": []}
+    mock_table.scan.return_value = {"Items": []}
+    mock_table.update_item.return_value = True
+    mock_table.delete_item.return_value = True
+
+    mock_resource = MagicMock()
+    mock_resource.Table.return_value = mock_table
+
+    mock_client = MagicMock()
+    mock_client.describe_table.return_value = {"Table": {"TableStatus": "ACTIVE"}}
+
+    with patch('boto3.resource', return_value=mock_resource), \
+         patch('boto3.client', return_value=mock_client):
+        # Importa o singleton já mockado
+        import utils.persistence.db_provider
+        yield
 
 @pytest.fixture(autouse=True)
 def mock_logging():
@@ -26,16 +54,6 @@ def mock_logging():
     with pytest.MonkeyPatch.context() as m:
         m.setattr('logging.getLogger', MagicMock())
         yield
-
-@pytest.fixture(autouse=True)
-def mock_db_provider():
-    """Mock DBProvider to prevent DynamoDB connection attempts during tests."""
-    with patch('utils.persistence.db_provider.DBProvider') as mock:
-        mock_instance = MagicMock()
-        mock.return_value = mock_instance
-        mock_instance.ensure_dynamo_available.return_value = True
-        mock_instance.initialize_tables.return_value = True
-        yield mock_instance
 
 @pytest.fixture(autouse=True)
 def mock_discord():
@@ -189,8 +207,14 @@ def mock_interaction():
 def mock_db_functions():
     """Mock database functions to avoid circular imports."""
     with patch('utils.persistence.dynamodb_players.get_player') as mock_get_player, \
-         patch('utils.persistence.dynamodb_players.update_player') as mock_update_player:
+         patch('utils.persistence.dynamodb_players.update_player') as mock_update_player, \
+         patch('utils.persistence.dynamodb_item_usage.track_item_usage') as mock_track_usage, \
+         patch('utils.persistence.dynamodb_item_usage.get_item_usage_count') as mock_get_usage_count, \
+         patch('utils.persistence.dynamodb_item_usage.increment_item_usage') as mock_increment_usage:
         yield {
             'get_player': mock_get_player,
-            'update_player': mock_update_player
+            'update_player': mock_update_player,
+            'track_item_usage': mock_track_usage,
+            'get_item_usage_count': mock_get_usage_count,
+            'increment_item_usage': mock_increment_usage
         } 

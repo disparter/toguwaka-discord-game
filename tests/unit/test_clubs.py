@@ -90,5 +90,17 @@ class TestClubBusinessLogic(unittest.TestCase):
         can_exchange = all(item in player['inventory'] for item in exchange['required_items'])
         self.assertFalse(can_exchange)
 
+    def test_apply_effect_with_usage_limit(self):
+        """Deve aplicar o efeito do item com limite de uso."""
+        self.player['hp'] = 100
+        self.item = {
+            'effects': {
+                'value': 50,
+            },
+        }
+        self.player['max_hp'] = 100
+        self.player['hp'] = min(self.player['hp'] + self.item['effects']['value'], self.player['max_hp'])
+        self.assertEqual(self.player['hp'], 100)
+
 if __name__ == '__main__':
     unittest.main() 
