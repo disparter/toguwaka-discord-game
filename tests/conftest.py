@@ -188,8 +188,8 @@ def mock_interaction():
 @pytest.fixture(autouse=True)
 def mock_db_functions():
     """Mock database functions to avoid circular imports."""
-    with patch('cogs.registration.get_player') as mock_get_player, \
-         patch('cogs.registration.update_player') as mock_update_player:
+    with patch('utils.persistence.dynamodb_players.get_player') as mock_get_player, \
+         patch('utils.persistence.dynamodb_players.update_player') as mock_update_player:
         yield {
             'get_player': mock_get_player,
             'update_player': mock_update_player

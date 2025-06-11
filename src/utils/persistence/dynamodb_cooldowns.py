@@ -76,8 +76,8 @@ async def clear_expired_cooldowns(user_id: Optional[str] = None) -> int:
     Clear expired cooldowns from the database.
     
     Args:
-        user_id: Optional user ID. If provided, only clears cooldowns for that user.
-                If None, clears all expired cooldowns.
+        user_id: Optional user ID to clear cooldowns for a specific user only.
+                 If None, clears all expired cooldowns.
     
     Returns:
         Number of cooldowns cleared
@@ -88,7 +88,7 @@ async def clear_expired_cooldowns(user_id: Optional[str] = None) -> int:
         cleared_count = 0
         
         if user_id:
-            # Clear cooldowns for specific user
+            # Clear expired cooldowns for specific user
             response = table.query(
                 KeyConditionExpression='PK = :pk',
                 FilterExpression='expiry_time < :now',
@@ -97,16 +97,6 @@ async def clear_expired_cooldowns(user_id: Optional[str] = None) -> int:
                     ':now': now
                 }
             )
-            
-            items = response.get('Items', [])
-            for item in items:
-                table.delete_item(
-                    Key={
-                        'PK': item['PK'],
-                        'SK': item['SK']
-                    }
-                )
-                cleared_count += 1
         else:
             # Clear all expired cooldowns
             response = table.scan(
@@ -115,18 +105,18 @@ async def clear_expired_cooldowns(user_id: Optional[str] = None) -> int:
                     ':now': now
                 }
             )
-            
-            items = response.get('Items', [])
-            for item in items:
-                table.delete_item(
-                    Key={
-                        'PK': item['PK'],
-                        'SK': item['SK']
-                    }
-                )
-                cleared_count += 1
         
-        logger.info(f"Cleared {cleared_count} expired cooldowns")
+        items = response.get('Items', [])
+        for item in items:
+            table.delete_item(
+                Key={
+                    'PK': item['PK'],
+                    'SK': item['SK']
+                }
+            )
+            cleared_count += 1
+        
+        logger.info(f"Cleared {cleared_count} expired cooldowns" + (f" for user {user_id}" if user_id else ""))
         return cleared_count
         
     except Exception as e:
