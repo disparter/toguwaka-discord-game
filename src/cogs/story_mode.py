@@ -674,7 +674,7 @@ class StoryModeCog(commands.Cog):
             await db_provider.update_player(user_id, **update_data)
 
             # Send next dialogue or choices
-            await self._send_dialogue_or_choices(interaction.channel, result["chapter_data"], result["player_data"])
+            await self._send_dialogue_or_choices(interaction, result["chapter_data"], result["player_data"])
 
             # Check for available events
             if "available_events" in result and result["available_events"]:
@@ -688,14 +688,14 @@ class StoryModeCog(commands.Cog):
                         description="Parabéns! Você concluiu a história principal do jogo.",
                         color=discord.Color.gold()
                     )
-                    await interaction.channel.send(embed=embed)
+                    await interaction.followup.send(embed=embed)
                 elif "next_chapter_id" in result:
                     embed = create_basic_embed(
                         title="Capítulo Concluído",
                         description=f"Você concluiu este capítulo da história. O próximo capítulo está disponível.",
                         color=discord.Color.green()
                     )
-                    await interaction.channel.send(embed=embed)
+                    await interaction.followup.send(embed=embed)
 
         return continue_callback
 
