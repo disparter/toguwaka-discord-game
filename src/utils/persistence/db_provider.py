@@ -16,20 +16,77 @@ from decimal import Decimal
 import json
 from botocore.exceptions import ClientError
 
-from utils.persistence.dynamodb_players import get_player, create_player, update_player, get_all_players, get_top_players
-from utils.persistence.dynamodb_clubs import get_club, get_all_clubs, get_club_members
-from utils.persistence.dynamodb_cooldowns import store_cooldown, get_cooldowns, get_cooldown, clear_expired_cooldowns
-from utils.persistence.dynamodb_inventory import get_player_inventory, add_item_to_inventory, remove_item_from_inventory
-from utils.persistence.dynamodb_events import store_event, get_event, get_all_events, get_active_events
-from utils.persistence.dynamodb_items import get_item, get_all_items
-from utils.persistence.dynamodb_quiz import get_quiz_question, get_all_quiz_questions, get_quiz_answers, add_quiz_question
-from utils.persistence.dynamodb_grades import get_player_grades, update_player_grade, get_monthly_average_grades
-from utils.persistence.dynamodb_votes import add_vote, get_vote_results
-from utils.persistence.dynamodb_reputation import update_player_reputation
-from utils.persistence.dynamodb_story import get_story_progress, update_story_progress
-from utils.persistence.dynamodb_system import get_system_flag, set_system_flag, get_daily_events_flags
-from utils.persistence.dynamodb_market import get_market_items, add_market_item
-from utils.persistence.dynamodb_scheduled_events import create_scheduled_event, get_scheduled_event, get_upcoming_events, get_active_events as get_active_scheduled_events
+# Import all database operations with aliases to avoid circular dependencies
+from utils.persistence.dynamodb_players import (
+    get_player as _get_player,
+    create_player as _create_player,
+    update_player as _update_player,
+    get_all_players as _get_all_players,
+    get_top_players as _get_top_players
+)
+from utils.persistence.dynamodb_clubs import (
+    get_club as _get_club,
+    get_all_clubs as _get_all_clubs,
+    get_club_members as _get_club_members
+)
+from utils.persistence.dynamodb_cooldowns import (
+    store_cooldown as _store_cooldown,
+    get_cooldowns as _get_cooldowns,
+    get_cooldown as _get_cooldown,
+    clear_expired_cooldowns as _clear_expired_cooldowns
+)
+from utils.persistence.dynamodb_inventory import (
+    get_player_inventory as _get_player_inventory,
+    add_item_to_inventory as _add_item_to_inventory,
+    remove_item_from_inventory as _remove_item_from_inventory
+)
+from utils.persistence.dynamodb_events import (
+    store_event as _store_event,
+    get_event as _get_event,
+    get_all_events as _get_all_events,
+    get_active_events as _get_active_events
+)
+from utils.persistence.dynamodb_items import (
+    get_item as _get_item,
+    get_all_items as _get_all_items
+)
+from utils.persistence.dynamodb_quiz import (
+    get_quiz_question as _get_quiz_question,
+    get_all_quiz_questions as _get_all_quiz_questions,
+    get_quiz_answers as _get_quiz_answers,
+    add_quiz_question as _add_quiz_question
+)
+from utils.persistence.dynamodb_grades import (
+    get_player_grades as _get_player_grades,
+    update_player_grade as _update_player_grade,
+    get_monthly_average_grades as _get_monthly_average_grades
+)
+from utils.persistence.dynamodb_votes import (
+    add_vote as _add_vote,
+    get_vote_results as _get_vote_results
+)
+from utils.persistence.dynamodb_reputation import (
+    update_player_reputation as _update_player_reputation
+)
+from utils.persistence.dynamodb_story import (
+    get_story_progress as _get_story_progress,
+    update_story_progress as _update_story_progress
+)
+from utils.persistence.dynamodb_system import (
+    get_system_flag as _get_system_flag,
+    set_system_flag as _set_system_flag,
+    get_daily_events_flags as _get_daily_events_flags
+)
+from utils.persistence.dynamodb_market import (
+    get_market_items as _get_market_items,
+    add_market_item as _add_market_item
+)
+from utils.persistence.dynamodb_scheduled_events import (
+    create_scheduled_event as _create_scheduled_event,
+    get_scheduled_event as _get_scheduled_event,
+    get_upcoming_events as _get_upcoming_events,
+    get_active_events as _get_active_scheduled_events
+)
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -141,23 +198,23 @@ class DBProvider:
     # --- Player operations ---
     async def get_player(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Get player data from database."""
-        return await get_player(user_id)
+        return await _get_player(user_id)
 
     async def create_player(self, user_id: str, name: str, **kwargs) -> bool:
         """Create a new player in database."""
-        return await create_player(user_id, name, **kwargs)
+        return await _create_player(user_id, name, **kwargs)
 
     async def update_player(self, user_id: str, **kwargs) -> bool:
         """Update player data in database."""
-        return await update_player(user_id, **kwargs)
+        return await _update_player(user_id, **kwargs)
 
     async def get_all_players(self) -> List[Dict[str, Any]]:
         """Get all players from database."""
-        return await get_all_players()
+        return await _get_all_players()
 
     async def get_top_players(self, limit: int = 10) -> list:
         """Get top players by level."""
-        return await get_top_players(limit)
+        return await _get_top_players(limit)
 
     async def get_top_players_by_reputation(self, limit: int = 10) -> list:
         """Get top players by reputation."""
@@ -181,45 +238,45 @@ class DBProvider:
     # --- Club operations ---
     async def get_club(self, club_id) -> Optional[Dict[str, Any]]:
         """Get club data from database."""
-        return await get_club(club_id)
+        return await _get_club(club_id)
 
     async def get_all_clubs(self) -> List[Dict[str, Any]]:
         """Get all clubs from database."""
-        return await get_all_clubs()
+        return await _get_all_clubs()
 
     async def get_club_members(self, club_id: str) -> list:
         """Get all members of a club."""
-        return await get_club_members(club_id)
+        return await _get_club_members(club_id)
 
     # --- Cooldown operations ---
     async def store_cooldown(self, user_id: str, command: str, expiry_time: datetime) -> bool:
         """Store a cooldown in database."""
-        return await store_cooldown(user_id, command, expiry_time)
+        return await _store_cooldown(user_id, command, expiry_time)
 
     async def get_cooldowns(self, user_id: str) -> Dict[str, datetime]:
         """Get all cooldowns for a user."""
-        return await get_cooldowns(user_id)
+        return await _get_cooldowns(user_id)
 
     async def get_cooldown(self, user_id: str, command: str) -> Optional[datetime]:
         """Get a specific cooldown for a user."""
-        return await get_cooldown(user_id, command)
+        return await _get_cooldown(user_id, command)
 
     async def clear_expired_cooldowns(self, user_id: Optional[str] = None) -> int:
         """Clear expired cooldowns."""
-        return await clear_expired_cooldowns(user_id)
+        return await _clear_expired_cooldowns(user_id)
 
     # --- Inventory operations ---
     async def get_player_inventory(self, user_id: str) -> Dict[str, Any]:
         """Get player inventory from database."""
-        return await get_player_inventory(user_id)
+        return await _get_player_inventory(user_id)
 
     async def add_item_to_inventory(self, user_id: str, item_id: str, item_data: Dict[str, Any]) -> bool:
         """Add an item to player inventory."""
-        return await add_item_to_inventory(user_id, item_id, item_data)
+        return await _add_item_to_inventory(user_id, item_id, item_data)
 
     async def remove_item_from_inventory(self, user_id: str, item_id: str) -> bool:
         """Remove an item from player inventory."""
-        return await remove_item_from_inventory(user_id, item_id)
+        return await _remove_item_from_inventory(user_id, item_id)
 
     # --- Event operations ---
     async def store_event(self, event_id: str, name: str, description: str, event_type: str,
@@ -227,121 +284,121 @@ class DBProvider:
                          end_time: datetime, participants: List[str], data: Dict[str, Any],
                          completed: bool = False) -> bool:
         """Store an event in database."""
-        return await store_event(event_id, name, description, event_type, channel_id, message_id,
+        return await _store_event(event_id, name, description, event_type, channel_id, message_id,
                                start_time, end_time, participants, data, completed)
 
     async def get_event(self, event_id: str) -> Optional[Dict[str, Any]]:
         """Get an event from database."""
-        return await get_event(event_id)
+        return await _get_event(event_id)
 
     async def get_all_events(self) -> List[Dict[str, Any]]:
         """Get all events from database."""
-        return await get_all_events()
+        return await _get_all_events()
 
     async def get_active_events(self) -> List[Dict[str, Any]]:
         """Get all active events from database."""
-        return await get_active_events()
+        return await _get_active_events()
 
     # --- Item operations ---
     async def get_item(self, item_id: str) -> Optional[Dict[str, Any]]:
         """Get an item from database."""
-        return await get_item(item_id)
+        return await _get_item(item_id)
 
     async def get_all_items(self) -> List[Dict[str, Any]]:
         """Get all items from database."""
-        return await get_all_items()
+        return await _get_all_items()
 
     # --- Quiz operations ---
     async def get_quiz_question(self, question_id: str) -> Optional[Dict[str, Any]]:
         """Get a quiz question from database."""
-        return await get_quiz_question(question_id)
+        return await _get_quiz_question(question_id)
 
     async def get_all_quiz_questions(self) -> List[Dict[str, Any]]:
         """Get all quiz questions from database."""
-        return await get_all_quiz_questions()
+        return await _get_all_quiz_questions()
 
     async def get_quiz_answers(self, question_id: str) -> List[Dict[str, Any]]:
         """Get all answers for a quiz question."""
-        return await get_quiz_answers(question_id)
+        return await _get_quiz_answers(question_id)
 
     async def add_quiz_question(self, question_id: str, question_data: Dict[str, Any]) -> bool:
         """Add a new quiz question."""
-        return await add_quiz_question(question_id, question_data)
+        return await _add_quiz_question(question_id, question_data)
 
     # --- Grade operations ---
     async def get_player_grades(self, user_id: str) -> Dict[str, Dict[str, float]]:
         """Get all grades for a player."""
-        return await get_player_grades(user_id)
+        return await _get_player_grades(user_id)
 
     async def update_player_grade(self, user_id: str, subject: str, grade: float) -> bool:
         """Update a player's grade."""
-        return await update_player_grade(user_id, subject, grade)
+        return await _update_player_grade(user_id, subject, grade)
 
     async def get_monthly_average_grades(self, user_id: str) -> Dict[str, float]:
         """Get monthly average grades for a player."""
-        return await get_monthly_average_grades(user_id)
+        return await _get_monthly_average_grades(user_id)
 
     # --- Vote operations ---
     async def add_vote(self, vote_id: str, voter_id: str, candidate_id: str) -> bool:
         """Add a vote to database."""
-        return await add_vote(vote_id, voter_id, candidate_id)
+        return await _add_vote(vote_id, voter_id, candidate_id)
 
     async def get_vote_results(self, vote_id: str) -> Dict[str, int]:
         """Get results for a vote."""
-        return await get_vote_results(vote_id)
+        return await _get_vote_results(vote_id)
 
     # --- Reputation operations ---
     async def update_player_reputation(self, user_id: str, amount: int) -> bool:
         """Update a player's reputation."""
-        return await update_player_reputation(user_id, amount)
+        return await _update_player_reputation(user_id, amount)
 
     # --- Story operations ---
     async def get_story_progress(self, user_id: str) -> Dict[str, Any]:
         """Get a player's story progress."""
-        return await get_story_progress(user_id)
+        return await _get_story_progress(user_id)
 
     async def update_story_progress(self, user_id: str, progress_data: Dict[str, Any]) -> bool:
         """Update a player's story progress."""
-        return await update_story_progress(user_id, progress_data)
+        return await _update_story_progress(user_id, progress_data)
 
     # --- System operations ---
     async def get_system_flag(self, flag_name: str) -> Optional[str]:
         """Get a system flag value."""
-        return await get_system_flag(flag_name)
+        return await _get_system_flag(flag_name)
 
     async def set_system_flag(self, flag_name: str, value: str, flag_type: str = 'system') -> bool:
         """Set a system flag value."""
-        return await set_system_flag(flag_name, value, flag_type)
+        return await _set_system_flag(flag_name, value, flag_type)
 
     async def get_daily_events_flags(self) -> List[Dict[str, Any]]:
         """Get all daily events flags."""
-        return await get_daily_events_flags()
+        return await _get_daily_events_flags()
 
     # --- Market operations ---
     async def get_market_items(self) -> List[Dict[str, Any]]:
         """Get all items in the market."""
-        return await get_market_items()
+        return await _get_market_items()
 
     async def add_market_item(self, item_id: str, item_data: Dict[str, Any]) -> bool:
         """Add an item to the market."""
-        return await add_market_item(item_id, item_data)
+        return await _add_market_item(item_id, item_data)
 
     # --- Scheduled events operations ---
     async def create_scheduled_event(self, event_id: str, event_data: Dict[str, Any]) -> bool:
         """Create a new scheduled event."""
-        return await create_scheduled_event(event_id, event_data)
+        return await _create_scheduled_event(event_id, event_data)
 
     async def get_scheduled_event(self, event_id: str) -> Optional[Dict[str, Any]]:
         """Get a scheduled event."""
-        return await get_scheduled_event(event_id)
+        return await _get_scheduled_event(event_id)
 
     async def get_upcoming_events(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get upcoming scheduled events."""
-        return await get_upcoming_events(limit)
+        return await _get_upcoming_events(limit)
 
     async def get_active_scheduled_events(self) -> List[Dict[str, Any]]:
         """Get currently active scheduled events."""
-        return await get_active_scheduled_events()
+        return await _get_active_scheduled_events()
 
     # --- Database initialization ---
     async def init_db(self) -> bool:
