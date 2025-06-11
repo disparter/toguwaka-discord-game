@@ -15,44 +15,49 @@ logger = get_logger('tokugawa_bot.clubs')
 async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
     """Get club data from database."""
     try:
-        table = get_table('Clubes')
-        response = await table.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
+        response = await dynamodb.get_item(
+            TableName='Clubes',
+            Key={
+                'PK': f'CLUB#{club_id}',
+                'SK': 'PROFILE'
+            }
+        )
         return response.get('Item')
     except Exception as e:
-        logger.error(f"Error getting club {club_id}: {str(e)}")
+        logger.error(f"Error getting club {club_id}: {e}")
         return None
 
 @handle_dynamo_error
 async def get_all_clubs() -> List[Dict[str, Any]]:
     """Get all clubs from database."""
     try:
-        table = get_table('Clubes')
-        response = table.scan(
-            FilterExpression='begins_with(SK, :sk)',
+        response = await dynamodb.scan(
+            TableName='Clubes',
+            FilterExpression='begins_with(PK, :prefix)',
             ExpressionAttributeValues={
-                ':sk': 'INFO'
+                ':prefix': 'CLUB#'
             }
         )
         return response.get('Items', [])
     except Exception as e:
-        logger.error(f"Error getting all clubs: {str(e)}")
+        logger.error(f"Error getting all clubs: {e}")
         return []
 
 @handle_dynamo_error
 async def get_club_members(club_id: str) -> List[Dict[str, Any]]:
-    """Get all members of a club."""
+    """Get club members from database."""
     try:
-        table = get_table('Clubes')
-        response = table.scan(
-            FilterExpression='begins_with(PK, :pk) AND begins_with(SK, :sk)',
+        response = await dynamodb.query(
+            TableName='Clubes',
+            KeyConditionExpression='PK = :pk AND begins_with(SK, :prefix)',
             ExpressionAttributeValues={
                 ':pk': f'CLUB#{club_id}',
-                ':sk': 'MEMBER#'
+                ':prefix': 'MEMBER#'
             }
         )
         return response.get('Items', [])
     except Exception as e:
-        logger.error(f"Error getting members for club {club_id}: {str(e)}")
+        logger.error(f"Error getting club members for club {club_id}: {e}")
         return []
 
 @handle_dynamo_error

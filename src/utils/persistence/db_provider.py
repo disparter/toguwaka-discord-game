@@ -219,27 +219,33 @@ class DBProvider:
     async def get_top_players_by_reputation(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get top players by reputation."""
         try:
-            table = self.PLAYERS_TABLE
-            response = await table.scan(
-                Limit=limit,
-                ScanIndexForward=False,  # Sort in descending order
-                ProjectionExpression='PK, name, reputation, level, exp'
+            # Scan the players table and sort by reputation
+            response = self.PLAYERS_TABLE.scan(
+                ProjectionExpression='PK, SK, #n, reputation, level, exp',
+                ExpressionAttributeNames={
+                    '#n': 'name'
+                }
             )
             
+            # Filter and sort players
             players = []
             for item in response.get('Items', []):
-                player = {
-                    'user_id': item['PK'].replace('PLAYER#', ''),
-                    'name': item.get('name', 'Unknown'),
-                    'reputation': item.get('reputation', 0),
-                    'level': item.get('level', 1),
-                    'exp': item.get('exp', 0)
-                }
-                players.append(player)
+                if item.get('PK', '').startswith('PLAYER#'):
+                    players.append({
+                        'user_id': item['PK'].split('#')[1],
+                        'name': item.get('name', 'Unknown'),
+                        'reputation': item.get('reputation', 0),
+                        'level': item.get('level', 1),
+                        'exp': item.get('exp', 0)
+                    })
             
-            return players
+            # Sort by reputation in descending order
+            players.sort(key=lambda x: x.get('reputation', 0), reverse=True)
+            
+            # Return top N players
+            return players[:limit]
         except Exception as e:
-            logger.error(f"Error getting top players by reputation: {str(e)}")
+            logger.error(f"Error getting top players by reputation: {e}")
             return []
 
     # --- Club operations ---
@@ -430,42 +436,37 @@ db_provider = DBProvider()
 
 # Create wrapper functions for all methods that need to be exported
 async def get_player_async(user_id: str) -> Optional[Dict[str, Any]]:
-    """Get player data from database (async version)."""
-    return await db_provider.get_player(user_id)
+    """Get player data asynchronously."""
+    try:
+        response = await db_provider.PLAYERS_TABLE.get_item(
+            Key={
+                'PK': f'PLAYER#{user_id}',
+                'SK': 'PROFILE'
+            }
+        )
+        return response.get('Item')
+    except Exception as e:
+        logger.error(f"Error getting player data: {e}")
+        return None
 
 def get_player(user_id: str) -> Optional[Dict[str, Any]]:
-    """Get player data from database (sync version)."""
+    """Get player data (sync version)."""
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-    # Run the async function in the event loop
     if loop.is_running():
-        # If we're already in an event loop, use run_coroutine_threadsafe
-        future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
+        future = asyncio.run_coroutine_threadsafe(get_player_async(user_id), loop)
         try:
-            # First attempt with 10 second timeout
-            return future.result(timeout=10)
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
         except concurrent.futures.TimeoutError:
-            logger.warning(f"First timeout waiting for get_player({user_id}), retrying...")
-            # Second attempt with 20 second timeout
-            try:
-                future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
-                return future.result(timeout=20)
-            except concurrent.futures.TimeoutError:
-                logger.error(f"Second timeout waiting for get_player({user_id}), final attempt...")
-                # Final attempt with 30 second timeout
-                try:
-                    future = asyncio.run_coroutine_threadsafe(db_provider.get_player(user_id), loop)
-                    return future.result(timeout=30)
-                except concurrent.futures.TimeoutError:
-                    logger.error(f"Final timeout waiting for get_player({user_id})")
-                    return None
+            logger.error("Timeout waiting for get_player")
+            return None
     else:
-        # Otherwise, use run_until_complete
-        return loop.run_until_complete(db_provider.get_player(user_id))
+        return loop.run_until_complete(get_player_async(user_id))
 
 async def update_player_async(user_id: str, **kwargs) -> bool:
     """Update player data in database (async version)."""
@@ -590,24 +591,9 @@ async def get_cooldown_async(user_id: str, command: str) -> Optional[datetime]:
     """Get cooldown for a specific command (async version)."""
     return await db_provider.get_cooldown(user_id, command)
 
-def get_cooldowns(*args, **kwargs) -> List[Dict[str, Any]]:
-    """Get all cooldowns (sync version)."""
-    try:
-        loop = asyncio.get_event_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-    if loop.is_running():
-        future = asyncio.run_coroutine_threadsafe(db_provider.get_cooldowns(*args, **kwargs), loop)
-        try:
-            # Add a timeout of 5 seconds to prevent deadlock
-            return future.result(timeout=5)
-        except concurrent.futures.TimeoutError:
-            logger.error("Timeout waiting for get_cooldowns")
-            return []
-    else:
-        return loop.run_until_complete(db_provider.get_cooldowns(*args, **kwargs))
+def get_cooldowns(user_id: str) -> Dict[str, datetime]:
+    """Get all cooldowns for a user."""
+    return _get_cooldowns(user_id)
 
 def get_cooldown(user_id: str, command: str) -> Optional[datetime]:
     """Get cooldown for a specific command (sync version)."""
@@ -736,6 +722,25 @@ def store_event(event_id: str, name: str, description: str, event_type: str,
                                    channel_id, message_id, start_time, 
                                    end_time, participants, data, completed)
         )
+
+def get_top_players_by_reputation(limit: int = 10) -> List[Dict[str, Any]]:
+    """Get top players by reputation (sync version)."""
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(db_provider.get_top_players_by_reputation(limit), loop)
+        try:
+            # Add a timeout of 5 seconds to prevent deadlock
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            logger.error("Timeout waiting for get_top_players_by_reputation")
+            return []
+    else:
+        return loop.run_until_complete(db_provider.get_top_players_by_reputation(limit))
 
 # Export the singleton instance and all wrapper functions
 __all__ = [

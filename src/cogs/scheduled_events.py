@@ -313,7 +313,7 @@ class ScheduledEvents(commands.Cog):
                 logger.info(f"Cleared {removed} expired cooldowns from database")
 
             # Then load active cooldowns
-            db_cooldowns = await db_provider.get_cooldowns()
+            db_cooldowns = await db_provider.get_cooldowns(user_id=None)  # Get all cooldowns
             if db_cooldowns:
                 # Update the COOLDOWNS dictionary with cooldowns from the database
                 from cogs.activities import COOLDOWNS
