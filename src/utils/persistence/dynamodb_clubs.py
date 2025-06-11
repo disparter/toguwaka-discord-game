@@ -16,7 +16,7 @@ async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
     """Get club data from database."""
     try:
         table = get_table('Clubes')
-        response = table.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
+        response = await table.get_item(Key={'PK': f'CLUB#{club_id}', 'SK': 'INFO'})
         return response.get('Item')
     except Exception as e:
         logger.error(f"Error getting club {club_id}: {str(e)}")
