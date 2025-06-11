@@ -40,7 +40,8 @@ async def get_club(club_id: str) -> Optional[Dict[str, Any]]:
 async def get_all_clubs() -> List[Dict[str, Any]]:
     """Get all clubs from database."""
     try:
-        response = await get_table('Clubes').scan(
+        table = get_table('Clubes')
+        response = await table.scan(
             FilterExpression='begins_with(PK, :prefix)',
             ExpressionAttributeValues={
                 ':prefix': 'CLUB#'

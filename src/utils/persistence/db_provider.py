@@ -221,9 +221,10 @@ class DBProvider:
         try:
             # Scan the players table and sort by reputation
             response = self.PLAYERS_TABLE.scan(
-                ProjectionExpression='PK, SK, #n, reputation, level, exp',
+                ProjectionExpression='PK, SK, #n, reputation, #l, exp',
                 ExpressionAttributeNames={
-                    '#n': 'name'
+                    '#n': 'name',
+                    '#l': 'level'
                 }
             )
             
@@ -438,7 +439,8 @@ db_provider = DBProvider()
 async def get_player_async(user_id: str) -> Optional[Dict[str, Any]]:
     """Get player data asynchronously."""
     try:
-        response = await db_provider.PLAYERS_TABLE.get_item(
+        table = db_provider.PLAYERS_TABLE
+        response = await table.get_item(
             Key={
                 'PK': f'PLAYER#{user_id}',
                 'SK': 'PROFILE'

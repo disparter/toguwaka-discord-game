@@ -2,23 +2,34 @@
 Inventory operations for DynamoDB.
 """
 
+import os
 import logging
+import boto3
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, List, Any, Optional
 from decimal import Decimal
 from utils.logging_config import get_logger
 from utils.persistence.dynamodb import handle_dynamo_error, get_table, TABLES
 from utils.item_effects import ItemEffectHandler
 
-logger = get_logger('tokugawa_bot.inventory')
+logger = logging.getLogger('tokugawa_bot.inventory')
+
+# Initialize DynamoDB client
+AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
+dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+
+def get_table(table_name: str):
+    """Get DynamoDB table."""
+    return dynamodb.Table(table_name)
 
 @handle_dynamo_error
 async def get_player_inventory(user_id: str) -> Dict[str, Any]:
     """Get player inventory from database."""
     try:
-        response = await get_table(TABLES['inventory']).get_item(
+        table = get_table('Inventario')
+        response = await table.get_item(
             Key={
-                'PK': f'USER#{user_id}',
+                'PK': f'PLAYER#{user_id}',
                 'SK': 'INVENTORY'
             }
         )
@@ -38,9 +49,10 @@ async def add_item_to_inventory(user_id: str, item_id: str, item_data: Dict[str,
         current_inventory[item_id] = item_data
         
         # Update inventory
-        await get_table(TABLES['inventory']).put_item(
+        table = get_table('Inventario')
+        await table.put_item(
             Item={
-                'PK': f'USER#{user_id}',
+                'PK': f'PLAYER#{user_id}',
                 'SK': 'INVENTORY',
                 'items': current_inventory
             }
@@ -62,9 +74,10 @@ async def remove_item_from_inventory(user_id: str, item_id: str) -> bool:
             del current_inventory[item_id]
             
             # Update inventory
-            await get_table(TABLES['inventory']).put_item(
+            table = get_table('Inventario')
+            await table.put_item(
                 Item={
-                    'PK': f'USER#{user_id}',
+                    'PK': f'PLAYER#{user_id}',
                     'SK': 'INVENTORY',
                     'items': current_inventory
                 }
