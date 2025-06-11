@@ -23,6 +23,7 @@ from utils.persistence.dynamodb import (
 )
 from botocore.exceptions import ClientError
 import boto3
+from utils.persistence.db_provider import db_provider
 
 logger = get_logger('tokugawa_bot.players')
 
@@ -31,7 +32,7 @@ class DynamoDBPlayers:
     
     def __init__(self):
         self.dynamodb = boto3.resource('dynamodb')
-        self.table = self.dynamodb.Table('Jogadores')
+        self.table = db_provider.PLAYERS_TABLE
     
     async def get_player(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Get player data from DynamoDB."""
@@ -43,7 +44,7 @@ class DynamoDBPlayers:
             response = self.table.get_item(
                 Key={
                     'PK': f'PLAYER#{user_id}',
-                    'SK': 'INFO'
+                    'SK': 'PROFILE'
                 }
             )
             
@@ -94,7 +95,7 @@ class DynamoDBPlayers:
                 logger.info(f"Updating player {user_id} with missing attributes: {missing_attrs}")
                 update_item = {
                     'PK': f"PLAYER#{user_id}",
-                    'SK': 'INFO',
+                    'SK': 'PROFILE',
                     **item
                 }
                 # Convert numeric values to Decimal for DynamoDB
@@ -136,7 +137,7 @@ class DynamoDBPlayers:
         try:
             item = {
                 'PK': f'PLAYER#{user_id}',
-                'SK': 'INFO',
+                'SK': 'PROFILE',
                 'name': name,
                 'created_at': datetime.now().isoformat(),
                 'level': 1,
@@ -262,7 +263,7 @@ async def delete_player(user_id: str) -> bool:
         await table.delete_item(
             Key={
                 'PK': f"PLAYER#{user_id}",
-                'SK': 'INFO'
+                'SK': 'PROFILE'
             }
         )
         return True
