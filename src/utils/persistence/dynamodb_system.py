@@ -105,4 +105,20 @@ async def get_all_system_flags() -> List[Dict[str, Any]]:
         return response.get('Items', [])
     except Exception as e:
         logger.error(f"Error getting all system flags: {str(e)}")
-        return [] 
+        return []
+
+@handle_dynamo_error
+async def store_system_flag(flag_name: str, value: Any) -> bool:
+    """Store a system flag in the database."""
+    try:
+        table = get_table('SystemFlags')
+        await table.put_item(Item={
+            'PK': 'SYSTEM',
+            'SK': f'FLAG#{flag_name}',
+            'value': value,
+            'updated_at': datetime.now().isoformat()
+        })
+        return True
+    except Exception as e:
+        logger.error(f"Error storing system flag {flag_name}: {str(e)}")
+        return False 

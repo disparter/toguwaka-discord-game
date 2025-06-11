@@ -49,9 +49,25 @@ Define as interfaces para os principais componentes do sistema:
 Implementações da interface `Chapter`:
 
 - `BaseChapter`: Implementação base com funcionalidades comuns
-- `StoryChapter`: Capítulo padrão da história
-- `ChallengeChapter`: Capítulo de desafio com mecânicas especiais
-- `BranchingChapter`: Capítulo com múltiplos caminhos baseados nas escolhas do jogador
+- `StoryChapter`: Capítulo de história principal
+- `ChallengeChapter`: Capítulo de desafio
+- `BranchingChapter`: Capítulo com múltiplos caminhos
+
+### Exemplo de Uso
+
+```python
+from story_mode import StoryMode
+from utils.config import STORY_MODE_DIR
+
+# Inicializar o modo história
+story_mode = StoryMode(STORY_MODE_DIR)
+
+# Iniciar a história para um jogador
+player_data = await story_mode.start_story(player_data)
+
+# Processar uma escolha do jogador
+player_data = await story_mode.process_choice(player_data, chapter_id, choice_key, choice_value)
+```
 
 ### Eventos (event.py)
 

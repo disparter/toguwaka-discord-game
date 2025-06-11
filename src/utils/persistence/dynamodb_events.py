@@ -75,7 +75,7 @@ async def get_all_events() -> List[Dict[str, Any]]:
 async def get_active_events() -> List[Dict[str, Any]]:
     """Get currently active events."""
     try:
-        table = get_table('Events')
+        table = get_table('Eventos')
         now = datetime.now().isoformat()
         
         response = await table.scan(

@@ -216,23 +216,30 @@ class DBProvider:
         """Get top players by level."""
         return await _get_top_players(limit)
 
-    async def get_top_players_by_reputation(self, limit: int = 10) -> list:
+    async def get_top_players_by_reputation(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get top players by reputation."""
         try:
-            response = self.PLAYERS_TABLE.scan()
-            players = response.get('Items', [])
+            table = self.PLAYERS_TABLE
+            response = await table.scan(
+                Limit=limit,
+                ScanIndexForward=False,  # Sort in descending order
+                ProjectionExpression='PK, name, reputation, level, exp'
+            )
             
-            # Sort players by reputation
-            sorted_players = sorted(players, key=lambda x: x.get('reputation', 0), reverse=True)
+            players = []
+            for item in response.get('Items', []):
+                player = {
+                    'user_id': item['PK'].replace('PLAYER#', ''),
+                    'name': item.get('name', 'Unknown'),
+                    'reputation': item.get('reputation', 0),
+                    'level': item.get('level', 1),
+                    'exp': item.get('exp', 0)
+                }
+                players.append(player)
             
-            # Return top players with their reputation
-            return [{
-                'user_id': player['PK'].replace('PLAYER#', ''),
-                'name': player.get('name', 'Unknown'),
-                'reputation': player.get('reputation', 0)
-            } for player in sorted_players[:limit]]
+            return players
         except Exception as e:
-            logger.error(f"Error getting top players by reputation: {e}")
+            logger.error(f"Error getting top players by reputation: {str(e)}")
             return []
 
     # --- Club operations ---

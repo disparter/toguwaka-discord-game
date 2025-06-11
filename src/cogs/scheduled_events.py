@@ -3769,9 +3769,9 @@ class ScheduledEvents(commands.Cog):
         try:
             # Get current quiz event
             quiz_event = None
-            for event in ACTIVE_EVENTS:
-                if event['type'] == 'quiz':
-                    quiz_event = event
+            for event_id, event_data in ACTIVE_EVENTS.items():
+                if event_data.get('data', {}).get('type') == 'daily_subject':
+                    quiz_event = event_data
                     break
 
             if not quiz_event:
@@ -3785,12 +3785,12 @@ class ScheduledEvents(commands.Cog):
                 return
 
             # Check if player has already participated
-            if interaction.user.id in quiz_event['participants']:
+            if interaction.user.id in quiz_event.get('participants', []):
                 await interaction.response.send_message("Você já participou deste quiz!", ephemeral=True)
                 return
 
-            # Get questions from database
-            questions = await self.load_quiz_questions()
+            # Get questions from the event data
+            questions = quiz_event.get('data', {}).get('questions', [])
             if not questions:
                 await interaction.response.send_message("Não há perguntas disponíveis para este quiz.", ephemeral=True)
                 return
@@ -3800,7 +3800,7 @@ class ScheduledEvents(commands.Cog):
 
             # Create options for the select menu
             options = []
-            for i, option_text in enumerate(question['options']):
+            for i, option_text in enumerate(question.get('options', [])):
                 options.append(
                     discord.SelectOption(
                         label=option_text,
@@ -3822,8 +3822,8 @@ class ScheduledEvents(commands.Cog):
             # Send question
             await interaction.response.send_message(
                 embed=create_basic_embed(
-                    title=f"Quiz: {quiz_event['data']['subject']}",
-                    description=f"**Pergunta:** {question['question']}",
+                    title=f"Quiz: {quiz_event.get('data', {}).get('subject', 'Matéria')}",
+                    description=f"**Pergunta:** {question.get('question', 'Pergunta não disponível')}",
                     color=0x00ff00
                 ),
                 view=view,

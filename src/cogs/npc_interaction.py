@@ -8,6 +8,7 @@ from story_mode.story_mode import StoryMode
 from utils.command_registrar import CommandRegistrar
 from utils.embeds import create_basic_embed
 from utils.persistence import db_provider
+from utils.config import STORY_MODE_DIR
 
 logger = logging.getLogger('tokugawa_bot')
 
@@ -19,7 +20,7 @@ class NPCInteractionCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.story_mode = StoryMode()
+        self.story_mode = StoryMode(STORY_MODE_DIR)
         logger.info("NPCInteractionCog initialized")
 
     def cog_load(self):

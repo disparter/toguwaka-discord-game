@@ -12,6 +12,7 @@ from story_mode.narrative_logger import get_narrative_logger
 from story_mode.story_mode import StoryMode
 from utils.embeds import create_basic_embed
 from utils.persistence import db_provider
+from utils.config import STORY_MODE_DIR
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -22,8 +23,9 @@ class DecisionDashboard(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.story_mode = StoryMode()
+        self.story_mode = StoryMode(STORY_MODE_DIR)
         self.narrative_logger = get_narrative_logger()
+        logger.info("DecisionDashboardCog initialized")
 
     # Group for dashboard commands
     dashboard_group = app_commands.Group(name="dashboard", description="Dashboard de Comparação de Decisões")
