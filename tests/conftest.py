@@ -27,6 +27,16 @@ def mock_logging():
         yield
 
 @pytest.fixture(autouse=True)
+def mock_db_provider():
+    """Mock DBProvider to prevent DynamoDB connection attempts during tests."""
+    with patch('utils.persistence.db_provider.DBProvider') as mock:
+        mock_instance = MagicMock()
+        mock.return_value = mock_instance
+        mock_instance.ensure_dynamo_available.return_value = True
+        mock_instance.initialize_tables.return_value = True
+        yield mock_instance
+
+@pytest.fixture(autouse=True)
 def mock_discord():
     """Mock Discord.py to prevent actual Discord API calls during tests."""
     mock_client = MagicMock()

@@ -1,10 +1,21 @@
 import pytest
 import sys
 import os
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 # Adiciona o diretório src ao PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
+
+# Mock do DBProvider
+@pytest.fixture(autouse=True)
+def mock_db_provider():
+    """Mock do DBProvider para evitar tentativas de conexão com DynamoDB durante os testes."""
+    with patch('utils.persistence.db_provider.DBProvider') as mock:
+        mock_instance = MagicMock()
+        mock.return_value = mock_instance
+        mock_instance.ensure_dynamo_available.return_value = True
+        mock_instance.initialize_tables.return_value = True
+        yield mock_instance
 
 # Mock do Discord apenas para os módulos que precisam
 @pytest.fixture(autouse=True)
