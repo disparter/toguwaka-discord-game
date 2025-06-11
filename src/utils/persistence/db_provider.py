@@ -40,52 +40,9 @@ from utils.persistence.dynamodb_inventory import (
     add_item_to_inventory as _add_item_to_inventory,
     remove_item_from_inventory as _remove_item_from_inventory
 )
-from utils.persistence.dynamodb_events import (
-    store_event as _store_event,
-    get_event as _get_event,
-    get_all_events as _get_all_events,
-    get_active_events as _get_active_events
-)
-from utils.persistence.dynamodb_items import (
-    get_item as _get_item,
-    get_all_items as _get_all_items
-)
-from utils.persistence.dynamodb_quiz import (
-    get_quiz_question as _get_quiz_question,
-    get_all_quiz_questions as _get_all_quiz_questions,
-    get_quiz_answers as _get_quiz_answers,
-    add_quiz_question as _add_quiz_question
-)
-from utils.persistence.dynamodb_grades import (
-    get_player_grades as _get_player_grades,
-    update_player_grade as _update_player_grade,
-    get_monthly_average_grades as _get_monthly_average_grades
-)
-from utils.persistence.dynamodb_votes import (
-    add_vote as _add_vote,
-    get_vote_results as _get_vote_results
-)
-from utils.persistence.dynamodb_reputation import (
-    update_player_reputation as _update_player_reputation
-)
-from utils.persistence.dynamodb_story import (
-    get_story_progress as _get_story_progress,
-    update_story_progress as _update_story_progress
-)
-from utils.persistence.dynamodb_system import (
-    get_system_flag as _get_system_flag,
-    set_system_flag as _set_system_flag,
-    get_daily_events_flags as _get_daily_events_flags
-)
 from utils.persistence.dynamodb_market import (
     get_market_items as _get_market_items,
     add_market_item as _add_market_item
-)
-from utils.persistence.dynamodb_scheduled_events import (
-    create_scheduled_event as _create_scheduled_event,
-    get_scheduled_event as _get_scheduled_event,
-    get_upcoming_events as _get_upcoming_events,
-    get_active_events as _get_active_scheduled_events
 )
 
 logger = logging.getLogger('tokugawa_bot')
@@ -292,102 +249,6 @@ class DBProvider:
         """Remove an item from player inventory."""
         return await _remove_item_from_inventory(user_id, item_id)
 
-    # --- Event operations ---
-    async def store_event(self, event_id: str, name: str, description: str, event_type: str,
-                         channel_id: str, message_id: str, start_time: datetime,
-                         end_time: datetime, participants: List[str], data: Dict[str, Any],
-                         completed: bool = False) -> bool:
-        """Store an event in database."""
-        return await _store_event(event_id, name, description, event_type, channel_id, message_id,
-                               start_time, end_time, participants, data, completed)
-
-    async def get_event(self, event_id: str) -> Optional[Dict[str, Any]]:
-        """Get an event from database."""
-        return await _get_event(event_id)
-
-    async def get_all_events(self) -> List[Dict[str, Any]]:
-        """Get all events from database."""
-        return await _get_all_events()
-
-    async def get_active_events(self) -> List[Dict[str, Any]]:
-        """Get all active events from database."""
-        return await _get_active_events()
-
-    # --- Item operations ---
-    async def get_item(self, item_id: str) -> Optional[Dict[str, Any]]:
-        """Get an item from database."""
-        return await _get_item(item_id)
-
-    async def get_all_items(self) -> List[Dict[str, Any]]:
-        """Get all items from database."""
-        return await _get_all_items()
-
-    # --- Quiz operations ---
-    async def get_quiz_question(self, question_id: str) -> Optional[Dict[str, Any]]:
-        """Get a quiz question from database."""
-        return await _get_quiz_question(question_id)
-
-    async def get_all_quiz_questions(self) -> List[Dict[str, Any]]:
-        """Get all quiz questions from database."""
-        return await _get_all_quiz_questions()
-
-    async def get_quiz_answers(self, question_id: str) -> List[Dict[str, Any]]:
-        """Get all answers for a quiz question."""
-        return await _get_quiz_answers(question_id)
-
-    async def add_quiz_question(self, question_id: str, question_data: Dict[str, Any]) -> bool:
-        """Add a new quiz question."""
-        return await _add_quiz_question(question_id, question_data)
-
-    # --- Grade operations ---
-    async def get_player_grades(self, user_id: str) -> Dict[str, Dict[str, float]]:
-        """Get all grades for a player."""
-        return await _get_player_grades(user_id)
-
-    async def update_player_grade(self, user_id: str, subject: str, grade: float) -> bool:
-        """Update a player's grade."""
-        return await _update_player_grade(user_id, subject, grade)
-
-    async def get_monthly_average_grades(self, user_id: str) -> Dict[str, float]:
-        """Get monthly average grades for a player."""
-        return await _get_monthly_average_grades(user_id)
-
-    # --- Vote operations ---
-    async def add_vote(self, vote_id: str, voter_id: str, candidate_id: str) -> bool:
-        """Add a vote to database."""
-        return await _add_vote(vote_id, voter_id, candidate_id)
-
-    async def get_vote_results(self, vote_id: str) -> Dict[str, int]:
-        """Get results for a vote."""
-        return await _get_vote_results(vote_id)
-
-    # --- Reputation operations ---
-    async def update_player_reputation(self, user_id: str, amount: int) -> bool:
-        """Update a player's reputation."""
-        return await _update_player_reputation(user_id, amount)
-
-    # --- Story operations ---
-    async def get_story_progress(self, user_id: str) -> Dict[str, Any]:
-        """Get a player's story progress."""
-        return await _get_story_progress(user_id)
-
-    async def update_story_progress(self, user_id: str, progress_data: Dict[str, Any]) -> bool:
-        """Update a player's story progress."""
-        return await _update_story_progress(user_id, progress_data)
-
-    # --- System operations ---
-    async def get_system_flag(self, flag_name: str) -> Optional[str]:
-        """Get a system flag value."""
-        return await _get_system_flag(flag_name)
-
-    async def set_system_flag(self, flag_name: str, value: str, flag_type: str = 'system') -> bool:
-        """Set a system flag value."""
-        return await _set_system_flag(flag_name, value, flag_type)
-
-    async def get_daily_events_flags(self) -> List[Dict[str, Any]]:
-        """Get all daily events flags."""
-        return await _get_daily_events_flags()
-
     # --- Market operations ---
     async def get_market_items(self) -> List[Dict[str, Any]]:
         """Get all items in the market."""
@@ -397,22 +258,339 @@ class DBProvider:
         """Add an item to the market."""
         return await _add_market_item(item_id, item_data)
 
-    # --- Scheduled events operations ---
-    async def create_scheduled_event(self, event_id: str, event_data: Dict[str, Any]) -> bool:
-        """Create a new scheduled event."""
-        return await _create_scheduled_event(event_id, event_data)
+    # --- Event operations ---
+    async def store_event(self, event_id: str, name: str, description: str, event_type: str,
+                         channel_id: str, message_id: str, start_time: datetime,
+                         end_time: datetime, participants: List[str], data: Dict[str, Any],
+                         completed: bool = False) -> bool:
+        """Store an event in database."""
+        try:
+            self.EVENTS_TABLE.put_item(
+                Item={
+                    'PK': f'EVENT#{event_id}',
+                    'SK': 'INFO',
+                    'name': name,
+                    'description': description,
+                    'type': event_type,
+                    'channel_id': channel_id,
+                    'message_id': message_id,
+                    'start_time': start_time.isoformat(),
+                    'end_time': end_time.isoformat(),
+                    'participants': participants,
+                    'data': data,
+                    'completed': completed
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error storing event: {e}")
+            return False
 
-    async def get_scheduled_event(self, event_id: str) -> Optional[Dict[str, Any]]:
-        """Get a scheduled event."""
-        return await _get_scheduled_event(event_id)
+    async def get_event(self, event_id: str) -> Optional[Dict[str, Any]]:
+        """Get an event from database."""
+        try:
+            response = self.EVENTS_TABLE.get_item(
+                Key={
+                    'PK': f'EVENT#{event_id}',
+                    'SK': 'INFO'
+                }
+            )
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting event: {e}")
+            return None
 
-    async def get_upcoming_events(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """Get upcoming scheduled events."""
-        return await _get_upcoming_events(limit)
+    async def get_all_events(self) -> List[Dict[str, Any]]:
+        """Get all events from database."""
+        try:
+            response = self.EVENTS_TABLE.scan()
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all events: {e}")
+            return []
 
-    async def get_active_scheduled_events(self) -> List[Dict[str, Any]]:
-        """Get currently active scheduled events."""
-        return await _get_active_scheduled_events()
+    async def get_active_events(self) -> List[Dict[str, Any]]:
+        """Get all active events from database."""
+        try:
+            current_time = datetime.now().isoformat()
+            response = self.EVENTS_TABLE.scan(
+                FilterExpression='start_time <= :now AND end_time > :now AND completed = :completed',
+                ExpressionAttributeValues={
+                    ':now': current_time,
+                    ':completed': False
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting active events: {e}")
+            return []
+
+    # --- Item operations ---
+    async def get_item(self, item_id: str) -> Optional[Dict[str, Any]]:
+        """Get an item from database."""
+        try:
+            response = self.ITEMS_TABLE.get_item(
+                Key={
+                    'PK': f'ITEM#{item_id}',
+                    'SK': 'INFO'
+                }
+            )
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting item: {e}")
+            return None
+
+    async def get_all_items(self) -> List[Dict[str, Any]]:
+        """Get all items from database."""
+        try:
+            response = self.ITEMS_TABLE.scan()
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all items: {e}")
+            return []
+
+    # --- Quiz operations ---
+    async def get_quiz_question(self, question_id: str) -> Optional[Dict[str, Any]]:
+        """Get a quiz question from database."""
+        try:
+            response = self.QUIZ_QUESTIONS_TABLE.get_item(
+                Key={
+                    'PK': f'QUESTION#{question_id}',
+                    'SK': 'INFO'
+                }
+            )
+            return response.get('Item')
+        except Exception as e:
+            logger.error(f"Error getting quiz question: {e}")
+            return None
+
+    async def get_all_quiz_questions(self) -> List[Dict[str, Any]]:
+        """Get all quiz questions from database."""
+        try:
+            response = self.QUIZ_QUESTIONS_TABLE.scan()
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting all quiz questions: {e}")
+            return []
+
+    async def get_quiz_answers(self, question_id: str) -> List[Dict[str, Any]]:
+        """Get all answers for a quiz question."""
+        try:
+            response = self.QUIZ_ANSWERS_TABLE.scan(
+                FilterExpression='question_id = :qid',
+                ExpressionAttributeValues={
+                    ':qid': question_id
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting quiz answers: {e}")
+            return []
+
+    async def add_quiz_question(self, question_id: str, question_data: Dict[str, Any]) -> bool:
+        """Add a new quiz question."""
+        try:
+            self.QUIZ_QUESTIONS_TABLE.put_item(
+                Item={
+                    'PK': f'QUESTION#{question_id}',
+                    'SK': 'INFO',
+                    **question_data
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error adding quiz question: {e}")
+            return False
+
+    # --- Grade operations ---
+    async def get_player_grades(self, user_id: str) -> Dict[str, Dict[str, float]]:
+        """Get all grades for a player."""
+        try:
+            response = self.GRADES_TABLE.scan(
+                FilterExpression='user_id = :uid',
+                ExpressionAttributeValues={
+                    ':uid': user_id
+                }
+            )
+            return response.get('Items', {})
+        except Exception as e:
+            logger.error(f"Error getting player grades: {e}")
+            return {}
+
+    async def update_player_grade(self, user_id: str, subject: str, grade: float) -> bool:
+        """Update a player's grade."""
+        try:
+            self.GRADES_TABLE.put_item(
+                Item={
+                    'PK': f'GRADE#{user_id}',
+                    'SK': f'SUBJECT#{subject}',
+                    'grade': grade,
+                    'timestamp': datetime.now().isoformat()
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error updating player grade: {e}")
+            return False
+
+    async def get_monthly_average_grades(self, user_id: str) -> Dict[str, float]:
+        """Get monthly average grades for a player."""
+        try:
+            response = self.GRADES_TABLE.scan(
+                FilterExpression='user_id = :uid',
+                ExpressionAttributeValues={
+                    ':uid': user_id
+                }
+            )
+            
+            # Calculate averages
+            grades = response.get('Items', [])
+            averages = {}
+            for grade in grades:
+                subject = grade['SK'].split('#')[1]
+                if subject not in averages:
+                    averages[subject] = []
+                averages[subject].append(grade['grade'])
+            
+            # Calculate final averages
+            for subject in averages:
+                averages[subject] = sum(averages[subject]) / len(averages[subject])
+            
+            return averages
+        except Exception as e:
+            logger.error(f"Error getting monthly average grades: {e}")
+            return {}
+
+    # --- Vote operations ---
+    async def add_vote(self, vote_id: str, voter_id: str, candidate_id: str) -> bool:
+        """Add a vote to database."""
+        try:
+            self.VOTES_TABLE.put_item(
+                Item={
+                    'PK': f'VOTE#{vote_id}',
+                    'SK': f'VOTER#{voter_id}',
+                    'candidate_id': candidate_id,
+                    'timestamp': datetime.now().isoformat()
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error adding vote: {e}")
+            return False
+
+    async def get_vote_results(self, vote_id: str) -> Dict[str, int]:
+        """Get results for a vote."""
+        try:
+            response = self.VOTES_TABLE.scan(
+                FilterExpression='PK = :vid',
+                ExpressionAttributeValues={
+                    ':vid': f'VOTE#{vote_id}'
+                }
+            )
+            
+            # Count votes
+            results = {}
+            for vote in response.get('Items', []):
+                candidate_id = vote['candidate_id']
+                results[candidate_id] = results.get(candidate_id, 0) + 1
+            
+            return results
+        except Exception as e:
+            logger.error(f"Error getting vote results: {e}")
+            return {}
+
+    # --- Reputation operations ---
+    async def update_player_reputation(self, user_id: str, amount: int) -> bool:
+        """Update a player's reputation."""
+        try:
+            # Get current player data
+            player = await self.get_player(user_id)
+            if not player:
+                return False
+            
+            # Update reputation
+            player['reputation'] = player.get('reputation', 0) + amount
+            await self.update_player(user_id, **player)
+            return True
+        except Exception as e:
+            logger.error(f"Error updating player reputation: {e}")
+            return False
+
+    # --- Story operations ---
+    async def get_story_progress(self, user_id: str) -> Dict[str, Any]:
+        """Get a player's story progress."""
+        try:
+            response = self.MAIN_TABLE.get_item(
+                Key={
+                    'PK': f'STORY#{user_id}',
+                    'SK': 'PROGRESS'
+                }
+            )
+            return response.get('Item', {})
+        except Exception as e:
+            logger.error(f"Error getting story progress: {e}")
+            return {}
+
+    async def update_story_progress(self, user_id: str, progress_data: Dict[str, Any]) -> bool:
+        """Update a player's story progress."""
+        try:
+            self.MAIN_TABLE.put_item(
+                Item={
+                    'PK': f'STORY#{user_id}',
+                    'SK': 'PROGRESS',
+                    **progress_data
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error updating story progress: {e}")
+            return False
+
+    # --- System operations ---
+    async def get_system_flag(self, flag_name: str) -> Optional[str]:
+        """Get a system flag value."""
+        try:
+            response = self.SYSTEM_FLAGS_TABLE.get_item(
+                Key={
+                    'PK': f'FLAG#{flag_name}',
+                    'SK': 'VALUE'
+                }
+            )
+            return response.get('Item', {}).get('value')
+        except Exception as e:
+            logger.error(f"Error getting system flag: {e}")
+            return None
+
+    async def set_system_flag(self, flag_name: str, value: str, flag_type: str = 'system') -> bool:
+        """Set a system flag value."""
+        try:
+            self.SYSTEM_FLAGS_TABLE.put_item(
+                Item={
+                    'PK': f'FLAG#{flag_name}',
+                    'SK': 'VALUE',
+                    'value': value,
+                    'type': flag_type,
+                    'timestamp': datetime.now().isoformat()
+                }
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Error setting system flag: {e}")
+            return False
+
+    async def get_daily_events_flags(self) -> List[Dict[str, Any]]:
+        """Get all daily events flags."""
+        try:
+            response = self.SYSTEM_FLAGS_TABLE.scan(
+                FilterExpression='type = :type',
+                ExpressionAttributeValues={
+                    ':type': 'daily_event'
+                }
+            )
+            return response.get('Items', [])
+        except Exception as e:
+            logger.error(f"Error getting daily events flags: {e}")
+            return []
 
     # --- Database initialization ---
     async def init_db(self) -> bool:

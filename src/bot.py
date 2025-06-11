@@ -11,6 +11,9 @@ from discord.ext import commands
 import logging
 from utils.persistence.db_provider import db_provider
 from utils.logging_config import get_logger
+from dotenv import load_dotenv
+
+from events import EventsManager
 
 # Set up logging
 logger = get_logger('tokugawa_bot')
@@ -46,6 +49,9 @@ if (
     except Exception as e:
         logger.error(f"Failed to set up CloudWatch logging: {e}")
 
+# Load environment variables
+load_dotenv()
+
 # Get environment variables
 TOKEN = os.environ.get('DISCORD_TOKEN')
 if not TOKEN:
@@ -80,28 +86,61 @@ else:
 
 # Create a custom bot class with setup_hook for loading extensions
 class TokugawaBot(commands.Bot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Initialize config dictionary with values from environment variables
-        self.config = {
-            "guild_id": int(os.environ.get('GUILD_ID', 0)) if os.environ.get('GUILD_ID') else None,
-            "admin_role_id": int(os.environ.get('ADMIN_ROLE_ID', 0)) if os.environ.get('ADMIN_ROLE_ID') else None,
-        }
-        logger.info(f"Bot initialized with config: {self.config}")
-
+    """Main bot class for Academia Tokugawa."""
+    
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        intents.members = True
+        
+        super().__init__(
+            command_prefix='!',
+            intents=intents,
+            help_command=None
+        )
+        
+        # Initialize components
+        self.db = db_provider
+        self.events_manager = EventsManager(self)
+    
     async def setup_hook(self):
-        """Setup hook that is called when the bot is starting up."""
-        # Load all extensions
-        for filename in os.listdir('./src/cogs'):
-            if filename.endswith('.py') and filename != '__init__.py':
-                try:
-                    await self.load_extension(f'cogs.{filename[:-3]}')
-                    logger.info(f'Loaded extension: cogs.{filename[:-3]}')
-                except Exception as e:
-                    logger.error(f'Failed to load extension cogs.{filename[:-3]}: {e}')
+        """Set up the bot when it starts."""
+        try:
+            # Initialize database
+            await self.db.init_db()
+            
+            # Start events manager
+            await self.events_manager.start()
+            
+            # Load extensions
+            for filename in os.listdir('./src/cogs'):
+                if filename.endswith('.py'):
+                    await self.load_extension(f'src.cogs.{filename[:-3]}')
+            
+            logger.info("Bot setup completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Error during bot setup: {e}")
+            raise
+    
+    async def close(self):
+        """Clean up resources when the bot shuts down."""
+        try:
+            # Stop events manager
+            await self.events_manager.stop()
+            
+            # Close database connections
+            await self.db.close()
+            
+            await super().close()
+            logger.info("Bot shutdown completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Error during bot shutdown: {e}")
+            raise
 
 # Create bot instance with command prefix and command tree for slash commands
-bot = TokugawaBot(command_prefix="!", intents=intents)
+bot = TokugawaBot()
 
 # Make sure the bot is syncing application commands
 async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):

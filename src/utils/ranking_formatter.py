@@ -1,8 +1,10 @@
 import discord
 from datetime import datetime
 import random
-from utils.persistence.db_provider import get_player, get_club, get_top_players, get_top_players_by_reputation
+from utils.persistence.db_provider import get_player, get_club, get_top_players, get_top_players_by_reputation, db_provider
 from utils.embeds import create_basic_embed
+
+logger = logging.getLogger('tokugawa_bot.ranking_formatter')
 
 class RankingFormatter:
     """Class for formatting ranking and news messages for the Academia Tokugawa Discord bot."""
@@ -314,7 +316,7 @@ class ClubEffectEngine:
     """Class for centralizing the application of club effects and buffs."""
     
     @staticmethod
-    def format_buff_description(buff_type, buff_value):
+    def format_buff_description(buff_type: str, buff_value: int) -> str:
         """Format a buff description string.
         
         Args:
@@ -334,7 +336,7 @@ class ClubEffectEngine:
             return f"+{buff_value}% de bônus"
     
     @staticmethod
-    def apply_club_buff(player, action_type, base_value):
+    def apply_club_buff(player: Dict[str, Any], action_type: str, base_value: float) -> tuple:
         """Apply club buffs to a value based on player's club and action type.
         
         Args:
@@ -345,16 +347,17 @@ class ClubEffectEngine:
         Returns:
             tuple: (buffed_value, buff_description or None)
         """
-        from cogs.scheduled_events import CLUB_BUFFS
-        
         # If player has no club, return base value
         if not player.get('club_id'):
             return base_value, None
         
+        # Get current events
+        events = db_provider.get_current_events()
+        
         # Check if player's club has an active buff
         club_id = player['club_id']
-        if club_id in CLUB_BUFFS:
-            buff = CLUB_BUFFS[club_id]
+        if events['weekly']['tournament'] and events['weekly']['tournament'].get('club_id') == club_id:
+            buff = events['weekly']['tournament']
             
             # Check if buff is for the right action type and not expired
             if buff['type'] == action_type and buff['expires'] > datetime.now():
