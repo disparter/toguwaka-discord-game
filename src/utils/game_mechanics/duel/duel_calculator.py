@@ -30,18 +30,51 @@ class DuelCalculator(IDuelCalculator):
         self.weights = {
             'formal': {
                 'power_stat': Decimal('0.3'),
-                'intelligence': Decimal('0.4'),
-                'charisma': Decimal('0.3')
+                'dexterity': Decimal('0.2'),
+                'intellect': Decimal('0.4'),
+                'charisma': Decimal('0.1')
             },
             'informal': {
-                'power_stat': Decimal('0.5'),
-                'intelligence': Decimal('0.2'),
-                'charisma': Decimal('0.3')
+                'power_stat': Decimal('0.4'),
+                'dexterity': Decimal('0.3'),
+                'intellect': Decimal('0.2'),
+                'charisma': Decimal('0.1')
             },
             'training': {
+                'power_stat': Decimal('0.5'),
+                'dexterity': Decimal('0.3'),
+                'intellect': Decimal('0.1'),
+                'charisma': Decimal('0.1')
+            },
+            'physical': {
                 'power_stat': Decimal('0.6'),
-                'intelligence': Decimal('0.2'),
+                'dexterity': Decimal('0.3'),
+                'intellect': Decimal('0.05'),
+                'charisma': Decimal('0.05')
+            },
+            'mental': {
+                'power_stat': Decimal('0.1'),
+                'dexterity': Decimal('0.1'),
+                'intellect': Decimal('0.6'),
                 'charisma': Decimal('0.2')
+            },
+            'strategic': {
+                'power_stat': Decimal('0.2'),
+                'dexterity': Decimal('0.3'),
+                'intellect': Decimal('0.4'),
+                'charisma': Decimal('0.1')
+            },
+            'social': {
+                'power_stat': Decimal('0.05'),
+                'dexterity': Decimal('0.05'),
+                'intellect': Decimal('0.2'),
+                'charisma': Decimal('0.7')
+            },
+            'elemental': {
+                'power_stat': Decimal('0.5'),
+                'dexterity': Decimal('0.1'),
+                'intellect': Decimal('0.3'),
+                'charisma': Decimal('0.1')
             }
         }
         
@@ -58,6 +91,14 @@ class DuelCalculator(IDuelCalculator):
             'training': {
                 'exp': 20,
                 'tusd': 30
+            },
+            'physical': {
+                'exp': 40,
+                'tusd': 80
+            },
+            'magical': {
+                'exp': 45,
+                'tusd': 90
             }
         }
         
@@ -118,7 +159,7 @@ class DuelCalculator(IDuelCalculator):
             challenger_score = (
                 Decimal(str(challenger['power_stat'])) * weights['power_stat'] * challenger_hp_factor +
                 Decimal(str(challenger['dexterity'])) * weights['dexterity'] * challenger_hp_factor +
-                Decimal(str(challenger['intellect'])) * weights['intelligence'] * challenger_hp_factor +
+                Decimal(str(challenger['intellect'])) * weights['intellect'] * challenger_hp_factor +
                 Decimal(str(challenger['charisma'])) * weights['charisma'] * challenger_hp_factor
             ) * self._get_random_factor()
             
@@ -126,7 +167,7 @@ class DuelCalculator(IDuelCalculator):
             opponent_score = (
                 Decimal(str(opponent['power_stat'])) * weights['power_stat'] * opponent_hp_factor +
                 Decimal(str(opponent['dexterity'])) * weights['dexterity'] * opponent_hp_factor +
-                Decimal(str(opponent['intellect'])) * weights['intelligence'] * opponent_hp_factor +
+                Decimal(str(opponent['intellect'])) * weights['intellect'] * opponent_hp_factor +
                 Decimal(str(opponent['charisma'])) * weights['charisma'] * opponent_hp_factor
             ) * self._get_random_factor()
             
@@ -163,7 +204,7 @@ class DuelCalculator(IDuelCalculator):
                 hp_loss = max(int(score_ratio * 20), 3)  # Mínimo de 3 HP
             
             return {
-                "winner": winner,
+                "winner": winner['name'],
                 "loser": opponent['name'] if winner == challenger else challenger['name'],
                 "duel_type": duel_type,
                 "win_margin": float(score_ratio),
