@@ -84,7 +84,7 @@ class StoryMode:
             first_chapter = self._get_first_chapter()
             if not first_chapter:
                 logger.error("No first chapter found in story data")
-                return {"error": "No first chapter found"}
+                return player_data  # Return player data with initialized story progress
 
             # Set the current chapter
             player_data = await self.progress_manager.set_current_chapter(player_data, first_chapter)
@@ -93,7 +93,7 @@ class StoryMode:
             chapter_data = await self._load_chapter(first_chapter)
             if not chapter_data:
                 logger.error(f"Failed to load chapter {first_chapter}")
-                return {"error": f"Failed to load chapter {first_chapter}"}
+                return player_data  # Return player data with current chapter set
 
             # Process the chapter
             await self._process_chapter(player_data, chapter_data)
@@ -106,7 +106,7 @@ class StoryMode:
             return player_data
         except Exception as e:
             logger.error(f"Error starting story: {str(e)}")
-            return {"error": str(e)}
+            return player_data  # Return player data even on error to preserve story progress
 
     async def _process_chapter(self, player_data: Dict[str, Any], chapter_data: Dict[str, Any]) -> None:
         """
