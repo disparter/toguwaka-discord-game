@@ -29,34 +29,18 @@ def load_json(file_path):
 
 
 # Load all economy data from JSON files
-ITEM_CATEGORIES = load_json('data/economy/item_categories.json')
+ITEM_CATEGORIES = load_json('data/economy/items/item_categories.json')
 ITEM_TYPES = load_json('data/economy/item_types.json')
 SEASONS = load_json('data/economy/seasons.json')
 ALTERNATIVE_CURRENCIES = load_json('data/economy/alternative_currencies.json')
 
-# Load more economy data from JSON files
-SPECIAL_CURRENCY_ITEMS = load_json('data/economy/special_currency_items.json')
-ITEM_EXCHANGES = load_json('data/economy/item_exchanges.json')
-
-# Load items from new category-based structure
+# Load items from category-based structure
 TRAINING_ITEMS = load_json('data/economy/items/training_items.json')
 COMBAT_ITEMS = load_json('data/economy/items/combat_items.json')
 ENERGY_ITEMS = load_json('data/economy/items/energy_items.json')
 ATTRIBUTE_ITEMS = load_json('data/economy/items/attribute_items.json')
 SOCIAL_ITEMS = load_json('data/economy/items/social_items.json')
 SUPPORT_ITEMS = load_json('data/economy/items/support_items.json')
-
-# Itens sazonais (baseados na estação/bimestre)
-SEASONAL_ITEMS = load_json('data/economy/seasonal_items.json')
-
-# Itens de eventos especiais (desbloqueados por eventos específicos)
-EVENT_ITEMS = load_json('data/economy/event_items.json')
-
-# Itens lendários (desbloqueados por progresso avançado ou eventos especiais)
-LEGENDARY_ITEMS = load_json('data/economy/legendary_items.json')
-
-# Itens temáticos de clubes (disponíveis apenas para membros de clubes específicos)
-CLUB_ITEMS = load_json('data/economy/club_items.json')
 
 # Carrega dados de técnicas
 TECHNIQUE_DATA = load_json('data/economy/techniques/techniques.json')
@@ -74,6 +58,7 @@ SHOP_ITEMS.extend(COMBAT_ITEMS)
 SHOP_ITEMS.extend(ENERGY_ITEMS)
 SHOP_ITEMS.extend(ATTRIBUTE_ITEMS)
 SHOP_ITEMS.extend(SOCIAL_ITEMS)
+SHOP_ITEMS.extend(SUPPORT_ITEMS)
 
 class Economy(commands.Cog):
     """Cog for economy and shop commands."""
